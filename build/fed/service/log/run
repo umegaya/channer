@@ -1,0 +1,4 @@
+#!/bin/sh
+LOG=/var/log/runsvdir/fed
+test -d "$LOG" || mkdir -p -m755 "$LOG"
+exec svlogd -t "$LOG"
