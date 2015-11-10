@@ -1,5 +1,5 @@
-/// <reference path="./mithril.d.ts"/>
-declare module UI {
+/// <reference path="../decl/mithril.d.ts"/>
+declare namespace UI {
 	interface Element extends _mithril.MithrilVirtualElement {		
 	}
 	

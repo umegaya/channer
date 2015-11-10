@@ -1,7 +1,7 @@
-/// <reference path="./UI.d.ts"/>
-/// <reference path="./socket.d.ts"/>
+/// <reference path="../decl/UI.d.ts"/>
+/// <reference path="../decl/socket.d.ts"/>
 
-module main {
+namespace main {
 	export class Config {
 		url: string;
 	}

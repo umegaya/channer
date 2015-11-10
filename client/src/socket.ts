@@ -1,4 +1,4 @@
-module socket {
+namespace socket {
 	export interface Delegate {
 		onopen?: () => void;
 		onmessage?: (event:any) => void;
@@ -7,7 +7,7 @@ module socket {
 	}
 	export class Socket {
 		url: string;
-		private ws: WebSocket;
+	 	ws: WebSocket;
 		constructor(url: string, d: Delegate) {
 			this.url = url;
 			this.ws = new WebSocket(url);
@@ -28,7 +28,7 @@ module socket {
 		}
 		private static onclose = (event:any) => void {
 		}
-		private static onerror =(event:any) => void {
+		private static onerror = (event:any) => void {
 		}
 	}
 	class SocketMap {

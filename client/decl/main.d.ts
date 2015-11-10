@@ -1,5 +1,6 @@
-/// <reference path="../../src/UI.d.ts" />
-declare module main {
+/// <reference path="../decl/UI.d.ts" />
+/// <reference path="../decl/socket.d.ts" />
+declare namespace main {
     class Config {
         url: string;
     }

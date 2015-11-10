@@ -1,5 +1,5 @@
-/// <reference path="./UI.d.ts"/>
-/// <reference path="./socket.d.ts"/>
+/// <reference path="../decl/UI.d.ts"/>
+/// <reference path="../decl/socket.d.ts"/>
 var main;
 (function (main) {
     var Config = (function () {
@@ -40,7 +40,7 @@ var main;
                 onopen: this.onopen,
                 onmessage: this.onmessage,
                 onclose: this.onclose,
-                onerror: this.onerror,
+                onerror: this.onerror
             });
         }
         return Controller;

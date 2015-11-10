@@ -1,4 +1,4 @@
-declare module socket {
+declare namespace socket {
     interface Delegate {
         onopen?: () => void;
         onmessage?: (event: any) => void;
@@ -7,7 +7,7 @@ declare module socket {
     }
     class Socket {
         url: string;
-        private ws;
+        ws: WebSocket;
         constructor(url: string, d: Delegate);
         send: (data: any) => void;
         close: () => void;
