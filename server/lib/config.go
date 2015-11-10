@@ -8,8 +8,9 @@ import (
 
 //Config represents common configuration of channer servers
 type Config struct {
-	EndPoint        string      `json:"endpoint"`
-	ListenAddress   string      `json:"listen"`
+	EndPoint        	string      `json:"endpoint"`
+	ListenAddress   	string      `json:"listen"`
+	DisableOriginCheck  bool        `json:"disable_origin_check"`
 }
 
 //check_and_fill check configuration, if configuration seems not set, 

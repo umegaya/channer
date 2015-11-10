@@ -83,6 +83,12 @@ type FrontServer struct {
 
 //NewFront creates new frontend server
 func NewFrontServer(config *Config) *FrontServer {
+	var co func(r *http.Request) bool = nil
+	if config.DisableOriginCheck {
+		co = func (r *http.Request) bool {
+			return true
+		}
+	}
 	return &FrontServer {
 		cmap : make(map[string]*FrontServerConn),
 		config : config,
@@ -91,12 +97,13 @@ func NewFrontServer(config *Config) *FrontServer {
 		receive : make(chan *packet.RecvPacket),
 		send : make(chan *packet.SendPacket),
 		closer : make(chan interface{}),
-		upgrader : websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024},
+		upgrader : websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024, CheckOrigin: co},
 	}
 }
 
 //ServeHTTP implements http.Handler interface
 func (sv *FrontServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("ServeHTTP")
 	ws, err := sv.upgrader.Upgrade(w, r, nil)
     if err != nil {
         return
@@ -130,10 +137,10 @@ func (sv *FrontServer) processEvents() {
 		select {
 		case c := <-sv.join:
 			log.Printf("join from %s", c.String())
-			sv.cmap[c.addr().String()] = c
+			sv.cmap[c.String()] = c
 		case c := <-sv.leave:
 			log.Printf("leave from %s", c.String())
-			delete(sv.cmap, c.addr().String())
+			delete(sv.cmap, c.String())
 			c.close()
 		case pkt := <-sv.receive:
 			log.Printf("receive from client at %s", pkt.From.String())

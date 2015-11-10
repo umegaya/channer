@@ -1,0 +1,4 @@
+{
+	"endpoint": "/ws",
+	"disable_origin_check": true
+}

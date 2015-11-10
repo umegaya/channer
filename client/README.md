@@ -1,0 +1,8 @@
+# channer client
+
+### dependency
+```
+sudo npm install -g phonegap
+sudo npm install -g typescript
+sudo npm install -g gulp
+```
