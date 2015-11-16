@@ -1,0 +1,84 @@
+{
+    "package": "channer",
+    "messages": [
+        {
+            "name": "Login",
+            "fields": [
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "hash",
+                    "id": 1
+                },
+                {
+                    "rule": "required",
+                    "type": "uint64",
+                    "name": "ts",
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "name": "MsgHLC",
+            "fields": [
+                {
+                    "rule": "required",
+                    "type": "uint32",
+                    "name": "ts_sec",
+                    "id": 1
+                },
+                {
+                    "rule": "required",
+                    "type": "uint32",
+                    "name": "logical_ts",
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "name": "MsgOptions",
+            "fields": [
+                {
+                    "rule": "repeated",
+                    "type": "MsgHLC",
+                    "name": "refers",
+                    "id": 1
+                },
+                {
+                    "rule": "optional",
+                    "type": "bool",
+                    "name": "no_fetch_url",
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "name": "Msg",
+            "fields": [
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "text",
+                    "id": 1
+                },
+                {
+                    "rule": "optional",
+                    "type": "MsgOptions",
+                    "name": "options",
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "name": "Hoge",
+            "fields": [
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "data",
+                    "id": 1
+                }
+            ]
+        }
+    ]
+}
