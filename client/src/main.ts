@@ -1,30 +1,20 @@
 /// <reference path="../decl/UI.d.ts"/>
+/// <reference path="../decl/proto.d.ts"/>
 /// <reference path="../decl/socket.d.ts"/>
+/// <reference path="../decl/channer.proto.d.ts"/>
 
 namespace main {
 	export class Config {
 		url: string;
 	}
-	export class Message {
-		text: string;
-		attr: any;
-		
-		constructor(text:string, attr:any) {
-			this.text = text;
-			this.attr = attr;
-		}
-		to_e = () : UI.Element => {
-			return m("div", this.text)			
-		}
-	}
 	export class Controller implements UI.Controller {
 		s: socket.Socket;
 		input_text: UI.Property<string>;
-		messages: Array<Message>;
+		messages: Array<channer.Msg>;
 
 		constructor(config: Config) {
 			this.input_text = m.prop("");
-			this.messages = new Array<Message>();
+			this.messages = new Array<channer.Msg>();
 			this.s = socket.Manager.open(config.url, {
 				onopen: this.onopen,
 				onmessage: this.onmessage,
@@ -36,21 +26,27 @@ namespace main {
 			socket.Manager.close(this.s);
 		}
 		finish_input = () => {
-			this.messages.push(new Message(this.input_text(), null));
+			console.log("finish input:" + this.input_text());
+			/*
+			var msg = {text:""};//proto.channer.MsgBuilder.new();
+			msg.text = this.input_text();
+			this.s.send(msg);
+			this.messages.push(msg);
 			this.input_text("");
+			*/
 		}
 		onopen = () => void {
 		}
-		onmessage = (event:any) => void {
+		onmessage = (event: any) => void {
 		}
-		onclose = (event:any) => void {
+		onclose = (event: any) => void {
 		}
-		onerror = (event:any) => void {
+		onerror = (event: any) => void {
 		}
 	}
 	function View(ctrl: Controller) : UI.Element {
-		var msgs = ctrl.messages.map(function (msg:Message) {
-			return msg.to_e();
+		var msgs = ctrl.messages.map(function (msg: channer.Msg) {
+			return m('div', msg.text);
 		})
 		return [
 			m("div", msgs),
@@ -70,7 +66,3 @@ namespace main {
 		}
 	}
 }
-
-m.mount(document.body, new main.Component({
-	url: "ws://localhost:8888/ws"
-}))

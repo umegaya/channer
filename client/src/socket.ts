@@ -1,3 +1,5 @@
+/// <reference path="../decl/proto.d.ts"/>
+
 namespace socket {
 	export interface Delegate {
 		onopen?: () => void;
@@ -11,13 +13,14 @@ namespace socket {
 		constructor(url: string, d: Delegate) {
 			this.url = url;
 			this.ws = new WebSocket(url);
+			this.ws.binaryType = "arraybuffer";
 			this.ws.onopen = d.onopen || Socket.onopen;
 			this.ws.onmessage = d.onmessage || Socket.onmessage;
 			this.ws.onclose = d.onclose || Socket.onclose;
 			this.ws.onerror = d.onerror || Socket.onerror;
 		}
-		send = (data: any) => {
-			this.ws.send(data);
+		send = (data: proto.Model) => {
+			this.ws.send(data.toArrayBuffer());
 		}
 		close = () => {
 			this.ws.close();

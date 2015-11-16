@@ -1,3 +1,4 @@
+/// <reference path="../decl/proto.d.ts" />
 declare namespace socket {
     interface Delegate {
         onopen?: () => void;
@@ -9,7 +10,7 @@ declare namespace socket {
         url: string;
         ws: WebSocket;
         constructor(url: string, d: Delegate);
-        send: (data: any) => void;
+        send: (data: proto.Model) => void;
         close: () => void;
         private static onopen;
         private static onmessage;

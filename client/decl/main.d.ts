@@ -1,19 +1,15 @@
 /// <reference path="../decl/UI.d.ts" />
+/// <reference path="../decl/proto.d.ts" />
 /// <reference path="../decl/socket.d.ts" />
+/// <reference path="../decl/channer.proto.d.ts" />
 declare namespace main {
     class Config {
         url: string;
     }
-    class Message {
-        text: string;
-        attr: any;
-        constructor(text: string, attr: any);
-        to_e: () => UI.Element;
-    }
     class Controller implements UI.Controller {
         s: socket.Socket;
         input_text: UI.Property<string>;
-        messages: Array<Message>;
+        messages: Array<channer.Msg>;
         constructor(config: Config);
         onunload: (evt: Event) => any;
         finish_input: () => void;
