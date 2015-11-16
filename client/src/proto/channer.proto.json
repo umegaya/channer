@@ -1,5 +1,5 @@
 {
-    "package": "channer",
+    "package": "ChannerProto",
     "messages": [
         {
             "name": "Login",
@@ -66,17 +66,6 @@
                     "type": "MsgOptions",
                     "name": "options",
                     "id": 2
-                }
-            ]
-        },
-        {
-            "name": "Hoge",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "string",
-                    "name": "data",
-                    "id": 1
                 }
             ]
         }
