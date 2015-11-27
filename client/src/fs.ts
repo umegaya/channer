@@ -1,0 +1,82 @@
+/// <reference path="../typings/phonegap.d.ts"/>
+/// <reference path="../typings/q/Q.d.ts"/>
+import q = require('q');
+
+export class FS {
+    fs: FileSystem;
+    constructor(fs: FileSystem) {
+        this.fs = fs;        
+    }
+    openfile = (path: string, options?: Flags): Q.Promise<FileEntry> => {
+        var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
+        this.fs.root.getFile(path, options, function (entry: FileEntry) {
+            df.resolve(entry);
+        }, function (e: any) {
+            df.reject(e);
+        });
+        return df.promise;
+    }
+    readfile = (entry: FileEntry) : Q.Promise<string> => {
+        var df: Q.Deferred<string> = q.defer<string>();
+        entry.file(function (file) {    
+            var reader : FileReader = new FileReader();
+            reader.onloadend = function (event : ProgressEvent) {
+                df.resolve(reader.result);
+            }
+            reader.readAsText(file);
+        }, function (e: FileError) {
+            df.reject(e);
+        });
+        return df.promise;
+    }
+    rename = (src: string, to: string, name?: string): Q.Promise<Entry> => {
+        var df: Q.Deferred<Entry> = q.defer<Entry>();
+        //to should relative to root.
+        return this.opendir(to)
+        .then((dir: DirectoryEntry) => {
+            this.openfile(src)
+            .then(function (file: FileEntry) {
+                file.moveTo(dir, name, function (entry: Entry) {
+                    df.resolve(entry);
+                }, function (e: any) {
+                    df.reject(e);
+                })
+            }, function (e: any) {
+                df.reject(e);
+            })
+            return df.promise;
+        });
+    }
+    opendir = (path: string, options?: Flags): Q.Promise<DirectoryEntry> => {
+        var df: Q.Deferred<DirectoryEntry> = q.defer<DirectoryEntry>();
+        this.fs.root.getDirectory(path, options, function (entry: DirectoryEntry) {
+            df.resolve(entry);
+        }, function (e: any) {
+            df.reject(e);
+        });
+        return df.promise;
+    }
+    download = (url: string, dest: string): Q.Promise<FileEntry> => {
+        var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
+        var ft: FileTransfer = new FileTransfer();
+        ft.download(encodeURI(url), this.fs.root.toURL() + dest, function(entry: FileEntry) {
+            df.resolve(entry);
+        }, function (e: FileTransferError) {
+        console.log("dl6:" + JSON.stringify(e));
+            df.reject(e);
+        });
+        return df.promise;
+    }
+    load = (js: FileEntry): Q.Promise<FileEntry> => {
+        console.log("loadjs:" + js.toURL());
+        var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
+        var scriptTag = document.createElement('script');
+        scriptTag.onload = function (event : any) {
+            df.resolve(js);
+        }
+        scriptTag.type = "text/javascript";
+        scriptTag.src = js.toURL();
+        document.head.appendChild(scriptTag);
+        return df.promise;
+    }
+};

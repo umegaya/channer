@@ -47,7 +47,9 @@ module.exports = function (settings) {
             new StatsWriterPlugin({
                 filename: "config.json",
                 transform: function (data) {
-                    var deps = ["vendor", "patch", "boot"];
+                    //declare simple dependency of each assets
+                    //TODO : if it goes really complex, enable graph-style dependency declaration
+                    var deps = ["vendor", "boot"];
                     function sorter(a, b) {
                         return deps.indexOf(a.name) - deps.indexOf(b.name);
                     }
