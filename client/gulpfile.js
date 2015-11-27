@@ -64,6 +64,7 @@ var movefile = function (file) {
     var dts = file.replace(/\.ts$/, '.d.ts');
     var js = file.replace(/\.ts$/, '.js');
     var dts_dest = dts.replace(paths.typescript, paths.typescript_decl);
+    var js_dest = js.replace(paths.typescript, paths.typescript_js);
     //console.log(dts, js, dts_dest, js_dest)
     fs.open(dts, 'r', function (err, fd) {
         if (!err) {
@@ -147,10 +148,10 @@ gulp.task('compile', function () {
         }
     })
     if (obj.error) {
-        readdir_recursive(paths.typescript, movefile);
+        readdir_recursive(paths.typescript, rmfile);
     }
     else {
-        readdir_recursive(paths.typescript, rmfile);        
+        readdir_recursive(paths.typescript, movefile);        
     }
 });
 
@@ -174,11 +175,11 @@ gulp.task('webpack-clean', function () {
 gulp.task("webpack-watch", function() {
     // Start a webpack-dev-server
     var server = "localhost";
-    var port = 9999;
+    var port = webpackConfig.output.assetServerPort;
     var compiler = webpack(webpackConfig);
 
     new WebpackDevServer(compiler, {
-      noInfo: false,
+      noInfo: true,
       hot: true,
       contentBase: webpackConfig.contentBase,
       publicPath: webpackConfig.output.publicPath,
@@ -188,10 +189,9 @@ gulp.task("webpack-watch", function() {
       }
     }).listen(port, server, function(err) {
         if(err) throw new util.PluginError("webpack:serve", err);
-
         // Server listening
         util.log("Starting", util.colors.blue("Webpack Development Server"));
-        util.log("Listening", util.colors.magenta("http://"+server+":"+port+"/webpack-dev-server/index.html"));
+        util.log("Listening", util.colors.magenta("http://"+server+":"+port));
     });
 });
 

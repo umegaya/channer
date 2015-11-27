@@ -1,0 +1,21 @@
+package ChannerProto;
+
+message Login {
+	required string hash = 1;
+	required uint64 ts = 2;
+}
+
+message MsgHLC {
+	required uint32 ts_sec = 1;
+	required uint32 logical_ts = 2;
+}
+
+message MsgOptions {
+	repeated MsgHLC refers = 1;
+	optional bool no_fetch_url = 2;
+}
+
+message Msg {
+	required string text = 1;
+	optional MsgOptions options = 2;
+}

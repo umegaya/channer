@@ -1,12 +1,17 @@
 /// <reference path="../typings/UI.d.ts"/>
 /// <reference path="../typings/proto.d.ts"/>
 /// <reference path="../typings/socket.d.ts"/>
+/// <reference path="../typings/boot.d.ts"/>
 
 import {Socket, Manager} from "./socket"
 import {ChannerProto} from "./proto"
+import {m} from "./uikit"
 
 export class Config {
 	url: string;
+	constructor(src: any) {
+		this.url = src.url;
+	}
 }
 export class Controller implements UI.Controller {
 	s: Socket;
@@ -27,11 +32,10 @@ export class Controller implements UI.Controller {
 		Manager.close(this.s);
 	}
 	finish_input = () => {
-		var msg = ChannerProto.MsgBuilder.new();
+		var msg = new ChannerProto.Msg();
 		msg.text = this.input_text();
-		//var msg = {text:this.input_text()}
-		//this.s.send(msg);
-		//this.messages.push(msg);
+		this.s.send(msg);
+		this.messages.push(msg);
 		this.input_text("");
 	}
 	onopen = () => {

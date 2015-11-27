@@ -1,0 +1,1 @@
+window.endpoint = "http://localhost:9999";
