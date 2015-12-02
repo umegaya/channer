@@ -117,7 +117,8 @@ class Patcher {
     }
 };
 
-window.channer.patch = function (loaderURL: string, onfinished: (config: any) => any): any {
+window.channer.patch = function (loaderURL: string, 
+    onfinished: (config: any) => any, onerror: (error: any) => any): any {
     console.log("start patch " + loaderURL);
     window.channer.fs = new FS(window.channer.rawfs);
     var patcher = new Patcher(window.channer.fs);
@@ -127,5 +128,6 @@ window.channer.patch = function (loaderURL: string, onfinished: (config: any) =>
         onfinished(config);
     }, function (e: any) {
         console.log("error patch:" + e.stack);
+        onerror(e);
     });
 }
