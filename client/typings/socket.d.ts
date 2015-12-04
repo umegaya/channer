@@ -9,16 +9,23 @@ export interface Delegate {
 export declare class Socket {
     url: string;
     ws: WebSocket;
+    private state;
+    private next_connection;
+    private error_streak;
+    private pendings;
     d: Delegate;
     constructor(url: string, d: Delegate);
     send: (data: Model) => void;
     close: () => void;
-    onopen: () => void;
+    reconnect_duration: () => number;
+    open: () => void;
+    private clear_error_streak;
+    private add_error_streak;
+    private onopen;
     private onmessage;
     private onclose;
     private onerror;
 }
 export declare class Manager {
     static open(url: string, d: Delegate): Socket;
-    static close(s: Socket): void;
 }

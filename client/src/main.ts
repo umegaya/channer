@@ -29,7 +29,6 @@ export class Controller implements UI.Controller {
 		});
 	}
 	onunload = (evt: Event): any => {
-		Manager.close(this.s);
 	}
 	finish_input = () => {
 		var p = new ChannerProto.Payload();
