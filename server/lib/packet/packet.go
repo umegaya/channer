@@ -1,10 +1,8 @@
 package packet
 
-//packet represent one protocol record
-type Packet struct {
-	Kind string			`json:"kind"`
-	Data interface{}	`json:"data"`
-}
+import (
+	proto "../../proto"
+)
 
 //Source is interface which is required packet source information 
 type Source interface {
@@ -18,41 +16,41 @@ type Destination interface {
 
 //Transport is interface which is required packet transport 
 type Transport interface {
-	Send(Destination, *Packet) error
+	Send(Destination, *proto.Payload) error
 }
 
 //packet represent one protocol record with receiver information
 type RecvPacket struct {
-	*Packet
+	Payload *proto.Payload
 	From Source
 }
 
 //packet represent one protocol record with destination information
 type SendPacket struct {
-	*Packet
+	Payload *proto.Payload
 	To Destination
 }
 
 //handlers map actual packet handler and packet type
-var handlers = map[string]func (pkt *Packet, t Transport) {
-	"msg": func (pkt *Packet, t Transport) {
-		pkt.Data.(*Msg).Process(t)
+var handlers = map[proto.Payload_Type]func (pkt *RecvPacket, t Transport) {
+	proto.Payload_PostRequest: func (pkt *RecvPacket, t Transport) {
+		go Process(pkt.Payload.PostRequest, t)
 	},
 }
 
 //Process processes packet according to its type
-func (pkt *Packet) Process(t Transport) {
-	handlers[pkt.Kind](pkt, t)
+func (pkt *RecvPacket) Process(t Transport) {
+	handlers[*pkt.Payload.Type](pkt, t)
 }
 
 
 //TopicDestination is destination which specifies topic. packet send to
 //all participant of the topic
 type TopicDestination struct {
-	Topic string
+	TopicId uint64
 }
 
 //String implements Destination intarface
-func (d *TopicDestination) String() string {
-	return d.Topic
+func (td *TopicDestination) String() string {
+	return "hoge"
 }

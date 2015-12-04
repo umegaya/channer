@@ -5,15 +5,16 @@ import (
 	"net/http"
 	"log"
 
+	proto "../proto"
 	"./packet"
 
 	"github.com/gorilla/websocket"
 )
 
-//FrontServerConn represent one front server connection 
+//FrontServerConn represents one front server connection 
 type FrontServerConn struct {
 	ws *websocket.Conn 
-	send chan *packet.Packet
+	send chan *proto.Payload
 	//Account Account
 }
 
@@ -21,13 +22,13 @@ type FrontServerConn struct {
 func newFrontServerConn(ws *websocket.Conn) *FrontServerConn {
 	return &FrontServerConn {
 		ws: ws,
-		send: make(chan *packet.Packet),
+		send: make(chan *proto.Payload),
 	}
 }
 
 //write send v as sent payload and 
-func (c *FrontServerConn) Write(pkt *packet.Packet) {
-	c.send <- pkt
+func (c *FrontServerConn) Write(payload *proto.Payload) {
+	c.send <- payload
 }
 
 
@@ -43,8 +44,12 @@ func (c *FrontServerConn) String() string {
 
 //writer used as goroutine, receive send message via send channel, write it to 
 func (c *FrontServerConn) writer(sv *FrontServer) {
-	for pkt := range c.send {
-		if err := c.ws.WriteJSON(pkt); err != nil {
+	for payload := range c.send {
+		if bytes, err := payload.Marshal(); err == nil {
+			if err := c.ws.WriteMessage(websocket.BinaryMessage, bytes); err != nil {
+				break
+			}
+		} else {
 			break
 		}
 	}
@@ -54,11 +59,15 @@ func (c *FrontServerConn) writer(sv *FrontServer) {
 //reader used as goroutine, receive client message and notify it to FrontServer object
 func (c *FrontServerConn) reader(sv *FrontServer) {
  	for {
- 		pkt := &packet.RecvPacket{ From: c }
-        if err := c.ws.ReadJSON(pkt); err != nil {
+ 		_, bytes, err := c.ws.ReadMessage();
+        if err != nil {
             break
         }
-        sv.receive <- pkt
+        var payload proto.Payload
+        if err := payload.Unmarshal(bytes); err != nil {
+        	break
+        }
+        sv.receive <- &packet.RecvPacket{ Payload: &payload, From: c }
     }
     c.ws.Close()
 }
@@ -119,15 +128,14 @@ func (sv *FrontServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (sv *FrontServer) Run() {
 	http.Handle(sv.config.EndPoint, sv)
 	go sv.processEvents()
- 	err := http.ListenAndServe(sv.config.ListenAddress, nil)
-    if err != nil {
+ 	if err := http.ListenAndServe(sv.config.ListenAddress, nil); err != nil {
         panic("FrontServer.Run fails to listen: " + err.Error())
     }
 }
 
 //Send sends spcified pkt to specified destination to
-func (sv *FrontServer) Send(to packet.Destination, pkt *packet.Packet) error {
-	sv.send <- &packet.SendPacket{ pkt, to }
+func (sv *FrontServer) Send(dest packet.Destination, payload *proto.Payload) error {
+	sv.send <- &packet.SendPacket{ To: dest, Payload: payload }
 	return nil
 }
 
@@ -146,15 +154,20 @@ func (sv *FrontServer) processEvents() {
 			log.Printf("receive from client at %s", pkt.From.String())
 			pkt.Process(sv)
 		case pkt := <-sv.send:
-			tmp := &packet.Packet{ Kind: pkt.Kind, Data: pkt.Data }
-			for _, c := range sv.cmap {
-				c.Write(tmp)
+			//TODO: get sending list from pkt.To. (including inter-server)
+			for _, c := range sv.sendlist(pkt.To) {
+				c.Write(pkt.Payload)
 			}
 		}
 	}
 }
 
-//leave leaves target connection
+//sendlist makes sendlist from Destination data of packet
+func (sv *FrontServer) sendlist(to packet.Destination) map[string]*FrontServerConn {
+	return sv.cmap
+}
+
+//eject leaves target connection
 func (sv *FrontServer) eject(c *FrontServerConn) {
 	sv.leave <- c
 }

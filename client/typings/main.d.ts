@@ -10,7 +10,7 @@ export declare class Config {
 export declare class Controller implements UI.Controller {
     s: Socket;
     input_text: UI.Property<string>;
-    messages: Array<ChannerProto.Msg>;
+    messages: Array<ChannerProto.Post>;
     constructor(config: Config);
     onunload: (evt: Event) => any;
     finish_input: () => void;

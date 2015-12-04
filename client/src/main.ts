@@ -16,11 +16,11 @@ export class Config {
 export class Controller implements UI.Controller {
 	s: Socket;
 	input_text: UI.Property<string>;
-	messages: Array<ChannerProto.Msg>;
+	messages: Array<ChannerProto.Post>;
 
 	constructor(config: Config) {
 		this.input_text = m.prop("");
-		this.messages = new Array<ChannerProto.Msg>();
+		this.messages = new Array<ChannerProto.Post>();
 		this.s = Manager.open(config.url, {
 			onopen: this.onopen,
 			onmessage: this.onmessage,
@@ -32,10 +32,17 @@ export class Controller implements UI.Controller {
 		Manager.close(this.s);
 	}
 	finish_input = () => {
-		var msg = new ChannerProto.Msg();
-		msg.text = this.input_text();
-		this.s.send(msg);
-		this.messages.push(msg);
+		var p = new ChannerProto.Payload();
+		var post = new ChannerProto.Post();
+		post.text = this.input_text();
+		p.type = ChannerProto.Payload.Type.PostRequest;
+		p.setPostRequest({
+			topic_id: 100,
+			walltime: (new Date()).getMilliseconds(),
+			post: post,
+		});
+		this.s.send(p);
+		this.messages.push(post);
 		this.input_text("");
 	}
 	onopen = () => {
@@ -48,7 +55,7 @@ export class Controller implements UI.Controller {
 	}
 }
 function View(ctrl: Controller) : UI.Element {
-	var msgs = ctrl.messages.map(function (msg: ChannerProto.Msg) {
+	var msgs = ctrl.messages.map(function (msg: ChannerProto.Post) {
 		return m('div', msg.text);
 	})
 	return [

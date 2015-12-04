@@ -1,21 +1,135 @@
+syntax = "proto2";
+
 package ChannerProto;
 
-message Login {
-	required string hash = 1;
-	required uint64 ts = 2;
-}
-
-message MsgHLC {
-	required uint32 ts_sec = 1;
+//common payload in message
+message HLC {
+	required uint64 walltime = 1;
 	required uint32 logical_ts = 2;
 }
 
-message MsgOptions {
-	repeated MsgHLC refers = 1;
-	optional bool no_fetch_url = 2;
+message Post {
+	message Options {
+		repeated HLC refers = 1;
+		optional bool no_fetch_url = 2;
+	}
+	required string text = 1;
+	optional HLC ts = 2;
+	optional Options options = 3;
 }
 
-message Msg {
-	required string text = 1;
-	optional MsgOptions options = 2;
+message Topic {
+	required string name = 1;
+	required HLC last_read_ts = 2;
+	repeated Post recent_posts = 3;
+}
+
+
+
+
+//requests 
+message LoginRequest {
+	required uint64 walltime = 2;
+	required string hash = 3;
+}
+
+message PostRequest {
+	required uint64 topic_id = 2;
+	required uint64 walltime = 3;
+	required Post post = 4;
+}
+
+message FetchRequest {
+	required HLC start_at = 2;
+	optional HLC end_at = 3;
+	optional uint32 count = 4;
+}
+
+message ReadRequest {
+	required uint64 topic_id = 2;
+	required HLC read_post_ts = 3;
+}
+
+message EnterTopicRequest {
+	required uint64 topic_id = 2;
+}
+
+message ExitTopicRequest {
+	required uint64 topic_id = 2;
+}
+
+
+
+
+//response
+message LoginResponse {
+	optional Topic last_read = 1; 
+}
+
+message PostResponse {
+	required HLC posted_at = 1;
+}
+
+message FetchResponse {
+	repeated Post posts = 1;
+}
+
+message ReadResponse {
+}
+
+message EnterTopicResponse {
+}
+
+message ExitTopicResponse {
+}
+
+
+
+
+//response error
+message RuntimeError {
+	required string reason = 1;
+}
+message Error {
+	enum Type {
+		RuntimeError = 1;
+	}
+	required Type type = 1;
+	optional RuntimeError runtime = 2;
+}
+
+
+
+
+//notification
+
+
+
+
+//total payload
+message Payload {
+	enum Type { 
+		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6;
+		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; 
+		PostNotify = 61;
+	}
+	required Type type = 1;
+	optional uint32 msgid = 2;
+	optional LoginRequest login_request = 3;
+	optional PostRequest post_request = 4;
+	optional FetchRequest fetch_request = 5;
+	optional ReadRequest read_request = 6;
+	optional EnterTopicRequest enter_topic_request = 7;
+	optional ExitTopicRequest exit_topic_request = 8;
+
+	optional Error error = 30;
+
+	optional LoginResponse login_response = 31;
+	optional PostResponse post_response = 32;
+	optional FetchResponse fetch_response = 33;
+	optional ReadResponse read_response = 34;
+	optional EnterTopicResponse enter_topic_response = 35;
+	optional ExitTopicResponse exit_topic_response = 36;
+
+	optional Post post_notify = 61;
 }

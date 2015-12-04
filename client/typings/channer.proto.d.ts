@@ -10,98 +10,489 @@ declare module ChannerProto {
 	}
 
 	export interface ProtoBufBuilder {
-		Login: LoginBuilder;
-		MsgHLC: MsgHLCBuilder;
-		MsgOptions: MsgOptionsBuilder;
-		Msg: MsgBuilder;
+		HLC: HLCBuilder;
+		Post: PostBuilder;
+		Topic: TopicBuilder;
+		LoginRequest: LoginRequestBuilder;
+		PostRequest: PostRequestBuilder;
+		FetchRequest: FetchRequestBuilder;
+		ReadRequest: ReadRequestBuilder;
+		EnterTopicRequest: EnterTopicRequestBuilder;
+		ExitTopicRequest: ExitTopicRequestBuilder;
+		LoginResponse: LoginResponseBuilder;
+		PostResponse: PostResponseBuilder;
+		FetchResponse: FetchResponseBuilder;
+		ReadResponse: ReadResponseBuilder;
+		EnterTopicResponse: EnterTopicResponseBuilder;
+		ExitTopicResponse: ExitTopicResponseBuilder;
+		RuntimeError: RuntimeErrorBuilder;
+		Error: ErrorBuilder;
+		Payload: PayloadBuilder;
 		
 	}
 }
 
 declare module ChannerProto {
 
-	export interface Login extends ProtoBufModel {
-		hash: string;
-		getHash() : string;
-		setHash(hash : string): void;
-		ts: number;
-		getTs() : number;
-		setTs(ts : number): void;
-		
-	}
-	
-	export interface LoginBuilder {
-		new(): Login;
-		decode(buffer: ArrayBuffer) : Login;
-		//decode(buffer: NodeBuffer) : Login;
-		//decode(buffer: ByteArrayBuffer) : Login;
-		decode64(buffer: string) : Login;
-		
-	}	
-}
-
-declare module ChannerProto {
-
-	export interface MsgHLC extends ProtoBufModel {
-		ts_sec: number;
-		getTsSec() : number;
-		setTsSec(tsSec : number): void;
+	export interface HLC extends ProtoBufModel {
+		walltime: number;
+		getWalltime() : number;
+		setWalltime(walltime : number): void;
 		logical_ts: number;
 		getLogicalTs() : number;
 		setLogicalTs(logicalTs : number): void;
 		
 	}
 	
-	export interface MsgHLCBuilder {
-		new(): MsgHLC;
-		decode(buffer: ArrayBuffer) : MsgHLC;
-		//decode(buffer: NodeBuffer) : MsgHLC;
-		//decode(buffer: ByteArrayBuffer) : MsgHLC;
-		decode64(buffer: string) : MsgHLC;
+	export interface HLCBuilder {
+		new(): HLC;
+		decode(buffer: ArrayBuffer) : HLC;
+		//decode(buffer: NodeBuffer) : HLC;
+		//decode(buffer: ByteArrayBuffer) : HLC;
+		decode64(buffer: string) : HLC;
 		
 	}	
 }
 
 declare module ChannerProto {
 
-	export interface MsgOptions extends ProtoBufModel {
-		refers: MsgHLC[];
-		getRefers() : MsgHLC[];
-		setRefers(refers : MsgHLC[]): void;
+	export interface Post extends ProtoBufModel {
+		text: string;
+		getText() : string;
+		setText(text : string): void;
+		ts?: HLC;
+		getTs() : HLC;
+		setTs(ts : HLC): void;
+		options?: Post.Options;
+		getOptions() : Post.Options;
+		setOptions(options : Post.Options): void;
+		
+	}
+	
+	export interface PostBuilder {
+		new(): Post;
+		decode(buffer: ArrayBuffer) : Post;
+		//decode(buffer: NodeBuffer) : Post;
+		//decode(buffer: ByteArrayBuffer) : Post;
+		decode64(buffer: string) : Post;
+		Options: Post.OptionsBuilder;
+		
+	}	
+}
+
+declare module ChannerProto.Post {
+
+	export interface Options extends ProtoBufModel {
+		refers: HLC[];
+		getRefers() : HLC[];
+		setRefers(refers : HLC[]): void;
 		no_fetch_url?: boolean;
 		getNoFetchUrl() : boolean;
 		setNoFetchUrl(noFetchUrl : boolean): void;
 		
 	}
 	
-	export interface MsgOptionsBuilder {
-		new(): MsgOptions;
-		decode(buffer: ArrayBuffer) : MsgOptions;
-		//decode(buffer: NodeBuffer) : MsgOptions;
-		//decode(buffer: ByteArrayBuffer) : MsgOptions;
-		decode64(buffer: string) : MsgOptions;
+	export interface OptionsBuilder {
+		new(): Options;
+		decode(buffer: ArrayBuffer) : Options;
+		//decode(buffer: NodeBuffer) : Options;
+		//decode(buffer: ByteArrayBuffer) : Options;
+		decode64(buffer: string) : Options;
 		
 	}	
 }
 
 declare module ChannerProto {
 
-	export interface Msg extends ProtoBufModel {
-		text: string;
-		getText() : string;
-		setText(text : string): void;
-		options?: MsgOptions;
-		getOptions() : MsgOptions;
-		setOptions(options : MsgOptions): void;
+	export interface Topic extends ProtoBufModel {
+		name: string;
+		getName() : string;
+		setName(name : string): void;
+		last_read_ts: HLC;
+		getLastReadTs() : HLC;
+		setLastReadTs(lastReadTs : HLC): void;
+		recent_posts: Post[];
+		getRecentPosts() : Post[];
+		setRecentPosts(recentPosts : Post[]): void;
 		
 	}
 	
-	export interface MsgBuilder {
-		new(): Msg;
-		decode(buffer: ArrayBuffer) : Msg;
-		//decode(buffer: NodeBuffer) : Msg;
-		//decode(buffer: ByteArrayBuffer) : Msg;
-		decode64(buffer: string) : Msg;
+	export interface TopicBuilder {
+		new(): Topic;
+		decode(buffer: ArrayBuffer) : Topic;
+		//decode(buffer: NodeBuffer) : Topic;
+		//decode(buffer: ByteArrayBuffer) : Topic;
+		decode64(buffer: string) : Topic;
 		
 	}	
+}
+
+declare module ChannerProto {
+
+	export interface LoginRequest extends ProtoBufModel {
+		walltime: number;
+		getWalltime() : number;
+		setWalltime(walltime : number): void;
+		hash: string;
+		getHash() : string;
+		setHash(hash : string): void;
+		
+	}
+	
+	export interface LoginRequestBuilder {
+		new(): LoginRequest;
+		decode(buffer: ArrayBuffer) : LoginRequest;
+		//decode(buffer: NodeBuffer) : LoginRequest;
+		//decode(buffer: ByteArrayBuffer) : LoginRequest;
+		decode64(buffer: string) : LoginRequest;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface PostRequest extends ProtoBufModel {
+		topic_id: number;
+		getTopicId() : number;
+		setTopicId(topicId : number): void;
+		walltime: number;
+		getWalltime() : number;
+		setWalltime(walltime : number): void;
+		post: Post;
+		getPost() : Post;
+		setPost(post : Post): void;
+		
+	}
+	
+	export interface PostRequestBuilder {
+		new(): PostRequest;
+		decode(buffer: ArrayBuffer) : PostRequest;
+		//decode(buffer: NodeBuffer) : PostRequest;
+		//decode(buffer: ByteArrayBuffer) : PostRequest;
+		decode64(buffer: string) : PostRequest;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface FetchRequest extends ProtoBufModel {
+		start_at: HLC;
+		getStartAt() : HLC;
+		setStartAt(startAt : HLC): void;
+		end_at?: HLC;
+		getEndAt() : HLC;
+		setEndAt(endAt : HLC): void;
+		count?: number;
+		getCount() : number;
+		setCount(count : number): void;
+		
+	}
+	
+	export interface FetchRequestBuilder {
+		new(): FetchRequest;
+		decode(buffer: ArrayBuffer) : FetchRequest;
+		//decode(buffer: NodeBuffer) : FetchRequest;
+		//decode(buffer: ByteArrayBuffer) : FetchRequest;
+		decode64(buffer: string) : FetchRequest;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface ReadRequest extends ProtoBufModel {
+		topic_id: number;
+		getTopicId() : number;
+		setTopicId(topicId : number): void;
+		read_post_ts: HLC;
+		getReadPostTs() : HLC;
+		setReadPostTs(readPostTs : HLC): void;
+		
+	}
+	
+	export interface ReadRequestBuilder {
+		new(): ReadRequest;
+		decode(buffer: ArrayBuffer) : ReadRequest;
+		//decode(buffer: NodeBuffer) : ReadRequest;
+		//decode(buffer: ByteArrayBuffer) : ReadRequest;
+		decode64(buffer: string) : ReadRequest;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface EnterTopicRequest extends ProtoBufModel {
+		topic_id: number;
+		getTopicId() : number;
+		setTopicId(topicId : number): void;
+		
+	}
+	
+	export interface EnterTopicRequestBuilder {
+		new(): EnterTopicRequest;
+		decode(buffer: ArrayBuffer) : EnterTopicRequest;
+		//decode(buffer: NodeBuffer) : EnterTopicRequest;
+		//decode(buffer: ByteArrayBuffer) : EnterTopicRequest;
+		decode64(buffer: string) : EnterTopicRequest;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface ExitTopicRequest extends ProtoBufModel {
+		topic_id: number;
+		getTopicId() : number;
+		setTopicId(topicId : number): void;
+		
+	}
+	
+	export interface ExitTopicRequestBuilder {
+		new(): ExitTopicRequest;
+		decode(buffer: ArrayBuffer) : ExitTopicRequest;
+		//decode(buffer: NodeBuffer) : ExitTopicRequest;
+		//decode(buffer: ByteArrayBuffer) : ExitTopicRequest;
+		decode64(buffer: string) : ExitTopicRequest;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface LoginResponse extends ProtoBufModel {
+		last_read?: Topic;
+		getLastRead() : Topic;
+		setLastRead(lastRead : Topic): void;
+		
+	}
+	
+	export interface LoginResponseBuilder {
+		new(): LoginResponse;
+		decode(buffer: ArrayBuffer) : LoginResponse;
+		//decode(buffer: NodeBuffer) : LoginResponse;
+		//decode(buffer: ByteArrayBuffer) : LoginResponse;
+		decode64(buffer: string) : LoginResponse;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface PostResponse extends ProtoBufModel {
+		posted_at: HLC;
+		getPostedAt() : HLC;
+		setPostedAt(postedAt : HLC): void;
+		
+	}
+	
+	export interface PostResponseBuilder {
+		new(): PostResponse;
+		decode(buffer: ArrayBuffer) : PostResponse;
+		//decode(buffer: NodeBuffer) : PostResponse;
+		//decode(buffer: ByteArrayBuffer) : PostResponse;
+		decode64(buffer: string) : PostResponse;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface FetchResponse extends ProtoBufModel {
+		posts: Post[];
+		getPosts() : Post[];
+		setPosts(posts : Post[]): void;
+		
+	}
+	
+	export interface FetchResponseBuilder {
+		new(): FetchResponse;
+		decode(buffer: ArrayBuffer) : FetchResponse;
+		//decode(buffer: NodeBuffer) : FetchResponse;
+		//decode(buffer: ByteArrayBuffer) : FetchResponse;
+		decode64(buffer: string) : FetchResponse;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface ReadResponse extends ProtoBufModel {
+		
+	}
+	
+	export interface ReadResponseBuilder {
+		new(): ReadResponse;
+		decode(buffer: ArrayBuffer) : ReadResponse;
+		//decode(buffer: NodeBuffer) : ReadResponse;
+		//decode(buffer: ByteArrayBuffer) : ReadResponse;
+		decode64(buffer: string) : ReadResponse;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface EnterTopicResponse extends ProtoBufModel {
+		
+	}
+	
+	export interface EnterTopicResponseBuilder {
+		new(): EnterTopicResponse;
+		decode(buffer: ArrayBuffer) : EnterTopicResponse;
+		//decode(buffer: NodeBuffer) : EnterTopicResponse;
+		//decode(buffer: ByteArrayBuffer) : EnterTopicResponse;
+		decode64(buffer: string) : EnterTopicResponse;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface ExitTopicResponse extends ProtoBufModel {
+		
+	}
+	
+	export interface ExitTopicResponseBuilder {
+		new(): ExitTopicResponse;
+		decode(buffer: ArrayBuffer) : ExitTopicResponse;
+		//decode(buffer: NodeBuffer) : ExitTopicResponse;
+		//decode(buffer: ByteArrayBuffer) : ExitTopicResponse;
+		decode64(buffer: string) : ExitTopicResponse;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface RuntimeError extends ProtoBufModel {
+		reason: string;
+		getReason() : string;
+		setReason(reason : string): void;
+		
+	}
+	
+	export interface RuntimeErrorBuilder {
+		new(): RuntimeError;
+		decode(buffer: ArrayBuffer) : RuntimeError;
+		//decode(buffer: NodeBuffer) : RuntimeError;
+		//decode(buffer: ByteArrayBuffer) : RuntimeError;
+		decode64(buffer: string) : RuntimeError;
+		
+	}	
+}
+
+declare module ChannerProto {
+
+	export interface Error extends ProtoBufModel {
+		type: Error.Type;
+		getType() : Error.Type;
+		setType(type : Error.Type): void;
+		runtime?: RuntimeError;
+		getRuntime() : RuntimeError;
+		setRuntime(runtime : RuntimeError): void;
+		
+	}
+	
+	export interface ErrorBuilder {
+		new(): Error;
+		decode(buffer: ArrayBuffer) : Error;
+		//decode(buffer: NodeBuffer) : Error;
+		//decode(buffer: ByteArrayBuffer) : Error;
+		decode64(buffer: string) : Error;
+		Type: Error.Type;
+		
+	}	
+}
+
+declare module ChannerProto.Error {
+	export const enum Type {
+		RuntimeError = 1,
+		
+	}
+}
+
+declare module ChannerProto {
+
+	export interface Payload extends ProtoBufModel {
+		type: Payload.Type;
+		getType() : Payload.Type;
+		setType(type : Payload.Type): void;
+		msgid?: number;
+		getMsgid() : number;
+		setMsgid(msgid : number): void;
+		login_request?: LoginRequest;
+		getLoginRequest() : LoginRequest;
+		setLoginRequest(loginRequest : LoginRequest): void;
+		post_request?: PostRequest;
+		getPostRequest() : PostRequest;
+		setPostRequest(postRequest : PostRequest): void;
+		fetch_request?: FetchRequest;
+		getFetchRequest() : FetchRequest;
+		setFetchRequest(fetchRequest : FetchRequest): void;
+		read_request?: ReadRequest;
+		getReadRequest() : ReadRequest;
+		setReadRequest(readRequest : ReadRequest): void;
+		enter_topic_request?: EnterTopicRequest;
+		getEnterTopicRequest() : EnterTopicRequest;
+		setEnterTopicRequest(enterTopicRequest : EnterTopicRequest): void;
+		exit_topic_request?: ExitTopicRequest;
+		getExitTopicRequest() : ExitTopicRequest;
+		setExitTopicRequest(exitTopicRequest : ExitTopicRequest): void;
+		error?: Error;
+		getError() : Error;
+		setError(error : Error): void;
+		login_response?: LoginResponse;
+		getLoginResponse() : LoginResponse;
+		setLoginResponse(loginResponse : LoginResponse): void;
+		post_response?: PostResponse;
+		getPostResponse() : PostResponse;
+		setPostResponse(postResponse : PostResponse): void;
+		fetch_response?: FetchResponse;
+		getFetchResponse() : FetchResponse;
+		setFetchResponse(fetchResponse : FetchResponse): void;
+		read_response?: ReadResponse;
+		getReadResponse() : ReadResponse;
+		setReadResponse(readResponse : ReadResponse): void;
+		enter_topic_response?: EnterTopicResponse;
+		getEnterTopicResponse() : EnterTopicResponse;
+		setEnterTopicResponse(enterTopicResponse : EnterTopicResponse): void;
+		exit_topic_response?: ExitTopicResponse;
+		getExitTopicResponse() : ExitTopicResponse;
+		setExitTopicResponse(exitTopicResponse : ExitTopicResponse): void;
+		post_notify?: Post;
+		getPostNotify() : Post;
+		setPostNotify(postNotify : Post): void;
+		
+	}
+	
+	export interface PayloadBuilder {
+		new(): Payload;
+		decode(buffer: ArrayBuffer) : Payload;
+		//decode(buffer: NodeBuffer) : Payload;
+		//decode(buffer: ByteArrayBuffer) : Payload;
+		decode64(buffer: string) : Payload;
+		Type: Payload.Type;
+		
+	}	
+}
+
+declare module ChannerProto.Payload {
+	export const enum Type {
+		LoginRequest = 1,
+		PostRequest = 2,
+		FetchRequest = 3,
+		ReadRequest = 4,
+		EnterTopicRequest = 5,
+		ExitTopicRequest = 6,
+		LoginResponse = 31,
+		PostResponse = 32,
+		FetchResponse = 33,
+		ReadResponse = 34,
+		EnterTopicResponse = 35,
+		ExitTopicResponse = 36,
+		PostNotify = 61,
+		
+	}
 }
