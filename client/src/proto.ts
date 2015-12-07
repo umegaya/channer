@@ -2,6 +2,10 @@
 /// <reference path="../typings/channer.proto.d.ts"/>
 /// <reference path="../typings/webpack-runtime.d.ts"/>
 /// <reference path="../typings/q/Q.d.ts"/>
+/// <reference path="../typings/socket.d.ts"/>
+/// <reference path="../typings/watcher.d.ts"/>
+/// <reference path="../typings/timer.d.ts"/>
+
 import {Socket, Manager} from "./socket"
 import {ProtoWatcher, Model} from "./watcher"
 import {Timer} from "./timer"
@@ -47,7 +51,7 @@ export class Handler {
 		this.timer.add(this.watcher.ontimer);
 		this.timer.add(Manager.ontimer);
 	}
-	stop = (t: Timer) => {
+	stop = () => {
 		this.timer.remove(this.watcher.ontimer);
 		this.timer.remove(Manager.ontimer);
 		if (this.socket) {

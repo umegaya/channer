@@ -1,5 +1,5 @@
-window.endpoint = "http://localhost:9999";
-window.devenv = 'dev'
+window.endpoint = "http://192.168.43.14:9999";
+window.devenv = "dev"
 window.channer = {
 	onResume: [],
 	onPause: [],
@@ -17,7 +17,14 @@ document.addEventListener("deviceready", function () {
 		var config_url = window.endpoint + "/assets/config.json";
 		var ft = new FileTransfer();
 		function alert_bad_network(error) {
-			alert("this device under bad network connection. go to the place where provides good connection, then retry:" + error.stack);
+			try {
+				throw new Error("dummy");
+			}
+			catch (e) {
+				alert("this device under bad network connection. " + 
+					"go to the place where provides good connection, then retry. " + 
+					"error at " + e.stack);
+			}
 		}
 		function launch(error) {
 			if (error) {
@@ -41,6 +48,7 @@ document.addEventListener("deviceready", function () {
 					});				
 				}, function (e) {
 					//retry download
+					console.log("download error:" + e.code + "|" + window.endpoint);
 					launch(e);
 				});
 			}
@@ -75,7 +83,7 @@ document.addEventListener("deviceready", function () {
 						//broken script?
 						//remove config.json => retry from first
 						remove_config(launch);
-					}, true);
+					});
 				}
 				script.type = "text/javascript";
 				script.src = url;
@@ -86,6 +94,11 @@ document.addEventListener("deviceready", function () {
 					var reader = new FileReader();
 					reader.onloadend = function (event) {
 						config_prev = JSON.parse(reader.result);
+						if (!config_prev.versions || config_prev.versions.length <= 0) {
+							console.log("broken config.json");
+							remove_config(launch);
+							return;
+						}
 						if (config_prev.versions[0].hash != config_next.versions[0].hash) {
 							console.log("use new ver:" + new_url);
 							load_patch_script(new_url);
@@ -98,6 +111,7 @@ document.addEventListener("deviceready", function () {
 					}
 					reader.readAsText(file);
 				}, function (e) {
+					console.log("fail to read config.json");
 					remove_config(function () {
 						console.log("use new ver:" + new_url);
 						load_patch_script(new_url);

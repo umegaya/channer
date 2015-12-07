@@ -174,7 +174,7 @@ gulp.task('webpack-clean', function () {
 // start webpack watcher (caution: this will not write resulting js to your output directory)
 gulp.task("webpack-watch", function() {
     // Start a webpack-dev-server
-    var server = "localhost";
+    var server = "0.0.0.0";
     var port = webpackConfig.output.assetServerPort;
     var compiler = webpack(webpackConfig);
 

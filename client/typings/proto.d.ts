@@ -2,6 +2,9 @@
 /// <reference path="../typings/channer.proto.d.ts" />
 /// <reference path="../typings/webpack-runtime.d.ts" />
 /// <reference path="../typings/q/Q.d.ts" />
+/// <reference path="../typings/socket.d.ts" />
+/// <reference path="../typings/watcher.d.ts" />
+/// <reference path="../typings/timer.d.ts" />
 import { ProtoWatcher, Model } from "./watcher";
 import { Timer } from "./timer";
 export declare var Builder: ChannerProto.ProtoBufBuilder;
@@ -15,6 +18,6 @@ export declare class Handler {
     private new_msgid;
     private send;
     start: () => void;
-    stop: (t: Timer) => void;
+    stop: () => void;
     post: (topic_id: number, text: string, options?: ChannerProto.Post.Options) => Q.Promise<Model>;
 }
