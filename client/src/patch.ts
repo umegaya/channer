@@ -20,8 +20,10 @@ class Config {
 
 class Patcher {
     fs: FS;
-    constructor(fs: FS) {
+    download_always: boolean;
+    constructor(fs: FS, debug?: boolean) {
         this.fs = fs;
+        this.download_always = debug;
     }
     update = (baseUrl: string, vs: Versions): Q.Promise<any> => {
         //create assets directory if not exists
@@ -86,7 +88,7 @@ class Patcher {
             //compare prev/next versions and if differ, marked as updated
             for (var k in next.versions) {
                 var nv: Version = next.versions[k];
-                if (prev.versions) {
+                if (prev.versions && (!this.download_always)) {
                     for (var j in prev.versions) {
                         var pv: Version = prev.versions[j];
                         if (nv.name == pv.name && nv.hash != pv.hash) {
@@ -117,11 +119,12 @@ class Patcher {
     }
 };
 
-window.channer.patch = function (loaderURL: string, 
-    onfinished: (config: any) => any, onerror: (error: any) => any): any {
+window.channer.patch = function (loaderURL: string, onfinished: (config: any) => any, 
+    onerror: (error: any) => any, debug?: boolean): any {
     console.log("start patch " + loaderURL);
     window.channer.fs = new FS(window.channer.rawfs);
-    var patcher = new Patcher(window.channer.fs);
+    window.channer.Q = q;
+    var patcher = new Patcher(window.channer.fs, debug);
     patcher.patch(loaderURL)
     .then(function (config: any) {
         console.log("end patch");

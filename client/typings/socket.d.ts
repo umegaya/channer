@@ -1,5 +1,5 @@
-/// <reference path="../typings/proto.d.ts" />
-import { Model } from "./proto";
+/// <reference path="../typings/handler.d.ts" />
+import { Model } from "./watcher";
 export interface Delegate {
     onopen?: () => void;
     onmessage?: (event: any) => void;
@@ -14,10 +14,12 @@ export declare class Socket {
     private error_streak;
     private pendings;
     d: Delegate;
-    constructor(url: string, d: Delegate);
+    static default_d: Delegate;
+    constructor(url: string, d?: Delegate);
+    set_delegate: (d: Delegate) => void;
     send: (data: Model) => void;
     close: () => void;
-    reconnect_duration: () => number;
+    reconnect_duration: (nowms: number) => number;
     open: () => void;
     private clear_error_streak;
     private add_error_streak;
@@ -28,4 +30,5 @@ export declare class Socket {
 }
 export declare class Manager {
     static open(url: string, d: Delegate): Socket;
+    static ontimer(nowms: number): void;
 }

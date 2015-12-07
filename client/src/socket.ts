@@ -1,6 +1,6 @@
-/// <reference path="../typings/proto.d.ts"/>
+/// <reference path="../typings/handler.d.ts"/>
 
-import {Model} from "./proto"
+import {Model} from "./watcher"
 
 class SocketMap {
 	[x: string]:Socket;
@@ -17,7 +17,7 @@ const enum SocketState {
 	DISCONNECT = 1,
 	CONNECTING = 2,
 	CONNECTED = 3,
-};
+}
 export class Socket {
 	url: string;
 	ws: WebSocket;
@@ -26,14 +26,27 @@ export class Socket {
 	private error_streak: number;
 	private pendings: Array<Model>;
 	d: Delegate;
-	constructor(url: string, d: Delegate) {
+	static default_d: Delegate = {
+		onopen: function () {},
+		onmessage: function (event:any) {},
+		onclose: function (event:any) {},
+		onerror: function (event:any) {},
+	}
+	constructor(url: string, d?: Delegate) {
 		this.url = url;
-		this.d = d;
+		this.d = {};
 		this.error_streak = 0;
 		this.state = SocketState.DISCONNECT;
+		this.set_delegate(d || {});
+	}
+	set_delegate = (d: Delegate) => {
+		this.d.onopen = d.onopen || Socket.default_d.onopen;
+		this.d.onmessage = d.onmessage || Socket.default_d.onmessage;
+		this.d.onclose = d.onclose || Socket.default_d.onclose;
+		this.d.onerror = d.onerror || Socket.default_d.onerror;
 	}
 	send = (data: Model) => {
-		if (this.state == SocketState.DISCONNECT) {		
+		if (this.state == SocketState.DISCONNECT) {
 			this.open();
 		}
 		if (this.state == SocketState.CONNECTING) {
@@ -46,13 +59,13 @@ export class Socket {
 		if (this.ws != null) {
 			this.ws.close();
 		}
-		sm[this.url] = null;
+		delete sm[this.url];
 	}
-	reconnect_duration = () : number => {
+	reconnect_duration = (nowms: number): number => {
 		if (!this.next_connection) {
 			return null;
 		}
-		var diff_msec = this.next_connection.getTime() - (new Date()).getTime();
+		var diff_msec = this.next_connection.getTime() - nowms;
 		return Math.ceil(diff_msec / 1000);
 	}
 	//don't call from outside of this module. only exposed for below setInterval callback.
@@ -104,25 +117,26 @@ export class Socket {
 		this.d.onerror(event);
 	}
 }
-
 export class Manager {
 	static open(url: string, d: Delegate): Socket {
-		var s = new Socket(url, d);
-		sm[url] = s;
+		var s = sm[url];
+		if (!s) {
+			s = new Socket(url);
+			sm[url] = s;
+		}
+		s.set_delegate(d);
 		return s;
 	}
-}
-
-setInterval(function () {
-	for (var k in sm) {
-		var s = sm[k];
-		var dur = s.reconnect_duration();
-		if (dur) {
-			console.log(k + " reconnect duraction:" + dur);
-		}
-		if (dur && dur <= 0) {
-			s.open();
-		}
+	static ontimer(nowms: number) {
+		for (var k in sm) {
+			var s = sm[k];
+			var dur = s.reconnect_duration(nowms);
+			if (dur) {
+				console.log(k + " reconnect duraction:" + dur);
+			}
+			if (dur && dur <= 0) {
+				s.open();
+			}
+		}		
 	}
-}, 1000);
-
+}

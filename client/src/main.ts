@@ -1,10 +1,6 @@
 /// <reference path="../typings/UI.d.ts"/>
 /// <reference path="../typings/proto.d.ts"/>
-/// <reference path="../typings/socket.d.ts"/>
-/// <reference path="../typings/boot.d.ts"/>
 
-import {Socket, Manager} from "./socket"
-import {ChannerProto} from "./proto"
 import {m} from "./uikit"
 
 export class Config {
@@ -14,49 +10,36 @@ export class Config {
 	}
 }
 export class Controller implements UI.Controller {
-	s: Socket;
 	input_text: UI.Property<string>;
 	messages: Array<ChannerProto.Post>;
 
 	constructor(config: Config) {
 		this.input_text = m.prop("");
 		this.messages = new Array<ChannerProto.Post>();
-		this.s = Manager.open(config.url, {
-			onopen: this.onopen,
-			onmessage: this.onmessage,
-			onclose: this.onclose,
-			onerror: this.onerror,
-		});
+		var conn = window.channer.conn;
+		conn.watcher.subscribe(ChannerProto.Payload.Type.PostNotify, this.onpostnotify);
 	}
 	onunload = (evt: Event): any => {
+		var conn = window.channer.conn;
+		conn.watcher.unsubscribe(ChannerProto.Payload.Type.PostNotify, this.onpostnotify);
+	}
+	onpostnotify = (data: ChannerProto.Post) => {
+		this.messages.push(data);
+		m.redraw();
 	}
 	finish_input = () => {
-		var p = new ChannerProto.Payload();
-		var post = new ChannerProto.Post();
-		post.text = this.input_text();
-		p.type = ChannerProto.Payload.Type.PostRequest;
-		p.setPostRequest({
-			topic_id: 100,
-			walltime: (new Date()).getMilliseconds(),
-			post: post,
+		//TODO: parse input_text, generate options
+		window.channer.conn.post(100, this.input_text())
+		.then(function (m: ChannerProto.PostResponse) {
+			console.log("sent message finished");
 		});
-		this.s.send(p);
-		this.messages.push(post);
 		this.input_text("");
-	}
-	onopen = () => {
-	}
-	onmessage = (event: any) => {
-	}
-	onclose = (event: any) => {
-	}
-	onerror = (event: any) => {
 	}
 }
 function View(ctrl: Controller) : UI.Element {
 	var msgs = ctrl.messages.map(function (msg: ChannerProto.Post) {
-		return m('div', msg.text);
-	})
+		return m("div", msg.text);
+	});
 	return [
 		m("div", msgs),
 		m("input", {onchange: m.withAttr("value", ctrl.input_text), value: ctrl.input_text()}),

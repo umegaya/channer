@@ -1,7 +1,16 @@
 window.endpoint = "http://localhost:9999";
-window.testError = false
-window.channer = {};
+window.devenv = 'dev'
+window.channer = {
+	onResume: [],
+	onPause: [],
+};
 document.addEventListener("deviceready", function () {
+	document.addEventListener("resume", function () {
+		window.channer.onResume.forEach(function (f){ f(); })	
+	});
+	document.addEventListener("pause", function () {
+		window.channer.onPause.forEach(function (f){ f(); })			
+	});
 	window.requestFileSystem(window.PERSISTENT, 0, function(fs) {
 		window.channer.rawfs = fs;
 
@@ -16,7 +25,7 @@ document.addEventListener("deviceready", function () {
 			}
 			try {
 				ft.download(encodeURI(config_url), fs.root.toURL() + "config.json.next", function(entry) {
-					if (window.testError && Math.random() < 0.5) {
+					if (window.devenv == 'chaos_monkey' && Math.random() < 0.5) {
 						launch(new Error());
 						return;
 					}
@@ -28,7 +37,7 @@ document.addEventListener("deviceready", function () {
 						reader.readAsText(file);
 					}, function (e) {
 						//retry download
-						launch(true);
+						launch(e);
 					});				
 				}, function (e) {
 					//retry download
@@ -62,10 +71,11 @@ document.addEventListener("deviceready", function () {
 					window.channer.patch(window.endpoint, function (config) {
 						window.channer.bootstrap(config);
 					}, function (error) {
+						console.log("bootstrap fails:" + JSON.stringify(error));
 						//broken script?
 						//remove config.json => retry from first
 						remove_config(launch);
-					});
+					}, true);
 				}
 				script.type = "text/javascript";
 				script.src = url;

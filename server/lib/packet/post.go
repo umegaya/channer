@@ -1,6 +1,8 @@
 package packet
 
 import (
+	"log"
+
 	proto "../../proto"
 )
 

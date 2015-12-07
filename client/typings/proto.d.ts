@@ -1,14 +1,20 @@
 /// <reference path="../typings/extern.d.ts" />
 /// <reference path="../typings/channer.proto.d.ts" />
 /// <reference path="../typings/webpack-runtime.d.ts" />
-export interface Model {
-    toArrayBuffer(): ArrayBuffer;
-    toBase64(): string;
-    toString(): string;
+/// <reference path="../typings/q/Q.d.ts" />
+import { ProtoWatcher, Model } from "./watcher";
+import { Timer } from "./timer";
+export declare var Builder: ChannerProto.ProtoBufBuilder;
+export declare class Handler {
+    watcher: ProtoWatcher;
+    private url;
+    private socket;
+    private msgid_seed;
+    private timer;
+    constructor(url: string, timer: Timer);
+    private new_msgid;
+    private send;
+    start: () => void;
+    stop: (t: Timer) => void;
+    post: (topic_id: number, text: string, options?: ChannerProto.Post.Options) => Q.Promise<Model>;
 }
-export interface Builder {
-    new (): any;
-    decode(buffer: ArrayBuffer): any;
-    decode64(buffer: string): any;
-}
-export declare var ChannerProto: any;
