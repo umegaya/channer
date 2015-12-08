@@ -81,7 +81,7 @@ export class Socket {
 			this.ws.onerror = this.onerror;
 			this.pendings = [];
 			this.state = SocketState.CONNECTING;
-		}		
+		}
 	}
 	private clear_error_streak = () => {
 		this.next_connection = null;

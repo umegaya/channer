@@ -19,12 +19,14 @@ declare module ChannerProto {
 		ReadRequest: ReadRequestBuilder;
 		EnterTopicRequest: EnterTopicRequestBuilder;
 		ExitTopicRequest: ExitTopicRequestBuilder;
+		PingRequest: PingRequestBuilder;
 		LoginResponse: LoginResponseBuilder;
 		PostResponse: PostResponseBuilder;
 		FetchResponse: FetchResponseBuilder;
 		ReadResponse: ReadResponseBuilder;
 		EnterTopicResponse: EnterTopicResponseBuilder;
 		ExitTopicResponse: ExitTopicResponseBuilder;
+		PingResponse: PingResponseBuilder;
 		RuntimeError: RuntimeErrorBuilder;
 		Error: ErrorBuilder;
 		Payload: PayloadBuilder;
@@ -261,6 +263,25 @@ declare module ChannerProto {
 
 declare module ChannerProto {
 
+	export interface PingRequest extends ProtoBufModel {
+		walltime: number;
+		getWalltime() : number;
+		setWalltime(walltime : number): void;
+		
+	}
+	
+	export interface PingRequestBuilder {
+		new(): PingRequest;
+		decode(buffer: ArrayBuffer) : PingRequest;
+		//decode(buffer: NodeBuffer) : PingRequest;
+		//decode(buffer: ByteArrayBuffer) : PingRequest;
+		decode64(buffer: string) : PingRequest;
+		
+	}	
+}
+
+declare module ChannerProto {
+
 	export interface LoginResponse extends ProtoBufModel {
 		last_read?: Topic;
 		getLastRead() : Topic;
@@ -366,6 +387,25 @@ declare module ChannerProto {
 
 declare module ChannerProto {
 
+	export interface PingResponse extends ProtoBufModel {
+		walltime: number;
+		getWalltime() : number;
+		setWalltime(walltime : number): void;
+		
+	}
+	
+	export interface PingResponseBuilder {
+		new(): PingResponse;
+		decode(buffer: ArrayBuffer) : PingResponse;
+		//decode(buffer: NodeBuffer) : PingResponse;
+		//decode(buffer: ByteArrayBuffer) : PingResponse;
+		decode64(buffer: string) : PingResponse;
+		
+	}	
+}
+
+declare module ChannerProto {
+
 	export interface RuntimeError extends ProtoBufModel {
 		reason: string;
 		getReason() : string;
@@ -440,6 +480,9 @@ declare module ChannerProto {
 		exit_topic_request?: ExitTopicRequest;
 		getExitTopicRequest() : ExitTopicRequest;
 		setExitTopicRequest(exitTopicRequest : ExitTopicRequest): void;
+		ping_request?: PingRequest;
+		getPingRequest() : PingRequest;
+		setPingRequest(pingRequest : PingRequest): void;
 		error?: Error;
 		getError() : Error;
 		setError(error : Error): void;
@@ -461,6 +504,9 @@ declare module ChannerProto {
 		exit_topic_response?: ExitTopicResponse;
 		getExitTopicResponse() : ExitTopicResponse;
 		setExitTopicResponse(exitTopicResponse : ExitTopicResponse): void;
+		ping_response?: PingResponse;
+		getPingResponse() : PingResponse;
+		setPingResponse(pingResponse : PingResponse): void;
 		post_notify?: Post;
 		getPostNotify() : Post;
 		setPostNotify(postNotify : Post): void;
@@ -486,12 +532,14 @@ declare module ChannerProto.Payload {
 		ReadRequest = 4,
 		EnterTopicRequest = 5,
 		ExitTopicRequest = 6,
+		PingRequest = 7,
 		LoginResponse = 31,
 		PostResponse = 32,
 		FetchResponse = 33,
 		ReadResponse = 34,
 		EnterTopicResponse = 35,
 		ExitTopicResponse = 36,
+		PingResponse = 37,
 		PostNotify = 61,
 		
 	}

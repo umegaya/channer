@@ -1,12 +1,10 @@
 package packet
 
 import (
-	"log"
-
 	proto "../../proto"
 )
 
-func Process(post *proto.PostRequest, t Transport) {
+func ProcessPost(from Source, msgid uint32, post *proto.PostRequest, t Transport) {
 	//TODO: save post data into database 
 
 	//send post notification to all member in this Topic
@@ -17,5 +15,18 @@ func Process(post *proto.PostRequest, t Transport) {
 		Type: &typ,
 		PostNotify: post.Post,
 	})
-}
 
+	rtyp := proto.Payload_PostResponse
+	var walltime uint64 = 0
+	var lc uint32 = 0
+	from.Send(&proto.Payload {
+		Type: &rtyp,
+		Msgid: &msgid,
+		PostResponse: &proto.PostResponse {
+			PostedAt: &proto.HLC { 
+				Walltime: &walltime, 
+				LogicalTs: &lc,
+			},
+		},
+	})
+}

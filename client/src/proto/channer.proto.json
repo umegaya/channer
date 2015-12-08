@@ -186,6 +186,17 @@
             ]
         },
         {
+            "name": "PingRequest",
+            "fields": [
+                {
+                    "rule": "required",
+                    "type": "uint64",
+                    "name": "walltime",
+                    "id": 1
+                }
+            ]
+        },
+        {
             "name": "LoginResponse",
             "fields": [
                 {
@@ -229,6 +240,17 @@
         {
             "name": "ExitTopicResponse",
             "fields": []
+        },
+        {
+            "name": "PingResponse",
+            "fields": [
+                {
+                    "rule": "required",
+                    "type": "uint64",
+                    "name": "walltime",
+                    "id": 1
+                }
+            ]
         },
         {
             "name": "RuntimeError",
@@ -322,6 +344,12 @@
                 },
                 {
                     "rule": "optional",
+                    "type": "PingRequest",
+                    "name": "ping_request",
+                    "id": 9
+                },
+                {
+                    "rule": "optional",
                     "type": "Error",
                     "name": "error",
                     "id": 30
@@ -364,6 +392,12 @@
                 },
                 {
                     "rule": "optional",
+                    "type": "PingResponse",
+                    "name": "ping_response",
+                    "id": 37
+                },
+                {
+                    "rule": "optional",
                     "type": "Post",
                     "name": "post_notify",
                     "id": 61
@@ -398,6 +432,10 @@
                             "id": 6
                         },
                         {
+                            "name": "PingRequest",
+                            "id": 7
+                        },
+                        {
                             "name": "LoginResponse",
                             "id": 31
                         },
@@ -420,6 +458,10 @@
                         {
                             "name": "ExitTopicResponse",
                             "id": 36
+                        },
+                        {
+                            "name": "PingResponse",
+                            "id": 37
                         },
                         {
                             "name": "PostNotify",

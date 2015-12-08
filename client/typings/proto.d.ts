@@ -10,14 +10,18 @@ import { Timer } from "./timer";
 export declare var Builder: ChannerProto.ProtoBufBuilder;
 export declare class Handler {
     watcher: ProtoWatcher;
+    latency: number;
     private url;
     private socket;
     private msgid_seed;
+    private last_ping;
     private timer;
     constructor(url: string, timer: Timer);
     private new_msgid;
     private send;
     resume: () => void;
     pause: () => void;
+    send_ping: (nowms: number) => void;
+    ping: (nowms: number) => Q.Promise<Model>;
     post: (topic_id: number, text: string, options?: ChannerProto.Post.Options) => Q.Promise<Model>;
 }

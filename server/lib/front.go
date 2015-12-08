@@ -31,6 +31,10 @@ func (c *FrontServerConn) Write(payload *proto.Payload) {
 	c.send <- payload
 }
 
+//Send implements packet.Source interface
+func (c *FrontServerConn) Send(payload *proto.Payload) {
+	c.Write(payload)
+}
 
 //addr returns net.Addr of this FrontServerConn
 func (c *FrontServerConn) addr() net.Addr {

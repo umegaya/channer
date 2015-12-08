@@ -17,13 +17,17 @@ export var Builder : ChannerProto.ProtoBufBuilder
 
 export class Handler {
 	watcher: ProtoWatcher;
+	latency: number;
 	private url: string;
 	private socket: Socket;
 	private msgid_seed: number;
+	private last_ping: number;
 	private timer: Timer;
 	constructor(url: string, timer: Timer) {
 		this.url = url;
 		this.msgid_seed = 0;
+		this.latency = 0;
+		this.last_ping = 0;
 		this.timer = timer;
 	}
 	private new_msgid = (): number => {
@@ -51,16 +55,38 @@ export class Handler {
 		this.socket = this.socket || Manager.open(this.url, {
 			onmessage: this.watcher.watch,
 		});
+		this.timer.add(this.send_ping);
 		this.timer.add(this.watcher.ontimer);
 		this.timer.add(Manager.ontimer);
 	}
 	pause = () => {
 		console.log("handler end");
+		this.timer.remove(this.send_ping);
 		this.timer.remove(this.watcher.ontimer);
 		this.timer.remove(Manager.ontimer);
 		if (this.socket) {
 			this.socket.close();
 		}
+	}
+	send_ping = (nowms: number) => {
+		if ((nowms - this.last_ping) > 5000) {
+			this.ping(nowms).then((m: ChannerProto.PingResponse) => {
+				this.latency = (window.channer.timer.now() - m.walltime);
+				console.log("ping latency:" + this.latency);
+			}, (e: Error) => {
+				console.log("ping error:" + e.message);
+			});
+			this.last_ping = nowms;
+		}
+	}
+	ping = (nowms: number): Q.Promise<Model> => {
+		var req = new Builder.PingRequest();
+		req.walltime = nowms;
+		
+		var p = new Builder.Payload();
+		p.type = ChannerProto.Payload.Type.PingRequest;
+		p.setPingRequest(req);
+		return this.send(p);
 	}
 	post = (topic_id: number, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
 		var post = new Builder.Post();

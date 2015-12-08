@@ -1,12 +1,15 @@
 package packet
 
 import (
+	"fmt"
+
 	proto "../../proto"
 )
 
 //Source is interface which is required packet source information 
 type Source interface {
 	String() string
+	Send(*proto.Payload)
 }
 
 //Destination is interface which is required packet destination information
@@ -34,15 +37,21 @@ type SendPacket struct {
 //handlers map actual packet handler and packet type
 var handlers = map[proto.Payload_Type]func (pkt *RecvPacket, t Transport) {
 	proto.Payload_PostRequest: func (pkt *RecvPacket, t Transport) {
-		go Process(pkt.Payload.PostRequest, t)
+		go ProcessPost(pkt.From, *pkt.Payload.Msgid, pkt.Payload.PostRequest, t)
+	},
+	proto.Payload_PingRequest: func (pkt *RecvPacket, t Transport) {
+		//go Process(pkt.From, pkt.Payload.PingRequest, t)
+		go ProcessPing(pkt.From, *pkt.Payload.Msgid, pkt.Payload.PingRequest, t)
 	},
 }
 
 //Process processes packet according to its type
 func (pkt *RecvPacket) Process(t Transport) {
-	handlers[*pkt.Payload.Type](pkt, t)
+	handler, ok := handlers[*pkt.Payload.Type]
+	if ok {
+		handler(pkt, t);
+	}
 }
-
 
 //TopicDestination is destination which specifies topic. packet send to
 //all participant of the topic
@@ -52,5 +61,5 @@ type TopicDestination struct {
 
 //String implements Destination intarface
 func (td *TopicDestination) String() string {
-	return "hoge"
+	return fmt.Sprintf("%u", td.TopicId);
 }

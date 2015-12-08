@@ -58,6 +58,10 @@ message ExitTopicRequest {
 	required uint64 topic_id = 2;
 }
 
+message PingRequest {
+	required uint64 walltime = 1;
+}
+
 
 
 
@@ -81,6 +85,10 @@ message EnterTopicResponse {
 }
 
 message ExitTopicResponse {
+}
+
+message PingResponse {
+	required uint64 walltime = 1;
 }
 
 
@@ -109,8 +117,8 @@ message Error {
 //total payload
 message Payload {
 	enum Type { 
-		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6;
-		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; 
+		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7;
+		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37;
 		PostNotify = 61;
 	}
 	required Type type = 1;
@@ -121,6 +129,7 @@ message Payload {
 	optional ReadRequest read_request = 6;
 	optional EnterTopicRequest enter_topic_request = 7;
 	optional ExitTopicRequest exit_topic_request = 8;
+	optional PingRequest ping_request = 9;
 
 	optional Error error = 30;
 
@@ -130,6 +139,7 @@ message Payload {
 	optional ReadResponse read_response = 34;
 	optional EnterTopicResponse enter_topic_response = 35;
 	optional ExitTopicResponse exit_topic_response = 36;
+	optional PingResponse ping_response = 37;
 
 	optional Post post_notify = 61;
 }
