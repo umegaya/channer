@@ -26,7 +26,7 @@ class ProtoSubscribersMap {
 	}
 }
 class ProtoRPCCallersMap {
-	[x: number]:[number, (m: Model) => any];
+	[x: number]:[number, (m: Model) => any, (e: Error) => any];
 }
 export interface ProtoPayloadModel {
 	type: number;
@@ -38,13 +38,15 @@ export class ProtoWatcher {
 	private protomap: ProtoMap;	
 	private callers: ProtoRPCCallersMap;
 	private subscribers: ProtoSubscribersMap;
+	private response_timeout: number;
 	//TODO: actually types should be one of enum declaration (equivalent to {[x: string]: number}).
 	//but no conversion rule between enum and above type. how we declare method signature?
-	constructor(types: any, parser: (data: any) => ProtoPayloadModel) {
+	constructor(types: any, parser: (data: any) => ProtoPayloadModel, response_timeout?: number) {
 		this.parser = parser;
 		this.protomap = new ProtoMap();
 		this.callers = new ProtoRPCCallersMap();
 		this.subscribers = new ProtoSubscribersMap();
+		this.response_timeout = response_timeout || 5000; //5sec
 		for (var t in types) {
 			//snakize
 			this.protomap[types[t]] = t.replace(/([A-Z])/g, function(_: string, m1: string, offset: number) {
@@ -62,13 +64,14 @@ export class ProtoWatcher {
 			this.subscribers[type].splice(idx, 1);
 		}
 	}
-	subscribe_response = (msgid: number, callback: (m: Model) => any) => {
-		this.callers[msgid] = [(new Date()).getTime(), callback];
+	subscribe_response = (msgid: number, callback: (m: Model) => any, error: (e: Error) => any) => {
+		this.callers[msgid] = [(new Date()).getTime() + this.response_timeout, callback, error];
 	}
 	ontimer = (now: number) => {
 		for (var k in this.callers) {
 			var c = this.callers[k]
 			if (c[0] < now) {
+				c[2](new Error("timeout"));
 				delete this.callers[k];
 			}
 		}
@@ -76,6 +79,7 @@ export class ProtoWatcher {
 	watch = (event: any) => {
 		var payload : ProtoPayloadModel = this.parser(event.data);
 		var m : Model = <Model>payload[this.protomap[payload.type]];
+		console.log("watch called:" + this.protomap[payload.type]);
 		if (payload.msgid) {
 			var [at, f] = this.callers[payload.msgid];
 			delete this.callers[payload.msgid];

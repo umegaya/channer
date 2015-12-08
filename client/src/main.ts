@@ -20,10 +20,12 @@ export class Controller implements UI.Controller {
 		conn.watcher.subscribe(ChannerProto.Payload.Type.PostNotify, this.onpostnotify);
 	}
 	onunload = (evt: Event): any => {
+		console.log("onunload");
 		var conn = window.channer.conn;
 		conn.watcher.unsubscribe(ChannerProto.Payload.Type.PostNotify, this.onpostnotify);
 	}
 	onpostnotify = (data: ChannerProto.Post) => {
+		console.log("onpostnotify:" + data.text);
 		this.messages.push(data);
 		m.redraw();
 	}
@@ -32,6 +34,8 @@ export class Controller implements UI.Controller {
 		window.channer.conn.post(100, this.input_text())
 		.then(function (m: ChannerProto.PostResponse) {
 			console.log("sent message finished");
+		}, function (e: Error) {
+			console.log("sent message error:" + e.message);			
 		});
 		this.input_text("");
 	}

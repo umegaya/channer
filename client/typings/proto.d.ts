@@ -17,7 +17,7 @@ export declare class Handler {
     constructor(url: string, timer: Timer);
     private new_msgid;
     private send;
-    start: () => void;
-    stop: () => void;
+    resume: () => void;
+    pause: () => void;
     post: (topic_id: number, text: string, options?: ChannerProto.Post.Options) => Q.Promise<Model>;
 }

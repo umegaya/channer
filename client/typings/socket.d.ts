@@ -18,7 +18,7 @@ export declare class Socket {
     constructor(url: string, d?: Delegate);
     set_delegate: (d: Delegate) => void;
     send: (data: Model) => void;
-    close: () => void;
+    close: (cleanup?: boolean) => void;
     reconnect_duration: (nowms: number) => number;
     open: () => void;
     private clear_error_streak;

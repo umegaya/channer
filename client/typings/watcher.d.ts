@@ -18,10 +18,11 @@ export declare class ProtoWatcher {
     private protomap;
     private callers;
     private subscribers;
-    constructor(types: any, parser: (data: any) => ProtoPayloadModel);
+    private response_timeout;
+    constructor(types: any, parser: (data: any) => ProtoPayloadModel, response_timeout?: number);
     subscribe: (type: number, callback: (m: Model) => any) => void;
     unsubscribe: (type: number, callback: (m: Model) => any) => void;
-    subscribe_response: (msgid: number, callback: (m: Model) => any) => void;
+    subscribe_response: (msgid: number, callback: (m: Model) => any, error: (e: Error) => any) => void;
     ontimer: (now: number) => void;
     watch: (event: any) => void;
 }

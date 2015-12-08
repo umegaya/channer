@@ -55,11 +55,13 @@ export class Socket {
 		}
 		this.ws.send(data.toArrayBuffer());
 	}
-	close = () => {
+	close = (cleanup?:boolean) => {
 		if (this.ws != null) {
 			this.ws.close();
 		}
-		delete sm[this.url];
+		if (cleanup) {
+			delete sm[this.url];
+		}
 	}
 	reconnect_duration = (nowms: number): number => {
 		if (!this.next_connection) {

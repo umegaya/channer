@@ -38,20 +38,24 @@ export class Handler {
 		p.msgid = msgid;
 		this.socket.send(p);
 		var df : Q.Deferred<Model> = Q.defer();
-		this.watcher.subscribe_response(msgid, function (m: Model) {
-			df.resolve(m)
+		this.watcher.subscribe_response(msgid, (m: Model) => {
+			df.resolve(m);
+		}, (e: Error) => {
+			df.reject(e);
 		});
 		return df.promise;
 	}
-	start = () => {
-		this.watcher = new ProtoWatcher(Builder.Payload.Type, Builder.Payload.decode);
-		this.socket = Manager.open(this.url, {
+	resume = () => {
+		console.log("handler start");
+		this.watcher = this.watcher || new ProtoWatcher(Builder.Payload.Type, Builder.Payload.decode);
+		this.socket = this.socket || Manager.open(this.url, {
 			onmessage: this.watcher.watch,
 		});
 		this.timer.add(this.watcher.ontimer);
 		this.timer.add(Manager.ontimer);
 	}
-	stop = () => {
+	pause = () => {
+		console.log("handler end");
 		this.timer.remove(this.watcher.ontimer);
 		this.timer.remove(Manager.ontimer);
 		if (this.socket) {
