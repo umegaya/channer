@@ -1,7 +1,7 @@
 /// <reference path="../typings/extern.d.ts"/>
 
 import {Handler} from "./proto"
-import {Component, Config} from "./main"
+import {Config} from "./config"
 import {Timer} from "./timer"
 import {m} from "./uikit"
 
@@ -15,5 +15,12 @@ window.channer.bootstrap = function (config: any) {
 	window.channer.timer = t;
 	t.start(1000);
 	h.resume();
-	m.mount(document.body, new Component(c));
+	m.route.mode = "hash"; //prevent from refreshing page when route changes.
+	//setup client router
+	m.route(document.body, "/login", {
+		"/login":				new window.channer.LoginComponent(c),
+		"/:org/": 				new window.channer.MainComponent(c),
+		"/:org/topic": 			new window.channer.ComposeComponent(c),
+		"/:org/topic/:id": 		new window.channer.TopicComponent(c),
+	});
 }

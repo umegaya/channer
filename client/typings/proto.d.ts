@@ -21,7 +21,7 @@ export declare class Handler {
     private send;
     resume: () => void;
     pause: () => void;
-    send_ping: (nowms: number) => void;
+    ontimer: (nowms: number) => void;
     ping: (nowms: number) => Q.Promise<Model>;
     post: (topic_id: number, text: string, options?: ChannerProto.Post.Options) => Q.Promise<Model>;
 }

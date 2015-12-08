@@ -197,7 +197,7 @@ gulp.task("webpack-watch", function() {
 
 // watch files
 gulp.task('watch', ['compile', 'webpack-watch'], function() {
-    gulp.watch(paths.typescript + '/*.ts', function (event) {
+    gulp.watch(paths.typescript + '/**/*.ts', function (event) {
         if (event.type == 'deleted' || event.path.match(new RegExp('.d.ts$'))) {
             return;
         }

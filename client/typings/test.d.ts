@@ -1,9 +1,6 @@
 /// <reference path="../typings/UI.d.ts" />
 /// <reference path="../typings/proto.d.ts" />
-export declare class Config {
-    url: string;
-    constructor(src: any);
-}
+import { Config } from "./config";
 export declare class Controller implements UI.Controller {
     input_text: UI.Property<string>;
     messages: Array<ChannerProto.Post>;

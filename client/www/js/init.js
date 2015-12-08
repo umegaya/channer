@@ -1,5 +1,5 @@
-window.endpoint = "http://192.168.43.14:9999";
-window.devenv = "dev"
+window.endpoint = "http://localhost:9999";
+window.devenv = "dev";
 window.channer = {
 	onResume: [],
 	onPause: [],
@@ -13,6 +13,11 @@ document.addEventListener("deviceready", function () {
 	});
 	window.requestFileSystem(window.PERSISTENT, 0, function(fs) {
 		window.channer.rawfs = fs;
+		
+		if (window.devenv == "dev" && window.endpoint.match('http://localhost')) {
+			window.endpoint = window.endpoint.replace("localhost", window.location.hostname);
+			console.log("replace endpoint to " + window.endpoint + " " + window.location.hostname);
+		}
 
 		var config_url = window.endpoint + "/assets/config.json";
 		var ft = new FileTransfer();
@@ -93,7 +98,14 @@ document.addEventListener("deviceready", function () {
 				entry.file(function (file) {    
 					var reader = new FileReader();
 					reader.onloadend = function (event) {
-						config_prev = JSON.parse(reader.result);
+						try {
+							config_prev = JSON.parse(reader.result);
+						}
+						catch (e) {
+							console.log("broken config.json:" + reader.result + " error:" + e.message);
+							remove_config(launch);
+							return;							
+						}
 						if (!config_prev.versions || config_prev.versions.length <= 0) {
 							console.log("broken config.json");
 							remove_config(launch);

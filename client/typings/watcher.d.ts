@@ -11,6 +11,7 @@ export interface Builder {
 export interface ProtoPayloadModel {
     type: number;
     msgid?: number;
+    error?: any;
     [x: string]: any;
 }
 export declare class ProtoWatcher {

@@ -2,13 +2,8 @@
 /// <reference path="../typings/proto.d.ts"/>
 
 import {m} from "./uikit"
+import {Config} from "./config"
 
-export class Config {
-	url: string;
-	constructor(src: any) {
-		this.url = src.url;
-	}
-}
 export class Controller implements UI.Controller {
 	input_text: UI.Property<string>;
 	messages: Array<ChannerProto.Post>;

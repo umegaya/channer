@@ -9,6 +9,10 @@ module.exports = function (settings) {
             vendor: "./src/vendor.ts",
             patch: "./src/patch.ts",
             boot: "./src/boot.ts",
+            main: "./src/components/main.ts",
+            login: "./src/components/login.ts",
+            topic: "./src/components/topic.ts",
+            compose: "./src/components/compose.ts",
         },
         output: {
             path: __root + "/www/assets",
@@ -49,7 +53,7 @@ module.exports = function (settings) {
                 transform: function (data) {
                     //declare simple dependency of each assets
                     //TODO : if it goes really complex, enable graph-style dependency declaration
-                    var deps = ["vendor", "boot"];
+                    var deps = ["vendor", "boot", "main", "login", "topic", "compose"];
                     function sorter(a, b) {
                         return deps.indexOf(a.name) - deps.indexOf(b.name);
                     }

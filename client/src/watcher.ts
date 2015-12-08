@@ -9,6 +9,13 @@ export interface Builder {
 	decode64(buffer: string) : any;
 }
 
+class ProtoError extends Error {
+	payload: Model;
+	constructor(m: Model, message?: string) {
+		super(message);
+		this.payload = m;
+	}
+}
 class ProtoMap {
 	[x: number]:string;
 }
@@ -31,6 +38,7 @@ class ProtoRPCCallersMap {
 export interface ProtoPayloadModel {
 	type: number;
 	msgid?: number;
+	error?: any;
 	[x: string]:any;
 }
 export class ProtoWatcher {
@@ -79,11 +87,17 @@ export class ProtoWatcher {
 	watch = (event: any) => {
 		var payload : ProtoPayloadModel = this.parser(event.data);
 		var m : Model = <Model>payload[this.protomap[payload.type]];
-		console.log("watch called:" + this.protomap[payload.type]);
 		if (payload.msgid) {
-			var [at, f] = this.callers[payload.msgid];
+			var [at, f, e] = this.callers[payload.msgid];
 			delete this.callers[payload.msgid];
-			f && f(m);
+			if (at) {
+				if (payload.error) {
+					e(new ProtoError(payload.error));	
+				}
+				else {
+					f(m);
+				}
+			}
 		}
 		else {
 			this.subscribers.call(payload.type, m);
