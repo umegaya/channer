@@ -22,12 +22,14 @@ export class Handler {
 	private socket: Socket;
 	private msgid_seed: number;
 	private last_ping: number;
+	private deactivate_limit_ms: number;
 	private timer: Timer;
 	constructor(url: string, timer: Timer) {
 		this.url = url;
 		this.msgid_seed = 0;
 		this.latency = 0;
 		this.last_ping = 0;
+		this.deactivate_limit_ms = 0;
 		this.timer = timer;
 	}
 	private new_msgid = (): number => {
@@ -49,8 +51,47 @@ export class Handler {
 		});
 		return df.promise;
 	}
+	private ontimer = (nowms: number) => {
+		if ((nowms - this.last_ping) > window.channer.config.ping_interval_ms) {
+			this.ping(nowms).then((m: ChannerProto.PingResponse) => {
+				this.latency = (Timer.now() - m.walltime);
+				console.log("ping latency:" + this.latency);
+			}, (e: Error) => {
+				console.log("ping error:" + e.message);
+			});
+			this.last_ping = nowms;
+		}
+	}
+	private deactivate_timer = (nowms: number) => {
+		if (this.deactivate_limit_ms <= 0) {
+			return;
+		}
+		if (nowms > this.deactivate_limit_ms) {
+			this.timer.remove(this.ontimer);
+			this.timer.remove(this.watcher.ontimer);
+			this.timer.remove(Manager.ontimer);
+			if (this.socket) {
+				this.socket.close();
+			}
+			this.stop_deactivate();
+		}
+		else {
+			console.log("left until deactivate:" + (this.deactivate_limit_ms - nowms) + "ms");
+		}
+	}
+	private start_deactivate = () => {
+		console.log("start deactivate");
+		this.deactivate_limit_ms = Timer.now() + window.channer.config.deactivate_timeout_ms;
+		this.timer.add(this.deactivate_timer);
+	}
+	private stop_deactivate = () => {
+		console.log("stop deactivate");
+		this.deactivate_limit_ms = 0;
+		this.timer.remove(this.deactivate_timer);
+	}
 	resume = () => {
 		console.log("handler start");
+		this.stop_deactivate();
 		this.watcher = this.watcher || new ProtoWatcher(Builder.Payload.Type, Builder.Payload.decode);
 		this.socket = this.socket || Manager.open(this.url, {
 			onmessage: this.watcher.watch,
@@ -61,23 +102,7 @@ export class Handler {
 	}
 	pause = () => {
 		console.log("handler end");
-		this.timer.remove(this.ontimer);
-		this.timer.remove(this.watcher.ontimer);
-		this.timer.remove(Manager.ontimer);
-		if (this.socket) {
-			this.socket.close();
-		}
-	}
-	ontimer = (nowms: number) => {
-		if ((nowms - this.last_ping) > 5000) {
-			this.ping(nowms).then((m: ChannerProto.PingResponse) => {
-				this.latency = (window.channer.timer.now() - m.walltime);
-				console.log("ping latency:" + this.latency);
-			}, (e: Error) => {
-				console.log("ping error:" + e.message);
-			});
-			this.last_ping = nowms;
-		}
+		this.start_deactivate();
 	}
 	//protocol sender
 	ping = (nowms: number): Q.Promise<Model> => {
@@ -99,7 +124,7 @@ export class Handler {
 		var req = new Builder.PostRequest();
 		req.post = post;
 		req.topic_id = topic_id;
-		req.walltime = window.channer.timer.now();
+		req.walltime = Timer.now();
 
 		var p = new Builder.Payload();
 		p.type = ChannerProto.Payload.Type.PostRequest;

@@ -15,13 +15,17 @@ export declare class Handler {
     private socket;
     private msgid_seed;
     private last_ping;
+    private deactivate_limit_ms;
     private timer;
     constructor(url: string, timer: Timer);
     private new_msgid;
     private send;
+    private ontimer;
+    private deactivate_timer;
+    private start_deactivate;
+    private stop_deactivate;
     resume: () => void;
     pause: () => void;
-    ontimer: (nowms: number) => void;
     ping: (nowms: number) => Q.Promise<Model>;
     post: (topic_id: number, text: string, options?: ChannerProto.Post.Options) => Q.Promise<Model>;
 }

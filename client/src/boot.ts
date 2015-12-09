@@ -13,7 +13,8 @@ window.channer.bootstrap = function (config: any) {
 	window.channer.onPause.push(h.pause);
 	window.channer.conn = h;
 	window.channer.timer = t;
-	t.start(1000);
+	window.channer.config = c;
+	t.start(c.timer_resolution_ms);
 	h.resume();
 	m.route.mode = "hash"; //prevent from refreshing page when route changes.
 	//setup client router

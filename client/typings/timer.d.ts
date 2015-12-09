@@ -3,10 +3,10 @@ export interface Task {
 }
 export declare class Timer {
     private tasks;
+    static now(): number;
     constructor();
     add: (t: Task) => void;
     remove: (t: Task) => void;
-    now: () => number;
     start: (msec: number) => void;
     private tick;
 }
