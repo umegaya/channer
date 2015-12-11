@@ -2,8 +2,14 @@
 /// <reference path="../../typings/UI.d.ts" />
 /// <reference path="../../typings/proto.d.ts" />
 import { Config } from "../config";
+export interface InputObservableController extends UI.Controller {
+    oninput(text: string): Q.Promise<ChannerProto.PostResponse>;
+}
 export declare class EditController implements UI.Controller {
+    input_text: UI.Property<string>;
+    observer: InputObservableController;
     constructor(config: Config);
+    oninput: () => void;
 }
 export declare class EditComponent implements UI.Component {
     controller: () => EditController;

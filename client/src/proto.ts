@@ -114,6 +114,11 @@ export class Handler {
 		p.setPingRequest(req);
 		return this.send(p);
 	}
+	login = (user: string, pass: string): Q.Promise<Model> => {
+		var p = new Builder.Payload();
+		p.type = ChannerProto.Payload.Type.LoginRequest;
+		return this.send(p);		
+	}
 	post = (topic_id: number, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
 		var post = new Builder.Post();
 		post.text = text;

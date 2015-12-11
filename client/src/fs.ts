@@ -62,7 +62,6 @@ export class FS {
         ft.download(encodeURI(url), this.fs.root.toURL() + dest, function(entry: FileEntry) {
             df.resolve(entry);
         }, function (e: FileTransferError) {
-        console.log("dl6:" + JSON.stringify(e));
             df.reject(e);
         });
         return df.promise;

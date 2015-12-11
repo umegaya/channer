@@ -27,5 +27,6 @@ export declare class Handler {
     resume: () => void;
     pause: () => void;
     ping: (nowms: number) => Q.Promise<Model>;
+    login: (user: string, pass: string) => Q.Promise<Model>;
     post: (topic_id: number, text: string, options?: ChannerProto.Post.Options) => Q.Promise<Model>;
 }

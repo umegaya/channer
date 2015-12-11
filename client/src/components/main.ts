@@ -4,13 +4,48 @@
 
 import {m} from "../uikit"
 import {Config} from "../config"
+import {ListComponent} from "./list"
 
 export class MainController implements UI.Controller {
+	selected: string;
+	tab_contents: {
+		[x: string]: UI.Component;
+	}
 	constructor(config: Config) {
+		this.selected = "joins";
+		this.tab_contents = {
+			joins: new ListComponent("joins"),
+			topics: new ListComponent("topics"),
+			replies: new ListComponent("replies"),
+			reactions: new ListComponent("reactions")
+		};
+	}
+	tabs = () => {
+		return m("ul", [
+			m("li", [this.tab("joins")]),
+			m("li", [this.tab("topics")]),
+			m("li", [this.tab("replies")]),
+			m("li", [this.tab("reactions")]),
+		]);
+	}
+	tab = (name: string) => {
+		return m("a", {
+			class: "main-tab" + (this.selected == name ? "_selected" : ""), 
+			onclick: function () { this.onchange(name) },
+		}, name);
+	}
+	activetab = (): UI.Component => {
+		return this.tab_contents[this.selected] || m("div", "error!");
+	}
+	onchange = (name: string) => {
+		this.selected = name;
 	}
 }
 function MainView(ctrl: MainController) : UI.Element {
-	return m("div")
+	return [
+		ctrl.tabs(),
+		ctrl.activetab(),
+	];
 }
 export class MainComponent implements UI.Component {
 	controller: () => MainController;

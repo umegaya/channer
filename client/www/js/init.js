@@ -82,7 +82,12 @@ document.addEventListener("deviceready", function () {
 				var script = document.createElement("script");
 				script.onload = function (ev) {
 					window.channer.patch(window.endpoint, function (config) {
-						window.channer.bootstrap(config);
+						try {
+							window.channer.bootstrap(config);
+						}
+						catch (e) {
+							console.log("bootstrap error: " + e.message);
+						}
 					}, function (error) {
 						console.log("bootstrap fails:" + JSON.stringify(error));
 						//broken script?

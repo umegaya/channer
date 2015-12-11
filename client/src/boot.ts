@@ -19,9 +19,10 @@ window.channer.bootstrap = function (config: any) {
 	m.route.mode = "hash"; //prevent from refreshing page when route changes.
 	//setup client router
 	m.route(document.body, "/login", {
-		"/login":				new window.channer.LoginComponent(c),
-		"/:org/": 				new window.channer.MainComponent(c),
-		"/:org/topic": 			new window.channer.ComposeComponent(c),
-		"/:org/topic/:id": 		new window.channer.TopicComponent(c),
+		"/login":					new window.channer.LoginComponent(c),
+		"/org/:org/": 				new window.channer.MainComponent(c),
+		"/org/:org/topic": 			new window.channer.ComposeComponent(c),
+		"/org/:org/topic/:id": 		new window.channer.TopicComponent(c),
+		"/org":						new window.channer.OrgComponent(c),
 	});
 }
