@@ -262,8 +262,10 @@ func (m *Topic) GetRecentPosts() []*Post {
 
 // requests
 type LoginRequest struct {
-	Walltime         *uint64 `protobuf:"varint,2,req,name=walltime" json:"walltime,omitempty"`
+	Walltime         *uint64 `protobuf:"varint,1,req,name=walltime" json:"walltime,omitempty"`
+	Username         *string `protobuf:"bytes,2,req,name=username" json:"username,omitempty"`
 	Hash             *string `protobuf:"bytes,3,req,name=hash" json:"hash,omitempty"`
+	DeviceId         *string `protobuf:"bytes,4,req,name=device_id" json:"device_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -278,9 +280,23 @@ func (m *LoginRequest) GetWalltime() uint64 {
 	return 0
 }
 
+func (m *LoginRequest) GetUsername() string {
+	if m != nil && m.Username != nil {
+		return *m.Username
+	}
+	return ""
+}
+
 func (m *LoginRequest) GetHash() string {
 	if m != nil && m.Hash != nil {
 		return *m.Hash
+	}
+	return ""
+}
+
+func (m *LoginRequest) GetDeviceId() string {
+	if m != nil && m.DeviceId != nil {
+		return *m.DeviceId
 	}
 	return ""
 }
@@ -927,9 +943,17 @@ func (m *LoginRequest) MarshalTo(data []byte) (int, error) {
 	if m.Walltime == nil {
 		return 0, new(github_com_golang_protobuf_proto.RequiredNotSetError)
 	} else {
-		data[i] = 0x10
+		data[i] = 0x8
 		i++
 		i = encodeVarintChanner(data, i, uint64(*m.Walltime))
+	}
+	if m.Username == nil {
+		return 0, new(github_com_golang_protobuf_proto.RequiredNotSetError)
+	} else {
+		data[i] = 0x12
+		i++
+		i = encodeVarintChanner(data, i, uint64(len(*m.Username)))
+		i += copy(data[i:], *m.Username)
 	}
 	if m.Hash == nil {
 		return 0, new(github_com_golang_protobuf_proto.RequiredNotSetError)
@@ -938,6 +962,14 @@ func (m *LoginRequest) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(*m.Hash)))
 		i += copy(data[i:], *m.Hash)
+	}
+	if m.DeviceId == nil {
+		return 0, new(github_com_golang_protobuf_proto.RequiredNotSetError)
+	} else {
+		data[i] = 0x22
+		i++
+		i = encodeVarintChanner(data, i, uint64(len(*m.DeviceId)))
+		i += copy(data[i:], *m.DeviceId)
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
@@ -1740,8 +1772,16 @@ func (m *LoginRequest) Size() (n int) {
 	if m.Walltime != nil {
 		n += 1 + sovChanner(uint64(*m.Walltime))
 	}
+	if m.Username != nil {
+		l = len(*m.Username)
+		n += 1 + l + sovChanner(uint64(l))
+	}
 	if m.Hash != nil {
 		l = len(*m.Hash)
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	if m.DeviceId != nil {
+		l = len(*m.DeviceId)
 		n += 1 + l + sovChanner(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
@@ -2581,7 +2621,7 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			return fmt.Errorf("proto: LoginRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 2:
+		case 1:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Walltime", wireType)
 			}
@@ -2602,6 +2642,37 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			}
 			m.Walltime = &v
 			hasFields[0] |= uint64(0x00000001)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Username", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.Username = &s
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000002)
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
@@ -2632,7 +2703,38 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			s := string(data[iNdEx:postIndex])
 			m.Hash = &s
 			iNdEx = postIndex
-			hasFields[0] |= uint64(0x00000002)
+			hasFields[0] |= uint64(0x00000004)
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeviceId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.DeviceId = &s
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000008)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -2653,6 +2755,12 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 		return new(github_com_golang_protobuf_proto.RequiredNotSetError)
 	}
 	if hasFields[0]&uint64(0x00000002) == 0 {
+		return new(github_com_golang_protobuf_proto.RequiredNotSetError)
+	}
+	if hasFields[0]&uint64(0x00000004) == 0 {
+		return new(github_com_golang_protobuf_proto.RequiredNotSetError)
+	}
+	if hasFields[0]&uint64(0x00000008) == 0 {
 		return new(github_com_golang_protobuf_proto.RequiredNotSetError)
 	}
 

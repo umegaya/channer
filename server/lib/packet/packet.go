@@ -43,6 +43,10 @@ var handlers = map[proto.Payload_Type]func (pkt *RecvPacket, t Transport) {
 		//go Process(pkt.From, pkt.Payload.PingRequest, t)
 		go ProcessPing(pkt.From, *pkt.Payload.Msgid, pkt.Payload.PingRequest, t)
 	},
+	proto.Payload_LoginRequest: func (pkt *RecvPacket, t Transport) {
+		//go Process(pkt.From, pkt.Payload.PingRequest, t)
+		go ProcessLogin(pkt.From, *pkt.Payload.Msgid, pkt.Payload.LoginRequest, t)
+	},
 }
 
 //Process processes packet according to its type

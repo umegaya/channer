@@ -3,8 +3,11 @@ window.devenv = "dev";
 window.channer = {
 	onResume: [],
 	onPause: [],
+	onPush: [],
 };
 document.addEventListener("deviceready", function () {
+	console.log("platform=" + device.platform);
+	window.channer.mobile = (device.platform != 'browser')
 	document.addEventListener("resume", function () {
 		window.channer.onResume.forEach(function (f){ f(); })	
 	});

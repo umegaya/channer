@@ -29,8 +29,10 @@ message Topic {
 
 //requests 
 message LoginRequest {
-	required uint64 walltime = 2;
-	required string hash = 3;
+	required uint64 walltime = 1;
+	required string username = 2;
+	required string hash = 3; //walltime + username + password + salt with sha256 
+	required string device_id = 4;
 }
 
 message PostRequest {

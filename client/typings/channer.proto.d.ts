@@ -135,9 +135,15 @@ declare module ChannerProto {
 		walltime: number;
 		getWalltime() : number;
 		setWalltime(walltime : number): void;
+		username: string;
+		getUsername() : string;
+		setUsername(username : string): void;
 		hash: string;
 		getHash() : string;
 		setHash(hash : string): void;
+		device_id: string;
+		getDeviceId() : string;
+		setDeviceId(deviceId : string): void;
 		
 	}
 	

@@ -18,7 +18,7 @@ export class FS {
     }
     readfile = (entry: FileEntry) : Q.Promise<string> => {
         var df: Q.Deferred<string> = q.defer<string>();
-        entry.file(function (file) {    
+        entry.file(function (file: File) {    
             var reader : FileReader = new FileReader();
             reader.onloadend = function (event : ProgressEvent) {
                 df.resolve(reader.result);
@@ -28,6 +28,15 @@ export class FS {
             df.reject(e);
         });
         return df.promise;
+    }
+    writefile = (entry: FileEntry) : Q.Promise<FileWriter> => {
+        var df: Q.Deferred<FileWriter> = q.defer<FileWriter>();
+        entry.createWriter(function (writer: FileWriter) {
+            df.resolve(writer);
+        }, function (e: FileError) {
+            df.reject(e);
+        });
+        return df.promise;   
     }
     rename = (src: string, to: string, name?: string): Q.Promise<Entry> => {
         var df: Q.Deferred<Entry> = q.defer<Entry>();

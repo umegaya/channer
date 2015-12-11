@@ -90,6 +90,12 @@
                     "rule": "required",
                     "type": "uint64",
                     "name": "walltime",
+                    "id": 1
+                },
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "username",
                     "id": 2
                 },
                 {
@@ -97,6 +103,12 @@
                     "type": "string",
                     "name": "hash",
                     "id": 3
+                },
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "device_id",
+                    "id": 4
                 }
             ]
         },
