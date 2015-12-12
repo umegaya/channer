@@ -14,6 +14,7 @@ export declare class StorageIO {
     constructor(entry: FileEntry, fs: FS);
     write: (f: Persistable) => q.Promise<Persistable>;
     read: (f: Persistable) => q.Promise<Persistable>;
+    rm: () => q.Promise<boolean>;
 }
 export declare class Storage {
     fs: FS;

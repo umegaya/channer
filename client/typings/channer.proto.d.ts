@@ -27,7 +27,6 @@ declare module ChannerProto {
 		EnterTopicResponse: EnterTopicResponseBuilder;
 		ExitTopicResponse: ExitTopicResponseBuilder;
 		PingResponse: PingResponseBuilder;
-		RuntimeError: RuntimeErrorBuilder;
 		Error: ErrorBuilder;
 		Payload: PayloadBuilder;
 		
@@ -135,15 +134,21 @@ declare module ChannerProto {
 		walltime: number;
 		getWalltime() : number;
 		setWalltime(walltime : number): void;
-		username: string;
-		getUsername() : string;
-		setUsername(username : string): void;
-		hash: string;
-		getHash() : string;
-		setHash(hash : string): void;
-		device_id: string;
+		user: string;
+		getUser() : string;
+		setUser(user : string): void;
+		sign?: string;
+		getSign() : string;
+		setSign(sign : string): void;
+		pass?: string;
+		getPass() : string;
+		setPass(pass : string): void;
+		device_id?: string;
 		getDeviceId() : string;
 		setDeviceId(deviceId : string): void;
+		rescue?: string;
+		getRescue() : string;
+		setRescue(rescue : string): void;
 		
 	}
 	
@@ -289,9 +294,9 @@ declare module ChannerProto {
 declare module ChannerProto {
 
 	export interface LoginResponse extends ProtoBufModel {
-		last_read?: Topic;
-		getLastRead() : Topic;
-		setLastRead(lastRead : Topic): void;
+		secret: string;
+		getSecret() : string;
+		setSecret(secret : string): void;
 		
 	}
 	
@@ -412,32 +417,13 @@ declare module ChannerProto {
 
 declare module ChannerProto {
 
-	export interface RuntimeError extends ProtoBufModel {
-		reason: string;
-		getReason() : string;
-		setReason(reason : string): void;
-		
-	}
-	
-	export interface RuntimeErrorBuilder {
-		new(): RuntimeError;
-		decode(buffer: ArrayBuffer) : RuntimeError;
-		//decode(buffer: NodeBuffer) : RuntimeError;
-		//decode(buffer: ByteArrayBuffer) : RuntimeError;
-		decode64(buffer: string) : RuntimeError;
-		
-	}	
-}
-
-declare module ChannerProto {
-
 	export interface Error extends ProtoBufModel {
 		type: Error.Type;
 		getType() : Error.Type;
 		setType(type : Error.Type): void;
-		runtime?: RuntimeError;
-		getRuntime() : RuntimeError;
-		setRuntime(runtime : RuntimeError): void;
+		explanation?: string;
+		getExplanation() : string;
+		setExplanation(explanation : string): void;
 		
 	}
 	
@@ -454,7 +440,10 @@ declare module ChannerProto {
 
 declare module ChannerProto.Error {
 	export const enum Type {
-		RuntimeError = 1,
+		Timeout = 1,
+		Login_InvalidAuth = 2,
+		Login_UserNotFound = 3,
+		Login_UserAlreadyExists = 4,
 		
 	}
 }
@@ -547,6 +536,7 @@ declare module ChannerProto.Payload {
 		ExitTopicResponse = 36,
 		PingResponse = 37,
 		PostNotify = 61,
+		Error = 101,
 		
 	}
 }

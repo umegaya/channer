@@ -9,9 +9,12 @@ export interface Builder {
 	decode64(buffer: string) : any;
 }
 
-class ProtoError extends Error {
-	payload: Model;
-	constructor(m: Model, message?: string) {
+export interface ProtoErrorModel {
+	type: number;
+}
+export class ProtoError extends Error {
+	payload: ProtoErrorModel;
+	constructor(m: ProtoErrorModel, message?: string) {
 		super(message);
 		this.payload = m;
 	}
@@ -33,12 +36,12 @@ class ProtoSubscribersMap {
 	}
 }
 class ProtoRPCCallersMap {
-	[x: number]:[number, (m: Model) => any, (e: Error) => any];
+	[x: number]:[number, (m: Model) => any, (e: ProtoError) => any];
 }
 export interface ProtoPayloadModel {
 	type: number;
 	msgid?: number;
-	error?: any;
+	error?: ProtoErrorModel;
 	[x: string]:any;
 }
 export class ProtoWatcher {
@@ -72,14 +75,14 @@ export class ProtoWatcher {
 			this.subscribers[type].splice(idx, 1);
 		}
 	}
-	subscribe_response = (msgid: number, callback: (m: Model) => any, error: (e: Error) => any) => {
+	subscribe_response = (msgid: number, callback: (m: Model) => any, error: (e: ProtoError) => any) => {
 		this.callers[msgid] = [(new Date()).getTime() + this.response_timeout, callback, error];
 	}
 	ontimer = (now: number) => {
 		for (var k in this.callers) {
 			var c = this.callers[k]
 			if (c[0] < now) {
-				c[2](new Error("timeout"));
+				c[2](new ProtoError(null, "timeout"));
 				delete this.callers[k];
 			}
 		}

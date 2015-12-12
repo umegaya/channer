@@ -30,9 +30,11 @@ message Topic {
 //requests 
 message LoginRequest {
 	required uint64 walltime = 1;
-	required string username = 2;
-	required string hash = 3; //walltime + username + password + salt with sha256 
-	required string device_id = 4;
+	required string user = 2;
+	optional string sign = 3; //walltime + username + password + salt with sha256 
+	optional string pass = 4; //only first time (before this client receive unique salt from server)
+	optional string device_id = 5; //if sent from mobile device, it should be specified
+	optional string rescue = 6; //to recover accout
 }
 
 message PostRequest {
@@ -69,7 +71,7 @@ message PingRequest {
 
 //response
 message LoginResponse {
-	optional Topic last_read = 1; 
+	required string secret = 1;
 }
 
 message PostResponse {
@@ -97,15 +99,15 @@ message PingResponse {
 
 
 //response error
-message RuntimeError {
-	required string reason = 1;
-}
 message Error {
 	enum Type {
-		RuntimeError = 1;
+		Timeout = 1;
+		Login_InvalidAuth = 2;
+		Login_UserNotFound = 3;
+		Login_UserAlreadyExists = 4;
 	}
 	required Type type = 1;
-	optional RuntimeError runtime = 2;
+	optional string explanation = 2;
 }
 
 
@@ -122,6 +124,7 @@ message Payload {
 		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7;
 		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37;
 		PostNotify = 61;
+		Error = 101;
 	}
 	required Type type = 1;
 	optional uint32 msgid = 2;

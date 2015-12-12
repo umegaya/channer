@@ -29,6 +29,15 @@ export class FS {
         });
         return df.promise;
     }
+    removefile = (entry: FileEntry) : Q.Promise<boolean> => {
+        var df: Q.Deferred<boolean> = q.defer<boolean>();
+        entry.remove(function () {
+            df.resolve(true);
+        }, function (e: FileError) {
+            df.reject(e);
+        });
+        return df.promise;        
+    }
     writefile = (entry: FileEntry) : Q.Promise<FileWriter> => {
         var df: Q.Deferred<FileWriter> = q.defer<FileWriter>();
         entry.createWriter(function (writer: FileWriter) {

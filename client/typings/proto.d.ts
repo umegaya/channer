@@ -24,9 +24,10 @@ export declare class Handler {
     private deactivate_timer;
     private start_deactivate;
     private stop_deactivate;
+    private signature;
     resume: () => void;
     pause: () => void;
     ping: (nowms: number) => Q.Promise<Model>;
-    login: (user: string, pass: string) => Q.Promise<Model>;
+    login: (user: string, secret: string, pass?: string, rescue?: string) => Q.Promise<Model>;
     post: (topic_id: number, text: string, options?: ChannerProto.Post.Options) => Q.Promise<Model>;
 }

@@ -10,9 +10,15 @@ export declare class Config {
     push_settings: any;
     constructor(src: any);
 }
+export declare class UserSettingsValues {
+    user: string;
+    pass: string;
+    device_id: string;
+    secret: string;
+}
 export declare class UserSettings implements Persistable {
     io: StorageIO;
-    device_id: string;
+    values: UserSettingsValues;
     constructor(io: StorageIO);
     save: () => Q.Promise<Persistable>;
     type: () => string;

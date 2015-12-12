@@ -1,3 +1,4 @@
+/// <reference path="../typings/extern.d.ts"/>
 /// <reference path="../typings/phonegap.d.ts"/>
 /// <reference path="../typings/q/Q.d.ts"/>
 
@@ -23,17 +24,24 @@ export class Push {
 	}
 	start = (): Q.Promise<PhonegapPluginPush.RegistrationEventResponse> => {
 		var df = q.defer<PhonegapPluginPush.RegistrationEventResponse>();
-		var d = this.delegate;
-		this.pn = PushNotification.init(this.config);
-		this.pn.on("registration", (r: PhonegapPluginPush.RegistrationEventResponse) => {
-			d.onregister && d.onregister(r);
-			df.resolve(r);	
-		});
-		this.pn.on("notification", d.onnotify || Push.default_d.onnotify);
-		this.pn.on("error", (e: Error) => {
-			d.onerror && d.onerror(e);
-			df.reject(e);
-		});
+		if (window.channer.mobile) {
+			var d = this.delegate || {};
+			this.pn = PushNotification.init(this.config);
+			this.pn.on("registration", (r: PhonegapPluginPush.RegistrationEventResponse) => {
+				d.onregister && d.onregister(r);
+				df.resolve(r);	
+			});
+			this.pn.on("notification", d.onnotify || Push.default_d.onnotify);
+			this.pn.on("error", (e: Error) => {
+				d.onerror && d.onerror(e);
+				df.reject(e);
+			});
+		}
+		else {
+			setTimeout(function () {
+				df.resolve({ registrationId: "" });
+			}, 10)
+		}
 		return df.promise;
 	}
 }

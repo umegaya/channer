@@ -95,20 +95,32 @@
                 {
                     "rule": "required",
                     "type": "string",
-                    "name": "username",
+                    "name": "user",
                     "id": 2
                 },
                 {
-                    "rule": "required",
+                    "rule": "optional",
                     "type": "string",
-                    "name": "hash",
+                    "name": "sign",
                     "id": 3
                 },
                 {
-                    "rule": "required",
+                    "rule": "optional",
+                    "type": "string",
+                    "name": "pass",
+                    "id": 4
+                },
+                {
+                    "rule": "optional",
                     "type": "string",
                     "name": "device_id",
-                    "id": 4
+                    "id": 5
+                },
+                {
+                    "rule": "optional",
+                    "type": "string",
+                    "name": "rescue",
+                    "id": 6
                 }
             ]
         },
@@ -212,9 +224,9 @@
             "name": "LoginResponse",
             "fields": [
                 {
-                    "rule": "optional",
-                    "type": "Topic",
-                    "name": "last_read",
+                    "rule": "required",
+                    "type": "string",
+                    "name": "secret",
                     "id": 1
                 }
             ]
@@ -265,17 +277,6 @@
             ]
         },
         {
-            "name": "RuntimeError",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "string",
-                    "name": "reason",
-                    "id": 1
-                }
-            ]
-        },
-        {
             "name": "Error",
             "fields": [
                 {
@@ -286,8 +287,8 @@
                 },
                 {
                     "rule": "optional",
-                    "type": "RuntimeError",
-                    "name": "runtime",
+                    "type": "string",
+                    "name": "explanation",
                     "id": 2
                 }
             ],
@@ -296,8 +297,20 @@
                     "name": "Type",
                     "values": [
                         {
-                            "name": "RuntimeError",
+                            "name": "Timeout",
                             "id": 1
+                        },
+                        {
+                            "name": "Login_InvalidAuth",
+                            "id": 2
+                        },
+                        {
+                            "name": "Login_UserNotFound",
+                            "id": 3
+                        },
+                        {
+                            "name": "Login_UserAlreadyExists",
+                            "id": 4
                         }
                     ]
                 }
@@ -478,6 +491,10 @@
                         {
                             "name": "PostNotify",
                             "id": 61
+                        },
+                        {
+                            "name": "Error",
+                            "id": 101
                         }
                     ]
                 }

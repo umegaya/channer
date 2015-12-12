@@ -21,9 +21,18 @@ export class StorageIO {
 	write = (f: Persistable): Q.Promise<Persistable> => {
 		var df : Q.Deferred<Persistable> = q.defer<Persistable>();
 		this.fs.writefile(this.entry).then((w: FileWriter) => {
-			var blob = new Blob([f.write()], {type:f.type()});
-			w.write(blob);
-			df.resolve(f);
+			try {
+				var blob = new Blob([f.write()], {type:f.type()});
+				w.onwriteend = function(e: ProgressEvent) {
+					w.onwriteend = null;
+					w.truncate(w.position);
+					df.resolve(f);
+				};
+				w.write(blob);
+			}
+			catch (e) {
+				df.reject(e);
+			}
 		}, (e: Error) => {
 			df.reject(e);
 		})
@@ -43,6 +52,9 @@ export class StorageIO {
 			df.reject(e);
 		})
 		return df.promise;
+	}
+	rm = (): Q.Promise<boolean> => {
+		return this.fs.removefile(this.entry)
 	}
 }
 

@@ -7,9 +7,9 @@
 /// <reference path="../typings/timer.d.ts"/>
 
 import {Socket, Manager} from "./socket"
-import {ProtoWatcher, Model} from "./watcher"
+import {ProtoWatcher, ProtoError, Model} from "./watcher"
 import {Timer} from "./timer"
-import {Q} from "./uikit"
+import {Q, m} from "./uikit"
 
 var ProtoBuf = window.channer.ProtoBuf;
 export var Builder : ChannerProto.ProtoBufBuilder 
@@ -44,8 +44,8 @@ export class Handler {
 		p.msgid = msgid;
 		this.socket.send(p);
 		var df : Q.Deferred<Model> = Q.defer();
-		this.watcher.subscribe_response(msgid, (m: Model) => {
-			df.resolve(m);
+		this.watcher.subscribe_response(msgid, (model: Model) => {
+			df.resolve(model);
 		}, (e: Error) => {
 			df.reject(e);
 		});
@@ -56,8 +56,8 @@ export class Handler {
 			this.ping(nowms).then((m: ChannerProto.PingResponse) => {
 				this.latency = (Timer.now() - m.walltime);
 				console.log("ping latency:" + this.latency);
-			}, (e: Error) => {
-				console.log("ping error:" + e.message);
+			}, (e: ProtoError) => {
+				console.log("ping error:" + (e.message || e.payload.type));
 			});
 			this.last_ping = nowms;
 		}
@@ -89,6 +89,9 @@ export class Handler {
 		this.deactivate_limit_ms = 0;
 		this.timer.remove(this.deactivate_timer);
 	}
+	private signature = (user: string, secret: string, walltime: number): string => {
+		return (new window.channer.hash.SHA256()).b64(walltime + user + secret);
+	}
 	resume = () => {
 		console.log("handler start");
 		this.stop_deactivate();
@@ -114,9 +117,26 @@ export class Handler {
 		p.setPingRequest(req);
 		return this.send(p);
 	}
-	login = (user: string, pass: string): Q.Promise<Model> => {
+	login = (user: string, secret: string, pass?: string, rescue?: string): Q.Promise<Model> => {
 		var p = new Builder.Payload();
 		p.type = ChannerProto.Payload.Type.LoginRequest;
+		var req = new Builder.LoginRequest();
+		var device_id = window.channer.settings.values.device_id;
+		if (device_id && device_id.length > 0) {
+			req.device_id = device_id;
+		}
+		req.user = user;
+		req.walltime = Timer.now();
+		if (secret) {
+			req.sign = this.signature(user, secret, req.walltime);
+		}
+		else {
+			req.pass = pass;
+		}
+		if (rescue) {
+			req.rescue = rescue;
+		}
+		p.setLoginRequest(req);
 		return this.send(p);		
 	}
 	post = (topic_id: number, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {

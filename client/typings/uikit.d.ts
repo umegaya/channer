@@ -3,5 +3,5 @@
 export declare var m: any;
 export declare var Q: any;
 export declare class Template {
-    static textinput(bind: UI.Property<string>, klass: string, initval: string): any;
+    static textinput(bind: UI.Property<string>, klass: string, initval: string, secure?: boolean): any;
 }

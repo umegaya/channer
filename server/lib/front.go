@@ -132,7 +132,7 @@ func (sv *FrontServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (sv *FrontServer) Run() {
 	http.Handle(sv.config.EndPoint, sv)
 	go sv.processEvents()
- 	if err := http.ListenAndServeTLS(sv.config.ListenAddress, nil); err != nil {
+ 	if err := http.ListenAndServeTLS(sv.config.ListenAddress, sv.config.CertPath, sv.config.KeyPath, nil); err != nil {
         panic("FrontServer.Run fails to listen: " + err.Error())
     }
 }

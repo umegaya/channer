@@ -24,12 +24,20 @@ export class Config {
 	}
 }
 
+export class UserSettingsValues {
+	user: string;
+	pass: string;
+	device_id: string;
+	secret: string;	
+}
+
 export class UserSettings implements Persistable {
 	io: StorageIO;
-	device_id: string;
+	values: UserSettingsValues;
 	
 	constructor(io: StorageIO) {
-		this.io = io;	
+		this.io = io;
+		this.values = new UserSettingsValues();
 	}
 	save = (): Q.Promise<Persistable> => {
 		return this.io.write(this);
@@ -38,12 +46,16 @@ export class UserSettings implements Persistable {
 		return "text/plain";
 	}
 	read = (blob: string) => {
+		console.log("blob:" + blob)
 		if (blob.length > 0) {
 			var loaded = JSON.parse(blob);
-			this.device_id = loaded.device_id;
+			this.values.user = loaded.user;
+			this.values.pass = loaded.pass;
+			this.values.secret = loaded.secret;
+			this.values.device_id = loaded.device_id;
 		}
 	}
 	write = (): string => {
-		return JSON.stringify(this);
+		return JSON.stringify(this.values);
 	}
 }

@@ -4,10 +4,10 @@ window.channer = {
 	onResume: [],
 	onPause: [],
 	onPush: [],
+	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
 };
+
 document.addEventListener("deviceready", function () {
-	console.log("platform=" + device.platform);
-	window.channer.mobile = (device.platform != 'browser')
 	document.addEventListener("resume", function () {
 		window.channer.onResume.forEach(function (f){ f(); })	
 	});

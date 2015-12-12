@@ -11,6 +11,8 @@ type Config struct {
 	EndPoint        	string      `json:"endpoint"`
 	ListenAddress   	string      `json:"listen"`
 	DisableOriginCheck  bool        `json:"disable_origin_check"`
+	CertPath            string 		`json:"cert"`
+	KeyPath				string 		`json:"key"`
 }
 
 //check_and_fill check configuration, if configuration seems not set, 

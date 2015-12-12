@@ -6,9 +6,13 @@ export declare class LoginController implements UI.Controller {
     component: LoginComponent;
     user: UI.Property<string>;
     pass: UI.Property<string>;
+    retype_pass: UI.Property<string>;
+    error_message: string;
+    querying: boolean;
     constructor(component: LoginComponent);
-    private clearinput;
+    private resetinput;
     onlogin: () => void;
+    sendlogin: (user: string, secret: string, pass?: string) => void;
 }
 export declare class LoginComponent implements UI.Component {
     controller: () => LoginController;

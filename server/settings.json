@@ -1,4 +1,6 @@
 {
 	"endpoint": "/ws",
+	"cert": "./certs/public.key",
+	"key": "./certs/private.key",
 	"disable_origin_check": true
 }

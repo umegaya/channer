@@ -24,6 +24,7 @@ window.channer.bootstrap = function (config: any) {
 			console.log("push: onerror:" + resp.message);	
 		},
 	});
+	var setting_io : StorageIO = null;
 	//store system modules to global namespace
 	window.channer.conn = h;
 	window.channer.timer = t;
@@ -33,20 +34,24 @@ window.channer.bootstrap = function (config: any) {
 	//build bootstrap chain
 	s.open(c.user_settings_path, {create: true})
 	.then((io: StorageIO) => {
+		setting_io = io;
 		var u : UserSettings = new UserSettings(io);
-		return io.read(u)
+		return setting_io.read(u)
 	})
 	.then((u: UserSettings) => {
 		window.channer.settings = u;
 		return p.start();
+	}, (e: Error) => {
+		console.log("user setting broken. remove all");
+		setting_io.rm();
+		throw e;
+		return p.start(); //never reach here. to make compiler feel good. :<
 	})
 	.then((resp: PhonegapPluginPush.RegistrationEventResponse) => {
-		console.log("step3");
 		window.channer.settings.device_id = resp.registrationId;
 		return window.channer.settings.save();
 	})
 	.then((u: UserSettings) => {
-		console.log("step4");
 		window.channer.onResume.push(h.resume);
 		window.channer.onPause.push(h.pause);
 		//startup timer and network
