@@ -3,11 +3,12 @@
 /// <reference path="../../typings/proto.d.ts" />
 import { Config } from "../config";
 export declare class MainController implements UI.Controller {
+    component: MainComponent;
     selected: string;
     tab_contents: {
         [x: string]: UI.Component;
     };
-    constructor(config: Config);
+    constructor(component: MainComponent);
     tabs: () => any;
     tab: (name: string) => any;
     activetab: () => UI.Component;

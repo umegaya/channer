@@ -6,7 +6,9 @@ import {m} from "../uikit"
 import {Config} from "../config"
 
 export class OrgController implements UI.Controller {
-	constructor(config: Config) {
+	component: OrgComponent
+	constructor(component: OrgComponent) {
+		this.component = component;
 	}
 }
 function OrgView(ctrl: OrgController) : UI.Element {
@@ -19,8 +21,8 @@ export class OrgComponent implements UI.Component {
 
 	constructor(config: Config) {
 		this.view = OrgView;
-		this.controller = function () {
-			return new OrgController(config);
+		this.controller = () => {
+			return new OrgController(this);
 		}
 	}
 }

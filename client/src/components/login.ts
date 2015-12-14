@@ -55,9 +55,10 @@ export class LoginController implements UI.Controller {
 				window.channer.settings.values.pass = pass;
 			}
 			window.channer.settings.save();
+			console.log("login success redirect to:" + this.component.next_url);
 			m.route(this.component.next_url);
 		}, (e: ProtoError) => {
-			console.log("login error:" + (e.message || e.payload.type));
+			console.log("login error:" + e.message);
 			this.querying = false;
 			this.error_message = e.message;
 			window.channer.settings.values.secret = null;
@@ -99,7 +100,7 @@ export class LoginComponent implements UI.Component {
 	constructor(config: Config, next_url?: string) {
 		this.view = LoginView;
 		this.next_url = next_url || "/org";
-		this.controller = function () {
+		this.controller = () => {
 			return new LoginController(this);
 		}
 	}

@@ -6,9 +6,10 @@ export interface InputObservableController extends UI.Controller {
     oninput(text: string): Q.Promise<ChannerProto.PostResponse>;
 }
 export declare class EditController implements UI.Controller {
+    component: EditComponent;
     input_text: UI.Property<string>;
     observer: InputObservableController;
-    constructor(config: Config);
+    constructor(component: EditComponent);
     oninput: () => void;
 }
 export declare class EditComponent implements UI.Component {

@@ -5,11 +5,13 @@
 /// <reference path="../typings/socket.d.ts"/>
 /// <reference path="../typings/watcher.d.ts"/>
 /// <reference path="../typings/timer.d.ts"/>
+/// <reference path="../typings/error.d.ts"/>
 
 import {Socket, Manager} from "./socket"
 import {ProtoWatcher, ProtoError, Model} from "./watcher"
 import {Timer} from "./timer"
 import {Q, m} from "./uikit"
+import {errorMessages} from "./error"
 
 var ProtoBuf = window.channer.ProtoBuf;
 export var Builder : ChannerProto.ProtoBufBuilder 
@@ -47,6 +49,12 @@ export class Handler {
 		this.watcher.subscribe_response(msgid, (model: Model) => {
 			df.resolve(model);
 		}, (e: Error) => {
+			if (e instanceof ProtoError) {
+				var pe = <ProtoError>e;
+				if (!e.message && pe.payload) {
+					e.message = errorMessages[pe.payload.type];
+				}
+			}
 			df.reject(e);
 		});
 		return df.promise;
@@ -57,7 +65,7 @@ export class Handler {
 				this.latency = (Timer.now() - m.walltime);
 				console.log("ping latency:" + this.latency);
 			}, (e: ProtoError) => {
-				console.log("ping error:" + (e.message || e.payload.type));
+				console.log("ping error:" + e.message);
 			});
 			this.last_ping = nowms;
 		}

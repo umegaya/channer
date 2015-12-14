@@ -5,6 +5,7 @@
 /// <reference path="../typings/socket.d.ts" />
 /// <reference path="../typings/watcher.d.ts" />
 /// <reference path="../typings/timer.d.ts" />
+/// <reference path="../typings/error.d.ts" />
 import { ProtoWatcher, Model } from "./watcher";
 import { Timer } from "./timer";
 export declare var Builder: ChannerProto.ProtoBufBuilder;

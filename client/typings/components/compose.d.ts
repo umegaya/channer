@@ -3,7 +3,8 @@
 /// <reference path="../../typings/proto.d.ts" />
 import { Config } from "../config";
 export declare class ComposeController implements UI.Controller {
-    constructor(config: Config);
+    component: ComposeComponent;
+    constructor(component: ComposeComponent);
 }
 export declare class ComposeComponent implements UI.Component {
     controller: () => ComposeController;

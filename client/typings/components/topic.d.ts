@@ -3,7 +3,8 @@
 /// <reference path="../../typings/proto.d.ts" />
 import { Config } from "../config";
 export declare class TopicController implements UI.Controller {
-    constructor(config: Config);
+    component: TopicComponent;
+    constructor(component: TopicComponent);
 }
 export declare class TopicComponent implements UI.Component {
     controller: () => TopicController;

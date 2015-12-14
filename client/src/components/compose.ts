@@ -6,7 +6,9 @@ import {m} from "../uikit"
 import {Config} from "../config"
 
 export class ComposeController implements UI.Controller {
-	constructor(config: Config) {
+	component: ComposeComponent;
+	constructor(component: ComposeComponent) {
+		this.component = component;
 	}
 }
 function ComposeView(ctrl: ComposeController) : UI.Element {
@@ -18,8 +20,8 @@ export class ComposeComponent implements UI.Component {
 
 	constructor(config: Config) {
 		this.view = ComposeView;
-		this.controller = function () {
-			return new ComposeController(config);
+		this.controller = () => {
+			return new ComposeController(this);
 		}
 	}
 }

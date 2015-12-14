@@ -6,7 +6,9 @@ import {m} from "../uikit"
 import {Config} from "../config"
 
 export class TopicController implements UI.Controller {
-	constructor(config: Config) {
+	component: TopicComponent;
+	constructor(component: TopicComponent) {
+		this.component = component;
 	}
 }
 function TopicView(ctrl: TopicController) : UI.Element {
@@ -18,8 +20,8 @@ export class TopicComponent implements UI.Component {
 
 	constructor(config: Config) {
 		this.view = TopicView;
-		this.controller = function () {
-			return new TopicController(config);
+		this.controller = () => {
+			return new TopicController(this);
 		}
 	}
 }

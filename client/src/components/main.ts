@@ -7,11 +7,13 @@ import {Config} from "../config"
 import {ListComponent} from "./list"
 
 export class MainController implements UI.Controller {
+	component: MainComponent;
 	selected: string;
 	tab_contents: {
 		[x: string]: UI.Component;
 	}
-	constructor(config: Config) {
+	constructor(component: MainComponent) {
+		this.component = component;
 		this.selected = "joins";
 		this.tab_contents = {
 			joins: new ListComponent("joins"),
@@ -53,8 +55,8 @@ export class MainComponent implements UI.Component {
 
 	constructor(config: Config) {
 		this.view = MainView;
-		this.controller = function () {
-			return new MainController(config);
+		this.controller = () => {
+			return new MainController(this);
 		}
 	}
 }
