@@ -16,12 +16,15 @@ export declare class Handler {
     private socket;
     private msgid_seed;
     private last_ping;
+    private last_auth;
     private deactivate_limit_ms;
     private timer;
     constructor(url: string, timer: Timer);
     private new_msgid;
     private send;
     private ontimer;
+    private reauth;
+    private onopen;
     private deactivate_timer;
     private start_deactivate;
     private stop_deactivate;

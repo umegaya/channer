@@ -4,9 +4,11 @@ import (
 	"net"
 	"net/http"
 	"log"
+	"time"
 
 	proto "../proto"
 	"./packet"
+	"./assets"
 
 	"github.com/gorilla/websocket"
 )
@@ -92,6 +94,7 @@ type FrontServer struct {
 	send   		chan *packet.SendPacket
 	closer      chan interface{}
 	upgrader 	websocket.Upgrader
+	assets   	*assets.Config
 }
 
 //NewFront creates new frontend server
@@ -102,6 +105,11 @@ func NewFrontServer(config *Config) *FrontServer {
 			return true
 		}
 	}
+	a := assets.Config {}
+	if err := a.Load(config.AssetsConfigPath); err != nil {
+		log.Fatal(err)
+	}
+	packet.Init(&a);
 	return &FrontServer {
 		cmap : make(map[string]*FrontServerConn),
 		config : config,
@@ -111,6 +119,7 @@ func NewFrontServer(config *Config) *FrontServer {
 		send : make(chan *packet.SendPacket),
 		closer : make(chan interface{}),
 		upgrader : websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024, CheckOrigin: co},
+		assets: &a,
 	}
 }
 
@@ -132,9 +141,23 @@ func (sv *FrontServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (sv *FrontServer) Run() {
 	http.Handle(sv.config.EndPoint, sv)
 	go sv.processEvents()
+    go sv.updateAssetsConfig(sv.config.AssetsConfigURL)
  	if err := http.ListenAndServeTLS(sv.config.ListenAddress, sv.config.CertPath, sv.config.KeyPath, nil); err != nil {
         panic("FrontServer.Run fails to listen: " + err.Error())
     }
+}
+
+//updateAssetsConfig updates assets config from local webpack dev server. this function is assumed to use with go routine.
+func (sv *FrontServer) updateAssetsConfig(host string) {
+	ticker := time.NewTicker(1000 * time.Millisecond)
+    for {
+        select {
+        case <-ticker.C:
+			if err := sv.assets.Update(host); err != nil {
+				log.Printf("asset config update fail with %v", err);
+			}
+        }
+    }	
 }
 
 //Send sends spcified pkt to specified destination to

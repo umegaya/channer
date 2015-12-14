@@ -3,18 +3,22 @@ import {StorageIO, Persistable} from "./storage"
 
 export class Config {
 	url: string;
+	client_version: string;
 	user_settings_path: string;
 	response_timeout_ms: number;
 	ping_interval_ms: number;
+	auth_interval_ms: number;
 	deactivate_timeout_ms: number;
 	timer_resolution_ms: number;
 	push_settings: any;
 	constructor(src: any) {
 		this.url = src.url;
+		this.client_version = src.client_version;
 		this.user_settings_path = "user_settings.json";
 		this.response_timeout_ms = src.response_timeout_ms || 5000;
 		this.ping_interval_ms = src.ping_interval_ms || this.response_timeout_ms;
-		this.deactivate_timeout_ms = src.deactivate_timeout_ms || 60000;
+		this.auth_interval_ms = src.auth_interval_ms || 3600000; //1h
+		this.deactivate_timeout_ms = src.deactivate_timeout_ms || 5000;
 		this.timer_resolution_ms = src.timer_resolution_ms || 1000;
 		this.push_settings = src.push_settings || {
 			"android": { "senderID": "1234567890" },
@@ -29,6 +33,7 @@ export class UserSettingsValues {
 	pass: string;
 	device_id: string;
 	secret: string;	
+	last_url: string;
 }
 
 export class UserSettings implements Persistable {
@@ -53,6 +58,7 @@ export class UserSettings implements Persistable {
 			this.values.pass = loaded.pass;
 			this.values.secret = loaded.secret;
 			this.values.device_id = loaded.device_id;
+			this.values.last_url = loaded.last_url;
 		}
 	}
 	write = (): string => {

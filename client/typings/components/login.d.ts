@@ -6,7 +6,7 @@ export declare class LoginController implements UI.Controller {
     component: LoginComponent;
     user: UI.Property<string>;
     pass: UI.Property<string>;
-    retype_pass: UI.Property<string>;
+    retype: UI.Property<string>;
     error_message: string;
     querying: boolean;
     constructor(component: LoginComponent);
@@ -18,5 +18,6 @@ export declare class LoginComponent implements UI.Component {
     controller: () => LoginController;
     view: UI.View<LoginController>;
     next_url: string;
-    constructor(config: Config, next_url?: string);
+    rescue: string;
+    constructor(config: Config, next_url: string);
 }

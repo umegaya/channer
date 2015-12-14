@@ -31,10 +31,11 @@ message Topic {
 message LoginRequest {
 	required uint64 walltime = 1;
 	required string user = 2;
-	optional string sign = 3; //walltime + username + password + salt with sha256 
-	optional string pass = 4; //only first time (before this client receive unique salt from server)
-	optional string device_id = 5; //if sent from mobile device, it should be specified
-	optional string rescue = 6; //to recover accout
+	required string version = 3;
+	optional string sign = 4; //walltime + username + password + salt with sha256 
+	optional string pass = 5; //only first time (before this client receive unique salt from server)
+	optional string device_id = 6; //if sent from mobile device, it should be specified
+	optional string rescue = 7; //to recover accout
 }
 
 message PostRequest {
@@ -105,6 +106,7 @@ message Error {
 		Login_InvalidAuth = 2;
 		Login_UserNotFound = 3;
 		Login_UserAlreadyExists = 4;
+		Login_OutdatedVersion = 5;
 	}
 	required Type type = 1;
 	optional string explanation = 2;

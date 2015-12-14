@@ -99,28 +99,34 @@
                     "id": 2
                 },
                 {
-                    "rule": "optional",
+                    "rule": "required",
                     "type": "string",
-                    "name": "sign",
+                    "name": "version",
                     "id": 3
                 },
                 {
                     "rule": "optional",
                     "type": "string",
-                    "name": "pass",
+                    "name": "sign",
                     "id": 4
                 },
                 {
                     "rule": "optional",
                     "type": "string",
-                    "name": "device_id",
+                    "name": "pass",
                     "id": 5
                 },
                 {
                     "rule": "optional",
                     "type": "string",
-                    "name": "rescue",
+                    "name": "device_id",
                     "id": 6
+                },
+                {
+                    "rule": "optional",
+                    "type": "string",
+                    "name": "rescue",
+                    "id": 7
                 }
             ]
         },
@@ -311,6 +317,10 @@
                         {
                             "name": "Login_UserAlreadyExists",
                             "id": 4
+                        },
+                        {
+                            "name": "Login_OutdatedVersion",
+                            "id": 5
                         }
                     ]
                 }

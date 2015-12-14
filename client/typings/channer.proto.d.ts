@@ -137,6 +137,9 @@ declare module ChannerProto {
 		user: string;
 		getUser() : string;
 		setUser(user : string): void;
+		version: string;
+		getVersion() : string;
+		setVersion(version : string): void;
 		sign?: string;
 		getSign() : string;
 		setSign(sign : string): void;
@@ -444,6 +447,7 @@ declare module ChannerProto.Error {
 		Login_InvalidAuth = 2,
 		Login_UserNotFound = 3,
 		Login_UserAlreadyExists = 4,
+		Login_OutdatedVersion = 5,
 		
 	}
 }

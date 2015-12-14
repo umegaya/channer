@@ -2,7 +2,7 @@
 /// <reference path="../../typings/UI.d.ts"/>
 /// <reference path="../../typings/proto.d.ts"/>
 
-import {m, Template} from "../uikit"
+import {m, Template, Util} from "../uikit"
 import {ProtoError} from "../watcher"
 import {Config} from "../config"
 
@@ -10,7 +10,7 @@ export class LoginController implements UI.Controller {
 	component: LoginComponent;
 	user: UI.Property<string>;
 	pass: UI.Property<string>;
-	retype_pass: UI.Property<string>;
+	retype: UI.Property<string>;
 	error_message: string;
 	querying: boolean;
 	constructor(component: LoginComponent) {
@@ -29,7 +29,7 @@ export class LoginController implements UI.Controller {
 			console.log("input accout information")
 			this.user = m.prop(user || "username");
 			this.pass = m.prop("password");
-			this.retype_pass = m.prop("retype password");
+			this.retype = m.prop("retype password");
 		}
 		m.redraw();
 	}
@@ -37,7 +37,7 @@ export class LoginController implements UI.Controller {
 		var user = this.user();
 		var pass = this.pass();
 		console.log("login with:" + user + "/" + pass);
-		if (!this.retype_pass || this.retype_pass() == pass) {
+		if (!this.retype || this.retype() == pass) {
 			this.sendlogin(user, null, pass);
 		}
 		else {
@@ -45,9 +45,9 @@ export class LoginController implements UI.Controller {
 		}
 	}
 	sendlogin = (user: string, secret: string, pass?: string) => {
-		window.channer.conn.login(user, secret, pass)
+		window.channer.conn.login(user, secret, pass, this.component.rescue)
 		.then((r: ChannerProto.LoginResponse) => {
-			console.log("login success:" + r.secret);
+			console.log("login success!:" + r.secret);
 			this.querying = false;
 			window.channer.settings.values.secret = r.secret;
 			window.channer.settings.values.user = user;
@@ -56,7 +56,7 @@ export class LoginController implements UI.Controller {
 			}
 			window.channer.settings.save();
 			console.log("login success redirect to:" + this.component.next_url);
-			m.route(this.component.next_url);
+			Util.route(this.component.next_url);
 		}, (e: ProtoError) => {
 			console.log("login error:" + e.message);
 			this.querying = false;
@@ -64,7 +64,13 @@ export class LoginController implements UI.Controller {
 			window.channer.settings.values.secret = null;
 			window.channer.settings.values.pass = null;
 			window.channer.settings.save();
-			this.resetinput();
+			if (e.payload.type == ChannerProto.Error.Type.Login_OutdatedVersion) {
+				console.log("reload app for update latest client:" + window.channer.config.client_version);
+				Util.restart_app();
+			}
+			else {
+				this.resetinput();
+			}
 		});
 		this.querying = true;
 		this.error_message = null;
@@ -82,8 +88,8 @@ function LoginView(ctrl: LoginController) : UI.Element {
 		]
 		elements.push(Template.textinput(ctrl.user, "login-input-user", "username"));
 		elements.push(Template.textinput(ctrl.pass, "login-input-pass", "password", true));
-		if (ctrl.retype_pass) {
-			elements.push(Template.textinput(ctrl.retype_pass, "login-input-pass-retype", "retype password", true))
+		if (ctrl.retype) {
+			elements.push(Template.textinput(ctrl.retype, "login-input-retype", "retype password", true))
 		}
 		elements.push(m("button", {
 			onclick: ctrl.onlogin,
@@ -96,11 +102,13 @@ export class LoginComponent implements UI.Component {
 	controller: () => LoginController;
 	view: UI.View<LoginController>;
 	next_url: string;
+	rescue: string;
 
-	constructor(config: Config, next_url?: string) {
+	constructor(config: Config, next_url: string) {
 		this.view = LoginView;
-		this.next_url = next_url || "/org";
 		this.controller = () => {
+			this.next_url = m.route.param("next") || "/org";
+			this.rescue = m.route.param("rescue");
 			return new LoginController(this);
 		}
 	}

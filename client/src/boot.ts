@@ -48,7 +48,7 @@ window.channer.bootstrap = function (config: any) {
 		return p.start(); //never reach here. to make compiler feel good. :<
 	})
 	.then((resp: PhonegapPluginPush.RegistrationEventResponse) => {
-		window.channer.settings.device_id = resp.registrationId;
+		window.channer.settings.values.device_id = resp.registrationId;
 		return window.channer.settings.save();
 	})
 	.then((u: UserSettings) => {
@@ -59,14 +59,20 @@ window.channer.bootstrap = function (config: any) {
 		h.resume();
 		m.route.mode = "hash"; //prevent from refreshing page when route changes.
 		//setup client router
-		m.route(document.body, "/login", {
-			"/login":					new window.channer.LoginComponent(c),
-			"/org":						new window.channer.OrgComponent(c),
-			"/org/:org/": 				new window.channer.MainComponent(c),
-			"/org/:org/topic": 			new window.channer.ComposeComponent(c),
-			"/org/:org/topic/:id": 		new window.channer.TopicComponent(c),
+		var last_url = window.channer.settings.last_url;
+		var start_url = last_url ? ("/login?next=" + last_url) : "/login"; 
+		m.route(document.body, start_url, {
+			"/login":				new window.channer.LoginComponent(c),
+			"/org":					new window.channer.OrgComponent(c),
+			"/org/:org/": 			new window.channer.MainComponent(c),
+			"/org/:org/topic": 		new window.channer.ComposeComponent(c),
+			"/org/:org/topic/:id": 	new window.channer.TopicComponent(c),
 		});
 	}, (e: Error) => {
+		console.log("bootstrap error!: " + e.message);
+		throw e;
+	})
+	.done(null, (e: Error) => {
 		console.log("bootstrap error: " + e.message);
 		throw e;
 	});

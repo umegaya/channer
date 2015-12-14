@@ -10,7 +10,7 @@
 import {Socket, Manager} from "./socket"
 import {ProtoWatcher, ProtoError, Model} from "./watcher"
 import {Timer} from "./timer"
-import {Q, m} from "./uikit"
+import {Q, m, Util} from "./uikit"
 import {errorMessages} from "./error"
 
 var ProtoBuf = window.channer.ProtoBuf;
@@ -24,6 +24,7 @@ export class Handler {
 	private socket: Socket;
 	private msgid_seed: number;
 	private last_ping: number;
+	private last_auth: number;
 	private deactivate_limit_ms: number;
 	private timer: Timer;
 	constructor(url: string, timer: Timer) {
@@ -31,6 +32,7 @@ export class Handler {
 		this.msgid_seed = 0;
 		this.latency = 0;
 		this.last_ping = 0;
+		this.last_auth = 0;
 		this.deactivate_limit_ms = 0;
 		this.timer = timer;
 	}
@@ -69,6 +71,20 @@ export class Handler {
 			});
 			this.last_ping = nowms;
 		}
+		if ((nowms - this.last_auth) > window.channer.config.auth_interval_ms) {
+			this.reauth();
+			this.last_auth = nowms;
+		}
+	}
+	private reauth = () => {
+		var current = m.route();
+		if (!current.match(/^\/login/)) {
+			console.log("re-authenticate current url:" + current);
+			Util.route("/login?next=" + current, true);
+		}		
+	}
+	private onopen = () => {
+		this.reauth();
 	}
 	private deactivate_timer = (nowms: number) => {
 		if (this.deactivate_limit_ms <= 0) {
@@ -106,6 +122,7 @@ export class Handler {
 		this.watcher = this.watcher || new ProtoWatcher(Builder.Payload.Type, Builder.Payload.decode);
 		this.socket = this.socket || Manager.open(this.url, {
 			onmessage: this.watcher.watch,
+			onopen: this.onopen,
 		});
 		this.timer.add(this.ontimer);
 		this.timer.add(this.watcher.ontimer);
@@ -133,6 +150,7 @@ export class Handler {
 		if (device_id && device_id.length > 0) {
 			req.device_id = device_id;
 		}
+		req.version = window.channer.config.client_version;
 		req.user = user;
 		req.walltime = Timer.now();
 		if (secret) {

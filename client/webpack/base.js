@@ -1,4 +1,5 @@
 var fs = require("fs");
+var hashes = require('jshashes');
 var StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin;
 var __root = __dirname + "/..";
 module.exports = function (settings) {
@@ -58,15 +59,18 @@ module.exports = function (settings) {
                     function sorter(a, b) {
                         return deps.indexOf(a.name) - deps.indexOf(b.name);
                     }
+                    var hash_src = "";
                     var ret = { versions: [], appconfig: false };
                     for (var k in data.assetsByChunkName) {
                         var hash = data.assetsByChunkName[k].match(/.+?\.([^\.]+)\.js$/);
                         if (hash) {
                             ret.versions.push({name: k, hash: hash[1]});
+                            hash_src += hash[1];
                         }
                     }
                     ret.versions.sort(sorter);
                     ret.appconfig = settings.appconfig;
+                    ret.appconfig.client_version = (new hashes.SHA256()).b64(hash_src);
                     return JSON.stringify(ret, null, 2);
                 }
             })

@@ -3,6 +3,19 @@
 export var m : any = window.channer.m;
 export var Q : any = window.channer.Q;
 
+export class Util {
+	static route(dest: string, route_only?: boolean) {
+		if (!route_only) {
+			window.channer.settings.values.last_url = dest;
+			window.channer.settings.save();
+		}
+		m.route(dest);
+	}
+	static restart_app() {
+		document.location.pathname = "/";
+		document.location.reload();
+	}
+}
 export class Template {
 	static textinput(bind: UI.Property<string>, klass: string, initval: string, secure?:boolean) {
 		var value = bind();

@@ -22,6 +22,7 @@ export declare class Socket {
     reconnect_duration: (nowms: number) => number;
     open: () => void;
     private clear_error_streak;
+    private set_reconnect_duration;
     private add_error_streak;
     private onopen;
     private onmessage;

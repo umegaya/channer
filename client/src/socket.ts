@@ -87,11 +87,14 @@ export class Socket {
 		this.next_connection = null;
 		this.error_streak = 0;		
 	}
+	private set_reconnect_duration = (dt: number) => {
+		var t = this.next_connection || new Date();
+		t.setTime(t.getTime() + dt);
+		this.next_connection = t;		
+	}
 	private add_error_streak = () => {
 		this.error_streak++;
-		var t = this.next_connection || new Date();
-		t.setTime(t.getTime() + (1000 * Math.min(300, Math.pow(2, this.error_streak - 1))));
-		this.next_connection = t;
+		this.set_reconnect_duration(1000 * Math.min(300, Math.pow(2, this.error_streak - 1)));
 	}
 	private onopen = () => {
 		this.state = SocketState.CONNECTED;

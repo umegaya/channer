@@ -4,6 +4,7 @@ import (
 	"log"
 	"fmt"
 
+	"../assets"
 	proto "../../proto"
 )
 
@@ -54,6 +55,18 @@ var handlers = map[proto.Payload_Type]func (pkt *RecvPacket, t Transport) {
 			go ProcessLogin(pkt.From, *pkt.Payload.Msgid, pkt.Payload.LoginRequest, t)
 		}
 	},
+}
+
+//Init initializes packet processing system
+var assetsConfig *assets.Config;
+func Init(config *assets.Config) {
+	assetsConfig = config;
+	log.Printf("asset config: client version = %v", assetsConfig.App.ClientVersion);
+}
+
+//AssetSettings returns client assetsettings
+func AssetsConfig() *assets.Config {
+	return assetsConfig;
 }
 
 //Process processes packet according to its type

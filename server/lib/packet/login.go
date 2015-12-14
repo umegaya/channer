@@ -51,11 +51,17 @@ func compute_user_secret(user, pass string, walltime uint64) string {
 func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transport) {
 	user := req.User
 	walltime := req.Walltime
-	if user == nil || walltime == nil {
+	version := req.Version
+	if user == nil || walltime == nil || version == nil {
 		SendError(from, msgid, proto.Error_Login_UserNotFound)
 		return	
 	}
 	log.Printf("login user:%v", *user)
+	if AssetsConfig().App.ClientVersion != *version {
+		log.Printf("login user:%v client outdated %v:%v", *user, AssetsConfig().App.ClientVersion, *version)
+		SendError(from, msgid, proto.Error_Login_OutdatedVersion)
+		return
+	}
 	//update account database
 	a, ok := amap[*user]
 	if pass := req.Pass; pass != nil {
