@@ -106,27 +106,39 @@
                 },
                 {
                     "rule": "optional",
-                    "type": "string",
-                    "name": "sign",
+                    "type": "uint64",
+                    "name": "id",
                     "id": 4
                 },
                 {
                     "rule": "optional",
                     "type": "string",
-                    "name": "pass",
+                    "name": "sign",
                     "id": 5
                 },
                 {
                     "rule": "optional",
                     "type": "string",
-                    "name": "device_id",
+                    "name": "pass",
                     "id": 6
                 },
                 {
                     "rule": "optional",
                     "type": "string",
-                    "name": "rescue",
+                    "name": "device_id",
                     "id": 7
+                },
+                {
+                    "rule": "optional",
+                    "type": "string",
+                    "name": "device_type",
+                    "id": 8
+                },
+                {
+                    "rule": "optional",
+                    "type": "string",
+                    "name": "rescue",
+                    "id": 9
                 }
             ]
         },
@@ -231,9 +243,15 @@
             "fields": [
                 {
                     "rule": "required",
+                    "type": "uint64",
+                    "name": "id",
+                    "id": 1
+                },
+                {
+                    "rule": "required",
                     "type": "string",
                     "name": "secret",
-                    "id": 1
+                    "id": 2
                 }
             ]
         },
@@ -321,6 +339,10 @@
                         {
                             "name": "Login_OutdatedVersion",
                             "id": 5
+                        },
+                        {
+                            "name": "Login_DatabaseError",
+                            "id": 6
                         }
                     ]
                 }

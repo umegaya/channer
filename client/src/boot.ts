@@ -62,14 +62,14 @@ window.channer.bootstrap = function (config: any) {
 		var last_url = window.channer.settings.last_url;
 		var start_url = last_url ? ("/login?next=" + last_url) : "/login"; 
 		m.route(document.body, start_url, {
-			"/login":				new window.channer.LoginComponent(c),
-			"/org":					new window.channer.OrgComponent(c),
-			"/org/:org/": 			new window.channer.MainComponent(c),
-			"/org/:org/topic": 		new window.channer.ComposeComponent(c),
-			"/org/:org/topic/:id": 	new window.channer.TopicComponent(c),
+			"/login":					new window.channer.LoginComponent(c),
+			"/channel":					new window.channer.ChannelComponent(c),
+			"/channel/:ch/": 			new window.channer.MainComponent(c),
+			"/channel/:ch/topic": 		new window.channer.ComposeComponent(c),
+			"/channel/:ch/topic/:id": 	new window.channer.TopicComponent(c),
 		});
 	}, (e: Error) => {
-		console.log("bootstrap error!: " + e.message);
+		console.log("bootstrap error: " + e.message);
 		throw e;
 	})
 	.done(null, (e: Error) => {

@@ -140,6 +140,9 @@ declare module ChannerProto {
 		version: string;
 		getVersion() : string;
 		setVersion(version : string): void;
+		id?: number;
+		getId() : number;
+		setId(id : number): void;
 		sign?: string;
 		getSign() : string;
 		setSign(sign : string): void;
@@ -149,6 +152,9 @@ declare module ChannerProto {
 		device_id?: string;
 		getDeviceId() : string;
 		setDeviceId(deviceId : string): void;
+		device_type?: string;
+		getDeviceType() : string;
+		setDeviceType(deviceType : string): void;
 		rescue?: string;
 		getRescue() : string;
 		setRescue(rescue : string): void;
@@ -297,6 +303,9 @@ declare module ChannerProto {
 declare module ChannerProto {
 
 	export interface LoginResponse extends ProtoBufModel {
+		id: number;
+		getId() : number;
+		setId(id : number): void;
 		secret: string;
 		getSecret() : string;
 		setSecret(secret : string): void;
@@ -448,6 +457,7 @@ declare module ChannerProto.Error {
 		Login_UserNotFound = 3,
 		Login_UserAlreadyExists = 4,
 		Login_OutdatedVersion = 5,
+		Login_DatabaseError = 6,
 		
 	}
 }

@@ -41,6 +41,10 @@ func (c *Config) Update(url string) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("update asset config: client version = %v", c.App.ClientVersion);
-	return c.decode(resp.Body)
+	ver := c.App.ClientVersion
+	err = c.decode(resp.Body)
+	if ver != c.App.ClientVersion {
+		log.Printf("client version = %v => %v", ver, c.App.ClientVersion)
+	}
+	return err
 }

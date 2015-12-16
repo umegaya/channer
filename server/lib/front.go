@@ -9,6 +9,7 @@ import (
 	proto "../proto"
 	"./packet"
 	"./assets"
+	"./models"
 
 	"github.com/gorilla/websocket"
 )
@@ -105,11 +106,16 @@ func NewFrontServer(config *Config) *FrontServer {
 			return true
 		}
 	}
+	//initialize packet processor
 	a := assets.Config {}
 	if err := a.Load(config.AssetsConfigPath); err != nil {
 		log.Fatal(err)
 	}
 	packet.Init(&a);
+	//initialize models
+	if err := models.Init(config.DBHost, config.DBCertPath); err != nil {
+		log.Fatal(err)
+	}
 	return &FrontServer {
 		cmap : make(map[string]*FrontServerConn),
 		config : config,

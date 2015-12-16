@@ -32,10 +32,12 @@ message LoginRequest {
 	required uint64 walltime = 1;
 	required string user = 2;
 	required string version = 3;
-	optional string sign = 4; //walltime + username + password + salt with sha256 
-	optional string pass = 5; //only first time (before this client receive unique salt from server)
-	optional string device_id = 6; //if sent from mobile device, it should be specified
-	optional string rescue = 7; //to recover accout
+	optional uint64 id = 4;
+	optional string sign = 5; //walltime + username + password + salt with sha256 
+	optional string pass = 6; //only first time (before this client receive unique salt from server)
+	optional string device_id = 7; //if sent from mobile device, it should be specified
+	optional string device_type = 8;
+	optional string rescue = 9; //to recover accout
 }
 
 message PostRequest {
@@ -72,7 +74,8 @@ message PingRequest {
 
 //response
 message LoginResponse {
-	required string secret = 1;
+	required uint64 id = 1;
+	required string secret = 2;
 }
 
 message PostResponse {
@@ -107,6 +110,7 @@ message Error {
 		Login_UserNotFound = 3;
 		Login_UserAlreadyExists = 4;
 		Login_OutdatedVersion = 5;
+		Login_DatabaseError = 6;
 	}
 	required Type type = 1;
 	optional string explanation = 2;

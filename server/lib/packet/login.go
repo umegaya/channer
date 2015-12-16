@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	
 	proto "../../proto"
+	"../models"
 )
 
 var SECRET string = "506779d073f0c20d5e14c62c7261db6bd238be7312ebef394ca1b05226740742";
@@ -52,6 +53,7 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	user := req.User
 	walltime := req.Walltime
 	version := req.Version
+	id := req.Id
 	if user == nil || walltime == nil || version == nil {
 		SendError(from, msgid, proto.Error_Login_UserNotFound)
 		return	
@@ -63,32 +65,40 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		return
 	}
 	//update account database
-	a, ok := amap[*user]
+	a, created, err := models.NewAccount(id, 0)
+	if err != nil {
+		log.Printf("login database error2: %v", err)
+		SendError(from, msgid, proto.Error_Login_DatabaseError)
+		return
+	}
 	if pass := req.Pass; pass != nil {
 	log.Printf("login user/pass:%v:%v", *user, *pass)
-		if ok {
+		if !created {
 			rescue := req.Rescue;
-			if rescue == nil || *rescue != a.rescue {
+			if rescue == nil || *rescue != a.Rescue {
 				SendError(from, msgid, proto.Error_Login_UserAlreadyExists)
 				return
 			}
 		}
+		//TODO: replace user with id value
 		secret := compute_user_secret(*user, *pass, *walltime)
-		a = Account {
-			user: *user,
-			secret: secret,
+		a.User = *user
+		a.Secret = secret
+		if _, err := a.Save(); err != nil {
+			log.Printf("login database error: %v", err)
+			SendError(from, msgid, proto.Error_Login_DatabaseError)
+			return
 		}
-		amap[*user] = a
 	} else {
-		if !ok {
+		if created {
 			SendError(from, msgid, proto.Error_Login_UserNotFound)
 			return			
 		}
 		sign := req.Sign;
 		log.Printf("sign:%v", sign);
-		if sign == nil || *sign != compute_sign(a.user, a.secret, *walltime) {
+		if sign == nil || *sign != compute_sign(a.User, a.Secret, *walltime) {
 			if sign != nil {
-				log.Printf("sign differ %v:%v:%v:%v:%v", *sign, compute_sign(a.user, a.secret, *walltime), a.user, a.secret, *walltime)
+				log.Printf("sign differ %v:%v:%v:%v:%v", *sign, compute_sign(a.User, a.Secret, *walltime), a.User, a.Secret, *walltime)
 			}
 			SendError(from, msgid, proto.Error_Login_InvalidAuth)
 			return
@@ -97,39 +107,30 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	}
 
 	//set device information
-	now := time.Now()
+	device_type := req.DeviceType
 	device_id := req.DeviceId
 	if device_id == nil {
 		//TODO: get unique identifier of browser and use it as device_id.
 		//(especially, if user uses mobile browser, how we identify it as same mobile device)
-		tmp_device_id := "browser:" + from.String()
+		tmp_device_id := "browser:" + string(a.Id)
+		tmp_device_type := "browser"
 		device_id = &tmp_device_id
+		device_type = &tmp_device_type
 	}
-	devices, ok := dmap[*user]
-	if !ok {
-		devices = make(map[string]Device)
-		dmap[*user] = devices
-	}
-	device, ok := devices[*device_id]
-	if !ok {
-		devices[*device_id] = Device {
-			id: *device_id,
-			last_access: now,
-			last_from: from.String(),
-		}
-	} else {
-		device.last_access = now
-		device.last_from = from.String()
+	if _, _, err := models.NewDevice(*device_id, *device_type, from.String(), a.Id); err != nil {
+		log.Printf("register device fails %v:%v:%v", *device_id, *device_type, a.Id)
+		//continue
 	}
 
 	//send post notification to all member in this Topic
-	log.Printf("secret:%v", a.secret);
+	log.Printf("secret:%v", a.Secret)
 	typ := proto.Payload_LoginResponse
 	from.Send(&proto.Payload {
 		Type: &typ,
 		Msgid: &msgid,
 		LoginResponse: &proto.LoginResponse{
-			Secret: &a.secret,
+			Id: &a.Id,
+			Secret: &a.Secret,
 		},
 	})
 }
