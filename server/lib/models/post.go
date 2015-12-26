@@ -13,6 +13,6 @@ type Post struct {
 }
 
 func InitPost() {
-	ConfigTable(Post{}, "posts", "Id")
+	create_table(Post{}, "posts", "Id")
 }
 

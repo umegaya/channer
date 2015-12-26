@@ -11,6 +11,6 @@ type Service struct {
 }
 
 func InitService() {
-	ConfigTable(Service{}, "services", "Id")
+	create_table(Service{}, "services", "Id")
 }
 

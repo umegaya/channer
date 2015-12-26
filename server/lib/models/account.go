@@ -23,7 +23,7 @@ const ACCTYPE_BOT = 1
 const ACCOUNT_ID_BASE = 36
 
 func InitAccount() {
-	ConfigTable(Account{}, "accounts", "Id")
+	create_table(Account{}, "accounts", "Id")
 }
 
 func NewAccount(id *string, typ int, user string) (*Account, bool, error) {
@@ -31,7 +31,7 @@ func NewAccount(id *string, typ int, user string) (*Account, bool, error) {
 	a := &Account{}
 	created := false
 	if id == nil {
-		a.Id = genUUID()
+		a.Id = dbm.UUID()
 		a.User = user
 		a.Type = typ
 		//newly created
@@ -53,6 +53,6 @@ func NewAccount(id *string, typ int, user string) (*Account, bool, error) {
 	return a, created, nil
 }
 
-func (a Account) Save() (int64, error) {
-	return update_record(a)
+func (a Account) Save(cols []string) (int64, error) {
+	return DBM().StoreColumns(a, cols)
 }

@@ -11,6 +11,6 @@ type Channel struct {
 }
 
 func InitChannel() {
-	ConfigTable(Channel{}, "channels", "Id")
+	create_table(Channel{}, "channels", "Id")
 }
 

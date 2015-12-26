@@ -82,7 +82,7 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		secret := compute_user_secret(*user, *pass, *walltime)
 		a.Secret = secret
 		log.Printf("login database %v %v", a.User, a.Secret);
-		if _, err := a.Save(); err != nil {
+		if _, err := a.Save([]string{ "Secret" }); err != nil {
 			log.Printf("login update account database error: %v", err)
 			SendError(from, msgid, proto.Error_Login_DatabaseError)
 			return

@@ -15,7 +15,7 @@ type Node struct {
 }
 
 func InitNode() {
-	ConfigTable(Node{}, "nodes", "Id").AddIndex("addr", "INDEX", []string{"Address"})
+	create_table(Node{}, "nodes", "Id").AddIndex("addr", "INDEX", []string{"Address"})
 }
 
 func insertWithId(address string) (*Node, error) {

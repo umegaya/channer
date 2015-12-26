@@ -13,6 +13,6 @@ type Reaction struct {
 }
 
 func InitReaction() {
-	ConfigTable(Reaction{}, "reactions", "Id")
+	create_table(Reaction{}, "reactions", "Id")
 }
 

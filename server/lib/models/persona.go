@@ -11,6 +11,6 @@ type Persona struct {
 }
 
 func InitPersona() {
-	ConfigTable(Persona{}, "personas", "Id")
+	create_table(Persona{}, "personas", "Id")
 }
 

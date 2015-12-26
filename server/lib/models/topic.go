@@ -10,6 +10,6 @@ type Topic struct {
 }
 
 func InitTopic() {
-	ConfigTable(Topic{}, "topics", "Id")
+	create_table(Topic{}, "topics", "Id")
 }
 

@@ -9,9 +9,13 @@ import (
 	"github.com/umegaya/gorp"
 )
 
-var dbmap *gorp.DbMap
-var node *Node
 type UUID uint64
+type Database struct {
+	gorp.DbMap
+	node *Node
+}
+
+var dbm Database
 
 func Init(db_addr, certs, host_addr string) error {
 	schema := "http"
@@ -26,7 +30,7 @@ func Init(db_addr, certs, host_addr string) error {
 	if _, err := db.Exec("CREATE DATABASE IF NOT EXISTS channer; SET DATABASE = 'channer';"); err != nil {
 		return err
 	}
-	dbmap = &gorp.DbMap{Db: db, Dialect: gorp.NewCockroachDialect()}
+	dbm = Database{gorp.DbMap{Db: db, Dialect: gorp.NewCockroachDialect()}, nil}
 	//add model 
 	InitNode()
 	InitAccount()
@@ -38,12 +42,12 @@ func Init(db_addr, certs, host_addr string) error {
 	InitReaction()
 	InitPost()
 	//create table according to model definition. TODO: how to do migration with roach?
-    if err := dbmap.CreateTablesIfNotExists(); err != nil {
+    if err := dbm.CreateTablesIfNotExists(); err != nil {
     	log.Printf("CreateTablesIfNotExists: %v", err)
     	return err
     }
     //initialize node object
-    node, _, err = NewNode(host_addr)
+    dbm.node, _, err = NewNode(host_addr)
     if err != nil {
     	log.Printf("NewNode: %v", err)
     	return err
@@ -52,25 +56,28 @@ func Init(db_addr, certs, host_addr string) error {
     return nil
 }
 
-func DBM() *gorp.DbMap {
-	return dbmap
+func DBM() *Database {
+	return &dbm
 }
 
-func default_filter(col *gorp.ColumnMap) bool {
-	return col.ColumnName != "Id"
+func create_table(tmpl interface {}, name string, pkey_column string) *gorp.TableMap {
+	return dbm.AddTableWithName(tmpl, name).SetKeys(false, pkey_column)
 }
 
-func update_record(record interface {}) (int64, error) {
-	return DBM().UpdateColumns(default_filter, record)
+func (dbm *Database) StoreColumns(record interface {}, columns []string) (int64, error) {
+	return dbm.UpdateColumns(func (col *gorp.ColumnMap) bool {
+		for _, c := range columns {
+			if col.ColumnName == c {
+				return true
+			}
+		}
+		return false
+	}, record)
 }
 
-func ConfigTable(tmpl interface {}, name string, pkey_column string) *gorp.TableMap {
-	return DBM().AddTableWithName(tmpl, name).SetKeys(false, pkey_column)
-}
-
-func genUUID() UUID {
+func (dbm *Database) UUID() UUID {
 	//var uuid UUID
 	//err := DBM().Db.QueryRow("select experimental_unique_int()").Scan(&uuid)
 	//return uuid, err
-	return node.NewUUID()
+	return dbm.node.NewUUID()
 }

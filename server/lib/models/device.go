@@ -17,7 +17,7 @@ type Device struct {
 }
 
 func InitDevice() {
-	ConfigTable(Device{}, "devices", "Id")
+	create_table(Device{}, "devices", "Id")
 }
 
 func NewDevice(id, typ, from string, account UUID) (*Device, bool, error) {
@@ -39,7 +39,7 @@ func NewDevice(id, typ, from string, account UUID) (*Device, bool, error) {
 	}
 	d.LastFrom = from
 	d.LastAccess = time.Now()
-	if _, err := update_record(d); err != nil {
+	if _, err := dbm.StoreColumns(d, []string{"LastFrom", "LastAccess"}); err != nil {
 		return d, false, err
 	}
 	return d, false, nil
