@@ -39,7 +39,6 @@ func calc_sha256(source string) string {
 //compute_sign is calculate signature of login request.
 func compute_sign(user, secret string, walltime uint64) string {
 	src := strconv.FormatUint(walltime, 10) + user + secret
-	log.Printf("src:%v", src)
 	return calc_sha256(src)
 }
 
@@ -65,14 +64,13 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		return
 	}
 	//update account database
-	a, created, err := models.NewAccount(id, 0)
+	a, created, err := models.NewAccount(id, models.ACCTYPE_USER, *user)
 	if err != nil {
-		log.Printf("login database error2: %v", err)
+		log.Printf("login create account database error: %v", err)
 		SendError(from, msgid, proto.Error_Login_DatabaseError)
 		return
 	}
 	if pass := req.Pass; pass != nil {
-	log.Printf("login user/pass:%v:%v", *user, *pass)
 		if !created {
 			rescue := req.Rescue;
 			if rescue == nil || *rescue != a.Rescue {
@@ -82,10 +80,10 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		}
 		//TODO: replace user with id value
 		secret := compute_user_secret(*user, *pass, *walltime)
-		a.User = *user
 		a.Secret = secret
+		log.Printf("login database %v %v", a.User, a.Secret);
 		if _, err := a.Save(); err != nil {
-			log.Printf("login database error: %v", err)
+			log.Printf("login update account database error: %v", err)
 			SendError(from, msgid, proto.Error_Login_DatabaseError)
 			return
 		}
@@ -109,27 +107,28 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	//set device information
 	device_type := req.DeviceType
 	device_id := req.DeviceId
+	idstr := strconv.FormatUint(uint64(a.Id), models.ACCOUNT_ID_BASE)
 	if device_id == nil {
 		//TODO: get unique identifier of browser and use it as device_id.
 		//(especially, if user uses mobile browser, how we identify it as same mobile device)
-		tmp_device_id := "browser:" + string(a.Id)
+		tmp_device_id := "browser:" + idstr
 		tmp_device_type := "browser"
 		device_id = &tmp_device_id
 		device_type = &tmp_device_type
 	}
 	if _, _, err := models.NewDevice(*device_id, *device_type, from.String(), a.Id); err != nil {
-		log.Printf("register device fails %v:%v:%v", *device_id, *device_type, a.Id)
+		log.Printf("register device fails %v:%v:%v:%v", *device_id, *device_type, a.Id, err)
 		//continue
 	}
 
 	//send post notification to all member in this Topic
-	log.Printf("secret:%v", a.Secret)
+	log.Printf("secret:%v, id:%v", a.Secret, idstr)
 	typ := proto.Payload_LoginResponse
 	from.Send(&proto.Payload {
 		Type: &typ,
 		Msgid: &msgid,
 		LoginResponse: &proto.LoginResponse{
-			Id: &a.Id,
+			Id: &idstr,
 			Secret: &a.Secret,
 		},
 	})

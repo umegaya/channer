@@ -7,3 +7,4 @@ errorMessages[ChannerProto.Error.Type.Login_InvalidAuth] = "Login: authentificat
 errorMessages[ChannerProto.Error.Type.Login_UserNotFound] = "Login: user not found";
 errorMessages[ChannerProto.Error.Type.Login_UserAlreadyExists] = "Login: user already exists";
 errorMessages[ChannerProto.Error.Type.Login_OutdatedVersion] = "Login: client version is outdated";
+errorMessages[ChannerProto.Error.Type.Login_DatabaseError] = "Login: database error";

@@ -1,11 +1,14 @@
 package models
 
 import (
+	"log"
+	"fmt"
+	"strconv"
 )
 
 //Account represents one user account
 type Account struct {
-	Id uint64
+	Id UUID
 	User string
 	//0: human, 1: bot
 	Type int
@@ -14,27 +17,42 @@ type Account struct {
 	Rescue string 
 }
 
+const ACCTYPE_USER = 0
+const ACCTYPE_BOT = 1
+
+const ACCOUNT_ID_BASE = 36
+
 func InitAccount() {
-	DBM().AddTableWithName(Account{}, "accounts").SetKeys(true, "Id")
+	ConfigTable(Account{}, "accounts", "Id")
 }
 
-func NewAccount(id *uint64, typ int) (*Account, bool, error) {
+func NewAccount(id *string, typ int, user string) (*Account, bool, error) {
 	dbm := DBM()
-	var tmp uint64 = 0
-	if id != nil {
-		tmp = *id
-	}
-	a := &Account{
-		Id: tmp,
-		Type: typ,
-	}
-	if err := dbm.SelectOne(&a, "select * from accounts where id=$1", a.Id); err != nil {
+	a := &Account{}
+	created := false
+	if id == nil {
+		a.Id = genUUID()
+		a.User = user
+		a.Type = typ
 		//newly created
-		return a, true, nil
+		if err := dbm.Insert(a); err != nil {
+			return nil, false, err
+		}
+		log.Printf("a = %v", a)
+		created = true
+	} else {
+		tmp, err := strconv.ParseUint(*id, ACCOUNT_ID_BASE, 64)
+		if err != nil {
+			return nil, false, fmt.Errorf("invalid account id: %v", *id)
+		}
+		a.Id = UUID(tmp)
 	}
-	return a, false, nil
+	if err := dbm.SelectOne(a, "select * from accounts where id=$1", a.Id); err != nil {
+		return nil, false, err
+	}
+	return a, created, nil
 }
 
-func (a *Account) Save() (int64, error) {
-	return DBM().Update(a)
+func (a Account) Save() (int64, error) {
+	return update_record(a)
 }

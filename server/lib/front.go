@@ -113,7 +113,8 @@ func NewFrontServer(config *Config) *FrontServer {
 	}
 	packet.Init(&a);
 	//initialize models
-	if err := models.Init(config.DBHost, config.DBCertPath); err != nil {
+	log.Printf("ad %v", config.NodeIpv4Address)
+	if err := models.Init(config.DBHost, config.DBCertPath, config.NodeIpv4Address); err != nil {
 		log.Fatal(err)
 	}
 	return &FrontServer {

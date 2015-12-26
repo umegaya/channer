@@ -14,6 +14,7 @@ export declare class Config {
 }
 export declare class UserSettingsValues {
     user: string;
+    account_id: string;
     pass: string;
     device_id: string;
     secret: string;

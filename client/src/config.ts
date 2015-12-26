@@ -30,6 +30,7 @@ export class Config {
 
 export class UserSettingsValues {
 	user: string;
+	account_id: string;
 	pass: string;
 	device_id: string;
 	secret: string;	
@@ -56,6 +57,7 @@ export class UserSettings implements Persistable {
 			var loaded = JSON.parse(blob);
 			this.values.user = loaded.user;
 			this.values.pass = loaded.pass;
+			this.values.account_id = loaded.account_id;
 			this.values.secret = loaded.secret;
 			this.values.device_id = loaded.device_id;
 			this.values.last_url = loaded.last_url;

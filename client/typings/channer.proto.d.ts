@@ -140,9 +140,9 @@ declare module ChannerProto {
 		version: string;
 		getVersion() : string;
 		setVersion(version : string): void;
-		id?: number;
-		getId() : number;
-		setId(id : number): void;
+		id?: string;
+		getId() : string;
+		setId(id : string): void;
 		sign?: string;
 		getSign() : string;
 		setSign(sign : string): void;
@@ -303,9 +303,9 @@ declare module ChannerProto {
 declare module ChannerProto {
 
 	export interface LoginResponse extends ProtoBufModel {
-		id: number;
-		getId() : number;
-		setId(id : number): void;
+		id: string;
+		getId() : string;
+		setId(id : string): void;
 		secret: string;
 		getSecret() : string;
 		setSecret(secret : string): void;

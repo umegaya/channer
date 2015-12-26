@@ -1,11 +1,14 @@
 /// <reference path="../typings/extern.d.ts"/>
 
 import {Handler} from "./proto"
-import {Config, UserSettings} from "./config"
+import {Config, UserSettings, UserSettingsValues} from "./config"
 import {Timer} from "./timer"
 import {m} from "./uikit"
 import {Push, PushReceiver} from "./push"
 import {Storage, StorageIO} from "./storage"
+
+//for debug. remove user setting
+var truncate_settings = false;
 
 window.channer.bootstrap = function (config: any) {	
 	//create system modules
@@ -40,6 +43,9 @@ window.channer.bootstrap = function (config: any) {
 	})
 	.then((u: UserSettings) => {
 		window.channer.settings = u;
+		if (truncate_settings) {
+			window.channer.settings.values = new UserSettingsValues();
+		}
 		return p.start();
 	}, (e: Error) => {
 		console.log("user setting broken. remove all");

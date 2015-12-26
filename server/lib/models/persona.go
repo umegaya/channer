@@ -5,12 +5,12 @@ import (
 
 //Account represents one user account
 type Persona struct {
-	Id uint64
-	Channel uint64
-	Account uint64
+	Id UUID
+	Channel UUID
+	Account UUID
 }
 
 func InitPersona() {
-	DBM().AddTableWithName(Persona{}, "personas").SetKeys(true, "Id")
+	ConfigTable(Persona{}, "personas", "Id")
 }
 

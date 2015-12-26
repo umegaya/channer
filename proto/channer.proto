@@ -32,7 +32,7 @@ message LoginRequest {
 	required uint64 walltime = 1;
 	required string user = 2;
 	required string version = 3;
-	optional uint64 id = 4;
+	optional string id = 4; //actually uint64 integer. but js isnt good at handle this.
 	optional string sign = 5; //walltime + username + password + salt with sha256 
 	optional string pass = 6; //only first time (before this client receive unique salt from server)
 	optional string device_id = 7; //if sent from mobile device, it should be specified
@@ -74,7 +74,7 @@ message PingRequest {
 
 //response
 message LoginResponse {
-	required uint64 id = 1;
+	required string id = 1;  //actually uint64 integer. but js isnt good at handle this.
 	required string secret = 2;
 }
 

@@ -282,7 +282,7 @@ type LoginRequest struct {
 	Walltime         *uint64 `protobuf:"varint,1,req,name=walltime" json:"walltime,omitempty"`
 	User             *string `protobuf:"bytes,2,req,name=user" json:"user,omitempty"`
 	Version          *string `protobuf:"bytes,3,req,name=version" json:"version,omitempty"`
-	Id               *uint64 `protobuf:"varint,4,opt,name=id" json:"id,omitempty"`
+	Id               *string `protobuf:"bytes,4,opt,name=id" json:"id,omitempty"`
 	Sign             *string `protobuf:"bytes,5,opt,name=sign" json:"sign,omitempty"`
 	Pass             *string `protobuf:"bytes,6,opt,name=pass" json:"pass,omitempty"`
 	DeviceId         *string `protobuf:"bytes,7,opt,name=device_id" json:"device_id,omitempty"`
@@ -316,11 +316,11 @@ func (m *LoginRequest) GetVersion() string {
 	return ""
 }
 
-func (m *LoginRequest) GetId() uint64 {
+func (m *LoginRequest) GetId() string {
 	if m != nil && m.Id != nil {
 		return *m.Id
 	}
-	return 0
+	return ""
 }
 
 func (m *LoginRequest) GetSign() string {
@@ -496,7 +496,7 @@ func (m *PingRequest) GetWalltime() uint64 {
 
 // response
 type LoginResponse struct {
-	Id               *uint64 `protobuf:"varint,1,req,name=id" json:"id,omitempty"`
+	Id               *string `protobuf:"bytes,1,req,name=id" json:"id,omitempty"`
 	Secret           *string `protobuf:"bytes,2,req,name=secret" json:"secret,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -505,11 +505,11 @@ func (m *LoginResponse) Reset()         { *m = LoginResponse{} }
 func (m *LoginResponse) String() string { return proto.CompactTextString(m) }
 func (*LoginResponse) ProtoMessage()    {}
 
-func (m *LoginResponse) GetId() uint64 {
+func (m *LoginResponse) GetId() string {
 	if m != nil && m.Id != nil {
 		return *m.Id
 	}
-	return 0
+	return ""
 }
 
 func (m *LoginResponse) GetSecret() string {
@@ -1012,9 +1012,10 @@ func (m *LoginRequest) MarshalTo(data []byte) (int, error) {
 		i += copy(data[i:], *m.Version)
 	}
 	if m.Id != nil {
-		data[i] = 0x20
+		data[i] = 0x22
 		i++
-		i = encodeVarintChanner(data, i, uint64(*m.Id))
+		i = encodeVarintChanner(data, i, uint64(len(*m.Id)))
+		i += copy(data[i:], *m.Id)
 	}
 	if m.Sign != nil {
 		data[i] = 0x2a
@@ -1289,9 +1290,10 @@ func (m *LoginResponse) MarshalTo(data []byte) (int, error) {
 	if m.Id == nil {
 		return 0, new(github_com_golang_protobuf_proto.RequiredNotSetError)
 	} else {
-		data[i] = 0x8
+		data[i] = 0xa
 		i++
-		i = encodeVarintChanner(data, i, uint64(*m.Id))
+		i = encodeVarintChanner(data, i, uint64(len(*m.Id)))
+		i += copy(data[i:], *m.Id)
 	}
 	if m.Secret == nil {
 		return 0, new(github_com_golang_protobuf_proto.RequiredNotSetError)
@@ -1828,7 +1830,8 @@ func (m *LoginRequest) Size() (n int) {
 		n += 1 + l + sovChanner(uint64(l))
 	}
 	if m.Id != nil {
-		n += 1 + sovChanner(uint64(*m.Id))
+		l = len(*m.Id)
+		n += 1 + l + sovChanner(uint64(l))
 	}
 	if m.Sign != nil {
 		l = len(*m.Sign)
@@ -1951,7 +1954,8 @@ func (m *LoginResponse) Size() (n int) {
 	var l int
 	_ = l
 	if m.Id != nil {
-		n += 1 + sovChanner(uint64(*m.Id))
+		l = len(*m.Id)
+		n += 1 + l + sovChanner(uint64(l))
 	}
 	if m.Secret != nil {
 		l = len(*m.Secret)
@@ -2761,10 +2765,10 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			iNdEx = postIndex
 			hasFields[0] |= uint64(0x00000004)
 		case 4:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			var v uint64
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowChanner
@@ -2774,12 +2778,22 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				v |= (uint64(b) & 0x7F) << shift
+				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			m.Id = &v
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.Id = &s
+			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Sign", wireType)
@@ -3612,10 +3626,10 @@ func (m *LoginResponse) Unmarshal(data []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			var v uint64
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowChanner
@@ -3625,12 +3639,22 @@ func (m *LoginResponse) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				v |= (uint64(b) & 0x7F) << shift
+				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			m.Id = &v
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.Id = &s
+			iNdEx = postIndex
 			hasFields[0] |= uint64(0x00000001)
 		case 2:
 			if wireType != 2 {

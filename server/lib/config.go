@@ -3,7 +3,11 @@ package channer
 import (
 	"encoding/json"
 	"os"
+	"time"
+	"log"
 	"flag"
+
+	"./utils"
 )
 
 //Config represents common configuration of channer servers
@@ -16,7 +20,11 @@ type Config struct {
 	AssetsConfigURL     string      `json:"assets_config_url"`
 	DBHost				string      `json:"database_host"`
 	DBCertPath          string      `json:"database_cert"`
-	AssetsConfigPath     string
+	AssetsConfigPath    string
+	NodeIpv4Address     string      `json:"node_ipv4_address"`
+	EpocMillis          uint64      `json:"epoc_millis"`
+	ExternalInterface   string      `json:"external_interface"`
+	EpocNode            bool
 }
 
 //check_and_fill check configuration, if configuration seems not set, 
@@ -27,6 +35,21 @@ func (c *Config) check_and_fill() error {
 	}
 	if c.ListenAddress == "" {
 		c.ListenAddress = "0.0.0.0:8888"
+	}
+	if c.ExternalInterface == "" {
+		c.ExternalInterface = "eth1"
+	}
+	if c.EpocMillis == 0 {
+		c.EpocNode = true
+		c.EpocMillis = uint64(time.Now().UnixNano() / int64(time.Millisecond))
+	}
+	if c.NodeIpv4Address == "" {
+		ip, err := utils.IFIP(c.ExternalInterface, false)
+		if err != nil {
+			return err
+		}
+		c.NodeIpv4Address = ip.String()
+		log.Printf("ad1 %v", c.NodeIpv4Address)
 	}
 	return nil
 }

@@ -5,11 +5,11 @@ import (
 
 //Account represents one user account
 type Topic struct {
-	Id uint64
+	Id UUID
 	Name string
 }
 
 func InitTopic() {
-	DBM().AddTableWithName(Topic{}, "topics").SetKeys(true, "Id")
+	ConfigTable(Topic{}, "topics", "Id")
 }
 

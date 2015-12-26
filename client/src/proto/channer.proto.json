@@ -106,7 +106,7 @@
                 },
                 {
                     "rule": "optional",
-                    "type": "uint64",
+                    "type": "string",
                     "name": "id",
                     "id": 4
                 },
@@ -243,7 +243,7 @@
             "fields": [
                 {
                     "rule": "required",
-                    "type": "uint64",
+                    "type": "string",
                     "name": "id",
                     "id": 1
                 },

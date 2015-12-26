@@ -151,6 +151,7 @@ export class Handler {
 			req.device_id = device_id;
 		}
 		req.version = window.channer.config.client_version;
+		req.id = window.channer.settings.values.account_id || null;
 		req.user = user;
 		req.walltime = Timer.now();
 		if (secret) {

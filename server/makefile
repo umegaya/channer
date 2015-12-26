@@ -14,7 +14,7 @@ db:
 	@docker-machine ip `docker-machine active` > dbhost
 
 stopdb:
-	@docker kill channerdb
+	-@docker kill channerdb
 	@docker rm channerdb
 
 browsedb:

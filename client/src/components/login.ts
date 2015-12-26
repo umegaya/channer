@@ -47,9 +47,10 @@ export class LoginController implements UI.Controller {
 	sendlogin = (user: string, secret: string, pass?: string) => {
 		window.channer.conn.login(user, secret, pass, this.component.rescue)
 		.then((r: ChannerProto.LoginResponse) => {
-			console.log("login success!:" + r.secret);
+			console.log("login success!:" + r.secret + "|" + r.id);
 			this.querying = false;
 			window.channer.settings.values.secret = r.secret;
+			window.channer.settings.values.account_id = r.id;
 			window.channer.settings.values.user = user;
 			if (pass) {
 				window.channer.settings.values.pass = pass;
@@ -107,7 +108,7 @@ export class LoginComponent implements UI.Component {
 	constructor(config: Config, next_url: string) {
 		this.view = LoginView;
 		this.controller = () => {
-			this.next_url = m.route.param("next") || "/org";
+			this.next_url = m.route.param("next") || "/channel";
 			this.rescue = m.route.param("rescue");
 			return new LoginController(this);
 		}
