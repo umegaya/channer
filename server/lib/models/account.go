@@ -53,6 +53,6 @@ func NewAccount(id *string, typ int, user string) (*Account, bool, error) {
 	return a, created, nil
 }
 
-func (a Account) Save(cols []string) (int64, error) {
+func (a *Account) Save(cols []string) (int64, error) {
 	return DBM().StoreColumns(a, cols)
 }
