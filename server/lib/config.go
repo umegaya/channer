@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"time"
-	"log"
 	"flag"
 
 	"./utils"
@@ -49,7 +48,6 @@ func (c *Config) check_and_fill() error {
 			return err
 		}
 		c.NodeIpv4Address = ip.String()
-		log.Printf("ad1 %v", c.NodeIpv4Address)
 	}
 	return nil
 }

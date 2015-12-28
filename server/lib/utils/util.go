@@ -48,5 +48,5 @@ func IFIP(name string, need_ipv6 bool) (net.IP, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("no suitable setting found")
+	return nil, fmt.Errorf("interface %v: no suitable setting found", name)
 }

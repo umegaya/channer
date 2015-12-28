@@ -3,7 +3,7 @@ all: protoc
 	go build -o channer
 
 start: all db
-	curl -O http://0.0.0.0:9999/assets/config.json
+	@curl -s -O http://0.0.0.0:9999/assets/config.json 2>&1 > /dev/null
 	./channer -c settings.json -a config.json --devdb `cat dbhost`
 
 protoc: 

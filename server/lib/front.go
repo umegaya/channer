@@ -7,7 +7,7 @@ import (
 	"time"
 
 	proto "../proto"
-	"./packet"
+	"./packets"
 	"./assets"
 	"./models"
 
@@ -34,7 +34,7 @@ func (c *FrontServerConn) Write(payload *proto.Payload) {
 	c.send <- payload
 }
 
-//Send implements packet.Source interface
+//Send implements packets.Source interface
 func (c *FrontServerConn) Send(payload *proto.Payload) {
 	c.Write(payload)
 }
@@ -44,7 +44,7 @@ func (c *FrontServerConn) addr() net.Addr {
 	return c.ws.RemoteAddr()
 }
 
-//String implements packet.Source interface
+//String implements packets.Source interface
 func (c *FrontServerConn) String() string {
 	return c.addr().String()
 }
@@ -74,7 +74,7 @@ func (c *FrontServerConn) reader(sv *FrontServer) {
         if err := payload.Unmarshal(bytes); err != nil {
         	break
         }
-        sv.receive <- &packet.RecvPacket{ Payload: &payload, From: c }
+        sv.receive <- &packets.RecvPacket{ Payload: &payload, From: c }
     }
     c.ws.Close()
 }
@@ -91,8 +91,8 @@ type FrontServer struct {
 	config 		*Config	
 	join 		chan *FrontServerConn
 	leave   	chan *FrontServerConn
-	receive     chan *packet.RecvPacket
-	send   		chan *packet.SendPacket
+	receive     chan *packets.RecvPacket
+	send   		chan *packets.SendPacket
 	closer      chan interface{}
 	upgrader 	websocket.Upgrader
 	assets   	*assets.Config
@@ -106,27 +106,15 @@ func NewFrontServer(config *Config) *FrontServer {
 			return true
 		}
 	}
-	//initialize packet processor
-	a := assets.Config {}
-	if err := a.Load(config.AssetsConfigPath); err != nil {
-		log.Fatal(err)
-	}
-	packet.Init(&a);
-	//initialize models
-	log.Printf("ad %v", config.NodeIpv4Address)
-	if err := models.Init(config.DBHost, config.DBCertPath, config.NodeIpv4Address); err != nil {
-		log.Fatal(err)
-	}
 	return &FrontServer {
 		cmap : make(map[string]*FrontServerConn),
 		config : config,
 		join : make(chan *FrontServerConn),
 		leave : make(chan *FrontServerConn),
-		receive : make(chan *packet.RecvPacket),
-		send : make(chan *packet.SendPacket),
+		receive : make(chan *packets.RecvPacket),
+		send : make(chan *packets.SendPacket),
 		closer : make(chan interface{}),
 		upgrader : websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024, CheckOrigin: co},
-		assets: &a,
 	}
 }
 
@@ -144,8 +132,25 @@ func (sv *FrontServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     c.reader(sv)
 }
 
+//init initialize related modules 
+func (sv *FrontServer) init() {
+	config := sv.config
+	//initialize packet processor
+	a := assets.Config {}
+	if err := a.Load(config.AssetsConfigPath); err != nil {
+		log.Fatal(err)
+	}
+	packets.Init(&a);
+	//initialize models
+	if err := models.Init(config.DBHost, config.DBCertPath, config.NodeIpv4Address); err != nil {
+		log.Fatal(err)
+	}
+	sv.assets = &a	
+}
+
 //Run sets up websocket handler, starts listen on configured address
 func (sv *FrontServer) Run() {
+	sv.init()
 	http.Handle(sv.config.EndPoint, sv)
 	go sv.processEvents()
     go sv.updateAssetsConfig(sv.config.AssetsConfigURL)
@@ -168,8 +173,8 @@ func (sv *FrontServer) updateAssetsConfig(host string) {
 }
 
 //Send sends spcified pkt to specified destination to
-func (sv *FrontServer) Send(dest packet.Destination, payload *proto.Payload) error {
-	sv.send <- &packet.SendPacket{ To: dest, Payload: payload }
+func (sv *FrontServer) Send(dest packets.Destination, payload *proto.Payload) error {
+	sv.send <- &packets.SendPacket{ To: dest, Payload: payload }
 	return nil
 }
 
@@ -197,7 +202,7 @@ func (sv *FrontServer) processEvents() {
 }
 
 //sendlist makes sendlist from Destination data of packet
-func (sv *FrontServer) sendlist(to packet.Destination) map[string]*FrontServerConn {
+func (sv *FrontServer) sendlist(to packets.Destination) map[string]*FrontServerConn {
 	return sv.cmap
 }
 
