@@ -53,18 +53,14 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	walltime := req.Walltime
 	version := req.Version
 	id := req.Id
-	if user == nil || walltime == nil || version == nil {
-		SendError(from, msgid, proto.Error_Login_UserNotFound)
-		return	
-	}
-	log.Printf("login user:%v", *user)
-	if AssetsConfig().App.ClientVersion != *version {
-		log.Printf("login user:%v client outdated %v:%v", *user, AssetsConfig().App.ClientVersion, *version)
+	log.Printf("login user:%v", user)
+	if AssetsConfig().App.ClientVersion != version {
+		log.Printf("login user:%v client outdated %v:%v", user, AssetsConfig().App.ClientVersion, version)
 		SendError(from, msgid, proto.Error_Login_OutdatedVersion)
 		return
 	}
 	//update account database
-	a, created, err := models.NewAccount(id, models.ACCTYPE_USER, *user)
+	a, created, err := models.NewAccount(id, proto.Model_Account_User, user)
 	if err != nil {
 		log.Printf("login create account database error: %v", err)
 		SendError(from, msgid, proto.Error_Login_DatabaseError)
@@ -79,7 +75,7 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 			}
 		}
 		//TODO: replace user with id value
-		secret := compute_user_secret(*user, *pass, *walltime)
+		secret := compute_user_secret(user, *pass, walltime)
 		a.Secret = secret
 		log.Printf("login database %v %v", a.User, a.Secret);
 		if _, err := a.Save([]string{ "Secret" }); err != nil {
@@ -94,9 +90,9 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		}
 		sign := req.Sign;
 		log.Printf("sign:%v", sign);
-		if sign == nil || *sign != compute_sign(a.User, a.Secret, *walltime) {
+		if sign == nil || *sign != compute_sign(a.User, a.Secret, walltime) {
 			if sign != nil {
-				log.Printf("sign differ %v:%v:%v:%v:%v", *sign, compute_sign(a.User, a.Secret, *walltime), a.User, a.Secret, *walltime)
+				log.Printf("sign differ %v:%v:%v:%v:%v", *sign, compute_sign(a.User, a.Secret, walltime), a.User, a.Secret, walltime)
 			}
 			SendError(from, msgid, proto.Error_Login_InvalidAuth)
 			return
@@ -116,20 +112,19 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		device_id = &tmp_device_id
 		device_type = &tmp_device_type
 	}
-	if _, _, err := models.NewDevice(*device_id, *device_type, from.String(), a.Id); err != nil {
+	if _, _, err := models.NewDevice(*device_id, *device_type, from.String(), models.UUID(a.Id)); err != nil {
 		log.Printf("register device fails %v:%v:%v:%v", *device_id, *device_type, a.Id, err)
 		//continue
 	}
 
 	//send post notification to all member in this Topic
 	log.Printf("secret:%v, id:%v", a.Secret, idstr)
-	typ := proto.Payload_LoginResponse
 	from.Send(&proto.Payload {
-		Type: &typ,
-		Msgid: &msgid,
+		Type: proto.Payload_LoginResponse,
+		Msgid: msgid,
 		LoginResponse: &proto.LoginResponse{
-			Id: &idstr,
-			Secret: &a.Secret,
+			Id: idstr,
+			Secret: a.Secret,
 		},
 	})
 }

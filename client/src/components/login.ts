@@ -5,6 +5,7 @@
 import {m, Template, Util} from "../uikit"
 import {ProtoError} from "../watcher"
 import {Config} from "../config"
+import ChannerProto = Proto2TypeScript.ChannerProto;
 
 export class LoginController implements UI.Controller {
 	component: LoginComponent;
@@ -66,7 +67,7 @@ export class LoginController implements UI.Controller {
 			window.channer.settings.values.pass = null;
 			window.channer.settings.save();
 			if (e.payload.type == ChannerProto.Error.Type.Login_OutdatedVersion) {
-				console.log("reload app for update latest client:" + window.channer.config.client_version);
+				console.log("reload app for updating client:" + window.channer.config.client_version);
 				Util.restart_app();
 			}
 			else {

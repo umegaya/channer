@@ -8,7 +8,8 @@
 /// <reference path="../typings/error.d.ts" />
 import { ProtoWatcher, Model } from "./watcher";
 import { Timer } from "./timer";
-export declare var Builder: ChannerProto.ProtoBufBuilder;
+import ChannerProto = Proto2TypeScript.ChannerProto;
+export declare var Builder: Proto2TypeScript.ChannerProtoBuilder;
 export declare class Handler {
     watcher: ProtoWatcher;
     latency: number;

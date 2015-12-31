@@ -2,6 +2,8 @@ syntax = "proto2";
 
 package ChannerProto;
 
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
 //common payload in message
 message HLC {
 	required uint64 walltime = 1;
@@ -11,7 +13,7 @@ message HLC {
 message Post {
 	message Options {
 		repeated HLC refers = 1;
-		optional bool no_fetch_url = 2;
+		optional bool fetch_url = 2;
 	}
 	required string text = 1;
 	optional HLC ts = 2;
@@ -24,45 +26,121 @@ message Topic {
 	repeated Post recent_posts = 3;
 }
 
+//database model definition
+message Model {	
+	message Account {
+		enum Type {
+			Unknown = 0;
+			User = 1;
+			Bot = 2;
+			Admin = 100;
+		}
+		required uint64 id = 1;
+		required string user = 2;
+		//0: human, 1: bot
+		required Type type = 3;
+		required string secret = 4;
+		//when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
+		required string rescue = 5;
+	}
 
+	message Channel {
+		required uint64 id = 1;
 
+		required string name = 2;
+		required string style = 3;
+	}
+
+	message Device {
+		required string id = 1;
+		required string type = 2;
+		required uint64 account = 3;
+		required string last_from = 4;
+		required int64 last_access = 5;
+	}
+
+	message Node {
+		required uint32 id = 1;
+		required string address = 2;
+		required uint64 seed = 3;
+	}
+
+	message Persona {
+		required uint64 id = 1;
+		required uint64 channel = 2;
+		required uint64 account = 3;
+	}
+
+	message Post {
+		required uint64 id = 1; //encoded hlc (unixtime + topic-unique-logical_ts). should be generated with txn with topics table.
+		required uint64 topic = 2;//parent topic id
+		required uint64 persona = 3;//persona who post it.
+		required uint64 attr = 4;//attr flag (banned or something)
+		required string text = 5;//posted text
+	}
+
+	message Topic {
+		required uint64 id = 1;
+		required string name = 2;
+	}
+
+	message Reaction {
+		enum Type {
+			Unknown = 0;
+			Star = 1;
+			Other = 2;
+			Admin = 3;
+		}
+		required uint64 id = 1; //encoded hlc (unixtime + topic-unique-logical_ts). should be generated with txn with topics table.
+		required uint64 post = 2; //parent post id
+		required Type type = 3;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
+		required uint64 persona = 4;//persona who react it.
+		required string text = 5;//0: empty string, 1: emoji definition. 2: misc data (maybe JSON)
+	}
+
+	message Service {
+		required uint64 id = 1;
+		required uint64 channel = 2;
+		required uint64 account = 3;
+	}
+}
 
 //requests 
 message LoginRequest {
 	required uint64 walltime = 1;
 	required string user = 2;
 	required string version = 3;
-	optional string id = 4; //actually uint64 integer. but js isnt good at handle this.
-	optional string sign = 5; //walltime + username + password + salt with sha256 
-	optional string pass = 6; //only first time (before this client receive unique salt from server)
-	optional string device_id = 7; //if sent from mobile device, it should be specified
-	optional string device_type = 8;
-	optional string rescue = 9; //to recover accout
+	optional string id = 4 [(gogoproto.nullable) = true]; //actually uint64 integer. but js isnt good at handle this.
+	optional string sign = 5 [(gogoproto.nullable) = true]; //walltime + username + password + salt with sha256 
+	optional string pass = 6 [(gogoproto.nullable) = true]; //only first time (before this client receive unique salt from server)
+	optional string device_id = 7 [(gogoproto.nullable) = true]; //if sent from mobile device, it should be specified
+	optional string device_type = 8 [(gogoproto.nullable) = true];
+	optional string rescue = 9 [(gogoproto.nullable) = true]; //to recover accout
 }
 
 message PostRequest {
-	required uint64 topic_id = 2;
-	required uint64 walltime = 3;
-	required Post post = 4;
+	required uint64 topic_id = 1;
+	required uint64 walltime = 2;
+	required Post post = 3;
 }
 
 message FetchRequest {
-	required HLC start_at = 2;
-	optional HLC end_at = 3;
-	optional uint32 count = 4;
+	required HLC start_at = 1;
+	optional HLC end_at = 2;
+	optional uint32 count = 3;
 }
 
 message ReadRequest {
-	required uint64 topic_id = 2;
-	required HLC read_post_ts = 3;
+	required uint64 topic_id = 1;
+	required HLC read_post_ts = 2;
 }
 
 message EnterTopicRequest {
-	required uint64 topic_id = 2;
+	required uint64 topic_id = 1;
 }
 
 message ExitTopicRequest {
-	required uint64 topic_id = 2;
+	required uint64 topic_id = 1;
 }
 
 message PingRequest {
@@ -105,6 +183,7 @@ message PingResponse {
 //response error
 message Error {
 	enum Type {
+		Unknown = 0;
 		Timeout = 1;
 		Login_InvalidAuth = 2;
 		Login_UserNotFound = 3;
@@ -127,6 +206,7 @@ message Error {
 //total payload
 message Payload {
 	enum Type { 
+		Unknown = 0;
 		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7;
 		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37;
 		PostNotify = 61;

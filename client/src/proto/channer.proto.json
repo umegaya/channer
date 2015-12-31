@@ -1,532 +1,873 @@
 {
-    "package": "ChannerProto",
+    "package": null,
     "messages": [
         {
-            "name": "HLC",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "uint64",
-                    "name": "walltime",
-                    "id": 1
-                },
-                {
-                    "rule": "required",
-                    "type": "uint32",
-                    "name": "logical_ts",
-                    "id": 2
-                }
-            ]
+            "name": "gogoproto",
+            "fields": [],
+            "options": {
+                "java_package": "com.google.protobuf",
+                "java_outer_classname": "GoGoProtos"
+            }
         },
         {
-            "name": "Post",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "string",
-                    "name": "text",
-                    "id": 1
-                },
-                {
-                    "rule": "optional",
-                    "type": "HLC",
-                    "name": "ts",
-                    "id": 2
-                },
-                {
-                    "rule": "optional",
-                    "type": "Options",
-                    "name": "options",
-                    "id": 3
-                }
-            ],
+            "name": "ChannerProto",
+            "fields": [],
             "messages": [
                 {
-                    "name": "Options",
+                    "name": "HLC",
                     "fields": [
                         {
-                            "rule": "repeated",
-                            "type": "HLC",
-                            "name": "refers",
+                            "rule": "required",
+                            "type": "uint64",
+                            "name": "walltime",
+                            "id": 1
+                        },
+                        {
+                            "rule": "required",
+                            "type": "uint32",
+                            "name": "logical_ts",
+                            "id": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "Post",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "text",
                             "id": 1
                         },
                         {
                             "rule": "optional",
-                            "type": "bool",
-                            "name": "no_fetch_url",
+                            "type": "HLC",
+                            "name": "ts",
                             "id": 2
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "Options",
+                            "name": "options",
+                            "id": 3
+                        }
+                    ],
+                    "messages": [
+                        {
+                            "name": "Options",
+                            "fields": [
+                                {
+                                    "rule": "repeated",
+                                    "type": "HLC",
+                                    "name": "refers",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "optional",
+                                    "type": "bool",
+                                    "name": "fetch_url",
+                                    "id": 2
+                                }
+                            ]
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "name": "Topic",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "string",
-                    "name": "name",
-                    "id": 1
                 },
                 {
-                    "rule": "required",
-                    "type": "HLC",
-                    "name": "last_read_ts",
-                    "id": 2
-                },
-                {
-                    "rule": "repeated",
-                    "type": "Post",
-                    "name": "recent_posts",
-                    "id": 3
-                }
-            ]
-        },
-        {
-            "name": "LoginRequest",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "uint64",
-                    "name": "walltime",
-                    "id": 1
-                },
-                {
-                    "rule": "required",
-                    "type": "string",
-                    "name": "user",
-                    "id": 2
-                },
-                {
-                    "rule": "required",
-                    "type": "string",
-                    "name": "version",
-                    "id": 3
-                },
-                {
-                    "rule": "optional",
-                    "type": "string",
-                    "name": "id",
-                    "id": 4
-                },
-                {
-                    "rule": "optional",
-                    "type": "string",
-                    "name": "sign",
-                    "id": 5
-                },
-                {
-                    "rule": "optional",
-                    "type": "string",
-                    "name": "pass",
-                    "id": 6
-                },
-                {
-                    "rule": "optional",
-                    "type": "string",
-                    "name": "device_id",
-                    "id": 7
-                },
-                {
-                    "rule": "optional",
-                    "type": "string",
-                    "name": "device_type",
-                    "id": 8
-                },
-                {
-                    "rule": "optional",
-                    "type": "string",
-                    "name": "rescue",
-                    "id": 9
-                }
-            ]
-        },
-        {
-            "name": "PostRequest",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "uint64",
-                    "name": "topic_id",
-                    "id": 2
-                },
-                {
-                    "rule": "required",
-                    "type": "uint64",
-                    "name": "walltime",
-                    "id": 3
-                },
-                {
-                    "rule": "required",
-                    "type": "Post",
-                    "name": "post",
-                    "id": 4
-                }
-            ]
-        },
-        {
-            "name": "FetchRequest",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "HLC",
-                    "name": "start_at",
-                    "id": 2
-                },
-                {
-                    "rule": "optional",
-                    "type": "HLC",
-                    "name": "end_at",
-                    "id": 3
-                },
-                {
-                    "rule": "optional",
-                    "type": "uint32",
-                    "name": "count",
-                    "id": 4
-                }
-            ]
-        },
-        {
-            "name": "ReadRequest",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "uint64",
-                    "name": "topic_id",
-                    "id": 2
-                },
-                {
-                    "rule": "required",
-                    "type": "HLC",
-                    "name": "read_post_ts",
-                    "id": 3
-                }
-            ]
-        },
-        {
-            "name": "EnterTopicRequest",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "uint64",
-                    "name": "topic_id",
-                    "id": 2
-                }
-            ]
-        },
-        {
-            "name": "ExitTopicRequest",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "uint64",
-                    "name": "topic_id",
-                    "id": 2
-                }
-            ]
-        },
-        {
-            "name": "PingRequest",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "uint64",
-                    "name": "walltime",
-                    "id": 1
-                }
-            ]
-        },
-        {
-            "name": "LoginResponse",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "string",
-                    "name": "id",
-                    "id": 1
-                },
-                {
-                    "rule": "required",
-                    "type": "string",
-                    "name": "secret",
-                    "id": 2
-                }
-            ]
-        },
-        {
-            "name": "PostResponse",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "HLC",
-                    "name": "posted_at",
-                    "id": 1
-                }
-            ]
-        },
-        {
-            "name": "FetchResponse",
-            "fields": [
-                {
-                    "rule": "repeated",
-                    "type": "Post",
-                    "name": "posts",
-                    "id": 1
-                }
-            ]
-        },
-        {
-            "name": "ReadResponse",
-            "fields": []
-        },
-        {
-            "name": "EnterTopicResponse",
-            "fields": []
-        },
-        {
-            "name": "ExitTopicResponse",
-            "fields": []
-        },
-        {
-            "name": "PingResponse",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "uint64",
-                    "name": "walltime",
-                    "id": 1
-                }
-            ]
-        },
-        {
-            "name": "Error",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "Type",
-                    "name": "type",
-                    "id": 1
-                },
-                {
-                    "rule": "optional",
-                    "type": "string",
-                    "name": "explanation",
-                    "id": 2
-                }
-            ],
-            "enums": [
-                {
-                    "name": "Type",
-                    "values": [
+                    "name": "Topic",
+                    "fields": [
                         {
-                            "name": "Timeout",
+                            "rule": "required",
+                            "type": "string",
+                            "name": "name",
                             "id": 1
                         },
                         {
-                            "name": "Login_InvalidAuth",
+                            "rule": "required",
+                            "type": "HLC",
+                            "name": "last_read_ts",
                             "id": 2
                         },
                         {
-                            "name": "Login_UserNotFound",
+                            "rule": "repeated",
+                            "type": "Post",
+                            "name": "recent_posts",
                             "id": 3
-                        },
-                        {
-                            "name": "Login_UserAlreadyExists",
-                            "id": 4
-                        },
-                        {
-                            "name": "Login_OutdatedVersion",
-                            "id": 5
-                        },
-                        {
-                            "name": "Login_DatabaseError",
-                            "id": 6
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "name": "Payload",
-            "fields": [
-                {
-                    "rule": "required",
-                    "type": "Type",
-                    "name": "type",
-                    "id": 1
                 },
                 {
-                    "rule": "optional",
-                    "type": "uint32",
-                    "name": "msgid",
-                    "id": 2
-                },
-                {
-                    "rule": "optional",
-                    "type": "LoginRequest",
-                    "name": "login_request",
-                    "id": 3
-                },
-                {
-                    "rule": "optional",
-                    "type": "PostRequest",
-                    "name": "post_request",
-                    "id": 4
-                },
-                {
-                    "rule": "optional",
-                    "type": "FetchRequest",
-                    "name": "fetch_request",
-                    "id": 5
-                },
-                {
-                    "rule": "optional",
-                    "type": "ReadRequest",
-                    "name": "read_request",
-                    "id": 6
-                },
-                {
-                    "rule": "optional",
-                    "type": "EnterTopicRequest",
-                    "name": "enter_topic_request",
-                    "id": 7
-                },
-                {
-                    "rule": "optional",
-                    "type": "ExitTopicRequest",
-                    "name": "exit_topic_request",
-                    "id": 8
-                },
-                {
-                    "rule": "optional",
-                    "type": "PingRequest",
-                    "name": "ping_request",
-                    "id": 9
-                },
-                {
-                    "rule": "optional",
-                    "type": "Error",
-                    "name": "error",
-                    "id": 30
-                },
-                {
-                    "rule": "optional",
-                    "type": "LoginResponse",
-                    "name": "login_response",
-                    "id": 31
-                },
-                {
-                    "rule": "optional",
-                    "type": "PostResponse",
-                    "name": "post_response",
-                    "id": 32
-                },
-                {
-                    "rule": "optional",
-                    "type": "FetchResponse",
-                    "name": "fetch_response",
-                    "id": 33
-                },
-                {
-                    "rule": "optional",
-                    "type": "ReadResponse",
-                    "name": "read_response",
-                    "id": 34
-                },
-                {
-                    "rule": "optional",
-                    "type": "EnterTopicResponse",
-                    "name": "enter_topic_response",
-                    "id": 35
-                },
-                {
-                    "rule": "optional",
-                    "type": "ExitTopicResponse",
-                    "name": "exit_topic_response",
-                    "id": 36
-                },
-                {
-                    "rule": "optional",
-                    "type": "PingResponse",
-                    "name": "ping_response",
-                    "id": 37
-                },
-                {
-                    "rule": "optional",
-                    "type": "Post",
-                    "name": "post_notify",
-                    "id": 61
-                }
-            ],
-            "enums": [
-                {
-                    "name": "Type",
-                    "values": [
+                    "name": "Model",
+                    "fields": [],
+                    "messages": [
                         {
-                            "name": "LoginRequest",
+                            "name": "Account",
+                            "fields": [
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "id",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "user",
+                                    "id": 2
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "Type",
+                                    "name": "type",
+                                    "id": 3
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "secret",
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "rescue",
+                                    "id": 5
+                                }
+                            ],
+                            "enums": [
+                                {
+                                    "name": "Type",
+                                    "values": [
+                                        {
+                                            "name": "Unknown",
+                                            "id": 0
+                                        },
+                                        {
+                                            "name": "User",
+                                            "id": 1
+                                        },
+                                        {
+                                            "name": "Bot",
+                                            "id": 2
+                                        },
+                                        {
+                                            "name": "Admin",
+                                            "id": 100
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Channel",
+                            "fields": [
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "id",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "name",
+                                    "id": 2
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "style",
+                                    "id": 3
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Device",
+                            "fields": [
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "id",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "type",
+                                    "id": 2
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "account",
+                                    "id": 3
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "last_from",
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "int64",
+                                    "name": "last_access",
+                                    "id": 5
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Node",
+                            "fields": [
+                                {
+                                    "rule": "required",
+                                    "type": "uint32",
+                                    "name": "id",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "address",
+                                    "id": 2
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "seed",
+                                    "id": 3
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Persona",
+                            "fields": [
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "id",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "channel",
+                                    "id": 2
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "account",
+                                    "id": 3
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Post",
+                            "fields": [
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "id",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "topic",
+                                    "id": 2
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "persona",
+                                    "id": 3
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "attr",
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "text",
+                                    "id": 5
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Topic",
+                            "fields": [
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "id",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "name",
+                                    "id": 2
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Reaction",
+                            "fields": [
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "id",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "post",
+                                    "id": 2
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "Type",
+                                    "name": "type",
+                                    "id": 3
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "persona",
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "text",
+                                    "id": 5
+                                }
+                            ],
+                            "enums": [
+                                {
+                                    "name": "Type",
+                                    "values": [
+                                        {
+                                            "name": "Unknown",
+                                            "id": 0
+                                        },
+                                        {
+                                            "name": "Star",
+                                            "id": 1
+                                        },
+                                        {
+                                            "name": "Other",
+                                            "id": 2
+                                        },
+                                        {
+                                            "name": "Admin",
+                                            "id": 3
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Service",
+                            "fields": [
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "id",
+                                    "id": 1
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "channel",
+                                    "id": 2
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "account",
+                                    "id": 3
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "LoginRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "uint64",
+                            "name": "walltime",
                             "id": 1
                         },
                         {
-                            "name": "PostRequest",
+                            "rule": "required",
+                            "type": "string",
+                            "name": "user",
                             "id": 2
                         },
                         {
-                            "name": "FetchRequest",
+                            "rule": "required",
+                            "type": "string",
+                            "name": "version",
                             "id": 3
                         },
                         {
-                            "name": "ReadRequest",
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "id",
+                            "id": 4,
+                            "options": {
+                                "(gogoproto.nullable)": true
+                            }
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "sign",
+                            "id": 5,
+                            "options": {
+                                "(gogoproto.nullable)": true
+                            }
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "pass",
+                            "id": 6,
+                            "options": {
+                                "(gogoproto.nullable)": true
+                            }
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "device_id",
+                            "id": 7,
+                            "options": {
+                                "(gogoproto.nullable)": true
+                            }
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "device_type",
+                            "id": 8,
+                            "options": {
+                                "(gogoproto.nullable)": true
+                            }
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "rescue",
+                            "id": 9,
+                            "options": {
+                                "(gogoproto.nullable)": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "PostRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "uint64",
+                            "name": "topic_id",
+                            "id": 1
+                        },
+                        {
+                            "rule": "required",
+                            "type": "uint64",
+                            "name": "walltime",
+                            "id": 2
+                        },
+                        {
+                            "rule": "required",
+                            "type": "Post",
+                            "name": "post",
+                            "id": 3
+                        }
+                    ]
+                },
+                {
+                    "name": "FetchRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "HLC",
+                            "name": "start_at",
+                            "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "HLC",
+                            "name": "end_at",
+                            "id": 2
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "uint32",
+                            "name": "count",
+                            "id": 3
+                        }
+                    ]
+                },
+                {
+                    "name": "ReadRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "uint64",
+                            "name": "topic_id",
+                            "id": 1
+                        },
+                        {
+                            "rule": "required",
+                            "type": "HLC",
+                            "name": "read_post_ts",
+                            "id": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "EnterTopicRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "uint64",
+                            "name": "topic_id",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "ExitTopicRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "uint64",
+                            "name": "topic_id",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "PingRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "uint64",
+                            "name": "walltime",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "LoginResponse",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "id",
+                            "id": 1
+                        },
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "secret",
+                            "id": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "PostResponse",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "HLC",
+                            "name": "posted_at",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "FetchResponse",
+                    "fields": [
+                        {
+                            "rule": "repeated",
+                            "type": "Post",
+                            "name": "posts",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "ReadResponse",
+                    "fields": []
+                },
+                {
+                    "name": "EnterTopicResponse",
+                    "fields": []
+                },
+                {
+                    "name": "ExitTopicResponse",
+                    "fields": []
+                },
+                {
+                    "name": "PingResponse",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "uint64",
+                            "name": "walltime",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "Error",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "Type",
+                            "name": "type",
+                            "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "explanation",
+                            "id": 2
+                        }
+                    ],
+                    "enums": [
+                        {
+                            "name": "Type",
+                            "values": [
+                                {
+                                    "name": "Unknown",
+                                    "id": 0
+                                },
+                                {
+                                    "name": "Timeout",
+                                    "id": 1
+                                },
+                                {
+                                    "name": "Login_InvalidAuth",
+                                    "id": 2
+                                },
+                                {
+                                    "name": "Login_UserNotFound",
+                                    "id": 3
+                                },
+                                {
+                                    "name": "Login_UserAlreadyExists",
+                                    "id": 4
+                                },
+                                {
+                                    "name": "Login_OutdatedVersion",
+                                    "id": 5
+                                },
+                                {
+                                    "name": "Login_DatabaseError",
+                                    "id": 6
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Payload",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "Type",
+                            "name": "type",
+                            "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "uint32",
+                            "name": "msgid",
+                            "id": 2
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "LoginRequest",
+                            "name": "login_request",
+                            "id": 3
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "PostRequest",
+                            "name": "post_request",
                             "id": 4
                         },
                         {
-                            "name": "EnterTopicRequest",
+                            "rule": "optional",
+                            "type": "FetchRequest",
+                            "name": "fetch_request",
                             "id": 5
                         },
                         {
-                            "name": "ExitTopicRequest",
+                            "rule": "optional",
+                            "type": "ReadRequest",
+                            "name": "read_request",
                             "id": 6
                         },
                         {
-                            "name": "PingRequest",
+                            "rule": "optional",
+                            "type": "EnterTopicRequest",
+                            "name": "enter_topic_request",
                             "id": 7
                         },
                         {
-                            "name": "LoginResponse",
+                            "rule": "optional",
+                            "type": "ExitTopicRequest",
+                            "name": "exit_topic_request",
+                            "id": 8
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "PingRequest",
+                            "name": "ping_request",
+                            "id": 9
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "Error",
+                            "name": "error",
+                            "id": 30
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "LoginResponse",
+                            "name": "login_response",
                             "id": 31
                         },
                         {
-                            "name": "PostResponse",
+                            "rule": "optional",
+                            "type": "PostResponse",
+                            "name": "post_response",
                             "id": 32
                         },
                         {
-                            "name": "FetchResponse",
+                            "rule": "optional",
+                            "type": "FetchResponse",
+                            "name": "fetch_response",
                             "id": 33
                         },
                         {
-                            "name": "ReadResponse",
+                            "rule": "optional",
+                            "type": "ReadResponse",
+                            "name": "read_response",
                             "id": 34
                         },
                         {
-                            "name": "EnterTopicResponse",
+                            "rule": "optional",
+                            "type": "EnterTopicResponse",
+                            "name": "enter_topic_response",
                             "id": 35
                         },
                         {
-                            "name": "ExitTopicResponse",
+                            "rule": "optional",
+                            "type": "ExitTopicResponse",
+                            "name": "exit_topic_response",
                             "id": 36
                         },
                         {
-                            "name": "PingResponse",
+                            "rule": "optional",
+                            "type": "PingResponse",
+                            "name": "ping_response",
                             "id": 37
                         },
                         {
-                            "name": "PostNotify",
+                            "rule": "optional",
+                            "type": "Post",
+                            "name": "post_notify",
                             "id": 61
-                        },
+                        }
+                    ],
+                    "enums": [
                         {
-                            "name": "Error",
-                            "id": 101
+                            "name": "Type",
+                            "values": [
+                                {
+                                    "name": "Unknown",
+                                    "id": 0
+                                },
+                                {
+                                    "name": "LoginRequest",
+                                    "id": 1
+                                },
+                                {
+                                    "name": "PostRequest",
+                                    "id": 2
+                                },
+                                {
+                                    "name": "FetchRequest",
+                                    "id": 3
+                                },
+                                {
+                                    "name": "ReadRequest",
+                                    "id": 4
+                                },
+                                {
+                                    "name": "EnterTopicRequest",
+                                    "id": 5
+                                },
+                                {
+                                    "name": "ExitTopicRequest",
+                                    "id": 6
+                                },
+                                {
+                                    "name": "PingRequest",
+                                    "id": 7
+                                },
+                                {
+                                    "name": "LoginResponse",
+                                    "id": 31
+                                },
+                                {
+                                    "name": "PostResponse",
+                                    "id": 32
+                                },
+                                {
+                                    "name": "FetchResponse",
+                                    "id": 33
+                                },
+                                {
+                                    "name": "ReadResponse",
+                                    "id": 34
+                                },
+                                {
+                                    "name": "EnterTopicResponse",
+                                    "id": 35
+                                },
+                                {
+                                    "name": "ExitTopicResponse",
+                                    "id": 36
+                                },
+                                {
+                                    "name": "PingResponse",
+                                    "id": 37
+                                },
+                                {
+                                    "name": "PostNotify",
+                                    "id": 61
+                                },
+                                {
+                                    "name": "Error",
+                                    "id": 101
+                                }
+                            ]
                         }
                     ]
                 }

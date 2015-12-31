@@ -4,13 +4,13 @@ import (
 	"log"
 	"time"
 	"sync"
+
+	proto "../../proto"
 )
 
 //Account represents one user account
 type Node struct {
-	Id uint16
-	Address string
-	Seed uint64
+	proto.Model_Node
 	mutex sync.Mutex `db:"-"`
 }
 
@@ -24,14 +24,20 @@ RETRY:
 	if err != nil {
 		return nil, err
 	}
-	var max_id uint16
+	var max_id uint32
 	if err := tx.SelectOne(&max_id, "select max(id) from nodes"); err != nil {
 		log.Printf("select max(id) fails: %v", err)
 		max_id = 1
 	}
+	if max_id > 0x7FFF {
+		log.Fatalf("node entry reach to limit: %v", max_id)
+	}
 	node := &Node {
-		Id: max_id,
-		Address: address,
+		proto.Model_Node {
+			Id: max_id,
+			Address: address,
+		},
+		sync.Mutex{},
 	}
 	if err := tx.Insert(node); err != nil {
 		tx.Rollback()
@@ -71,4 +77,8 @@ func (n *Node) NewUUID() UUID {
 	id = (id << nodeIDBits) | uint64(n.Id)
 	return UUID(id)
 
+}
+
+func (n Node) Proto() proto.Model_Node {
+	return n.Model_Node
 }

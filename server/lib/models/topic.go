@@ -1,12 +1,12 @@
 package models
 
 import (
+	proto "../../proto"
 )
 
 //Account represents one user account
 type Topic struct {
-	Id UUID
-	Name string
+	proto.Model_Topic
 }
 
 func InitTopic() {

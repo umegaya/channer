@@ -1,13 +1,12 @@
 package models
 
 import (
+	proto "../../proto"
 )
 
 //Account represents one user account
 type Service struct {
-	Id UUID
-	Channel UUID //attached channel
-	Account UUID //bot account id
+	proto.Model_Service
 }
 
 func InitService() {

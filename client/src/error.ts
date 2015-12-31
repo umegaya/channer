@@ -1,4 +1,5 @@
 /// <reference path="../typings/channer.proto.d.ts"/>
+import ChannerProto = Proto2TypeScript.ChannerProto;
 
 export var errorMessages : { [x: number]: string } = []
 

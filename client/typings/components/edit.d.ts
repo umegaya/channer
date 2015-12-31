@@ -2,6 +2,7 @@
 /// <reference path="../../typings/UI.d.ts" />
 /// <reference path="../../typings/proto.d.ts" />
 import { Config } from "../config";
+import ChannerProto = Proto2TypeScript.ChannerProto;
 export interface InputObservableController extends UI.Controller {
     oninput(text: string): Q.Promise<ChannerProto.PostResponse>;
 }

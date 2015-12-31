@@ -1,6 +1,7 @@
 /// <reference path="../typings/UI.d.ts" />
 /// <reference path="../typings/proto.d.ts" />
 import { Config } from "./config";
+import ChannerProto = Proto2TypeScript.ChannerProto;
 export declare class Controller implements UI.Controller {
     input_text: UI.Property<string>;
     messages: Array<ChannerProto.Post>;

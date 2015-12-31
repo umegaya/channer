@@ -1,13 +1,12 @@
 package models
 
 import (
+	proto "../../proto"
 )
 
 //Account represents one user account
 type Persona struct {
-	Id UUID
-	Channel UUID
-	Account UUID
+	proto.Model_Persona
 }
 
 func InitPersona() {

@@ -3,17 +3,13 @@ package models
 import (
 	"log"
 	"time"
+
+	proto "../../proto"
 )
 
 //Account represents one user account
 type Device struct {
-	Id string
-	//each of ios, android, wp8
-	Type string
-	//owner account id indexed.
-	Account UUID
-	LastFrom string
-	LastAccess time.Time
+	proto.Model_Device
 }
 
 func InitDevice() {
@@ -27,9 +23,9 @@ func NewDevice(id, typ, from string, account UUID) (*Device, bool, error) {
 		log.Printf("device select fails: %v %v", err, id)
 		d.Id = id
 		d.Type = typ
-		d.Account = account
+		d.Account = uint64(account)
 		d.LastFrom = from
-		d.LastAccess = time.Now()
+		d.LastAccess = time.Now().UnixNano()
 		//TODO: check err is "not found" or not.
 		if err := dbm.Insert(d); err != nil {
 			return nil, false, err
@@ -38,7 +34,7 @@ func NewDevice(id, typ, from string, account UUID) (*Device, bool, error) {
 		return d, true, nil
 	}
 	d.LastFrom = from
-	d.LastAccess = time.Now()
+	d.LastAccess = time.Now().UnixNano()
 	if _, err := dbm.StoreColumns(d, []string{"LastFrom", "LastAccess"}); err != nil {
 		return d, false, err
 	}

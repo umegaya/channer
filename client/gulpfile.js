@@ -117,9 +117,11 @@ var compiler = function (file, compile_only) {
 
 // generate JSON files for proto files. 
 gulp.task('proto-json', function () {
+    var gopath = process.env.GOPATH
+    var incpath = "-p "+gopath+"/src -p "+gopath+"/src/github.com/gogo/protobuf/protobuf"
     return gulp
         .src(paths.proto + '/**/*.proto', {base: paths.proto})
-        .pipe(exec('pbjs <%= file.path %> --source proto --target json', execOptions))
+        .pipe(exec('pbjs <%= file.path %> --source proto --target json ' + incpath, execOptions))
         .pipe(exec.reporter(execReportOptions))
         .pipe(rename(function (path) {
             path.extname += '.json';

@@ -7,7 +7,7 @@ start: all db
 	./channer -c settings.json -a config.json --devdb `cat dbhost`
 
 protoc: 
-	@protoc --gofast_out=./proto -I ../proto ../proto/*.proto
+	@protoc --gogofaster_out=./proto -I ../proto -I `echo $$GOPATH`/src -I `echo $$GOPATH`/src/github.com/gogo/protobuf/protobuf ../proto/*.proto
 
 db: 
 	@docker inspect channerdb 2>&1 > /dev/null || docker run --name channerdb -d --net=host -p 26257 cockroachdb/cockroach shell -c "./cockroach start --dev --addr 0.0.0.0:26257"

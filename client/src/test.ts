@@ -3,6 +3,7 @@
 
 import {m} from "./uikit"
 import {Config} from "./config"
+import ChannerProto = Proto2TypeScript.ChannerProto;
 
 export class Controller implements UI.Controller {
 	input_text: UI.Property<string>;

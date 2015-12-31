@@ -13,8 +13,10 @@ import {Timer} from "./timer"
 import {Q, m, Util} from "./uikit"
 import {errorMessages} from "./error"
 
+import ChannerProto = Proto2TypeScript.ChannerProto;
+
 var ProtoBuf = window.channer.ProtoBuf;
-export var Builder : ChannerProto.ProtoBufBuilder 
+export var Builder : Proto2TypeScript.ChannerProtoBuilder 
 	= window.channer.ProtoBuf.loadJson(require('channer.proto.json')).build("ChannerProto");
 
 export class Handler {

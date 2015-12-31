@@ -4,21 +4,14 @@ import (
 	"log"
 	"fmt"
 	"strconv"
+
+	proto "../../proto"
 )
 
 //Account represents one user account
 type Account struct {
-	Id UUID
-	User string
-	//0: human, 1: bot
-	Type int
-	Secret string
-	//when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
-	Rescue string 
+	proto.Model_Account
 }
-
-const ACCTYPE_USER = 0
-const ACCTYPE_BOT = 1
 
 const ACCOUNT_ID_BASE = 36
 
@@ -26,12 +19,12 @@ func InitAccount() {
 	create_table(Account{}, "accounts", "Id")
 }
 
-func NewAccount(id *string, typ int, user string) (*Account, bool, error) {
+func NewAccount(id *string, typ proto.Model_Account_Type, user string) (*Account, bool, error) {
 	dbm := DBM()
 	a := &Account{}
 	created := false
 	if id == nil {
-		a.Id = dbm.UUID()
+		a.Id = uint64(dbm.UUID())
 		a.User = user
 		a.Type = typ
 		//newly created
@@ -45,7 +38,7 @@ func NewAccount(id *string, typ int, user string) (*Account, bool, error) {
 		if err != nil {
 			return nil, false, fmt.Errorf("invalid account id: %v", *id)
 		}
-		a.Id = UUID(tmp)
+		a.Id = tmp
 	}
 	if err := dbm.SelectOne(a, "select * from accounts where id=$1", a.Id); err != nil {
 		return nil, false, err
@@ -55,4 +48,8 @@ func NewAccount(id *string, typ int, user string) (*Account, bool, error) {
 
 func (a *Account) Save(cols []string) (int64, error) {
 	return DBM().StoreColumns(a, cols)
+}
+
+func (a Account) Proto() proto.Model_Account {
+	return a.Model_Account
 }
