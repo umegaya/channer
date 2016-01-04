@@ -82,7 +82,9 @@ export class ProtoWatcher {
 		for (var k in this.callers) {
 			var c = this.callers[k]
 			if (c[0] < now) {
-				c[2](new ProtoError(null, "timeout"));
+				c[2](new ProtoError({
+					type: 1, //Timeout TODO: how generalize it?
+				}));
 				delete this.callers[k];
 			}
 		}

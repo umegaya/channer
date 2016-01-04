@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"database/sql"
 
+	proto "../../proto"
+
 	_ "github.com/cockroachdb/cockroach/sql/driver"
 	"github.com/umegaya/gorp"
 )
 
-type UUID uint64
 type Database struct {
 	gorp.DbMap
 	node *Node
@@ -75,7 +76,7 @@ func (dbm *Database) StoreColumns(record interface {}, columns []string) (int64,
 	}, record)
 }
 
-func (dbm *Database) UUID() UUID {
+func (dbm *Database) UUID() proto.UUID {
 	//var uuid UUID
 	//err := DBM().Db.QueryRow("select experimental_unique_int()").Scan(&uuid)
 	//return uuid, err

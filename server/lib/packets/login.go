@@ -52,7 +52,6 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	user := req.User
 	walltime := req.Walltime
 	version := req.Version
-	id := req.Id
 	log.Printf("login user:%v", user)
 	if AssetsConfig().App.ClientVersion != version {
 		log.Printf("login user:%v client outdated %v:%v", user, AssetsConfig().App.ClientVersion, version)
@@ -60,25 +59,31 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		return
 	}
 	//update account database
-	a, created, err := models.NewAccount(id, proto.Model_Account_User, user)
+	a, created, err := models.NewAccount(req.Id, proto.Model_Account_User, user, req.Mail)
 	if err != nil {
 		log.Printf("login create account database error: %v", err)
 		SendError(from, msgid, proto.Error_Login_DatabaseError)
 		return
 	}
 	if pass := req.Pass; pass != nil {
+		hashed_pass := compute_user_secret(a.StringId(), *pass, 0)
 		if !created {
-			rescue := req.Rescue;
-			if rescue == nil || *rescue != a.Rescue {
-				SendError(from, msgid, proto.Error_Login_UserAlreadyExists)
-				return
+			if hashed_pass != a.Pass {
+				rescue := req.Rescue;
+				if rescue == nil || len(a.Rescue) <= 0 || *rescue != a.Rescue {
+					SendError(from, msgid, proto.Error_Login_UserAlreadyExists)
+					return
+				}
+				log.Printf("account %v rescue is enabled %v, force override secret", a.Id, a.Rescue)
 			}
 		}
 		//TODO: replace user with id value
-		secret := compute_user_secret(user, *pass, walltime)
+		secret := compute_user_secret(a.StringId(), *pass, walltime)
 		a.Secret = secret
+		a.Pass = hashed_pass
+		a.Rescue = ""
 		log.Printf("login database %v %v", a.User, a.Secret);
-		if _, err := a.Save([]string{ "Secret" }); err != nil {
+		if _, err := a.Save([]string{ "Secret", "Pass" }); err != nil {
 			log.Printf("login update account database error: %v", err)
 			SendError(from, msgid, proto.Error_Login_DatabaseError)
 			return
@@ -86,13 +91,13 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	} else {
 		if created {
 			SendError(from, msgid, proto.Error_Login_UserNotFound)
-			return			
+			return
 		}
 		sign := req.Sign;
-		log.Printf("sign:%v", sign);
-		if sign == nil || *sign != compute_sign(a.User, a.Secret, walltime) {
+		log.Printf("sign:%v", *sign);
+		if sign == nil || *sign != compute_sign(a.StringId(), a.Secret, walltime) {
 			if sign != nil {
-				log.Printf("sign differ %v:%v:%v:%v:%v", *sign, compute_sign(a.User, a.Secret, walltime), a.User, a.Secret, walltime)
+				log.Printf("invalid sign %v:%v:%v:%v:%v", *sign, compute_sign(a.StringId(), a.Secret, walltime), a.StringId(), a.Secret, walltime)
 			}
 			SendError(from, msgid, proto.Error_Login_InvalidAuth)
 			return
@@ -103,7 +108,7 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	//set device information
 	device_type := req.DeviceType
 	device_id := req.DeviceId
-	idstr := strconv.FormatUint(uint64(a.Id), models.ACCOUNT_ID_BASE)
+	idstr := a.StringId()
 	if device_id == nil {
 		//TODO: get unique identifier of browser and use it as device_id.
 		//(especially, if user uses mobile browser, how we identify it as same mobile device)
@@ -112,7 +117,7 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		device_id = &tmp_device_id
 		device_type = &tmp_device_type
 	}
-	if _, _, err := models.NewDevice(*device_id, *device_type, from.String(), models.UUID(a.Id)); err != nil {
+	if _, _, err := models.NewDevice(*device_id, *device_type, from.String(), a.Id); err != nil {
 		log.Printf("register device fails %v:%v:%v:%v", *device_id, *device_type, a.Id, err)
 		//continue
 	}

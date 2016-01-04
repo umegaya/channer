@@ -106,7 +106,10 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "id",
-                                    "id": 1
+                                    "id": 1,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -129,8 +132,26 @@
                                 {
                                     "rule": "required",
                                     "type": "string",
-                                    "name": "rescue",
+                                    "name": "pass",
                                     "id": 5
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "mail",
+                                    "id": 6
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint32",
+                                    "name": "status",
+                                    "id": 7
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "rescue",
+                                    "id": 8
                                 }
                             ],
                             "enums": [
@@ -148,10 +169,23 @@
                                         {
                                             "name": "Bot",
                                             "id": 2
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Status",
+                                    "values": [
+                                        {
+                                            "name": "None",
+                                            "id": 0
+                                        },
+                                        {
+                                            "name": "Banned",
+                                            "id": 1
                                         },
                                         {
                                             "name": "Admin",
-                                            "id": 100
+                                            "id": 2
                                         }
                                     ]
                                 }
@@ -164,7 +198,10 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "id",
-                                    "id": 1
+                                    "id": 1,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -199,7 +236,10 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "account",
-                                    "id": 3
+                                    "id": 3,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -222,7 +262,10 @@
                                     "rule": "required",
                                     "type": "uint32",
                                     "name": "id",
-                                    "id": 1
+                                    "id": 1,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -245,19 +288,34 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "id",
-                                    "id": 1
+                                    "id": 1,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "channel",
-                                    "id": 2
+                                    "id": 2,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "account",
-                                    "id": 3
+                                    "id": 3,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "name",
+                                    "id": 4
                                 }
                             ]
                         },
@@ -268,19 +326,28 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "id",
-                                    "id": 1
+                                    "id": 1,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "topic",
-                                    "id": 2
+                                    "id": 2,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "persona",
-                                    "id": 3
+                                    "id": 3,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -303,7 +370,10 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "id",
-                                    "id": 1
+                                    "id": 1,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -320,13 +390,19 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "id",
-                                    "id": 1
+                                    "id": 1,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "post",
-                                    "id": 2
+                                    "id": 2,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -338,7 +414,10 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "persona",
-                                    "id": 4
+                                    "id": 4,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -378,19 +457,28 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "id",
-                                    "id": 1
+                                    "id": 1,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "channel",
-                                    "id": 2
+                                    "id": 2,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "account",
-                                    "id": 3
+                                    "id": 3,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 }
                             ]
                         }
@@ -420,16 +508,13 @@
                         {
                             "rule": "optional",
                             "type": "string",
-                            "name": "id",
-                            "id": 4,
-                            "options": {
-                                "(gogoproto.nullable)": true
-                            }
+                            "name": "mail",
+                            "id": 4
                         },
                         {
                             "rule": "optional",
                             "type": "string",
-                            "name": "sign",
+                            "name": "id",
                             "id": 5,
                             "options": {
                                 "(gogoproto.nullable)": true
@@ -438,7 +523,7 @@
                         {
                             "rule": "optional",
                             "type": "string",
-                            "name": "pass",
+                            "name": "sign",
                             "id": 6,
                             "options": {
                                 "(gogoproto.nullable)": true
@@ -447,7 +532,7 @@
                         {
                             "rule": "optional",
                             "type": "string",
-                            "name": "device_id",
+                            "name": "pass",
                             "id": 7,
                             "options": {
                                 "(gogoproto.nullable)": true
@@ -456,7 +541,7 @@
                         {
                             "rule": "optional",
                             "type": "string",
-                            "name": "device_type",
+                            "name": "device_id",
                             "id": 8,
                             "options": {
                                 "(gogoproto.nullable)": true
@@ -465,8 +550,17 @@
                         {
                             "rule": "optional",
                             "type": "string",
-                            "name": "rescue",
+                            "name": "device_type",
                             "id": 9,
+                            "options": {
+                                "(gogoproto.nullable)": true
+                            }
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "rescue",
+                            "id": 10,
                             "options": {
                                 "(gogoproto.nullable)": true
                             }
@@ -678,6 +772,10 @@
                                 {
                                     "name": "Login_DatabaseError",
                                     "id": 6
+                                },
+                                {
+                                    "name": "Login_BrokenClientData",
+                                    "id": 7
                                 }
                             ]
                         }

@@ -2,7 +2,6 @@ package models
 
 import (
 	"log"
-	"fmt"
 	"strconv"
 
 	proto "../../proto"
@@ -19,13 +18,14 @@ func InitAccount() {
 	create_table(Account{}, "accounts", "Id")
 }
 
-func NewAccount(id *string, typ proto.Model_Account_Type, user string) (*Account, bool, error) {
+func NewAccount(id *string, typ proto.Model_Account_Type, user string, mail string) (*Account, bool, error) {
 	dbm := DBM()
 	a := &Account{}
 	created := false
 	if id == nil {
-		a.Id = uint64(dbm.UUID())
+		a.Id = dbm.UUID()
 		a.User = user
+		a.Mail = mail
 		a.Type = typ
 		//newly created
 		if err := dbm.Insert(a); err != nil {
@@ -36,9 +36,9 @@ func NewAccount(id *string, typ proto.Model_Account_Type, user string) (*Account
 	} else {
 		tmp, err := strconv.ParseUint(*id, ACCOUNT_ID_BASE, 64)
 		if err != nil {
-			return nil, false, fmt.Errorf("invalid account id: %v", *id)
+			return nil, false, err
 		}
-		a.Id = tmp
+		a.Id = proto.UUID(tmp)
 	}
 	if err := dbm.SelectOne(a, "select * from accounts where id=$1", a.Id); err != nil {
 		return nil, false, err
@@ -50,6 +50,10 @@ func (a *Account) Save(cols []string) (int64, error) {
 	return DBM().StoreColumns(a, cols)
 }
 
-func (a Account) Proto() proto.Model_Account {
+func (a *Account) Proto() proto.Model_Account {
 	return a.Model_Account
+}
+
+func (a *Account) StringId() string {
+	return strconv.FormatUint(uint64(a.Id), ACCOUNT_ID_BASE)
 }

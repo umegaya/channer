@@ -100,8 +100,8 @@ export class Socket {
 		this.state = SocketState.CONNECTED;
 		for (var i = 0; i < this.pendings.length; i++) {
 			this.send(this.pendings[i]);
-			this.pendings = [];
 		}
+		this.pendings = [];
 		this.next_connection = null;
 		this.error_streak = 0;
 		this.d.onopen();

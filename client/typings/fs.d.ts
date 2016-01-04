@@ -11,5 +11,8 @@ export declare class FS {
     rename: (src: string, to: string, name?: string) => q.Promise<Entry>;
     opendir: (path: string, options?: Flags) => q.Promise<DirectoryEntry>;
     download: (url: string, dest: string) => q.Promise<FileEntry>;
-    load: (js: FileEntry) => q.Promise<FileEntry>;
+    load: (file: FileEntry) => q.Promise<FileEntry>;
+    loadjs: (js: FileEntry) => q.Promise<FileEntry>;
+    loadcss: (css: FileEntry) => q.Promise<FileEntry>;
+    applycss: (name: string, css: string) => q.Promise<boolean>;
 }

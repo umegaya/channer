@@ -45,11 +45,18 @@ export class Handler {
 		}
 		return this.msgid_seed;
 	}
-	private send = (p: ChannerProto.Payload): Q.Promise<Model> => {
+	private send = (p: ChannerProto.Payload, e?: ChannerProto.Error.Type): Q.Promise<Model> => {
+		var df : Q.Deferred<Model> = Q.defer();
+		if (e) {
+			//return error with same manner when error caused by server
+			setTimeout(function () {
+				df.reject(new ProtoError({ type: e }));
+			}, 1)
+			return df.promise;
+		}
 		var msgid : number = this.new_msgid();
 		p.msgid = msgid;
 		this.socket.send(p);
-		var df : Q.Deferred<Model> = Q.defer();
 		this.watcher.subscribe_response(msgid, (model: Model) => {
 			df.resolve(model);
 		}, (e: Error) => {
@@ -144,9 +151,7 @@ export class Handler {
 		p.setPingRequest(req);
 		return this.send(p);
 	}
-	login = (user: string, secret: string, pass?: string, rescue?: string): Q.Promise<Model> => {
-		var p = new Builder.Payload();
-		p.type = ChannerProto.Payload.Type.LoginRequest;
+	login = (user: string, mail: string, secret: string, pass?: string, rescue?: string): Q.Promise<Model> => {
 		var req = new Builder.LoginRequest();
 		var device_id = window.channer.settings.values.device_id;
 		if (device_id && device_id.length > 0) {
@@ -155,9 +160,13 @@ export class Handler {
 		req.version = window.channer.config.client_version;
 		req.id = window.channer.settings.values.account_id || null;
 		req.user = user;
+		req.mail = mail;
 		req.walltime = Timer.now();
 		if (secret) {
-			req.sign = this.signature(user, secret, req.walltime);
+			if (!req.id) {
+				return this.send(null, ChannerProto.Error.Type.Login_BrokenClientData);
+			}
+			req.sign = this.signature(req.id, secret, req.walltime);
 		}
 		else {
 			req.pass = pass;
@@ -165,6 +174,8 @@ export class Handler {
 		if (rescue) {
 			req.rescue = rescue;
 		}
+		var p = new Builder.Payload();
+		p.type = ChannerProto.Payload.Type.LoginRequest;
 		p.setLoginRequest(req);
 		return this.send(p);		
 	}

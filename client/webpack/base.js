@@ -41,9 +41,9 @@ module.exports = function (settings) {
             loaders: [
                 {test: /\.ts$/, loader: 'awesome-typescript-loader?tsconfig=./tsconfig.json'},
                 {test: /\.proto\.json$/, loader: 'raw-loader'},
-                {test: /\.png$/, loader: 'url?mimetype=image/png'},
-                {test: /\.gif$/, loader: 'url?mimetype=image/gif'},
-                {test: /\.jpe?g$/, loader: 'url?mimetype=image/jpeg'},
+                {test: /\.css$/, loader: 'css-loader'},
+                {test: /\.styl$/, loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'},
+                {test: /\.(png|gif|jpe?g)$/, loader: 'file-loader'},
                 {test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url?limit=10000&minetype=application/font-woff'},
                 {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file'}
             ]
@@ -62,9 +62,11 @@ module.exports = function (settings) {
                     var hash_src = "";
                     var ret = { versions: [], appconfig: false };
                     for (var k in data.assetsByChunkName) {
-                        var hash = data.assetsByChunkName[k].match(/.+?\.([^\.]+)\.js$/);
+                        //console.log("k = " + data.assetsByChunkName[k]);
+                        var hash = data.assetsByChunkName[k].match(/.+?\.([^\.]+)\.([^\.]+)$/);
                         if (hash) {
-                            ret.versions.push({name: k, hash: hash[1]});
+                            //console.log("hash = " + hash[1] + "|" + hash[2]);
+                            ret.versions.push({name: k, hash: hash[1], ext: hash[2]});
                             hash_src += hash[1];
                         }
                     }

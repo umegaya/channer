@@ -5,14 +5,16 @@ import { Config } from "../config";
 export declare class LoginController implements UI.Controller {
     component: LoginComponent;
     user: UI.Property<string>;
-    pass: UI.Property<string>;
+    mail: UI.Property<string>;
     retype: UI.Property<string>;
     error_message: string;
     querying: boolean;
     constructor(component: LoginComponent);
     private resetinput;
     onlogin: () => void;
-    sendlogin: (user: string, secret: string, pass?: string) => void;
+    sendlogin: (user: string, mail: string, secret?: string) => void;
+    sanitized_mail_address: () => string;
+    sendlogin_ready: () => boolean;
 }
 export declare class LoginComponent implements UI.Component {
     controller: () => LoginController;

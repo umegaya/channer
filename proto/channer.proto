@@ -33,20 +33,25 @@ message Model {
 			Unknown = 0;
 			User = 1;
 			Bot = 2;
-			Admin = 100;
 		}
-		required uint64 id = 1;
+		enum Status {
+			None = 0;
+			Banned = 1;
+			Admin = 2;
+		}
+		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string user = 2;
-		//0: human, 1: bot
 		required Type type = 3;
 		required string secret = 4;
+		required string pass = 5;
+		required string mail = 6;
 		//when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
-		required string rescue = 5;
+		required uint32 status = 7;
+		required string rescue = 8;
 	}
 
 	message Channel {
-		required uint64 id = 1;
-
+		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string name = 2;
 		required string style = 3;
 	}
@@ -54,33 +59,34 @@ message Model {
 	message Device {
 		required string id = 1;
 		required string type = 2;
-		required uint64 account = 3;
+		required uint64 account = 3 [(gogoproto.casttype) = "UUID"];
 		required string last_from = 4;
 		required int64 last_access = 5;
 	}
 
 	message Node {
-		required uint32 id = 1;
+		required uint32 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string address = 2;
 		required uint64 seed = 3;
 	}
 
 	message Persona {
-		required uint64 id = 1;
-		required uint64 channel = 2;
-		required uint64 account = 3;
+		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required uint64 channel = 2 [(gogoproto.casttype) = "UUID"];
+		required uint64 account = 3 [(gogoproto.casttype) = "UUID"];
+		required string name = 4;
 	}
 
 	message Post {
-		required uint64 id = 1; //encoded hlc (unixtime + topic-unique-logical_ts). should be generated with txn with topics table.
-		required uint64 topic = 2;//parent topic id
-		required uint64 persona = 3;//persona who post it.
+		required uint64 id = 1 [(gogoproto.casttype) = "UUID"]; 
+		required uint64 topic = 2 [(gogoproto.casttype) = "UUID"];//parent topic id
+		required uint64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who post it.
 		required uint64 attr = 4;//attr flag (banned or something)
 		required string text = 5;//posted text
 	}
 
 	message Topic {
-		required uint64 id = 1;
+		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string name = 2;
 	}
 
@@ -91,17 +97,17 @@ message Model {
 			Other = 2;
 			Admin = 3;
 		}
-		required uint64 id = 1; //encoded hlc (unixtime + topic-unique-logical_ts). should be generated with txn with topics table.
-		required uint64 post = 2; //parent post id
+		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required uint64 post = 2 [(gogoproto.casttype) = "UUID"]; //parent post id
 		required Type type = 3;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
-		required uint64 persona = 4;//persona who react it.
+		required uint64 persona = 4 [(gogoproto.casttype) = "UUID"];//persona who react it.
 		required string text = 5;//0: empty string, 1: emoji definition. 2: misc data (maybe JSON)
 	}
 
 	message Service {
-		required uint64 id = 1;
-		required uint64 channel = 2;
-		required uint64 account = 3;
+		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required uint64 channel = 2 [(gogoproto.casttype) = "UUID"];
+		required uint64 account = 3 [(gogoproto.casttype) = "UUID"];
 	}
 }
 
@@ -110,12 +116,13 @@ message LoginRequest {
 	required uint64 walltime = 1;
 	required string user = 2;
 	required string version = 3;
-	optional string id = 4 [(gogoproto.nullable) = true]; //actually uint64 integer. but js isnt good at handle this.
-	optional string sign = 5 [(gogoproto.nullable) = true]; //walltime + username + password + salt with sha256 
-	optional string pass = 6 [(gogoproto.nullable) = true]; //only first time (before this client receive unique salt from server)
-	optional string device_id = 7 [(gogoproto.nullable) = true]; //if sent from mobile device, it should be specified
-	optional string device_type = 8 [(gogoproto.nullable) = true];
-	optional string rescue = 9 [(gogoproto.nullable) = true]; //to recover accout
+	optional string mail = 4;
+	optional string id = 5 [(gogoproto.nullable) = true]; //actually uint64 integer. but js isnt good at handle this.
+	optional string sign = 6 [(gogoproto.nullable) = true]; //walltime + username + password + salt with sha256 
+	optional string pass = 7 [(gogoproto.nullable) = true]; //only first time (before this client receive unique salt from server)
+	optional string device_id = 8 [(gogoproto.nullable) = true]; //if sent from mobile device, it should be specified
+	optional string device_type = 9 [(gogoproto.nullable) = true];
+	optional string rescue = 10 [(gogoproto.nullable) = true]; //to recover accout
 }
 
 message PostRequest {
@@ -190,6 +197,7 @@ message Error {
 		Login_UserAlreadyExists = 4;
 		Login_OutdatedVersion = 5;
 		Login_DatabaseError = 6;
+		Login_BrokenClientData = 7;
 	}
 	required Type type = 1;
 	optional string explanation = 2;

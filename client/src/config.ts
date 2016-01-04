@@ -35,6 +35,26 @@ export class UserSettingsValues {
 	device_id: string;
 	secret: string;	
 	last_url: string;
+	mail: string;
+	private secure_random = (): string => {
+		var array = new Uint8Array(16);
+		window.crypto.getRandomValues(array);
+		var hex = "0123456789abcdef";
+		var str = "";
+		for (var i = 0; i < array.length; i++) {
+			var byte = array[i];
+			var hi = Math.ceil(byte / 16);
+			var lo = Math.ceil(byte % 16);
+			str += (hex.charAt(hi) + hex.charAt(lo));
+		}
+		return str;
+	}
+	init = () => {
+		if (!this.pass) {
+			this.pass = this.secure_random();
+			console.log("password = " + this.pass);
+		}
+	}
 }
 
 export class UserSettings implements Persistable {
@@ -61,6 +81,7 @@ export class UserSettings implements Persistable {
 			this.values.secret = loaded.secret;
 			this.values.device_id = loaded.device_id;
 			this.values.last_url = loaded.last_url;
+			this.values.mail = loaded.mail;
 		}
 	}
 	write = (): string => {

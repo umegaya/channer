@@ -16,14 +16,13 @@ func InitDevice() {
 	create_table(Device{}, "devices", "Id")
 }
 
-func NewDevice(id, typ, from string, account UUID) (*Device, bool, error) {
+func NewDevice(id, typ, from string, account proto.UUID) (*Device, bool, error) {
 	dbm := DBM()
 	d := &Device{}
 	if err := dbm.SelectOne(d, "select * from devices where id=$1", id); err != nil {
-		log.Printf("device select fails: %v %v", err, id)
 		d.Id = id
 		d.Type = typ
-		d.Account = uint64(account)
+		d.Account = account
 		d.LastFrom = from
 		d.LastAccess = time.Now().UnixNano()
 		//TODO: check err is "not found" or not.

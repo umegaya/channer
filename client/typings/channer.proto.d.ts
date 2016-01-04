@@ -203,6 +203,15 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		secret: string;
 		getSecret() : string;
 		setSecret(secret : string): void;
+		pass: string;
+		getPass() : string;
+		setPass(pass : string): void;
+		mail: string;
+		getMail() : string;
+		setMail(mail : string): void;
+		status: number;
+		getStatus() : number;
+		setStatus(status : number): void;
 		rescue: string;
 		getRescue() : string;
 		setRescue(rescue : string): void;
@@ -216,6 +225,7 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		//decode(buffer: ByteArrayBuffer) : Account;
 		decode64(buffer: string) : Account;
 		Type: Account.Type;
+		Status: Account.Status;
 		
 	}	
 }
@@ -225,7 +235,15 @@ declare module Proto2TypeScript.ChannerProto.Model.Account {
 		Unknown = 0,
 		User = 1,
 		Bot = 2,
-		Admin = 100,
+		
+	}
+}
+
+declare module Proto2TypeScript.ChannerProto.Model.Account {
+	export const enum Status {
+		None = 0,
+		Banned = 1,
+		Admin = 2,
 		
 	}
 }
@@ -323,6 +341,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		account: number;
 		getAccount() : number;
 		setAccount(account : number): void;
+		name: string;
+		getName() : string;
+		setName(name : string): void;
 		
 	}
 	
@@ -468,6 +489,9 @@ declare module Proto2TypeScript.ChannerProto {
 		version: string;
 		getVersion() : string;
 		setVersion(version : string): void;
+		mail?: string;
+		getMail() : string;
+		setMail(mail : string): void;
 		id?: string;
 		getId() : string;
 		setId(id : string): void;
@@ -787,6 +811,7 @@ declare module Proto2TypeScript.ChannerProto.Error {
 		Login_UserAlreadyExists = 4,
 		Login_OutdatedVersion = 5,
 		Login_DatabaseError = 6,
+		Login_BrokenClientData = 7,
 		
 	}
 }

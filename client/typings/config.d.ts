@@ -19,6 +19,9 @@ export declare class UserSettingsValues {
     device_id: string;
     secret: string;
     last_url: string;
+    mail: string;
+    private secure_random;
+    init: () => void;
 }
 export declare class UserSettings implements Persistable {
     io: StorageIO;

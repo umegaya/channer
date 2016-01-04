@@ -8,6 +8,7 @@ import {FS} from "./fs";
 class Version {
     name: string;
     hash: string;
+    ext: string;
     updated: boolean;
 }
 class Versions {
@@ -35,9 +36,10 @@ class Patcher {
             for (var i in vs) {
                 var ent = vs[i];
                 var name: string = ent.name;
-                var dest: string = 'assets/' + name + '.js';
+                var ext: string = ent.ext;
+                var dest: string = 'assets/' + name + "." + ext;
                 if (vs[i].updated) {
-                    var src: string = baseUrl + '/assets/' + name + "." + ent.hash + ".js";
+                    var src: string = baseUrl + '/assets/' + name + "." + ent.hash + "." + ent.ext;
                     console.log("download:" + src + " => " + dest);
                     loaders.push(this.fs.download(src, dest));
                 }

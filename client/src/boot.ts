@@ -3,7 +3,7 @@
 import {Handler} from "./proto"
 import {Config, UserSettings, UserSettingsValues} from "./config"
 import {Timer} from "./timer"
-import {m} from "./uikit"
+import {m, Util} from "./uikit"
 import {Push, PushReceiver} from "./push"
 import {Storage, StorageIO} from "./storage"
 
@@ -42,6 +42,7 @@ window.channer.bootstrap = function (config: any) {
 		return setting_io.read(u)
 	})
 	.then((u: UserSettings) => {
+		u.values.init();
 		window.channer.settings = u;
 		if (truncate_settings) {
 			window.channer.settings.values = new UserSettingsValues();
@@ -57,7 +58,11 @@ window.channer.bootstrap = function (config: any) {
 		window.channer.settings.values.device_id = resp.registrationId;
 		return window.channer.settings.save();
 	})
+	
 	.then((u: UserSettings) => {
+		return window.channer.fs.applycss("base", require("./styles/base.styl"));
+	})
+	.then(() => {
 		window.channer.onResume.push(h.resume);
 		window.channer.onPause.push(h.pause);
 		//startup timer and network

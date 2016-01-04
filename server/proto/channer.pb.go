@@ -52,20 +52,17 @@ const (
 	Model_Account_Unknown Model_Account_Type = 0
 	Model_Account_User    Model_Account_Type = 1
 	Model_Account_Bot     Model_Account_Type = 2
-	Model_Account_Admin   Model_Account_Type = 100
 )
 
 var Model_Account_Type_name = map[int32]string{
-	0:   "Unknown",
-	1:   "User",
-	2:   "Bot",
-	100: "Admin",
+	0: "Unknown",
+	1: "User",
+	2: "Bot",
 }
 var Model_Account_Type_value = map[string]int32{
 	"Unknown": 0,
 	"User":    1,
 	"Bot":     2,
-	"Admin":   100,
 }
 
 func (x Model_Account_Type) Enum() *Model_Account_Type {
@@ -82,6 +79,42 @@ func (x *Model_Account_Type) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*x = Model_Account_Type(value)
+	return nil
+}
+
+type Model_Account_Status int32
+
+const (
+	Model_Account_None   Model_Account_Status = 0
+	Model_Account_Banned Model_Account_Status = 1
+	Model_Account_Admin  Model_Account_Status = 2
+)
+
+var Model_Account_Status_name = map[int32]string{
+	0: "None",
+	1: "Banned",
+	2: "Admin",
+}
+var Model_Account_Status_value = map[string]int32{
+	"None":   0,
+	"Banned": 1,
+	"Admin":  2,
+}
+
+func (x Model_Account_Status) Enum() *Model_Account_Status {
+	p := new(Model_Account_Status)
+	*p = x
+	return p
+}
+func (x Model_Account_Status) String() string {
+	return proto.EnumName(Model_Account_Status_name, int32(x))
+}
+func (x *Model_Account_Status) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(Model_Account_Status_value, data, "Model_Account_Status")
+	if err != nil {
+		return err
+	}
+	*x = Model_Account_Status(value)
 	return nil
 }
 
@@ -368,20 +401,22 @@ func (m *Model) String() string { return proto.CompactTextString(m) }
 func (*Model) ProtoMessage()    {}
 
 type Model_Account struct {
-	Id   uint64 `protobuf:"varint,1,req,name=id" json:"id"`
-	User string `protobuf:"bytes,2,req,name=user" json:"user"`
-	// 0: human, 1: bot
+	Id     UUID               `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
+	User   string             `protobuf:"bytes,2,req,name=user" json:"user"`
 	Type   Model_Account_Type `protobuf:"varint,3,req,name=type,enum=ChannerProto.Model_Account_Type" json:"type"`
 	Secret string             `protobuf:"bytes,4,req,name=secret" json:"secret"`
+	Pass   string             `protobuf:"bytes,5,req,name=pass" json:"pass"`
+	Mail   string             `protobuf:"bytes,6,req,name=mail" json:"mail"`
 	// when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
-	Rescue string `protobuf:"bytes,5,req,name=rescue" json:"rescue"`
+	Status uint32 `protobuf:"varint,7,req,name=status" json:"status"`
+	Rescue string `protobuf:"bytes,8,req,name=rescue" json:"rescue"`
 }
 
 func (m *Model_Account) Reset()         { *m = Model_Account{} }
 func (m *Model_Account) String() string { return proto.CompactTextString(m) }
 func (*Model_Account) ProtoMessage()    {}
 
-func (m *Model_Account) GetId() uint64 {
+func (m *Model_Account) GetId() UUID {
 	if m != nil {
 		return m.Id
 	}
@@ -409,6 +444,27 @@ func (m *Model_Account) GetSecret() string {
 	return ""
 }
 
+func (m *Model_Account) GetPass() string {
+	if m != nil {
+		return m.Pass
+	}
+	return ""
+}
+
+func (m *Model_Account) GetMail() string {
+	if m != nil {
+		return m.Mail
+	}
+	return ""
+}
+
+func (m *Model_Account) GetStatus() uint32 {
+	if m != nil {
+		return m.Status
+	}
+	return 0
+}
+
 func (m *Model_Account) GetRescue() string {
 	if m != nil {
 		return m.Rescue
@@ -417,7 +473,7 @@ func (m *Model_Account) GetRescue() string {
 }
 
 type Model_Channel struct {
-	Id    uint64 `protobuf:"varint,1,req,name=id" json:"id"`
+	Id    UUID   `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
 	Name  string `protobuf:"bytes,2,req,name=name" json:"name"`
 	Style string `protobuf:"bytes,3,req,name=style" json:"style"`
 }
@@ -426,7 +482,7 @@ func (m *Model_Channel) Reset()         { *m = Model_Channel{} }
 func (m *Model_Channel) String() string { return proto.CompactTextString(m) }
 func (*Model_Channel) ProtoMessage()    {}
 
-func (m *Model_Channel) GetId() uint64 {
+func (m *Model_Channel) GetId() UUID {
 	if m != nil {
 		return m.Id
 	}
@@ -450,7 +506,7 @@ func (m *Model_Channel) GetStyle() string {
 type Model_Device struct {
 	Id         string `protobuf:"bytes,1,req,name=id" json:"id"`
 	Type       string `protobuf:"bytes,2,req,name=type" json:"type"`
-	Account    uint64 `protobuf:"varint,3,req,name=account" json:"account"`
+	Account    UUID   `protobuf:"varint,3,req,name=account,casttype=UUID" json:"account"`
 	LastFrom   string `protobuf:"bytes,4,req,name=last_from" json:"last_from"`
 	LastAccess int64  `protobuf:"varint,5,req,name=last_access" json:"last_access"`
 }
@@ -473,7 +529,7 @@ func (m *Model_Device) GetType() string {
 	return ""
 }
 
-func (m *Model_Device) GetAccount() uint64 {
+func (m *Model_Device) GetAccount() UUID {
 	if m != nil {
 		return m.Account
 	}
@@ -495,7 +551,7 @@ func (m *Model_Device) GetLastAccess() int64 {
 }
 
 type Model_Node struct {
-	Id      uint32 `protobuf:"varint,1,req,name=id" json:"id"`
+	Id      UUID   `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
 	Address string `protobuf:"bytes,2,req,name=address" json:"address"`
 	Seed    uint64 `protobuf:"varint,3,req,name=seed" json:"seed"`
 }
@@ -504,7 +560,7 @@ func (m *Model_Node) Reset()         { *m = Model_Node{} }
 func (m *Model_Node) String() string { return proto.CompactTextString(m) }
 func (*Model_Node) ProtoMessage()    {}
 
-func (m *Model_Node) GetId() uint32 {
+func (m *Model_Node) GetId() UUID {
 	if m != nil {
 		return m.Id
 	}
@@ -526,40 +582,48 @@ func (m *Model_Node) GetSeed() uint64 {
 }
 
 type Model_Persona struct {
-	Id      uint64 `protobuf:"varint,1,req,name=id" json:"id"`
-	Channel uint64 `protobuf:"varint,2,req,name=channel" json:"channel"`
-	Account uint64 `protobuf:"varint,3,req,name=account" json:"account"`
+	Id      UUID   `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
+	Channel UUID   `protobuf:"varint,2,req,name=channel,casttype=UUID" json:"channel"`
+	Account UUID   `protobuf:"varint,3,req,name=account,casttype=UUID" json:"account"`
+	Name    string `protobuf:"bytes,4,req,name=name" json:"name"`
 }
 
 func (m *Model_Persona) Reset()         { *m = Model_Persona{} }
 func (m *Model_Persona) String() string { return proto.CompactTextString(m) }
 func (*Model_Persona) ProtoMessage()    {}
 
-func (m *Model_Persona) GetId() uint64 {
+func (m *Model_Persona) GetId() UUID {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *Model_Persona) GetChannel() uint64 {
+func (m *Model_Persona) GetChannel() UUID {
 	if m != nil {
 		return m.Channel
 	}
 	return 0
 }
 
-func (m *Model_Persona) GetAccount() uint64 {
+func (m *Model_Persona) GetAccount() UUID {
 	if m != nil {
 		return m.Account
 	}
 	return 0
 }
 
+func (m *Model_Persona) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
 type Model_Post struct {
-	Id      uint64 `protobuf:"varint,1,req,name=id" json:"id"`
-	Topic   uint64 `protobuf:"varint,2,req,name=topic" json:"topic"`
-	Persona uint64 `protobuf:"varint,3,req,name=persona" json:"persona"`
+	Id      UUID   `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
+	Topic   UUID   `protobuf:"varint,2,req,name=topic,casttype=UUID" json:"topic"`
+	Persona UUID   `protobuf:"varint,3,req,name=persona,casttype=UUID" json:"persona"`
 	Attr    uint64 `protobuf:"varint,4,req,name=attr" json:"attr"`
 	Text    string `protobuf:"bytes,5,req,name=text" json:"text"`
 }
@@ -568,21 +632,21 @@ func (m *Model_Post) Reset()         { *m = Model_Post{} }
 func (m *Model_Post) String() string { return proto.CompactTextString(m) }
 func (*Model_Post) ProtoMessage()    {}
 
-func (m *Model_Post) GetId() uint64 {
+func (m *Model_Post) GetId() UUID {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *Model_Post) GetTopic() uint64 {
+func (m *Model_Post) GetTopic() UUID {
 	if m != nil {
 		return m.Topic
 	}
 	return 0
 }
 
-func (m *Model_Post) GetPersona() uint64 {
+func (m *Model_Post) GetPersona() UUID {
 	if m != nil {
 		return m.Persona
 	}
@@ -604,7 +668,7 @@ func (m *Model_Post) GetText() string {
 }
 
 type Model_Topic struct {
-	Id   uint64 `protobuf:"varint,1,req,name=id" json:"id"`
+	Id   UUID   `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
 	Name string `protobuf:"bytes,2,req,name=name" json:"name"`
 }
 
@@ -612,7 +676,7 @@ func (m *Model_Topic) Reset()         { *m = Model_Topic{} }
 func (m *Model_Topic) String() string { return proto.CompactTextString(m) }
 func (*Model_Topic) ProtoMessage()    {}
 
-func (m *Model_Topic) GetId() uint64 {
+func (m *Model_Topic) GetId() UUID {
 	if m != nil {
 		return m.Id
 	}
@@ -627,10 +691,10 @@ func (m *Model_Topic) GetName() string {
 }
 
 type Model_Reaction struct {
-	Id      uint64              `protobuf:"varint,1,req,name=id" json:"id"`
-	Post    uint64              `protobuf:"varint,2,req,name=post" json:"post"`
+	Id      UUID                `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
+	Post    UUID                `protobuf:"varint,2,req,name=post,casttype=UUID" json:"post"`
 	Type    Model_Reaction_Type `protobuf:"varint,3,req,name=type,enum=ChannerProto.Model_Reaction_Type" json:"type"`
-	Persona uint64              `protobuf:"varint,4,req,name=persona" json:"persona"`
+	Persona UUID                `protobuf:"varint,4,req,name=persona,casttype=UUID" json:"persona"`
 	Text    string              `protobuf:"bytes,5,req,name=text" json:"text"`
 }
 
@@ -638,14 +702,14 @@ func (m *Model_Reaction) Reset()         { *m = Model_Reaction{} }
 func (m *Model_Reaction) String() string { return proto.CompactTextString(m) }
 func (*Model_Reaction) ProtoMessage()    {}
 
-func (m *Model_Reaction) GetId() uint64 {
+func (m *Model_Reaction) GetId() UUID {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *Model_Reaction) GetPost() uint64 {
+func (m *Model_Reaction) GetPost() UUID {
 	if m != nil {
 		return m.Post
 	}
@@ -659,7 +723,7 @@ func (m *Model_Reaction) GetType() Model_Reaction_Type {
 	return Model_Reaction_Unknown
 }
 
-func (m *Model_Reaction) GetPersona() uint64 {
+func (m *Model_Reaction) GetPersona() UUID {
 	if m != nil {
 		return m.Persona
 	}
@@ -674,30 +738,30 @@ func (m *Model_Reaction) GetText() string {
 }
 
 type Model_Service struct {
-	Id      uint64 `protobuf:"varint,1,req,name=id" json:"id"`
-	Channel uint64 `protobuf:"varint,2,req,name=channel" json:"channel"`
-	Account uint64 `protobuf:"varint,3,req,name=account" json:"account"`
+	Id      UUID `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
+	Channel UUID `protobuf:"varint,2,req,name=channel,casttype=UUID" json:"channel"`
+	Account UUID `protobuf:"varint,3,req,name=account,casttype=UUID" json:"account"`
 }
 
 func (m *Model_Service) Reset()         { *m = Model_Service{} }
 func (m *Model_Service) String() string { return proto.CompactTextString(m) }
 func (*Model_Service) ProtoMessage()    {}
 
-func (m *Model_Service) GetId() uint64 {
+func (m *Model_Service) GetId() UUID {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *Model_Service) GetChannel() uint64 {
+func (m *Model_Service) GetChannel() UUID {
 	if m != nil {
 		return m.Channel
 	}
 	return 0
 }
 
-func (m *Model_Service) GetAccount() uint64 {
+func (m *Model_Service) GetAccount() UUID {
 	if m != nil {
 		return m.Account
 	}
@@ -709,12 +773,13 @@ type LoginRequest struct {
 	Walltime   uint64  `protobuf:"varint,1,req,name=walltime" json:"walltime"`
 	User       string  `protobuf:"bytes,2,req,name=user" json:"user"`
 	Version    string  `protobuf:"bytes,3,req,name=version" json:"version"`
-	Id         *string `protobuf:"bytes,4,opt,name=id" json:"id,omitempty"`
-	Sign       *string `protobuf:"bytes,5,opt,name=sign" json:"sign,omitempty"`
-	Pass       *string `protobuf:"bytes,6,opt,name=pass" json:"pass,omitempty"`
-	DeviceId   *string `protobuf:"bytes,7,opt,name=device_id" json:"device_id,omitempty"`
-	DeviceType *string `protobuf:"bytes,8,opt,name=device_type" json:"device_type,omitempty"`
-	Rescue     *string `protobuf:"bytes,9,opt,name=rescue" json:"rescue,omitempty"`
+	Mail       string  `protobuf:"bytes,4,opt,name=mail" json:"mail"`
+	Id         *string `protobuf:"bytes,5,opt,name=id" json:"id,omitempty"`
+	Sign       *string `protobuf:"bytes,6,opt,name=sign" json:"sign,omitempty"`
+	Pass       *string `protobuf:"bytes,7,opt,name=pass" json:"pass,omitempty"`
+	DeviceId   *string `protobuf:"bytes,8,opt,name=device_id" json:"device_id,omitempty"`
+	DeviceType *string `protobuf:"bytes,9,opt,name=device_type" json:"device_type,omitempty"`
+	Rescue     *string `protobuf:"bytes,10,opt,name=rescue" json:"rescue,omitempty"`
 }
 
 func (m *LoginRequest) Reset()         { *m = LoginRequest{} }
@@ -738,6 +803,13 @@ func (m *LoginRequest) GetUser() string {
 func (m *LoginRequest) GetVersion() string {
 	if m != nil {
 		return m.Version
+	}
+	return ""
+}
+
+func (m *LoginRequest) GetMail() string {
+	if m != nil {
+		return m.Mail
 	}
 	return ""
 }
@@ -1212,6 +1284,7 @@ func init() {
 	proto.RegisterType((*Error)(nil), "ChannerProto.Error")
 	proto.RegisterType((*Payload)(nil), "ChannerProto.Payload")
 	proto.RegisterEnum("ChannerProto.Model_Account_Type", Model_Account_Type_name, Model_Account_Type_value)
+	proto.RegisterEnum("ChannerProto.Model_Account_Status", Model_Account_Status_name, Model_Account_Status_value)
 	proto.RegisterEnum("ChannerProto.Model_Reaction_Type", Model_Reaction_Type_name, Model_Reaction_Type_value)
 	proto.RegisterEnum("ChannerProto.Error_Type", Error_Type_name, Error_Type_value)
 	proto.RegisterEnum("ChannerProto.Payload_Type", Payload_Type_name, Payload_Type_value)
@@ -1415,6 +1488,17 @@ func (m *Model_Account) MarshalTo(data []byte) (int, error) {
 	i += copy(data[i:], m.Secret)
 	data[i] = 0x2a
 	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Pass)))
+	i += copy(data[i:], m.Pass)
+	data[i] = 0x32
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Mail)))
+	i += copy(data[i:], m.Mail)
+	data[i] = 0x38
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Status))
+	data[i] = 0x42
+	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Rescue)))
 	i += copy(data[i:], m.Rescue)
 	return i, nil
@@ -1537,6 +1621,10 @@ func (m *Model_Persona) MarshalTo(data []byte) (int, error) {
 	data[i] = 0x18
 	i++
 	i = encodeVarintChanner(data, i, uint64(m.Account))
+	data[i] = 0x22
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Name)))
+	i += copy(data[i:], m.Name)
 	return i, nil
 }
 
@@ -1686,38 +1774,42 @@ func (m *LoginRequest) MarshalTo(data []byte) (int, error) {
 	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Version)))
 	i += copy(data[i:], m.Version)
+	data[i] = 0x22
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Mail)))
+	i += copy(data[i:], m.Mail)
 	if m.Id != nil {
-		data[i] = 0x22
+		data[i] = 0x2a
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(*m.Id)))
 		i += copy(data[i:], *m.Id)
 	}
 	if m.Sign != nil {
-		data[i] = 0x2a
+		data[i] = 0x32
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(*m.Sign)))
 		i += copy(data[i:], *m.Sign)
 	}
 	if m.Pass != nil {
-		data[i] = 0x32
+		data[i] = 0x3a
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(*m.Pass)))
 		i += copy(data[i:], *m.Pass)
 	}
 	if m.DeviceId != nil {
-		data[i] = 0x3a
+		data[i] = 0x42
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(*m.DeviceId)))
 		i += copy(data[i:], *m.DeviceId)
 	}
 	if m.DeviceType != nil {
-		data[i] = 0x42
+		data[i] = 0x4a
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(*m.DeviceType)))
 		i += copy(data[i:], *m.DeviceType)
 	}
 	if m.Rescue != nil {
-		data[i] = 0x4a
+		data[i] = 0x52
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(*m.Rescue)))
 		i += copy(data[i:], *m.Rescue)
@@ -2385,6 +2477,11 @@ func (m *Model_Account) Size() (n int) {
 	n += 1 + sovChanner(uint64(m.Type))
 	l = len(m.Secret)
 	n += 1 + l + sovChanner(uint64(l))
+	l = len(m.Pass)
+	n += 1 + l + sovChanner(uint64(l))
+	l = len(m.Mail)
+	n += 1 + l + sovChanner(uint64(l))
+	n += 1 + sovChanner(uint64(m.Status))
 	l = len(m.Rescue)
 	n += 1 + l + sovChanner(uint64(l))
 	return n
@@ -2431,6 +2528,8 @@ func (m *Model_Persona) Size() (n int) {
 	n += 1 + sovChanner(uint64(m.Id))
 	n += 1 + sovChanner(uint64(m.Channel))
 	n += 1 + sovChanner(uint64(m.Account))
+	l = len(m.Name)
+	n += 1 + l + sovChanner(uint64(l))
 	return n
 }
 
@@ -2483,6 +2582,8 @@ func (m *LoginRequest) Size() (n int) {
 	l = len(m.User)
 	n += 1 + l + sovChanner(uint64(l))
 	l = len(m.Version)
+	n += 1 + l + sovChanner(uint64(l))
+	l = len(m.Mail)
 	n += 1 + l + sovChanner(uint64(l))
 	if m.Id != nil {
 		l = len(*m.Id)
@@ -3315,7 +3416,7 @@ func (m *Model_Account) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Id |= (uint64(b) & 0x7F) << shift
+				m.Id |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3403,6 +3504,86 @@ func (m *Model_Account) Unmarshal(data []byte) error {
 			hasFields[0] |= uint64(0x00000008)
 		case 5:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pass", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Pass = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000010)
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Mail", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Mail = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000020)
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			m.Status = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Status |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000040)
+		case 8:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Rescue", wireType)
 			}
 			var stringLen uint64
@@ -3430,7 +3611,7 @@ func (m *Model_Account) Unmarshal(data []byte) error {
 			}
 			m.Rescue = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-			hasFields[0] |= uint64(0x00000010)
+			hasFields[0] |= uint64(0x00000080)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -3459,6 +3640,15 @@ func (m *Model_Account) Unmarshal(data []byte) error {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("secret")
 	}
 	if hasFields[0]&uint64(0x00000010) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("pass")
+	}
+	if hasFields[0]&uint64(0x00000020) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("mail")
+	}
+	if hasFields[0]&uint64(0x00000040) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("status")
+	}
+	if hasFields[0]&uint64(0x00000080) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("rescue")
 	}
 
@@ -3511,7 +3701,7 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Id |= (uint64(b) & 0x7F) << shift
+				m.Id |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3711,7 +3901,7 @@ func (m *Model_Device) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Account |= (uint64(b) & 0x7F) << shift
+				m.Account |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3847,7 +4037,7 @@ func (m *Model_Node) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Id |= (uint32(b) & 0x7F) << shift
+				m.Id |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3977,7 +4167,7 @@ func (m *Model_Persona) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Id |= (uint64(b) & 0x7F) << shift
+				m.Id |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3997,7 +4187,7 @@ func (m *Model_Persona) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Channel |= (uint64(b) & 0x7F) << shift
+				m.Channel |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4017,12 +4207,42 @@ func (m *Model_Persona) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Account |= (uint64(b) & 0x7F) << shift
+				m.Account |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 			hasFields[0] |= uint64(0x00000004)
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000008)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -4046,6 +4266,9 @@ func (m *Model_Persona) Unmarshal(data []byte) error {
 	}
 	if hasFields[0]&uint64(0x00000004) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("account")
+	}
+	if hasFields[0]&uint64(0x00000008) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("name")
 	}
 
 	if iNdEx > l {
@@ -4097,7 +4320,7 @@ func (m *Model_Post) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Id |= (uint64(b) & 0x7F) << shift
+				m.Id |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4117,7 +4340,7 @@ func (m *Model_Post) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Topic |= (uint64(b) & 0x7F) << shift
+				m.Topic |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4137,7 +4360,7 @@ func (m *Model_Post) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Persona |= (uint64(b) & 0x7F) << shift
+				m.Persona |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4273,7 +4496,7 @@ func (m *Model_Topic) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Id |= (uint64(b) & 0x7F) << shift
+				m.Id |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4380,7 +4603,7 @@ func (m *Model_Reaction) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Id |= (uint64(b) & 0x7F) << shift
+				m.Id |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4400,7 +4623,7 @@ func (m *Model_Reaction) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Post |= (uint64(b) & 0x7F) << shift
+				m.Post |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4440,7 +4663,7 @@ func (m *Model_Reaction) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Persona |= (uint64(b) & 0x7F) << shift
+				m.Persona |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4556,7 +4779,7 @@ func (m *Model_Service) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Id |= (uint64(b) & 0x7F) << shift
+				m.Id |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4576,7 +4799,7 @@ func (m *Model_Service) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Channel |= (uint64(b) & 0x7F) << shift
+				m.Channel |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4596,7 +4819,7 @@ func (m *Model_Service) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Account |= (uint64(b) & 0x7F) << shift
+				m.Account |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4744,6 +4967,35 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			hasFields[0] |= uint64(0x00000004)
 		case 4:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Mail", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Mail = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
 			var stringLen uint64
@@ -4772,7 +5024,7 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			s := string(data[iNdEx:postIndex])
 			m.Id = &s
 			iNdEx = postIndex
-		case 5:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Sign", wireType)
 			}
@@ -4802,7 +5054,7 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			s := string(data[iNdEx:postIndex])
 			m.Sign = &s
 			iNdEx = postIndex
-		case 6:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Pass", wireType)
 			}
@@ -4832,7 +5084,7 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			s := string(data[iNdEx:postIndex])
 			m.Pass = &s
 			iNdEx = postIndex
-		case 7:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DeviceId", wireType)
 			}
@@ -4862,7 +5114,7 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			s := string(data[iNdEx:postIndex])
 			m.DeviceId = &s
 			iNdEx = postIndex
-		case 8:
+		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DeviceType", wireType)
 			}
@@ -4892,7 +5144,7 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 			s := string(data[iNdEx:postIndex])
 			m.DeviceType = &s
 			iNdEx = postIndex
-		case 9:
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Rescue", wireType)
 			}

@@ -84,7 +84,22 @@ export class FS {
         });
         return df.promise;
     }
-    load = (js: FileEntry): Q.Promise<FileEntry> => {
+    load = (file: FileEntry): Q.Promise<FileEntry> => {
+        var ext = file.toURL().match(/\.([^\.]+$)/);
+        if (!ext || !ext[1]) {
+            console.log("invalid file name:" + file.toURL());
+        }
+        else if (ext[1] == "js") {
+            return this.loadjs(file);
+        }
+        else if (ext[1] == "css") {
+            return this.loadcss(file);
+        }
+        else {
+            console.log("unsupported file type:" + file.toURL());
+        }
+    }
+    loadjs = (js: FileEntry): Q.Promise<FileEntry> => {
         console.log("loadjs:" + js.toURL());
         var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
         var scriptTag = document.createElement('script');
@@ -96,4 +111,43 @@ export class FS {
         document.head.appendChild(scriptTag);
         return df.promise;
     }
+    loadcss = (css: FileEntry): Q.Promise<FileEntry> => {
+        console.log("loadcss:" + css.toURL());
+        var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
+        var cssTag = document.createElement("link");
+        cssTag.onload = function (event: any) {
+            df.resolve(css);
+        }
+        cssTag.rel = "stylesheet";
+        cssTag.type = "text/css";
+        cssTag.href = css.toURL();
+        var elements = document.head.getElementsByTagName("link");
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].href == css.toURL()) {
+                document.head.replaceChild(cssTag, elements[i]);
+                return df.promise;
+            }
+        }
+        document.head.appendChild(cssTag);
+        return df.promise;
+    }
+    applycss = (name: string, css: string): Q.Promise<boolean> => {
+        var df: Q.Deferred<boolean> = q.defer<boolean>();
+        var cssTag = document.createElement("style");
+        cssTag.onload = function (event: any) {
+            df.resolve(true);
+        }
+        cssTag.type = "text/css";
+        cssTag.innerHTML = css;
+		cssTag.title = name;
+        var elements = document.head.getElementsByTagName("style");
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].title == name) {
+                document.head.replaceChild(cssTag, elements[i]);
+                return df.promise;
+            }
+        }
+        document.head.appendChild(cssTag);
+        return df.promise;
+	}
 };

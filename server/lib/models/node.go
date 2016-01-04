@@ -34,7 +34,7 @@ RETRY:
 	}
 	node := &Node {
 		proto.Model_Node {
-			Id: max_id,
+			Id: proto.UUID(max_id),
 			Address: address,
 		},
 		sync.Mutex{},
@@ -61,7 +61,7 @@ func NewNode(address string) (*Node, bool, error) {
 
 var uniqueIDEpoch = time.Date(2015, time.January, 1, 0, 0, 0, 0, time.UTC).UnixNano()
 
-func (n *Node) NewUUID() UUID {
+func (n *Node) NewUUID() proto.UUID {
 	const precision = uint64(10 * time.Microsecond)
 	const nodeIDBits = 15
 
@@ -75,10 +75,10 @@ func (n *Node) NewUUID() UUID {
 	n.mutex.Unlock()
 	
 	id = (id << nodeIDBits) | uint64(n.Id)
-	return UUID(id)
+	return proto.UUID(id)
 
 }
 
-func (n Node) Proto() proto.Model_Node {
+func (n *Node) Proto() proto.Model_Node {
 	return n.Model_Node
 }
