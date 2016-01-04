@@ -9,3 +9,8 @@ stopweb:
 	-@docker kill channerweb
 	@docker rm channerweb
 
+test:
+	@./test/tools/runserver.sh &
+	@phonegap serve --browser &
+	@sleep 1
+	@gulp test

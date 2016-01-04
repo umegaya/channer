@@ -6,6 +6,7 @@ var fs = require('fs');
 var ts = require('typescript/lib/typescript');
 var webpack = require('webpack');
 var WebpackDevServer = require("webpack-dev-server");
+var nightwatch = require('nightwatch');
 
 var prod = !!util.env.prod;
 var webpackConfig = Object.create(require('./webpack/' + (prod ? 'prod.js' : 'dev.js')));
@@ -157,6 +158,7 @@ gulp.task('compile', function () {
     }
 });
 
+//compile assets once by using webpack
 gulp.task('webpack', ['webpack-clean'], function() {
   webpack(webpackConfig, function(err, stats) {
     if (err) throw new util.PluginError('webpack:build', err);
@@ -194,6 +196,16 @@ gulp.task("webpack-watch", function() {
         // Server listening
         util.log("Starting", util.colors.blue("Webpack Development Server"));
         util.log("Listening", util.colors.magenta("http://"+server+":"+port));
+    });
+});
+
+// run test
+gulp.task('test', function () {
+    nightwatch.runner({
+        config: 'nightwatch.json',
+        env: 'default'
+    }, function (passed) {
+        process.exit(passed ? 0 : 1);
     });
 });
 
