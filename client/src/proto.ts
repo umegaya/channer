@@ -45,7 +45,12 @@ export class Handler {
 		}
 		return this.msgid_seed;
 	}
-	private send = (p: ChannerProto.Payload, e?: ChannerProto.Error.Type): Q.Promise<Model> => {
+	private redraw = () => {
+		setTimeout(() => {
+			m.redraw()
+		}, 1);
+	}
+	private send = (p: ChannerProto.Payload, e?: ChannerProto.Error.Type, no_redraw?:boolean): Q.Promise<Model> => {
 		var df : Q.Deferred<Model> = Q.defer();
 		if (e) {
 			//return error with same manner when error caused by server
@@ -68,6 +73,9 @@ export class Handler {
 			}
 			df.reject(e);
 		});
+		if (!no_redraw) {
+			df.promise.done(this.redraw, this.redraw);
+		}
 		return df.promise;
 	}
 	private ontimer = (nowms: number) => {
@@ -87,7 +95,7 @@ export class Handler {
 	}
 	private reauth = () => {
 		var current = m.route();
-		if (!current.match(/^\/login/)) {
+		if (!current.match(/^\/(login|rescue)/)) {
 			console.log("re-authenticate current url:" + current);
 			Util.route("/login?next=" + current, true);
 		}		
@@ -149,7 +157,7 @@ export class Handler {
 		var p = new Builder.Payload();
 		p.type = ChannerProto.Payload.Type.PingRequest;
 		p.setPingRequest(req);
-		return this.send(p);
+		return this.send(p, null, true);
 	}
 	login = (user: string, mail: string, secret: string, pass?: string, rescue?: string): Q.Promise<Model> => {
 		var req = new Builder.LoginRequest();
@@ -178,6 +186,20 @@ export class Handler {
 		p.type = ChannerProto.Payload.Type.LoginRequest;
 		p.setLoginRequest(req);
 		return this.send(p);		
+	}
+	rescue = (): Q.Promise<Model> => {
+		var req = new Builder.RescueRequest();
+		req.account = window.channer.settings.values.account_id;
+		if (!req.account) {
+			return this.send(null, ChannerProto.Error.Type.Rescue_InvalidAuth);
+		}
+		var secret = window.channer.settings.values.secret;
+		req.walltime = Timer.now();
+		req.sign = this.signature(req.account, secret, req.walltime);
+		var p = new Builder.Payload();
+		p.type = ChannerProto.Payload.Type.RescueRequest;
+		p.setRescueRequest(req);
+		return this.send(p);
 	}
 	post = (topic_id: number, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
 		var post = new Builder.Post();

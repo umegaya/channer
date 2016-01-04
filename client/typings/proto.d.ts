@@ -22,6 +22,7 @@ export declare class Handler {
     private timer;
     constructor(url: string, timer: Timer);
     private new_msgid;
+    private redraw;
     private send;
     private ontimer;
     private reauth;
@@ -34,5 +35,6 @@ export declare class Handler {
     pause: () => void;
     ping: (nowms: number) => Q.Promise<Model>;
     login: (user: string, mail: string, secret: string, pass?: string, rescue?: string) => Q.Promise<Model>;
+    rescue: () => Q.Promise<Model>;
     post: (topic_id: number, text: string, options?: ChannerProto.Post.Options) => Q.Promise<Model>;
 }

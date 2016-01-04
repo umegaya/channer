@@ -19,37 +19,37 @@ func InitNode() {
 }
 
 func insertWithId(address string) (*Node, error) {
+	var node *Node
+	if err := dbm.Txn(func (tx Dbif) error {
 RETRY:
-	tx, err := DBM().Begin()
-	if err != nil {
+		var max_id uint32
+		if err := tx.SelectOne(&max_id, "select max(id) from nodes"); err != nil {
+			log.Printf("select max(id) fails: %v", err)
+			max_id = 1
+		}
+		if max_id > 0x7FFF {
+			log.Fatalf("node entry reach to limit: %v", max_id)
+		}
+		node = &Node {
+			proto.Model_Node {
+				Id: proto.UUID(max_id),
+				Address: address,
+			},
+			sync.Mutex{},
+		}
+		if err := tx.Insert(node); err != nil {
+			goto RETRY
+		}
+		return nil
+	}); err != nil {
 		return nil, err
 	}
-	var max_id uint32
-	if err := tx.SelectOne(&max_id, "select max(id) from nodes"); err != nil {
-		log.Printf("select max(id) fails: %v", err)
-		max_id = 1
-	}
-	if max_id > 0x7FFF {
-		log.Fatalf("node entry reach to limit: %v", max_id)
-	}
-	node := &Node {
-		proto.Model_Node {
-			Id: proto.UUID(max_id),
-			Address: address,
-		},
-		sync.Mutex{},
-	}
-	if err := tx.Insert(node); err != nil {
-		tx.Rollback()
-		goto RETRY
-	}
-	tx.Commit()
 	return node, nil
 }
 
-func NewNode(address string) (*Node, bool, error) {
+func NewNode(dbif Dbif, address string) (*Node, bool, error) {
 	node := &Node{}
-	if err := DBM().SelectOne(node, "select * from nodes where address = $1", address); err != nil {
+	if err := dbif.SelectOne(node, "select * from nodes where address = $1", address); err != nil {
 		node, err := insertWithId(address)
 		if err != nil {
 			return nil, false, err

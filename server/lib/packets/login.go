@@ -2,88 +2,55 @@ package packets
 
 import (
 	"log"
-	"time"
-	"bytes"
-	"strconv"
-	"crypto/sha256"
-	"encoding/base64"
 	
 	proto "../../proto"
 	"../models"
 )
 
-var SECRET string = "506779d073f0c20d5e14c62c7261db6bd238be7312ebef394ca1b05226740742";
-
-//Account represents one user account
-type Account struct {
-	user string
-	secret string
-	rescue string //when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
-}
-var amap map[string]Account = make(map[string]Account)
-
-//Device represents device which each user uses (single user may have multiple devices)
-type Device struct {
-	id string
-	last_access time.Time
-	last_from string
-}
-var dmap map[string]map[string]Device = make(map[string]map[string]Device)
-
-//cals_sha256 is handy methods for calculating sha256 string from string.
-func calc_sha256(source string) string {
-	shabytes := sha256.Sum256(bytes.NewBufferString(source).Bytes())
-	return base64.StdEncoding.EncodeToString(shabytes[:sha256.Size])
-}
-
-//compute_sign is calculate signature of login request.
-func compute_sign(user, secret string, walltime uint64) string {
-	src := strconv.FormatUint(walltime, 10) + user + secret
-	return calc_sha256(src)
-}
-
-//compute_user_secret calculates secret for users
-func compute_user_secret(user, pass string, walltime uint64) string {
-	return calc_sha256(strconv.FormatUint(walltime, 10) + user + pass + SECRET)
-}
-
 //TODO: entirely use database as datastore
 func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transport) {
 	user := req.User
-	walltime := req.Walltime
 	version := req.Version
-	log.Printf("login user:%v", user)
 	if AssetsConfig().App.ClientVersion != version {
 		log.Printf("login user:%v client outdated %v:%v", user, AssetsConfig().App.ClientVersion, version)
 		SendError(from, msgid, proto.Error_Login_OutdatedVersion)
 		return
 	}
+	rescue := req.Rescue
+	if rescue != nil {
+		a, err := models.FindRescueAccount(*rescue)
+		if err != nil {
+			SendError(from, msgid, proto.Error_Rescue_CannotRescue)
+			return
+		}
+		tmp := a.StringId()
+		req.User = a.User
+		req.Mail = a.Mail
+		req.Id = &tmp
+		req.Pass = &a.Pass 
+		log.Printf("account %v rescue is enabled %v, force override secret", a.StringId(), *rescue)
+	}
+	walltime := req.Walltime
 	//update account database
-	a, created, err := models.NewAccount(req.Id, proto.Model_Account_User, user, req.Mail)
+	a, created, err := models.NewAccount(models.DBM(), req.Id, proto.Model_Account_User, user, req.Mail)
 	if err != nil {
 		log.Printf("login create account database error: %v", err)
 		SendError(from, msgid, proto.Error_Login_DatabaseError)
 		return
 	}
 	if pass := req.Pass; pass != nil {
-		hashed_pass := compute_user_secret(a.StringId(), *pass, 0)
 		if !created {
-			if hashed_pass != a.Pass {
-				rescue := req.Rescue;
-				if rescue == nil || len(a.Rescue) <= 0 || *rescue != a.Rescue {
-					SendError(from, msgid, proto.Error_Login_UserAlreadyExists)
-					return
-				}
-				log.Printf("account %v rescue is enabled %v, force override secret", a.Id, a.Rescue)
+			if *pass != a.Pass {
+				SendError(from, msgid, proto.Error_Login_UserAlreadyExists)
+				return
 			}
 		}
 		//TODO: replace user with id value
-		secret := compute_user_secret(a.StringId(), *pass, walltime)
+		secret := a.ComputeSecret(*pass, walltime)
 		a.Secret = secret
-		a.Pass = hashed_pass
-		a.Rescue = ""
+		a.Pass = *pass
 		log.Printf("login database %v %v", a.User, a.Secret);
-		if _, err := a.Save([]string{ "Secret", "Pass" }); err != nil {
+		if _, err := a.Save(models.DBM(), []string{ "Secret", "Pass" }); err != nil {
 			log.Printf("login update account database error: %v", err)
 			SendError(from, msgid, proto.Error_Login_DatabaseError)
 			return
@@ -95,10 +62,7 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		}
 		sign := req.Sign;
 		log.Printf("sign:%v", *sign);
-		if sign == nil || *sign != compute_sign(a.StringId(), a.Secret, walltime) {
-			if sign != nil {
-				log.Printf("invalid sign %v:%v:%v:%v:%v", *sign, compute_sign(a.StringId(), a.Secret, walltime), a.StringId(), a.Secret, walltime)
-			}
+		if sign == nil || !a.VerifySign(*sign, walltime) {
 			SendError(from, msgid, proto.Error_Login_InvalidAuth)
 			return
 		}
@@ -117,19 +81,25 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		device_id = &tmp_device_id
 		device_type = &tmp_device_type
 	}
-	if _, _, err := models.NewDevice(*device_id, *device_type, from.String(), a.Id); err != nil {
+	if _, _, err := models.NewDevice(models.DBM(), *device_id, *device_type, from.String(), a.Id); err != nil {
 		log.Printf("register device fails %v:%v:%v:%v", *device_id, *device_type, a.Id, err)
 		//continue
 	}
-
+	//compute response
+	resp := &proto.LoginResponse{
+		Id: idstr,
+		Secret: a.Secret,
+	}
+	if rescue != nil {
+		resp.Pass = req.Pass
+		resp.Mail = &req.Mail
+		resp.User = &req.User
+	}
 	//send post notification to all member in this Topic
 	log.Printf("secret:%v, id:%v", a.Secret, idstr)
 	from.Send(&proto.Payload {
 		Type: proto.Payload_LoginResponse,
 		Msgid: msgid,
-		LoginResponse: &proto.LoginResponse{
-			Id: idstr,
-			Secret: a.Secret,
-		},
+		LoginResponse: resp,
 	})
 }

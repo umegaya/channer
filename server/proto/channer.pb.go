@@ -20,6 +20,7 @@
 		EnterTopicRequest
 		ExitTopicRequest
 		PingRequest
+		RescueRequest
 		LoginResponse
 		PostResponse
 		FetchResponse
@@ -27,6 +28,7 @@
 		EnterTopicResponse
 		ExitTopicResponse
 		PingResponse
+		RescueResponse
 		Error
 		Payload
 */
@@ -167,16 +169,24 @@ const (
 	Error_Login_UserAlreadyExists Error_Type = 4
 	Error_Login_OutdatedVersion   Error_Type = 5
 	Error_Login_DatabaseError     Error_Type = 6
+	Error_Login_BrokenClientData  Error_Type = 7
+	Error_Rescue_DatabaseError    Error_Type = 10
+	Error_Rescue_CannotRescue     Error_Type = 11
+	Error_Rescue_InvalidAuth      Error_Type = 12
 )
 
 var Error_Type_name = map[int32]string{
-	0: "Unknown",
-	1: "Timeout",
-	2: "Login_InvalidAuth",
-	3: "Login_UserNotFound",
-	4: "Login_UserAlreadyExists",
-	5: "Login_OutdatedVersion",
-	6: "Login_DatabaseError",
+	0:  "Unknown",
+	1:  "Timeout",
+	2:  "Login_InvalidAuth",
+	3:  "Login_UserNotFound",
+	4:  "Login_UserAlreadyExists",
+	5:  "Login_OutdatedVersion",
+	6:  "Login_DatabaseError",
+	7:  "Login_BrokenClientData",
+	10: "Rescue_DatabaseError",
+	11: "Rescue_CannotRescue",
+	12: "Rescue_InvalidAuth",
 }
 var Error_Type_value = map[string]int32{
 	"Unknown":                 0,
@@ -186,6 +196,10 @@ var Error_Type_value = map[string]int32{
 	"Login_UserAlreadyExists": 4,
 	"Login_OutdatedVersion":   5,
 	"Login_DatabaseError":     6,
+	"Login_BrokenClientData":  7,
+	"Rescue_DatabaseError":    10,
+	"Rescue_CannotRescue":     11,
+	"Rescue_InvalidAuth":      12,
 }
 
 func (x Error_Type) Enum() *Error_Type {
@@ -216,6 +230,7 @@ const (
 	Payload_EnterTopicRequest  Payload_Type = 5
 	Payload_ExitTopicRequest   Payload_Type = 6
 	Payload_PingRequest        Payload_Type = 7
+	Payload_RescueRequest      Payload_Type = 8
 	Payload_LoginResponse      Payload_Type = 31
 	Payload_PostResponse       Payload_Type = 32
 	Payload_FetchResponse      Payload_Type = 33
@@ -223,6 +238,7 @@ const (
 	Payload_EnterTopicResponse Payload_Type = 35
 	Payload_ExitTopicResponse  Payload_Type = 36
 	Payload_PingResponse       Payload_Type = 37
+	Payload_RescueResponse     Payload_Type = 38
 	Payload_PostNotify         Payload_Type = 61
 	Payload_Error              Payload_Type = 101
 )
@@ -236,6 +252,7 @@ var Payload_Type_name = map[int32]string{
 	5:   "EnterTopicRequest",
 	6:   "ExitTopicRequest",
 	7:   "PingRequest",
+	8:   "RescueRequest",
 	31:  "LoginResponse",
 	32:  "PostResponse",
 	33:  "FetchResponse",
@@ -243,6 +260,7 @@ var Payload_Type_name = map[int32]string{
 	35:  "EnterTopicResponse",
 	36:  "ExitTopicResponse",
 	37:  "PingResponse",
+	38:  "RescueResponse",
 	61:  "PostNotify",
 	101: "Error",
 }
@@ -255,6 +273,7 @@ var Payload_Type_value = map[string]int32{
 	"EnterTopicRequest":  5,
 	"ExitTopicRequest":   6,
 	"PingRequest":        7,
+	"RescueRequest":      8,
 	"LoginResponse":      31,
 	"PostResponse":       32,
 	"FetchResponse":      33,
@@ -262,6 +281,7 @@ var Payload_Type_value = map[string]int32{
 	"EnterTopicResponse": 35,
 	"ExitTopicResponse":  36,
 	"PingResponse":       37,
+	"RescueResponse":     38,
 	"PostNotify":         61,
 	"Error":              101,
 }
@@ -409,7 +429,6 @@ type Model_Account struct {
 	Mail   string             `protobuf:"bytes,6,req,name=mail" json:"mail"`
 	// when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
 	Status uint32 `protobuf:"varint,7,req,name=status" json:"status"`
-	Rescue string `protobuf:"bytes,8,req,name=rescue" json:"rescue"`
 }
 
 func (m *Model_Account) Reset()         { *m = Model_Account{} }
@@ -465,11 +484,35 @@ func (m *Model_Account) GetStatus() uint32 {
 	return 0
 }
 
-func (m *Model_Account) GetRescue() string {
+type Model_Rescue struct {
+	Id        []byte `protobuf:"bytes,1,req,name=id" json:"id"`
+	Account   string `protobuf:"bytes,2,req,name=account" json:"account"`
+	ValidDate int64  `protobuf:"varint,3,req,name=valid_date" json:"valid_date"`
+}
+
+func (m *Model_Rescue) Reset()         { *m = Model_Rescue{} }
+func (m *Model_Rescue) String() string { return proto.CompactTextString(m) }
+func (*Model_Rescue) ProtoMessage()    {}
+
+func (m *Model_Rescue) GetId() []byte {
 	if m != nil {
-		return m.Rescue
+		return m.Id
+	}
+	return nil
+}
+
+func (m *Model_Rescue) GetAccount() string {
+	if m != nil {
+		return m.Account
 	}
 	return ""
+}
+
+func (m *Model_Rescue) GetValidDate() int64 {
+	if m != nil {
+		return m.ValidDate
+	}
+	return 0
 }
 
 type Model_Channel struct {
@@ -986,10 +1029,44 @@ func (m *PingRequest) GetWalltime() uint64 {
 	return 0
 }
 
+type RescueRequest struct {
+	Account  string `protobuf:"bytes,1,req,name=account" json:"account"`
+	Sign     string `protobuf:"bytes,2,req,name=sign" json:"sign"`
+	Walltime uint64 `protobuf:"varint,3,req,name=walltime" json:"walltime"`
+}
+
+func (m *RescueRequest) Reset()         { *m = RescueRequest{} }
+func (m *RescueRequest) String() string { return proto.CompactTextString(m) }
+func (*RescueRequest) ProtoMessage()    {}
+
+func (m *RescueRequest) GetAccount() string {
+	if m != nil {
+		return m.Account
+	}
+	return ""
+}
+
+func (m *RescueRequest) GetSign() string {
+	if m != nil {
+		return m.Sign
+	}
+	return ""
+}
+
+func (m *RescueRequest) GetWalltime() uint64 {
+	if m != nil {
+		return m.Walltime
+	}
+	return 0
+}
+
 // response
 type LoginResponse struct {
-	Id     string `protobuf:"bytes,1,req,name=id" json:"id"`
-	Secret string `protobuf:"bytes,2,req,name=secret" json:"secret"`
+	Id     string  `protobuf:"bytes,1,req,name=id" json:"id"`
+	Secret string  `protobuf:"bytes,2,req,name=secret" json:"secret"`
+	Pass   *string `protobuf:"bytes,3,opt,name=pass" json:"pass,omitempty"`
+	Mail   *string `protobuf:"bytes,4,opt,name=mail" json:"mail,omitempty"`
+	User   *string `protobuf:"bytes,5,opt,name=user" json:"user,omitempty"`
 }
 
 func (m *LoginResponse) Reset()         { *m = LoginResponse{} }
@@ -1006,6 +1083,27 @@ func (m *LoginResponse) GetId() string {
 func (m *LoginResponse) GetSecret() string {
 	if m != nil {
 		return m.Secret
+	}
+	return ""
+}
+
+func (m *LoginResponse) GetPass() string {
+	if m != nil && m.Pass != nil {
+		return *m.Pass
+	}
+	return ""
+}
+
+func (m *LoginResponse) GetMail() string {
+	if m != nil && m.Mail != nil {
+		return *m.Mail
+	}
+	return ""
+}
+
+func (m *LoginResponse) GetUser() string {
+	if m != nil && m.User != nil {
+		return *m.User
 	}
 	return ""
 }
@@ -1076,6 +1174,29 @@ func (m *PingResponse) GetWalltime() uint64 {
 	return 0
 }
 
+type RescueResponse struct {
+	Url    string `protobuf:"bytes,1,req,name=url" json:"url"`
+	Remain int64  `protobuf:"varint,2,req,name=remain" json:"remain"`
+}
+
+func (m *RescueResponse) Reset()         { *m = RescueResponse{} }
+func (m *RescueResponse) String() string { return proto.CompactTextString(m) }
+func (*RescueResponse) ProtoMessage()    {}
+
+func (m *RescueResponse) GetUrl() string {
+	if m != nil {
+		return m.Url
+	}
+	return ""
+}
+
+func (m *RescueResponse) GetRemain() int64 {
+	if m != nil {
+		return m.Remain
+	}
+	return 0
+}
+
 // response error
 type Error struct {
 	Type        Error_Type `protobuf:"varint,1,req,name=type,enum=ChannerProto.Error_Type" json:"type"`
@@ -1111,6 +1232,7 @@ type Payload struct {
 	EnterTopicRequest  *EnterTopicRequest  `protobuf:"bytes,7,opt,name=enter_topic_request" json:"enter_topic_request,omitempty"`
 	ExitTopicRequest   *ExitTopicRequest   `protobuf:"bytes,8,opt,name=exit_topic_request" json:"exit_topic_request,omitempty"`
 	PingRequest        *PingRequest        `protobuf:"bytes,9,opt,name=ping_request" json:"ping_request,omitempty"`
+	RescueRequest      *RescueRequest      `protobuf:"bytes,10,opt,name=rescue_request" json:"rescue_request,omitempty"`
 	Error              *Error              `protobuf:"bytes,30,opt,name=error" json:"error,omitempty"`
 	LoginResponse      *LoginResponse      `protobuf:"bytes,31,opt,name=login_response" json:"login_response,omitempty"`
 	PostResponse       *PostResponse       `protobuf:"bytes,32,opt,name=post_response" json:"post_response,omitempty"`
@@ -1119,6 +1241,7 @@ type Payload struct {
 	EnterTopicResponse *EnterTopicResponse `protobuf:"bytes,35,opt,name=enter_topic_response" json:"enter_topic_response,omitempty"`
 	ExitTopicResponse  *ExitTopicResponse  `protobuf:"bytes,36,opt,name=exit_topic_response" json:"exit_topic_response,omitempty"`
 	PingResponse       *PingResponse       `protobuf:"bytes,37,opt,name=ping_response" json:"ping_response,omitempty"`
+	RescueResponse     *RescueResponse     `protobuf:"bytes,38,opt,name=rescue_response" json:"rescue_response,omitempty"`
 	PostNotify         *Post               `protobuf:"bytes,61,opt,name=post_notify" json:"post_notify,omitempty"`
 }
 
@@ -1189,6 +1312,13 @@ func (m *Payload) GetPingRequest() *PingRequest {
 	return nil
 }
 
+func (m *Payload) GetRescueRequest() *RescueRequest {
+	if m != nil {
+		return m.RescueRequest
+	}
+	return nil
+}
+
 func (m *Payload) GetError() *Error {
 	if m != nil {
 		return m.Error
@@ -1245,6 +1375,13 @@ func (m *Payload) GetPingResponse() *PingResponse {
 	return nil
 }
 
+func (m *Payload) GetRescueResponse() *RescueResponse {
+	if m != nil {
+		return m.RescueResponse
+	}
+	return nil
+}
+
 func (m *Payload) GetPostNotify() *Post {
 	if m != nil {
 		return m.PostNotify
@@ -1259,6 +1396,7 @@ func init() {
 	proto.RegisterType((*Topic)(nil), "ChannerProto.Topic")
 	proto.RegisterType((*Model)(nil), "ChannerProto.Model")
 	proto.RegisterType((*Model_Account)(nil), "ChannerProto.Model.Account")
+	proto.RegisterType((*Model_Rescue)(nil), "ChannerProto.Model.Rescue")
 	proto.RegisterType((*Model_Channel)(nil), "ChannerProto.Model.Channel")
 	proto.RegisterType((*Model_Device)(nil), "ChannerProto.Model.Device")
 	proto.RegisterType((*Model_Node)(nil), "ChannerProto.Model.Node")
@@ -1274,6 +1412,7 @@ func init() {
 	proto.RegisterType((*EnterTopicRequest)(nil), "ChannerProto.EnterTopicRequest")
 	proto.RegisterType((*ExitTopicRequest)(nil), "ChannerProto.ExitTopicRequest")
 	proto.RegisterType((*PingRequest)(nil), "ChannerProto.PingRequest")
+	proto.RegisterType((*RescueRequest)(nil), "ChannerProto.RescueRequest")
 	proto.RegisterType((*LoginResponse)(nil), "ChannerProto.LoginResponse")
 	proto.RegisterType((*PostResponse)(nil), "ChannerProto.PostResponse")
 	proto.RegisterType((*FetchResponse)(nil), "ChannerProto.FetchResponse")
@@ -1281,6 +1420,7 @@ func init() {
 	proto.RegisterType((*EnterTopicResponse)(nil), "ChannerProto.EnterTopicResponse")
 	proto.RegisterType((*ExitTopicResponse)(nil), "ChannerProto.ExitTopicResponse")
 	proto.RegisterType((*PingResponse)(nil), "ChannerProto.PingResponse")
+	proto.RegisterType((*RescueResponse)(nil), "ChannerProto.RescueResponse")
 	proto.RegisterType((*Error)(nil), "ChannerProto.Error")
 	proto.RegisterType((*Payload)(nil), "ChannerProto.Payload")
 	proto.RegisterEnum("ChannerProto.Model_Account_Type", Model_Account_Type_name, Model_Account_Type_value)
@@ -1497,10 +1637,37 @@ func (m *Model_Account) MarshalTo(data []byte) (int, error) {
 	data[i] = 0x38
 	i++
 	i = encodeVarintChanner(data, i, uint64(m.Status))
-	data[i] = 0x42
+	return i, nil
+}
+
+func (m *Model_Rescue) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *Model_Rescue) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Id != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintChanner(data, i, uint64(len(m.Id)))
+		i += copy(data[i:], m.Id)
+	}
+	data[i] = 0x12
 	i++
-	i = encodeVarintChanner(data, i, uint64(len(m.Rescue)))
-	i += copy(data[i:], m.Rescue)
+	i = encodeVarintChanner(data, i, uint64(len(m.Account)))
+	i += copy(data[i:], m.Account)
+	data[i] = 0x18
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.ValidDate))
 	return i, nil
 }
 
@@ -1992,6 +2159,35 @@ func (m *PingRequest) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
+func (m *RescueRequest) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RescueRequest) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	data[i] = 0xa
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Account)))
+	i += copy(data[i:], m.Account)
+	data[i] = 0x12
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Sign)))
+	i += copy(data[i:], m.Sign)
+	data[i] = 0x18
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Walltime))
+	return i, nil
+}
+
 func (m *LoginResponse) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -2015,6 +2211,24 @@ func (m *LoginResponse) MarshalTo(data []byte) (int, error) {
 	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Secret)))
 	i += copy(data[i:], m.Secret)
+	if m.Pass != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintChanner(data, i, uint64(len(*m.Pass)))
+		i += copy(data[i:], *m.Pass)
+	}
+	if m.Mail != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintChanner(data, i, uint64(len(*m.Mail)))
+		i += copy(data[i:], *m.Mail)
+	}
+	if m.User != nil {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintChanner(data, i, uint64(len(*m.User)))
+		i += copy(data[i:], *m.User)
+	}
 	return i, nil
 }
 
@@ -2153,6 +2367,31 @@ func (m *PingResponse) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
+func (m *RescueResponse) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RescueResponse) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	data[i] = 0xa
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Url)))
+	i += copy(data[i:], m.Url)
+	data[i] = 0x10
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Remain))
+	return i, nil
+}
+
 func (m *Error) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -2269,17 +2508,27 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		}
 		i += n15
 	}
+	if m.RescueRequest != nil {
+		data[i] = 0x52
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.RescueRequest.Size()))
+		n16, err := m.RescueRequest.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n16
+	}
 	if m.Error != nil {
 		data[i] = 0xf2
 		i++
 		data[i] = 0x1
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.Error.Size()))
-		n16, err := m.Error.MarshalTo(data[i:])
+		n17, err := m.Error.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n16
+		i += n17
 	}
 	if m.LoginResponse != nil {
 		data[i] = 0xfa
@@ -2287,11 +2536,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x1
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.LoginResponse.Size()))
-		n17, err := m.LoginResponse.MarshalTo(data[i:])
+		n18, err := m.LoginResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n17
+		i += n18
 	}
 	if m.PostResponse != nil {
 		data[i] = 0x82
@@ -2299,11 +2548,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PostResponse.Size()))
-		n18, err := m.PostResponse.MarshalTo(data[i:])
+		n19, err := m.PostResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n18
+		i += n19
 	}
 	if m.FetchResponse != nil {
 		data[i] = 0x8a
@@ -2311,11 +2560,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.FetchResponse.Size()))
-		n19, err := m.FetchResponse.MarshalTo(data[i:])
+		n20, err := m.FetchResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n19
+		i += n20
 	}
 	if m.ReadResponse != nil {
 		data[i] = 0x92
@@ -2323,11 +2572,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ReadResponse.Size()))
-		n20, err := m.ReadResponse.MarshalTo(data[i:])
+		n21, err := m.ReadResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n20
+		i += n21
 	}
 	if m.EnterTopicResponse != nil {
 		data[i] = 0x9a
@@ -2335,11 +2584,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.EnterTopicResponse.Size()))
-		n21, err := m.EnterTopicResponse.MarshalTo(data[i:])
+		n22, err := m.EnterTopicResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n21
+		i += n22
 	}
 	if m.ExitTopicResponse != nil {
 		data[i] = 0xa2
@@ -2347,11 +2596,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ExitTopicResponse.Size()))
-		n22, err := m.ExitTopicResponse.MarshalTo(data[i:])
+		n23, err := m.ExitTopicResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n22
+		i += n23
 	}
 	if m.PingResponse != nil {
 		data[i] = 0xaa
@@ -2359,11 +2608,23 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PingResponse.Size()))
-		n23, err := m.PingResponse.MarshalTo(data[i:])
+		n24, err := m.PingResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n23
+		i += n24
+	}
+	if m.RescueResponse != nil {
+		data[i] = 0xb2
+		i++
+		data[i] = 0x2
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.RescueResponse.Size()))
+		n25, err := m.RescueResponse.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n25
 	}
 	if m.PostNotify != nil {
 		data[i] = 0xea
@@ -2371,11 +2632,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x3
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PostNotify.Size()))
-		n24, err := m.PostNotify.MarshalTo(data[i:])
+		n26, err := m.PostNotify.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n24
+		i += n26
 	}
 	return i, nil
 }
@@ -2482,8 +2743,19 @@ func (m *Model_Account) Size() (n int) {
 	l = len(m.Mail)
 	n += 1 + l + sovChanner(uint64(l))
 	n += 1 + sovChanner(uint64(m.Status))
-	l = len(m.Rescue)
+	return n
+}
+
+func (m *Model_Rescue) Size() (n int) {
+	var l int
+	_ = l
+	if m.Id != nil {
+		l = len(m.Id)
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	l = len(m.Account)
 	n += 1 + l + sovChanner(uint64(l))
+	n += 1 + sovChanner(uint64(m.ValidDate))
 	return n
 }
 
@@ -2671,6 +2943,17 @@ func (m *PingRequest) Size() (n int) {
 	return n
 }
 
+func (m *RescueRequest) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Account)
+	n += 1 + l + sovChanner(uint64(l))
+	l = len(m.Sign)
+	n += 1 + l + sovChanner(uint64(l))
+	n += 1 + sovChanner(uint64(m.Walltime))
+	return n
+}
+
 func (m *LoginResponse) Size() (n int) {
 	var l int
 	_ = l
@@ -2678,6 +2961,18 @@ func (m *LoginResponse) Size() (n int) {
 	n += 1 + l + sovChanner(uint64(l))
 	l = len(m.Secret)
 	n += 1 + l + sovChanner(uint64(l))
+	if m.Pass != nil {
+		l = len(*m.Pass)
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	if m.Mail != nil {
+		l = len(*m.Mail)
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	if m.User != nil {
+		l = len(*m.User)
+		n += 1 + l + sovChanner(uint64(l))
+	}
 	return n
 }
 
@@ -2728,6 +3023,15 @@ func (m *PingResponse) Size() (n int) {
 	return n
 }
 
+func (m *RescueResponse) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Url)
+	n += 1 + l + sovChanner(uint64(l))
+	n += 1 + sovChanner(uint64(m.Remain))
+	return n
+}
+
 func (m *Error) Size() (n int) {
 	var l int
 	_ = l
@@ -2770,6 +3074,10 @@ func (m *Payload) Size() (n int) {
 		l = m.PingRequest.Size()
 		n += 1 + l + sovChanner(uint64(l))
 	}
+	if m.RescueRequest != nil {
+		l = m.RescueRequest.Size()
+		n += 1 + l + sovChanner(uint64(l))
+	}
 	if m.Error != nil {
 		l = m.Error.Size()
 		n += 2 + l + sovChanner(uint64(l))
@@ -2800,6 +3108,10 @@ func (m *Payload) Size() (n int) {
 	}
 	if m.PingResponse != nil {
 		l = m.PingResponse.Size()
+		n += 2 + l + sovChanner(uint64(l))
+	}
+	if m.RescueResponse != nil {
+		l = m.RescueResponse.Size()
 		n += 2 + l + sovChanner(uint64(l))
 	}
 	if m.PostNotify != nil {
@@ -3582,36 +3894,6 @@ func (m *Model_Account) Unmarshal(data []byte) error {
 				}
 			}
 			hasFields[0] |= uint64(0x00000040)
-		case 8:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Rescue", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowChanner
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthChanner
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Rescue = string(data[iNdEx:postIndex])
-			iNdEx = postIndex
-			hasFields[0] |= uint64(0x00000080)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -3648,8 +3930,144 @@ func (m *Model_Account) Unmarshal(data []byte) error {
 	if hasFields[0]&uint64(0x00000040) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("status")
 	}
-	if hasFields[0]&uint64(0x00000080) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("rescue")
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Model_Rescue) Unmarshal(data []byte) error {
+	var hasFields [1]uint64
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Rescue: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Rescue: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = append([]byte{}, data[iNdEx:postIndex]...)
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000001)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Account = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000002)
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ValidDate", wireType)
+			}
+			m.ValidDate = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.ValidDate |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000004)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+	if hasFields[0]&uint64(0x00000001) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("id")
+	}
+	if hasFields[0]&uint64(0x00000002) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("account")
+	}
+	if hasFields[0]&uint64(0x00000004) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("valid_date")
 	}
 
 	if iNdEx > l {
@@ -5811,6 +6229,146 @@ func (m *PingRequest) Unmarshal(data []byte) error {
 	}
 	return nil
 }
+func (m *RescueRequest) Unmarshal(data []byte) error {
+	var hasFields [1]uint64
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RescueRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RescueRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Account = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000001)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sign", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Sign = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000002)
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Walltime", wireType)
+			}
+			m.Walltime = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Walltime |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000004)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+	if hasFields[0]&uint64(0x00000001) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("account")
+	}
+	if hasFields[0]&uint64(0x00000002) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("sign")
+	}
+	if hasFields[0]&uint64(0x00000004) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("walltime")
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *LoginResponse) Unmarshal(data []byte) error {
 	var hasFields [1]uint64
 	l := len(data)
@@ -5901,6 +6459,96 @@ func (m *LoginResponse) Unmarshal(data []byte) error {
 			m.Secret = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 			hasFields[0] |= uint64(0x00000002)
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pass", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.Pass = &s
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Mail", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.Mail = &s
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field User", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.User = &s
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -6321,6 +6969,113 @@ func (m *PingResponse) Unmarshal(data []byte) error {
 	}
 	return nil
 }
+func (m *RescueResponse) Unmarshal(data []byte) error {
+	var hasFields [1]uint64
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RescueResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RescueResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Url", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Url = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000001)
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Remain", wireType)
+			}
+			m.Remain = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Remain |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000002)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+	if hasFields[0]&uint64(0x00000001) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("url")
+	}
+	if hasFields[0]&uint64(0x00000002) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("remain")
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *Error) Unmarshal(data []byte) error {
 	var hasFields [1]uint64
 	l := len(data)
@@ -6724,6 +7479,39 @@ func (m *Payload) Unmarshal(data []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RescueRequest", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.RescueRequest == nil {
+				m.RescueRequest = &RescueRequest{}
+			}
+			if err := m.RescueRequest.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		case 30:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Error", wireType)
@@ -6985,6 +7773,39 @@ func (m *Payload) Unmarshal(data []byte) error {
 				m.PingResponse = &PingResponse{}
 			}
 			if err := m.PingResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 38:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RescueResponse", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.RescueResponse == nil {
+				m.RescueResponse = &RescueResponse{}
+			}
+			if err := m.RescueResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

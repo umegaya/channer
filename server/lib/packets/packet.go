@@ -55,6 +55,12 @@ var handlers = map[proto.Payload_Type]func (pkt *RecvPacket, t Transport) {
 			go ProcessLogin(pkt.From, pkt.Payload.Msgid, pkt.Payload.LoginRequest, t)
 		}
 	},
+	proto.Payload_RescueRequest: func (pkt *RecvPacket, t Transport) {
+		//go Process(pkt.From, pkt.Payload.PingRequest, t)
+		if pkt.Payload.RescueRequest != nil {
+			go ProcessRescue(pkt.From, pkt.Payload.Msgid, pkt.Payload.RescueRequest, t)
+		}
+	},
 }
 
 //Init initializes packet processing system

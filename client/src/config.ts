@@ -43,8 +43,8 @@ export class UserSettingsValues {
 		var str = "";
 		for (var i = 0; i < array.length; i++) {
 			var byte = array[i];
-			var hi = Math.ceil(byte / 16);
-			var lo = Math.ceil(byte % 16);
+			var hi = Math.floor(byte / 16);
+			var lo = Math.floor(byte % 16);
 			str += (hex.charAt(hi) + hex.charAt(lo));
 		}
 		return str;

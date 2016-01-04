@@ -74,6 +74,8 @@ window.channer.bootstrap = function (config: any) {
 		var start_url = last_url ? ("/login?next=" + last_url) : "/login"; 
 		m.route(document.body, start_url, {
 			"/login":					new window.channer.LoginComponent(c),
+			"/rescue":                  new window.channer.RescueComponent(c),
+			"/rescue/:rescue":          new window.channer.LoginComponent(c),
 			"/channel":					new window.channer.ChannelComponent(c),
 			"/channel/:ch/": 			new window.channer.MainComponent(c),
 			"/channel/:ch/topic": 		new window.channer.ComposeComponent(c),

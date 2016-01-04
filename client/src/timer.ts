@@ -3,11 +3,13 @@ export interface Task {
 }
 export class Timer {
 	private tasks: Array<Task>;
+	private handle: number;
 	static now(): number {
 		return (new Date()).getTime();
 	}
 	constructor() {
 		this.tasks = new Array<Task>();
+		this.handle = null;
 	}
 	add = (t: Task) => {
 		var idx = this.tasks.indexOf(t);
@@ -22,7 +24,15 @@ export class Timer {
 		}
 	}
 	start = (msec: number) => {
-		setInterval(this.tick, msec);
+		if (!this.handle) {
+			this.handle = setInterval(this.tick, msec);
+		}
+	}
+	stop = () => {
+		if (this.handle != null) {
+			clearInterval(this.handle);
+			this.handle = null;
+		}
 	}
 	private tick = () => {
 		var nowms : number = Timer.now();

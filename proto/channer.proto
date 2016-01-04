@@ -47,7 +47,12 @@ message Model {
 		required string mail = 6;
 		//when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
 		required uint32 status = 7;
-		required string rescue = 8;
+	}
+
+	message Rescue {
+		required bytes id = 1;
+		required string account = 2;
+		required int64 valid_date = 3;
 	}
 
 	message Channel {
@@ -154,6 +159,12 @@ message PingRequest {
 	required uint64 walltime = 1;
 }
 
+message RescueRequest {
+	required string account = 1;
+	required string sign = 2;
+	required uint64 walltime = 3;
+}
+
 
 
 
@@ -161,6 +172,9 @@ message PingRequest {
 message LoginResponse {
 	required string id = 1;  //actually uint64 integer. but js isnt good at handle this.
 	required string secret = 2;
+	optional string pass = 3 [(gogoproto.nullable) = true];
+	optional string mail = 4 [(gogoproto.nullable) = true];
+	optional string user = 5 [(gogoproto.nullable) = true];
 }
 
 message PostResponse {
@@ -184,6 +198,10 @@ message PingResponse {
 	required uint64 walltime = 1;
 }
 
+message RescueResponse {
+	required string url = 1;
+	required int64 remain = 2;
+}
 
 
 
@@ -198,6 +216,10 @@ message Error {
 		Login_OutdatedVersion = 5;
 		Login_DatabaseError = 6;
 		Login_BrokenClientData = 7;
+
+		Rescue_DatabaseError = 10;
+		Rescue_CannotRescue = 11;
+		Rescue_InvalidAuth = 12;
 	}
 	required Type type = 1;
 	optional string explanation = 2;
@@ -215,8 +237,10 @@ message Error {
 message Payload {
 	enum Type { 
 		Unknown = 0;
-		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7;
-		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37;
+		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7; 
+		RescueRequest = 8;
+		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37; 
+		RescueResponse = 38;
 		PostNotify = 61;
 		Error = 101;
 	}
@@ -229,6 +253,7 @@ message Payload {
 	optional EnterTopicRequest enter_topic_request = 7;
 	optional ExitTopicRequest exit_topic_request = 8;
 	optional PingRequest ping_request = 9;
+	optional RescueRequest rescue_request = 10;
 
 	optional Error error = 30;
 
@@ -239,6 +264,7 @@ message Payload {
 	optional EnterTopicResponse enter_topic_response = 35;
 	optional ExitTopicResponse exit_topic_response = 36;
 	optional PingResponse ping_response = 37;
+	optional RescueResponse rescue_response = 38;
 
 	optional Post post_notify = 61;
 }

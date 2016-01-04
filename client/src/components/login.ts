@@ -22,12 +22,17 @@ export class LoginController implements UI.Controller {
 		var user = window.channer.settings.values.user;
 		var secret = window.channer.settings.values.secret;
 		var mail = window.channer.settings.values.mail;
+		//note that mail is empty string, its treated as falsy value 
 		console.log("user/secret/mail " + user + "|" + secret + "|" + mail);
-		if (secret && user) {
+		if (this.component.rescue) {
+			console.log("rescue login with:" + this.component.rescue);
+			this.sendlogin("dummy", "");
+		}
+		else if (secret && user) {
 			console.log("auto login with:" + user + "/" + secret);
 			this.sendlogin(user, mail, secret);
 		}
-		else if (!user || !mail) {
+		else if (!user) {
 			this.user = m.prop(user || "username");
 			this.mail = m.prop(mail || "mail address");
 		}
@@ -35,7 +40,6 @@ export class LoginController implements UI.Controller {
 			console.log("auto login with:" + user + "&" + mail);
 			this.sendlogin(user, mail);
 		}
-		m.redraw();
 	}
 	onlogin = () => {
 		var user = this.user();
@@ -50,23 +54,26 @@ export class LoginController implements UI.Controller {
 			console.log("login success!:" + r.secret + "|" + r.id);
 			this.querying = false;
 			window.channer.settings.values.secret = r.secret;
-			window.channer.settings.values.mail = mail;
+			window.channer.settings.values.mail = r.mail || mail;
 			window.channer.settings.values.account_id = r.id;
-			window.channer.settings.values.user = user;
+			window.channer.settings.values.user = r.user || user;
+			if (r.pass) {
+				window.channer.settings.values.pass = r.pass;
+			}
 			window.channer.settings.save();
 			console.log("login success redirect to:" + this.component.next_url);
 			Util.route(this.component.next_url);
 		}, (e: ProtoError) => {
 			console.log("login error:" + e.message);
 			this.querying = false;
-			this.error_message = e.message;
-			window.channer.settings.values.secret = null;
-			window.channer.settings.save();
 			if (e.payload.type == ChannerProto.Error.Type.Login_OutdatedVersion) {
 				console.log("reload app for updating client:" + window.channer.config.client_version);
 				Util.restart_app();
 			}
 			else {
+				this.error_message = e.message;
+				window.channer.settings.values.secret = null;
+				window.channer.settings.save();
 				this.resetinput();
 			}
 		});

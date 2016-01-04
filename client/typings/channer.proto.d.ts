@@ -55,6 +55,7 @@ declare module Proto2TypeScript {
 		EnterTopicRequest: ChannerProto.EnterTopicRequestBuilder;
 		ExitTopicRequest: ChannerProto.ExitTopicRequestBuilder;
 		PingRequest: ChannerProto.PingRequestBuilder;
+		RescueRequest: ChannerProto.RescueRequestBuilder;
 		LoginResponse: ChannerProto.LoginResponseBuilder;
 		PostResponse: ChannerProto.PostResponseBuilder;
 		FetchResponse: ChannerProto.FetchResponseBuilder;
@@ -62,6 +63,7 @@ declare module Proto2TypeScript {
 		EnterTopicResponse: ChannerProto.EnterTopicResponseBuilder;
 		ExitTopicResponse: ChannerProto.ExitTopicResponseBuilder;
 		PingResponse: ChannerProto.PingResponseBuilder;
+		RescueResponse: ChannerProto.RescueResponseBuilder;
 		Error: ChannerProto.ErrorBuilder;
 		Payload: ChannerProto.PayloadBuilder;
 		
@@ -176,6 +178,7 @@ declare module Proto2TypeScript.ChannerProto {
 		//decode(buffer: ByteArrayBuffer) : Model;
 		decode64(buffer: string) : Model;
 		Account: Model.AccountBuilder;
+		Rescue: Model.RescueBuilder;
 		Channel: Model.ChannelBuilder;
 		Device: Model.DeviceBuilder;
 		Node: Model.NodeBuilder;
@@ -212,9 +215,6 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		status: number;
 		getStatus() : number;
 		setStatus(status : number): void;
-		rescue: string;
-		getRescue() : string;
-		setRescue(rescue : string): void;
 		
 	}
 	
@@ -246,6 +246,31 @@ declare module Proto2TypeScript.ChannerProto.Model.Account {
 		Admin = 2,
 		
 	}
+}
+
+declare module Proto2TypeScript.ChannerProto.Model {
+
+	export interface Rescue extends ProtoBufModel {
+		id: ByteBuffer;
+		getId() : ByteBuffer;
+		setId(id : ByteBuffer): void;
+		account: string;
+		getAccount() : string;
+		setAccount(account : string): void;
+		valid_date: number;
+		getValidDate() : number;
+		setValidDate(validDate : number): void;
+		
+	}
+	
+	export interface RescueBuilder {
+		new(): Rescue;
+		decode(buffer: ArrayBuffer) : Rescue;
+		//decode(buffer: NodeBuffer) : Rescue;
+		//decode(buffer: ByteArrayBuffer) : Rescue;
+		decode64(buffer: string) : Rescue;
+		
+	}	
 }
 
 declare module Proto2TypeScript.ChannerProto.Model {
@@ -654,6 +679,31 @@ declare module Proto2TypeScript.ChannerProto {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface RescueRequest extends ProtoBufModel {
+		account: string;
+		getAccount() : string;
+		setAccount(account : string): void;
+		sign: string;
+		getSign() : string;
+		setSign(sign : string): void;
+		walltime: number;
+		getWalltime() : number;
+		setWalltime(walltime : number): void;
+		
+	}
+	
+	export interface RescueRequestBuilder {
+		new(): RescueRequest;
+		decode(buffer: ArrayBuffer) : RescueRequest;
+		//decode(buffer: NodeBuffer) : RescueRequest;
+		//decode(buffer: ByteArrayBuffer) : RescueRequest;
+		decode64(buffer: string) : RescueRequest;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface LoginResponse extends ProtoBufModel {
 		id: string;
 		getId() : string;
@@ -661,6 +711,15 @@ declare module Proto2TypeScript.ChannerProto {
 		secret: string;
 		getSecret() : string;
 		setSecret(secret : string): void;
+		pass?: string;
+		getPass() : string;
+		setPass(pass : string): void;
+		mail?: string;
+		getMail() : string;
+		setMail(mail : string): void;
+		user?: string;
+		getUser() : string;
+		setUser(user : string): void;
 		
 	}
 	
@@ -781,6 +840,28 @@ declare module Proto2TypeScript.ChannerProto {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface RescueResponse extends ProtoBufModel {
+		url: string;
+		getUrl() : string;
+		setUrl(url : string): void;
+		remain: number;
+		getRemain() : number;
+		setRemain(remain : number): void;
+		
+	}
+	
+	export interface RescueResponseBuilder {
+		new(): RescueResponse;
+		decode(buffer: ArrayBuffer) : RescueResponse;
+		//decode(buffer: NodeBuffer) : RescueResponse;
+		//decode(buffer: ByteArrayBuffer) : RescueResponse;
+		decode64(buffer: string) : RescueResponse;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface Error extends ProtoBufModel {
 		type: Error.Type;
 		getType() : Error.Type;
@@ -812,6 +893,9 @@ declare module Proto2TypeScript.ChannerProto.Error {
 		Login_OutdatedVersion = 5,
 		Login_DatabaseError = 6,
 		Login_BrokenClientData = 7,
+		Rescue_DatabaseError = 10,
+		Rescue_CannotRescue = 11,
+		Rescue_InvalidAuth = 12,
 		
 	}
 }
@@ -846,6 +930,9 @@ declare module Proto2TypeScript.ChannerProto {
 		ping_request?: PingRequest;
 		getPingRequest() : PingRequest;
 		setPingRequest(pingRequest : PingRequest): void;
+		rescue_request?: RescueRequest;
+		getRescueRequest() : RescueRequest;
+		setRescueRequest(rescueRequest : RescueRequest): void;
 		error?: Error;
 		getError() : Error;
 		setError(error : Error): void;
@@ -870,6 +957,9 @@ declare module Proto2TypeScript.ChannerProto {
 		ping_response?: PingResponse;
 		getPingResponse() : PingResponse;
 		setPingResponse(pingResponse : PingResponse): void;
+		rescue_response?: RescueResponse;
+		getRescueResponse() : RescueResponse;
+		setRescueResponse(rescueResponse : RescueResponse): void;
 		post_notify?: Post;
 		getPostNotify() : Post;
 		setPostNotify(postNotify : Post): void;
@@ -897,6 +987,7 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		EnterTopicRequest = 5,
 		ExitTopicRequest = 6,
 		PingRequest = 7,
+		RescueRequest = 8,
 		LoginResponse = 31,
 		PostResponse = 32,
 		FetchResponse = 33,
@@ -904,6 +995,7 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		EnterTopicResponse = 35,
 		ExitTopicResponse = 36,
 		PingResponse = 37,
+		RescueResponse = 38,
 		PostNotify = 61,
 		Error = 101,
 		

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"log"
+	//"log"
 	"time"
 
 	proto "../../proto"
@@ -16,17 +16,16 @@ func InitDevice() {
 	create_table(Device{}, "devices", "Id")
 }
 
-func NewDevice(id, typ, from string, account proto.UUID) (*Device, bool, error) {
-	dbm := DBM()
+func NewDevice(dbif Dbif, id, typ, from string, account proto.UUID) (*Device, bool, error) {
 	d := &Device{}
-	if err := dbm.SelectOne(d, "select * from devices where id=$1", id); err != nil {
+	if err := dbif.SelectOne(d, "select * from devices where id=$1", id); err != nil {
 		d.Id = id
 		d.Type = typ
 		d.Account = account
 		d.LastFrom = from
 		d.LastAccess = time.Now().UnixNano()
 		//TODO: check err is "not found" or not.
-		if err := dbm.Insert(d); err != nil {
+		if err := dbif.Insert(d); err != nil {
 			return nil, false, err
 		}
 		//newly created
@@ -34,7 +33,7 @@ func NewDevice(id, typ, from string, account proto.UUID) (*Device, bool, error) 
 	}
 	d.LastFrom = from
 	d.LastAccess = time.Now().UnixNano()
-	if _, err := dbm.StoreColumns(d, []string{"LastFrom", "LastAccess"}); err != nil {
+	if _, err := StoreColumns(dbif, d, []string{"LastFrom", "LastAccess"}); err != nil {
 		return d, false, err
 	}
 	return d, false, nil
