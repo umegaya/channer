@@ -1,5 +1,45 @@
+/// <reference path="./phonegap.d.ts"/>
+/// <reference path="./compat.d.ts"/>
+/// <reference path="./channer.proto.d.ts"/>
+/// <reference path="./Q/q.d.ts"/>
+/// <reference path="./UI.d.ts"/>
+/// <reference path="./mithril.d.ts"/>
+/// <reference path="./webpack-runtime.d.ts"/>
+
 interface Window {
-    channer: any;
+    channer: ChannerModules;
+    environment: string;
 }
 
-declare type ByteBuffer = ArrayBuffer;
+/**
+ *  ChannerModules is collection of modules that referred by channer 
+ *  via global namespace 
+ */
+interface ChannerModules {
+	bootstrap: (c: any/*Config*/) => void;
+	conn: any/*Handler*/;
+	config: any/*Config*/;
+	m: _mithril.MithrilStatic;
+	ProtoBuf: any;
+	timer: any/*Timer*/;
+	settings: any/*UserSettings*/;
+	push: any/*Push*/;
+	rawfs: FileSystem;
+	fs: any/*FS*/;
+	hash: any;
+	storage: any;
+	patch: any;
+	mobile: boolean;
+	onResume: Array<() => void>;
+	onPause: Array<() => void>;
+	onPush: Array<(resp:any) => void>;/*PushReceiver*/
+	components: {
+		Login: UI.ComponentFactory;
+		Rescue: UI.ComponentFactory;
+		Channel: UI.ComponentFactory;
+		Compose: UI.ComponentFactory;
+		Topic: UI.ComponentFactory;
+		Main: UI.ComponentFactory;
+		Edit: UI.ComponentFactory;
+	}	
+}

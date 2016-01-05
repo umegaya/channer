@@ -1,13 +1,10 @@
-/// <reference path="../../typings/extern.d.ts"/>
-/// <reference path="../../typings/UI.d.ts"/>
-/// <reference path="../../typings/proto.d.ts"/>
-
-import {m} from "../uikit"
+import {m, Util} from "../uikit"
 import {Config} from "../config"
 
 export class ComposeController implements UI.Controller {
 	component: ComposeComponent;
 	constructor(component: ComposeComponent) {
+		Util.active(this, component);
 		this.component = component;
 	}
 }
@@ -26,4 +23,4 @@ export class ComposeComponent implements UI.Component {
 	}
 }
 
-window.channer.ComposeComponent = ComposeComponent
+window.channer.components.Compose = ComposeComponent

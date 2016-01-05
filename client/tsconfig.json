@@ -5,6 +5,11 @@
         "module": "commonjs",
         "declaration": true
     },
-    "awesomeTypescriptLoaderOptions": {
-    }
+    "files": [
+        "./typings/phonegap.d.ts",
+        "./typings/compat.d.ts",
+        "./typings/channer.proto.d.ts",
+        "./typings/Q/q.d.ts",
+        "./typings/extern.d.ts"
+    ]
 }

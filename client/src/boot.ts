@@ -1,14 +1,14 @@
 /// <reference path="../typings/extern.d.ts"/>
-
 import {Handler} from "./proto"
 import {Config, UserSettings, UserSettingsValues} from "./config"
 import {Timer} from "./timer"
 import {m, Util} from "./uikit"
 import {Push, PushReceiver} from "./push"
 import {Storage, StorageIO} from "./storage"
+import {HelpComponent} from "./components/help"
 
 //for debug. remove user setting
-var truncate_settings = false;
+var truncate_settings = window.environment.match(/test/);
 
 window.channer.bootstrap = function (config: any) {	
 	//create system modules
@@ -45,14 +45,16 @@ window.channer.bootstrap = function (config: any) {
 		u.values.init();
 		window.channer.settings = u;
 		if (truncate_settings) {
+			console.log("truncate settings: env = " + window.environment);
 			window.channer.settings.values = new UserSettingsValues();
 		}
-		return p.start();
+		return p.start(window.channer.mobile);
 	}, (e: Error) => {
 		console.log("user setting broken. remove all");
 		setting_io.rm();
 		throw e;
-		return p.start(); //never reach here. to make compiler feel good. :<
+		//never reach here. to make compiler feel good. :<
+		return p.start(window.channer.mobile); 
 	})
 	.then((resp: PhonegapPluginPush.RegistrationEventResponse) => {
 		window.channer.settings.values.device_id = resp.registrationId;
@@ -70,16 +72,17 @@ window.channer.bootstrap = function (config: any) {
 		h.resume();
 		m.route.mode = "hash"; //prevent from refreshing page when route changes.
 		//setup client router
-		var last_url = window.channer.settings.last_url;
+		var last_url = window.channer.settings.values.last_url;
 		var start_url = last_url ? ("/login?next=" + last_url) : "/login"; 
 		m.route(document.body, start_url, {
-			"/login":					new window.channer.LoginComponent(c),
-			"/rescue":                  new window.channer.RescueComponent(c),
-			"/rescue/:rescue":          new window.channer.LoginComponent(c),
-			"/channel":					new window.channer.ChannelComponent(c),
-			"/channel/:ch/": 			new window.channer.MainComponent(c),
-			"/channel/:ch/topic": 		new window.channer.ComposeComponent(c),
-			"/channel/:ch/topic/:id": 	new window.channer.TopicComponent(c),
+			"/login":					new window.channer.components.Login(c),
+			"/rescue":                  new window.channer.components.Rescue(c),
+			"/rescue/:rescue":          new window.channer.components.Login(c),
+			"/help/:title":             new HelpComponent(c),
+			"/channel":					new window.channer.components.Channel(c),
+			"/channel/:ch/": 			new window.channer.components.Main(c),
+			"/channel/:ch/topic": 		new window.channer.components.Compose(c),
+			"/channel/:ch/topic/:id": 	new window.channer.components.Topic(c),
 		});
 	}, (e: Error) => {
 		console.log("bootstrap error: " + e.message);

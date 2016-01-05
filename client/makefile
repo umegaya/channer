@@ -1,5 +1,5 @@
 all: 
-	@gulp watch &
+	@gulp webpack-watch &
 	@phonegap serve --browser
 
 web:

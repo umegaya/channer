@@ -1,9 +1,24 @@
 /// <reference path="../typings/extern.d.ts"/>
-/// <reference path="../typings/UI.d.ts"/>
+
 export var m : any = window.channer.m;
-export var Q : any = window.channer.Q;
 
 export class Util {
+	static current: {
+		component: UI.Component;
+		ctrl: UI.Controller;
+	};
+	static active(ctrl: UI.Controller, component: UI.Component) {
+		if (!Util.current) {
+			Util.current = {
+				component: component,
+				ctrl: ctrl,
+			}
+		}
+		else {
+			Util.current.component = component;
+			Util.current.ctrl = ctrl;
+		}
+	}
 	static route(dest: string, route_only?: boolean) {
 		if (!route_only) {
 			window.channer.settings.values.last_url = dest;

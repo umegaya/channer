@@ -1,28 +1,29 @@
 /// <reference path="../../typings/extern.d.ts"/>
-/// <reference path="../../typings/UI.d.ts"/>
-/// <reference path="../../typings/proto.d.ts"/>
 
-import {m, Q} from "../uikit"
+import {m, Util} from "../uikit"
 import {Config} from "../config"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 
 export interface InputObservableController extends UI.Controller {
-	oninput(text: string): Q.Promise<ChannerProto.PostResponse>;
+	oninput(text: string, 
+		ok: (resp: ChannerProto.PostResponse) => any, 
+		err: (e: Error) => any): any;
 }
 export class EditController implements UI.Controller {
 	component: EditComponent;
 	input_text: UI.Property<string>;
 	observer: InputObservableController;
 	constructor(component: EditComponent) {
+		Util.active(this, component);
 		this.component = component;
 		this.input_text = m.prop("");
 	}
 	oninput = () => {
 		var text = this.input_text();
 		if (this.observer) {
-			this.observer.oninput(text).then(function (resp: ChannerProto.PostResponse) {
+			this.observer.oninput(text, (resp: ChannerProto.PostResponse) => {
 				console.log("input success:" + resp.posted_at.walltime);
-			}, function (e: Error) {
+			}, (e: Error) => {
 				console.log("input error:" + e.message);
 			});
 		}
@@ -54,4 +55,4 @@ export class EditComponent implements UI.Component {
 	}
 }
 
-window.channer.EditComponent = EditComponent
+window.channer.components.Edit = EditComponent

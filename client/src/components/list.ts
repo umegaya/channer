@@ -1,13 +1,12 @@
 /// <reference path="../../typings/extern.d.ts"/>
-/// <reference path="../../typings/UI.d.ts"/>
-/// <reference path="../../typings/proto.d.ts"/>
 
-import {m} from "../uikit"
+import {m, Util} from "../uikit"
 import {Config} from "../config"
 
 export class ElementController implements UI.Controller {
 	component: ElementComponent;
 	constructor(component: ElementComponent) {
+		Util.active(this, component);
 		this.component = component;
 	}
 }
@@ -80,42 +79,3 @@ export class ListComponent implements UI.Component {
 	}
 }
 
-/*
-export interface ListElementComponent extends UI.Component {
-	constructor(parent: UI.Component, data: any): ListElementComponent;
-}
-
-export class ListController<T extends ListElementComponent> extends UI.Controller {
-	elements: Array<T>;
-	constructor(config: Config) {
-		super();
-		this.elements = new Array<T>();
-	}
-	create = (data: any): T => {
-		return new T(this, data);		
-	}
-	add = (data: any) => {
-		this.elements.push(this.create(data));
-	}
-	remove = (e: T) => {
-		var idx = this.elements.indexOf(e);
-		if (idx >= 0) {
-			this.elements.splice(idx, 1);
-		}
-	}
-}
-function ListView<T extends ListElementComponent>(ctrl: ListController<T>) : UI.Element {
-	return m("div", {class: "list-container"}, ctrl.elements);
-}
-export class ListComponent<T extends ListElementComponent> implements UI.Component {
-	controller: () => ListController<T>;
-	view: UI.View<ListController<T>>;
-
-	constructor(config: Config) {
-		this.view = ListView;
-		this.controller = function () {
-			return new ListController<T>(config);
-		}
-	}
-}
-*/

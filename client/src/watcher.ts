@@ -1,3 +1,4 @@
+/// <reference path="../typings/extern.d.ts"/>
 export interface Model {
 	toArrayBuffer(): ArrayBuffer;
 	toBase64(): string;

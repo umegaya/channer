@@ -15,7 +15,7 @@ type Node struct {
 }
 
 func InitNode() {
-	create_table(Node{}, "nodes", "Id").AddIndex("addr", "INDEX", []string{"Address"})
+	create_table(Node{}, "nodes", "Id").AddIndex("addr", "UNIQUE", []string{"Address"})
 }
 
 func insertWithId(address string) (*Node, error) {
@@ -23,7 +23,7 @@ func insertWithId(address string) (*Node, error) {
 	if err := dbm.Txn(func (tx Dbif) error {
 RETRY:
 		var max_id uint32
-		if err := tx.SelectOne(&max_id, "select max(id) from nodes"); err != nil {
+		if err := tx.SelectOne(&max_id, "select max(id)+1 from nodes"); err != nil {
 			log.Printf("select max(id) fails: %v", err)
 			max_id = 1
 		}

@@ -1,6 +1,4 @@
 /// <reference path="../../typings/extern.d.ts"/>
-/// <reference path="../../typings/UI.d.ts"/>
-/// <reference path="../../typings/proto.d.ts"/>
 
 import {m, Template, Util} from "../uikit"
 import {ProtoError} from "../watcher"
@@ -8,6 +6,8 @@ import {Config} from "../config"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 
 export class LoginController implements UI.Controller {
+	static DEFAULT_USER_NAME = "username";
+	static DEFAULT_MAIL_ADDR = "mail address";
 	component: LoginComponent;
 	user: UI.Property<string>;
 	mail: UI.Property<string>;
@@ -15,6 +15,7 @@ export class LoginController implements UI.Controller {
 	error_message: string;
 	querying: boolean;
 	constructor(component: LoginComponent) {
+		Util.active(this, component);
 		this.component = component;
 		this.resetinput();
 	}
@@ -33,8 +34,8 @@ export class LoginController implements UI.Controller {
 			this.sendlogin(user, mail, secret);
 		}
 		else if (!user) {
-			this.user = m.prop(user || "username");
-			this.mail = m.prop(mail || "mail address");
+			this.user = m.prop(user || LoginController.DEFAULT_USER_NAME);
+			this.mail = m.prop(mail || LoginController.DEFAULT_MAIL_ADDR);
 		}
 		else {
 			console.log("auto login with:" + user + "&" + mail);
@@ -88,19 +89,21 @@ export class LoginController implements UI.Controller {
 		return mail;		
 	}
 	sendlogin_ready = (): boolean => {
-		return this.user().length > 0;
+		var user: string = this.user();
+		return (user != LoginController.DEFAULT_USER_NAME && user.length > 0);
 	}
 }
 function LoginView(ctrl: LoginController) : UI.Element {
 	var elements : Array<UI.Element>;
 	if (ctrl.querying) {
 		elements = [
-			m("div", {class: "querying"}, "send request now"),
+			m("div", {class: "div-querying"}, "sending request now"),
 		]
 	}
 	else {
+		var title_class = ctrl.error_message ? "div-title-error" : "div-title"; 
 		elements = [ 
-			m("div", ctrl.error_message || "please enter username"),
+			m("div", {class: title_class}, ctrl.error_message || "please enter username"),
 		]
 		elements.push(Template.textinput(ctrl.user, "input-user", "username"));
 		elements.push(Template.textinput(ctrl.mail, "input-mail", "mail address"));
@@ -119,7 +122,7 @@ export class LoginComponent implements UI.Component {
 	next_url: string;
 	rescue: string;
 
-	constructor(config: Config, next_url: string) {
+	constructor(config: Config) {
 		this.view = LoginView;
 		this.controller = () => {
 			this.next_url = m.route.param("next") || "/channel";
@@ -129,4 +132,4 @@ export class LoginComponent implements UI.Component {
 	}
 }
 
-window.channer.LoginComponent = LoginComponent
+window.channer.components.Login = LoginComponent

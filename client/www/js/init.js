@@ -1,13 +1,19 @@
 window.endpoint = "http://localhost:9999";
-window.devenv = "dev";
+window.environment = "dev";
 window.channer = {
 	onResume: [],
 	onPause: [],
 	onPush: [],
+	components: {},
 	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
 };
 
 document.addEventListener("deviceready", function () {
+	var env = document.URL.match(/env=([^&]+)/);
+	if (env && env[1]) {
+		console.log("set app environment = " + env[1]);
+		window.environment = env[1];
+	}
 	document.addEventListener("resume", function () {
 		window.channer.onResume.forEach(function (f){ f(); })	
 	});
@@ -17,7 +23,7 @@ document.addEventListener("deviceready", function () {
 	window.requestFileSystem(window.PERSISTENT, 0, function(fs) {
 		window.channer.rawfs = fs;
 		
-		if (window.devenv == "dev" && window.endpoint.match('http://localhost')) {
+		if (window.environment.match(/dev/) && window.endpoint.match('http://localhost')) {
 			window.endpoint = window.endpoint.replace("localhost", window.location.hostname);
 			console.log("replace endpoint to " + window.endpoint + " " + window.location.hostname);
 		}
@@ -29,6 +35,7 @@ document.addEventListener("deviceready", function () {
 				throw new Error("dummy");
 			}
 			catch (e) {
+				console.log("env = " + window.environment);
 				alert("this device under bad network connection. " + 
 					"go to the place where provides good connection, then retry. " + 
 					"error at " + e.stack);
@@ -40,7 +47,7 @@ document.addEventListener("deviceready", function () {
 			}
 			try {
 				ft.download(encodeURI(config_url), fs.root.toURL() + "config.json.next", function(entry) {
-					if (window.devenv == 'chaos_monkey' && Math.random() < 0.5) {
+					if (window.environment.match(/dev/) && Math.random() < 0.1) {
 						launch(new Error());
 						return;
 					}

@@ -23,7 +23,12 @@
     },
     "chrome": {
       "desiredCapabilities": {
-        "browserName": "chrome"
+        "browserName": "chrome",
+        "chromeOptions": {
+          "args": [
+            "unlimited-storage"
+          ]
+        }
       }
     },
     "firefox": {

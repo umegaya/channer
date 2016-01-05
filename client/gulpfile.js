@@ -1,3 +1,5 @@
+/* global __dirname */
+/* global process */
 var gulp = require('gulp');
 var exec = require('gulp-exec');
 var rename = require('gulp-rename');
@@ -65,7 +67,7 @@ var movefile = function (file) {
     var dts = file.replace(/\.ts$/, '.d.ts');
     var js = file.replace(/\.ts$/, '.js');
     var dts_dest = dts.replace(paths.typescript, paths.typescript_decl);
-    var js_dest = js.replace(paths.typescript, paths.typescript_js);
+    //var js_dest = js.replace(paths.typescript, paths.typescript_js);
     //console.log(dts, js, dts_dest, js_dest)
     fs.open(dts, 'r', function (err, fd) {
         if (!err) {
@@ -188,7 +190,7 @@ gulp.task("webpack-watch", function() {
       contentBase: webpackConfig.contentBase,
       publicPath: webpackConfig.output.publicPath,
       stats: {
-        colors:true,
+        colors: true,
         reasons: true
       }
     }).listen(port, server, function(err) {
@@ -203,7 +205,7 @@ gulp.task("webpack-watch", function() {
 gulp.task('test', function () {
     nightwatch.runner({
         config: 'nightwatch.json',
-        env: 'default'
+        env: 'chrome'
     }, function (passed) {
         process.exit(passed ? 0 : 1);
     });

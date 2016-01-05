@@ -1,19 +1,18 @@
 /// <reference path="../../typings/extern.d.ts"/>
-/// <reference path="../../typings/UI.d.ts"/>
-/// <reference path="../../typings/proto.d.ts"/>
 
-import {m} from "../uikit"
+import {m, Util} from "../uikit"
 import {Config} from "../config"
 
 export class ChannelController implements UI.Controller {
 	component: ChannelComponent
 	constructor(component: ChannelComponent) {
+		Util.active(this, component);
 		this.component = component;
 	}
 }
 function ChannelView(ctrl: ChannelController) : UI.Element {
 	console.log("Channelview")
-	return [m("div")]
+	return m("div", {class: "channel-list"})
 }
 export class ChannelComponent implements UI.Component {
 	controller: () => ChannelController;
@@ -27,4 +26,4 @@ export class ChannelComponent implements UI.Component {
 	}
 }
 
-window.channer.ChannelComponent = ChannelComponent
+window.channer.components.Channel = ChannelComponent;

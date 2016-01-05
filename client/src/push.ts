@@ -1,8 +1,5 @@
 /// <reference path="../typings/extern.d.ts"/>
-/// <reference path="../typings/phonegap.d.ts"/>
-/// <reference path="../typings/q/Q.d.ts"/>
-
-import q = require('q');
+import Q = require('q');
 
 export interface PushDelegate {
 	onregister?(response: PhonegapPluginPush.RegistrationEventResponse): any;
@@ -22,9 +19,9 @@ export class Push {
 		this.config = config;
 		this.delegate = delegate;
 	}
-	start = (): Q.Promise<PhonegapPluginPush.RegistrationEventResponse> => {
-		var df = q.defer<PhonegapPluginPush.RegistrationEventResponse>();
-		if (window.channer.mobile) {
+	start = (mobile: boolean): Q.Promise<PhonegapPluginPush.RegistrationEventResponse> => {
+		var df = Q.defer<PhonegapPluginPush.RegistrationEventResponse>();
+		if (mobile) {
 			var d = this.delegate || {};
 			this.pn = PushNotification.init(this.config);
 			this.pn.on("registration", (r: PhonegapPluginPush.RegistrationEventResponse) => {
@@ -40,7 +37,7 @@ export class Push {
 		else {
 			setTimeout(function () {
 				df.resolve({ registrationId: "" });
-			}, 10)
+			}, 1)
 		}
 		return df.promise;
 	}

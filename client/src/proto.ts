@@ -1,17 +1,10 @@
 /// <reference path="../typings/extern.d.ts"/>
-/// <reference path="../typings/channer.proto.d.ts"/>
-/// <reference path="../typings/webpack-runtime.d.ts"/>
-/// <reference path="../typings/q/Q.d.ts"/>
-/// <reference path="../typings/socket.d.ts"/>
-/// <reference path="../typings/watcher.d.ts"/>
-/// <reference path="../typings/timer.d.ts"/>
-/// <reference path="../typings/error.d.ts"/>
-
 import {Socket, Manager} from "./socket"
 import {ProtoWatcher, ProtoError, Model} from "./watcher"
 import {Timer} from "./timer"
-import {Q, m, Util} from "./uikit"
+import {m, Util} from "./uikit"
 import {errorMessages} from "./error"
+import Q = require('q');
 
 import ChannerProto = Proto2TypeScript.ChannerProto;
 
@@ -51,7 +44,7 @@ export class Handler {
 		}, 1);
 	}
 	private send = (p: ChannerProto.Payload, e?: ChannerProto.Error.Type, no_redraw?:boolean): Q.Promise<Model> => {
-		var df : Q.Deferred<Model> = Q.defer();
+		var df : Q.Deferred<Model> = Q.defer<Model>();
 		if (e) {
 			//return error with same manner when error caused by server
 			setTimeout(function () {

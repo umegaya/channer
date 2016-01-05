@@ -16,4 +16,8 @@ declare namespace UI {
 		controller: () => Controller;
 		view: View<Controller>;
 	}
+	
+	interface ComponentFactory {
+		new (config: any): Component;
+	}
 }
