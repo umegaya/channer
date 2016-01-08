@@ -42,12 +42,12 @@ window.channer.bootstrap = function (config: any) {
 		return setting_io.read(u)
 	})
 	.then((u: UserSettings) => {
-		u.values.init();
-		window.channer.settings = u;
 		if (truncate_settings) {
 			console.log("truncate settings: env = " + window.environment);
-			window.channer.settings.values = new UserSettingsValues();
+			u.values = new UserSettingsValues();
 		}
+		u.values.init();
+		window.channer.settings = u;
 		return p.start(window.channer.mobile);
 	}, (e: Error) => {
 		console.log("user setting broken. remove all");
@@ -60,7 +60,6 @@ window.channer.bootstrap = function (config: any) {
 		window.channer.settings.values.device_id = resp.registrationId;
 		return window.channer.settings.save();
 	})
-	
 	.then((u: UserSettings) => {
 		return window.channer.fs.applycss("base", require("./styles/base.styl"));
 	})

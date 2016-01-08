@@ -4,8 +4,11 @@ window.channer = {
 	onResume: [],
 	onPause: [],
 	onPush: [],
-	components: {},
+	components: {
+        active: {},
+    },
 	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
+    testtmp: {},
 };
 
 document.addEventListener("deviceready", function () {
@@ -47,7 +50,7 @@ document.addEventListener("deviceready", function () {
 			}
 			try {
 				ft.download(encodeURI(config_url), fs.root.toURL() + "config.json.next", function(entry) {
-					if (window.environment.match(/dev/) && Math.random() < 0.1) {
+					if (window.environment.match(/chaos/) && Math.random() < 0.1) {
 						launch(new Error());
 						return;
 					}

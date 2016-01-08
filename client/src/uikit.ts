@@ -3,21 +3,10 @@
 export var m : any = window.channer.m;
 
 export class Util {
-	static current: {
-		component: UI.Component;
-		ctrl: UI.Controller;
-	};
 	static active(ctrl: UI.Controller, component: UI.Component) {
-		if (!Util.current) {
-			Util.current = {
-				component: component,
-				ctrl: ctrl,
-			}
-		}
-		else {
-			Util.current.component = component;
-			Util.current.ctrl = ctrl;
-		}
+        var current = window.channer.components.active;
+		current.component = component;
+		current.ctrl = ctrl;
 	}
 	static route(dest: string, route_only?: boolean) {
 		if (!route_only) {

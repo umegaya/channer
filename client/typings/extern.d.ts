@@ -41,5 +41,10 @@ interface ChannerModules {
 		Topic: UI.ComponentFactory;
 		Main: UI.ComponentFactory;
 		Edit: UI.ComponentFactory;
-	}	
+        active: {
+            component: UI.Component;
+            ctrl: UI.Controller;
+        }
+	}
+    testtmp: any;
 }
