@@ -1,7 +1,5 @@
-/// <reference path="../typings/phonegap.d.ts"/>
-/// <reference path="../typings/q/Q.d.ts"/>
-
-import q = require('q');
+/// <reference path="../typings/extern.d.ts"/>
+import Q = require('q');
 import {Config} from "./config"
 import {FS} from "./fs"
 
@@ -19,7 +17,7 @@ export class StorageIO {
 		this.fs = fs;
 	}
 	write = (f: Persistable): Q.Promise<Persistable> => {
-		var df : Q.Deferred<Persistable> = q.defer<Persistable>();
+		var df : Q.Deferred<Persistable> = Q.defer<Persistable>();
 		this.fs.writefile(this.entry).then((w: FileWriter) => {
 			try {
 				var blob = new Blob([f.write()], {type:f.type()});
@@ -39,7 +37,7 @@ export class StorageIO {
 		return df.promise;
 	}
 	read = (f: Persistable): Q.Promise<Persistable> => {
-		var df : Q.Deferred<Persistable> = q.defer<Persistable>();
+		var df : Q.Deferred<Persistable> = Q.defer<Persistable>();
 		this.fs.readfile(this.entry).then((r: string) => {
 			try {
 				f.read(r);
@@ -64,7 +62,7 @@ export class Storage {
 		this.fs = fs;
 	}
 	open = (path: string, options?: Flags): Q.Promise<StorageIO> => {
-		var df : Q.Deferred<StorageIO> = q.defer<StorageIO>();
+		var df : Q.Deferred<StorageIO> = Q.defer<StorageIO>();
 		this.fs.openfile(path, options).then((e: FileEntry) => {
 			df.resolve(new StorageIO(e, this.fs));
 		}, (e: Error) => {

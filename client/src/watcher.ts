@@ -1,3 +1,4 @@
+/// <reference path="../typings/extern.d.ts"/>
 export interface Model {
 	toArrayBuffer(): ArrayBuffer;
 	toBase64(): string;
@@ -15,6 +16,9 @@ export interface ProtoErrorModel {
 export class ProtoError extends Error {
 	payload: ProtoErrorModel;
 	constructor(m: ProtoErrorModel, message?: string) {
+        if (!message && m) {
+            message = m.type.toString();
+        }
 		super(message);
 		this.payload = m;
 	}

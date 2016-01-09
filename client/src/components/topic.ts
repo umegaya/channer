@@ -1,13 +1,12 @@
 /// <reference path="../../typings/extern.d.ts"/>
-/// <reference path="../../typings/UI.d.ts"/>
-/// <reference path="../../typings/proto.d.ts"/>
 
-import {m} from "../uikit"
+import {m, Util} from "../uikit"
 import {Config} from "../config"
 
 export class TopicController implements UI.Controller {
 	component: TopicComponent;
 	constructor(component: TopicComponent) {
+		Util.active(this, component);
 		this.component = component;
 	}
 }
@@ -26,4 +25,4 @@ export class TopicComponent implements UI.Component {
 	}
 }
 
-window.channer.TopicComponent = TopicComponent
+window.channer.components.Topic = TopicComponent

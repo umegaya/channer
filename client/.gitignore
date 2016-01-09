@@ -1,3 +1,5 @@
 www/assets/*
 platforms/*
 node_modules/*
+test/reports/*
+*.log

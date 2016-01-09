@@ -1,3 +1,4 @@
+/* global __dirname */
 var fs = require("fs");
 var hashes = require('jshashes');
 var StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin;
@@ -40,10 +41,10 @@ module.exports = function (settings) {
         devtool: 'inline-source-map',
         module: {
             loaders: [
-                {test: /\.ts$/, loader: 'awesome-typescript-loader?tsconfig=./tsconfig.json'},
-                {test: /\.proto\.json$/, loader: 'raw-loader'},
-                {test: /\.css$/, loader: 'css-loader'},
-                {test: /\.styl$/, loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'},
+                {test: /\.ts$/,     loader: 'awesome-typescript-loader?tsconfig=./tsconfig.json'},
+                {test: /\.json$/,   loader: 'raw-loader'},
+                {test: /\.css$/,    loader: 'css-loader'},
+                {test: /\.styl$/,   loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'},
                 {test: /\.(png|gif|jpe?g)$/, loader: 'file-loader'},
                 {test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url?limit=10000&minetype=application/font-woff'},
                 {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file'}

@@ -1,8 +1,6 @@
 /// <reference path="../../typings/extern.d.ts"/>
-/// <reference path="../../typings/UI.d.ts"/>
-/// <reference path="../../typings/proto.d.ts"/>
 
-import {m} from "../uikit"
+import {m, Util} from "../uikit"
 import {Config} from "../config"
 import {ListComponent} from "./list"
 
@@ -13,6 +11,7 @@ export class MainController implements UI.Controller {
 		[x: string]: UI.Component;
 	}
 	constructor(component: MainComponent) {
+		Util.active(this, component);
 		this.component = component;
 		this.selected = "joins";
 		this.tab_contents = {
@@ -61,4 +60,4 @@ export class MainComponent implements UI.Component {
 	}
 }
 
-window.channer.MainComponent = MainComponent
+window.channer.components.Main = MainComponent

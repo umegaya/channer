@@ -1,5 +1,4 @@
-/// <reference path="../typings/handler.d.ts"/>
-
+/// <reference path="../typings/extern.d.ts"/>
 import {Model} from "./watcher"
 
 class SocketMap {

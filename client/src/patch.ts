@@ -1,9 +1,6 @@
-/// <reference path="../typings/phonegap.d.ts"/>
-/// <reference path="../typings/q/Q.d.ts"/>
 /// <reference path="../typings/extern.d.ts"/>
-/// <reference path="../typings/webpack-runtime.d.ts"/>
-import q = require('q');
 import {FS} from "./fs";
+import Q = require('q');
 
 class Version {
     name: string;
@@ -28,7 +25,7 @@ class Patcher {
     }
     update = (baseUrl: string, vs: Versions): Q.Promise<any> => {
         //create assets directory if not exists
-        var df: Q.Deferred<DirectoryEntry> = q.defer<DirectoryEntry>();
+        var df: Q.Deferred<DirectoryEntry> = Q.defer<DirectoryEntry>();
         //no rootDir needed. otherwise FileNotFound error raise
         return this.fs.opendir('assets', {create:true})
         .then(() => {
@@ -48,7 +45,7 @@ class Patcher {
                     loaders.push(this.fs.openfile(dest))
                 }
             }
-            return q.all(loaders)
+            return Q.all(loaders)
             .then((entries : Array<FileEntry>) => {
                 entries.shift(); //prevent patch.js from loading
                 if (entries.length > 0) {
@@ -78,7 +75,7 @@ class Patcher {
         return this.fs.openfile('config.json.next')
         .then(this.fs.readfile)
         .then((nextData: string) => {
-            var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
+            var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
             next = JSON.parse(nextData);
             //create if not exists current config.json.
             //no rootDir needed. otherwise FileNotFound error raise
@@ -125,7 +122,6 @@ window.channer.patch = function (loaderURL: string, onfinished: (config: any) =>
     onerror: (error: any) => any, debug?: boolean): any {
     console.log("start patch " + loaderURL);
     window.channer.fs = new FS(window.channer.rawfs);
-    window.channer.Q = q;
     var patcher = new Patcher(window.channer.fs, debug);
     patcher.patch(loaderURL)
     .then(function (config: any) {

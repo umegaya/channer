@@ -1,8 +1,6 @@
 /// <reference path="../../typings/extern.d.ts"/>
-/// <reference path="../../typings/UI.d.ts"/>
-/// <reference path="../../typings/proto.d.ts"/>
 
-import {m, Q} from "../uikit"
+import {m, Util} from "../uikit"
 import {Config} from "../config"
 import {ProtoError} from "../watcher"
 import ChannerProto = Proto2TypeScript.ChannerProto;
@@ -12,6 +10,7 @@ export class RescueController implements UI.Controller {
 	url: UI.Property<string>;
 	remain_time: UI.Property<number>;
 	constructor(component: RescueComponent) {
+		Util.active(this, component);
 		this.component = component;
 		this.url = m.prop("");
 		this.remain_time = m.prop(0);
@@ -67,4 +66,4 @@ export class RescueComponent implements UI.Component {
 	}
 }
 
-window.channer.RescueComponent = RescueComponent
+window.channer.components.Rescue = RescueComponent

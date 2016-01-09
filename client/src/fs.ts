@@ -1,6 +1,5 @@
-/// <reference path="../typings/phonegap.d.ts"/>
-/// <reference path="../typings/q/Q.d.ts"/>
-import q = require('q');
+/// <reference path="../typings/extern.d.ts"/>
+import Q = require('q');
 
 export class FS {
     fs: FileSystem;
@@ -8,7 +7,7 @@ export class FS {
         this.fs = fs;        
     }
     openfile = (path: string, options?: Flags): Q.Promise<FileEntry> => {
-        var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
+        var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
         this.fs.root.getFile(path, options, function (entry: FileEntry) {
             df.resolve(entry);
         }, function (e: any) {
@@ -17,7 +16,7 @@ export class FS {
         return df.promise;
     }
     readfile = (entry: FileEntry) : Q.Promise<string> => {
-        var df: Q.Deferred<string> = q.defer<string>();
+        var df: Q.Deferred<string> = Q.defer<string>();
         entry.file(function (file: File) {    
             var reader : FileReader = new FileReader();
             reader.onloadend = function (event : ProgressEvent) {
@@ -30,7 +29,7 @@ export class FS {
         return df.promise;
     }
     removefile = (entry: FileEntry) : Q.Promise<boolean> => {
-        var df: Q.Deferred<boolean> = q.defer<boolean>();
+        var df: Q.Deferred<boolean> = Q.defer<boolean>();
         entry.remove(function () {
             df.resolve(true);
         }, function (e: FileError) {
@@ -39,7 +38,7 @@ export class FS {
         return df.promise;        
     }
     writefile = (entry: FileEntry) : Q.Promise<FileWriter> => {
-        var df: Q.Deferred<FileWriter> = q.defer<FileWriter>();
+        var df: Q.Deferred<FileWriter> = Q.defer<FileWriter>();
         entry.createWriter(function (writer: FileWriter) {
             df.resolve(writer);
         }, function (e: FileError) {
@@ -48,7 +47,7 @@ export class FS {
         return df.promise;   
     }
     rename = (src: string, to: string, name?: string): Q.Promise<Entry> => {
-        var df: Q.Deferred<Entry> = q.defer<Entry>();
+        var df: Q.Deferred<Entry> = Q.defer<Entry>();
         //to should relative to root.
         return this.opendir(to)
         .then((dir: DirectoryEntry) => {
@@ -66,7 +65,7 @@ export class FS {
         });
     }
     opendir = (path: string, options?: Flags): Q.Promise<DirectoryEntry> => {
-        var df: Q.Deferred<DirectoryEntry> = q.defer<DirectoryEntry>();
+        var df: Q.Deferred<DirectoryEntry> = Q.defer<DirectoryEntry>();
         this.fs.root.getDirectory(path, options, function (entry: DirectoryEntry) {
             df.resolve(entry);
         }, function (e: any) {
@@ -75,7 +74,7 @@ export class FS {
         return df.promise;
     }
     download = (url: string, dest: string): Q.Promise<FileEntry> => {
-        var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
+        var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
         var ft: FileTransfer = new FileTransfer();
         ft.download(encodeURI(url), this.fs.root.toURL() + dest, function(entry: FileEntry) {
             df.resolve(entry);
@@ -101,7 +100,7 @@ export class FS {
     }
     loadjs = (js: FileEntry): Q.Promise<FileEntry> => {
         console.log("loadjs:" + js.toURL());
-        var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
+        var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
         var scriptTag = document.createElement('script');
         scriptTag.onload = function (event : any) {
             df.resolve(js);
@@ -113,7 +112,7 @@ export class FS {
     }
     loadcss = (css: FileEntry): Q.Promise<FileEntry> => {
         console.log("loadcss:" + css.toURL());
-        var df: Q.Deferred<FileEntry> = q.defer<FileEntry>();
+        var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
         var cssTag = document.createElement("link");
         cssTag.onload = function (event: any) {
             df.resolve(css);
@@ -132,7 +131,7 @@ export class FS {
         return df.promise;
     }
     applycss = (name: string, css: string): Q.Promise<boolean> => {
-        var df: Q.Deferred<boolean> = q.defer<boolean>();
+        var df: Q.Deferred<boolean> = Q.defer<boolean>();
         var cssTag = document.createElement("style");
         cssTag.onload = function (event: any) {
             df.resolve(true);

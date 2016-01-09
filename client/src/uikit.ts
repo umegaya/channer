@@ -1,9 +1,13 @@
 /// <reference path="../typings/extern.d.ts"/>
-/// <reference path="../typings/UI.d.ts"/>
+
 export var m : any = window.channer.m;
-export var Q : any = window.channer.Q;
 
 export class Util {
+	static active(ctrl: UI.Controller, component: UI.Component) {
+        var current = window.channer.components.active;
+		current.component = component;
+		current.ctrl = ctrl;
+	}
 	static route(dest: string, route_only?: boolean) {
 		if (!route_only) {
 			window.channer.settings.values.last_url = dest;

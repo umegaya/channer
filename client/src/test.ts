@@ -1,6 +1,3 @@
-/// <reference path="../typings/UI.d.ts"/>
-/// <reference path="../typings/proto.d.ts"/>
-
 import {m} from "./uikit"
 import {Config} from "./config"
 import ChannerProto = Proto2TypeScript.ChannerProto;

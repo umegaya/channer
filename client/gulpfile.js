@@ -1,3 +1,5 @@
+/* global __dirname */
+/* global process */
 var gulp = require('gulp');
 var exec = require('gulp-exec');
 var rename = require('gulp-rename');
@@ -6,6 +8,7 @@ var fs = require('fs');
 var ts = require('typescript/lib/typescript');
 var webpack = require('webpack');
 var WebpackDevServer = require("webpack-dev-server");
+var nightwatch = require('nightwatch');
 
 var prod = !!util.env.prod;
 var webpackConfig = Object.create(require('./webpack/' + (prod ? 'prod.js' : 'dev.js')));
@@ -64,7 +67,7 @@ var movefile = function (file) {
     var dts = file.replace(/\.ts$/, '.d.ts');
     var js = file.replace(/\.ts$/, '.js');
     var dts_dest = dts.replace(paths.typescript, paths.typescript_decl);
-    var js_dest = js.replace(paths.typescript, paths.typescript_js);
+    //var js_dest = js.replace(paths.typescript, paths.typescript_js);
     //console.log(dts, js, dts_dest, js_dest)
     fs.open(dts, 'r', function (err, fd) {
         if (!err) {
@@ -157,6 +160,7 @@ gulp.task('compile', function () {
     }
 });
 
+//compile assets once by using webpack
 gulp.task('webpack', ['webpack-clean'], function() {
   webpack(webpackConfig, function(err, stats) {
     if (err) throw new util.PluginError('webpack:build', err);
@@ -186,7 +190,7 @@ gulp.task("webpack-watch", function() {
       contentBase: webpackConfig.contentBase,
       publicPath: webpackConfig.output.publicPath,
       stats: {
-        colors:true,
+        colors: true,
         reasons: true
       }
     }).listen(port, server, function(err) {
@@ -194,6 +198,16 @@ gulp.task("webpack-watch", function() {
         // Server listening
         util.log("Starting", util.colors.blue("Webpack Development Server"));
         util.log("Listening", util.colors.magenta("http://"+server+":"+port));
+    });
+});
+
+// run test
+gulp.task('test', function () {
+    nightwatch.runner({
+        config: 'nightwatch.json',
+        env: 'chrome'
+    }, function (passed) {
+        process.exit(passed ? 0 : 1);
     });
 });
 

@@ -1,5 +1,6 @@
-/// <reference path="../typings/q/Q.d.ts"/>
-import {StorageIO, Persistable} from "./storage"
+/// <reference path="../typings/extern.d.ts"/>
+import {StorageIO, Persistable} from "./storage";
+import Q = require('q');
 
 export class Config {
 	url: string;
