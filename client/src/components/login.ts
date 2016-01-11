@@ -88,32 +88,28 @@ export class LoginController implements UI.Controller {
 		}
 		return mail;		
 	}
-	sendlogin_ready = (): boolean => {
+	sendready = (): boolean => {
 		var user: string = this.user();
 		return (user != LoginController.DEFAULT_USER_NAME && user.length > 0);
 	}
 }
 function LoginView(ctrl: LoginController) : UI.Element {
-	var elements : Array<UI.Element>;
-	if (ctrl.querying) {
-		elements = [
-			m("div", {class: "div-querying"}, "sending request now"),
-		]
-	}
-	else {
-		var title_class = ctrl.error_message ? "div-title-error" : "div-title"; 
-		elements = [ 
-			m("div", {class: title_class}, ctrl.error_message || "please enter username"),
-		]
-		elements.push(Template.textinput(ctrl.user, "input-user", "username"));
-		elements.push(Template.textinput(ctrl.mail, "input-mail", "mail address"));
-		elements.push(m("button", {
-			onclick: ctrl.onlogin,
-			class: ctrl.sendlogin_ready() ? 
-				"button-login" : 
-				"button-login-disabled", 
-		}, "Login"));
-	}
+	var elements = Template.header();
+    var title_class = ctrl.error_message ? "div-caption-error" : "div-caption"; 
+    elements.push(m("div", {
+        class: title_class, id: "guide", 
+    }, ctrl.error_message || "please enter username"));
+    elements.push(Template.textinput(ctrl.user, {
+        class:"input-text", id:"user"
+    }, "username"));
+    elements.push(Template.textinput(ctrl.mail, {
+        class: "input-text", id:"mail" 
+    }, "mail address"));
+    elements.push(m("button", {
+        onclick: ctrl.onlogin,
+        id: "send",
+        class: ctrl.sendready() ? "button-send" : "button-send-disabled", 
+    }, "Login"));
 	return m("div", {class: "login"}, elements);
 }
 export class LoginComponent implements UI.Component {

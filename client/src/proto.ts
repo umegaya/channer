@@ -15,6 +15,7 @@ export var Builder : Proto2TypeScript.ChannerProtoBuilder
 export class Handler {
 	watcher: ProtoWatcher;
 	latency: number;
+    querying: boolean;
 	private url: string;
 	private socket: Socket;
 	private msgid_seed: number;
@@ -30,6 +31,7 @@ export class Handler {
 		this.last_auth = 0;
 		this.deactivate_limit_ms = 0;
 		this.timer = timer;
+        this.querying = false;
 	}
 	private new_msgid = (): number => {
 		this.msgid_seed++;
@@ -40,21 +42,26 @@ export class Handler {
 	}
 	private redraw = () => {
 		setTimeout(() => {
+            this.querying = false;
 			m.redraw()
 		}, 1);
 	}
+    private debug_close = (error_count: number) => {
+        this.socket.debug_close(error_count);
+    }
 	private send = (p: ChannerProto.Payload, e?: ChannerProto.Error.Type, no_redraw?:boolean): Q.Promise<Model> => {
 		var df : Q.Deferred<Model> = Q.defer<Model>();
 		if (e) {
 			//return error with same manner when error caused by server
 			setTimeout(function () {
 				df.reject(new ProtoError({ type: e }));
-			}, 1)
+			}, 1);
 			return df.promise;
 		}
 		var msgid : number = this.new_msgid();
 		p.msgid = msgid;
 		this.socket.send(p);
+        this.querying = true;
 		this.watcher.subscribe_response(msgid, (model: Model) => {
 			df.resolve(model);
 		}, (e: Error) => {
@@ -72,10 +79,13 @@ export class Handler {
 		return df.promise;
 	}
 	private ontimer = (nowms: number) => {
-		if ((nowms - this.last_ping) > window.channer.config.ping_interval_ms) {
+        if (this.socket.next_connection) {
+            this.redraw();
+        }
+		else if ((nowms - this.last_ping) > window.channer.config.ping_interval_ms) {
 			this.ping(nowms).then((m: ChannerProto.PingResponse) => {
 				this.latency = (Timer.now() - m.walltime);
-				console.log("ping latency:" + this.latency);
+				//console.log("ping latency:" + this.latency);
 			}, (e: ProtoError) => {
 				console.log("ping error:" + e.message);
 			});
@@ -96,6 +106,9 @@ export class Handler {
 	private onopen = () => {
 		this.reauth();
 	}
+    private onclose = () => {
+        this.redraw();
+    }
 	private deactivate_timer = (nowms: number) => {
 		if (this.deactivate_limit_ms <= 0) {
 			return;
@@ -126,6 +139,9 @@ export class Handler {
 	private signature = (user: string, secret: string, walltime: number): string => {
 		return (new window.channer.hash.SHA256()).b64(walltime + user + secret);
 	}
+    reconnect_duration = (): number => {
+        return this.socket.reconnect_duration();
+    }
 	resume = () => {
 		console.log("handler start");
 		this.stop_deactivate();
@@ -133,6 +149,7 @@ export class Handler {
 		this.socket = this.socket || Manager.open(this.url, {
 			onmessage: this.watcher.watch,
 			onopen: this.onopen,
+            onclose: this.onclose,
 		});
 		this.timer.add(this.ontimer);
 		this.timer.add(this.watcher.ontimer);
@@ -150,7 +167,7 @@ export class Handler {
 		var p = new Builder.Payload();
 		p.type = ChannerProto.Payload.Type.PingRequest;
 		p.setPingRequest(req);
-		return this.send(p, null, true);
+		return this.send(p);
 	}
 	login = (user: string, mail: string, secret: string, pass?: string, rescue?: string): Q.Promise<Model> => {
 		var req = new Builder.LoginRequest();
@@ -177,7 +194,7 @@ export class Handler {
 		}
 		var p = new Builder.Payload();
 		p.type = ChannerProto.Payload.Type.LoginRequest;
-		p.setLoginRequest(req);
+		p.login_request = req;
 		return this.send(p);		
 	}
 	rescue = (): Q.Promise<Model> => {
@@ -191,24 +208,34 @@ export class Handler {
 		req.sign = this.signature(req.account, secret, req.walltime);
 		var p = new Builder.Payload();
 		p.type = ChannerProto.Payload.Type.RescueRequest;
-		p.setRescueRequest(req);
+		p.rescue_request = req;
 		return this.send(p);
 	}
+    create_channel = (name: string, desc?: string, style?: string, 
+        options?: ChannerProto.Model.Channel.Options): Q.Promise<Model> => {
+        var req = new Builder.ChannelCreateRequest();
+        req.name = name;
+        req.description = desc;
+        req.style = style;
+        req.options = options;
+        var p = new Builder.Payload();
+        p.type = ChannerProto.Payload.Type.ChannelCreateRequest;
+        p.channel_create_request = req;
+        return this.send(p);
+    }
 	post = (topic_id: number, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
 		var post = new Builder.Post();
 		post.text = text;
 		if (options) {
 			post.options = options;
 		}
-
 		var req = new Builder.PostRequest();
 		req.post = post;
 		req.topic_id = topic_id;
 		req.walltime = Timer.now();
-
 		var p = new Builder.Payload();
 		p.type = ChannerProto.Payload.Type.PostRequest;
-		p.setPostRequest(req);
+		p.post_request = req;
 		return this.send(p);
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"../assets"
+	"../models"
 	proto "../../proto"
 )
 
@@ -12,6 +13,8 @@ import (
 type Source interface {
 	String() string
 	Send(*proto.Payload)
+	Account() *models.Account
+	SetAccount(*models.Account)
 }
 
 //Destination is interface which is required packet destination information

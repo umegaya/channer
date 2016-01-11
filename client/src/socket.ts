@@ -20,8 +20,8 @@ const enum SocketState {
 export class Socket {
 	url: string;
 	ws: WebSocket;
+	next_connection: Date;
 	private state: SocketState;
-	private next_connection: Date;
 	private error_streak: number;
 	private pendings: Array<Model>;
 	d: Delegate;
@@ -38,6 +38,9 @@ export class Socket {
 		this.state = SocketState.DISCONNECT;
 		this.set_delegate(d || {});
 	}
+    connected = () => {
+        return this.state == SocketState.CONNECTED;
+    }
 	set_delegate = (d: Delegate) => {
 		this.d.onopen = d.onopen || Socket.default_d.onopen;
 		this.d.onmessage = d.onmessage || Socket.default_d.onmessage;
@@ -62,10 +65,18 @@ export class Socket {
 			delete sm[this.url];
 		}
 	}
-	reconnect_duration = (nowms: number): number => {
+    debug_close = (error_count: number) => {
+        if (error_count > 0) {
+            error_count--;
+        }
+        this.error_streak = error_count;
+        this.ws.close();
+    }
+	reconnect_duration = (nowms?: number): number => {
 		if (!this.next_connection) {
 			return null;
 		}
+        nowms = nowms || (new Date()).getTime();
 		var diff_msec = this.next_connection.getTime() - nowms;
 		return Math.ceil(diff_msec / 1000);
 	}
@@ -87,13 +98,16 @@ export class Socket {
 		this.error_streak = 0;		
 	}
 	private set_reconnect_duration = (dt: number) => {
-		var t = this.next_connection || new Date();
+		var t = new Date();
 		t.setTime(t.getTime() + dt);
-		this.next_connection = t;		
+		this.next_connection = t;
 	}
 	private add_error_streak = () => {
+        console.log("err:" + this.error_streak + " ~> " + this.error_streak);
 		this.error_streak++;
-		this.set_reconnect_duration(1000 * Math.min(300, Math.pow(2, this.error_streak - 1)));
+		this.set_reconnect_duration(
+            1000 * Math.min(300, Math.pow(2, this.error_streak - 1))
+        );
 	}
 	private onopen = () => {
 		this.state = SocketState.CONNECTED;
@@ -117,7 +131,7 @@ export class Socket {
 	private onerror = (event:any) => {
 		this.state = SocketState.DISCONNECT;
 		this.ws = null;
-		this.add_error_streak();
+		//this.add_error_streak();
 		this.d.onerror(event);
 	}
 }
@@ -135,9 +149,9 @@ export class Manager {
 		for (var k in sm) {
 			var s = sm[k];
 			var dur = s.reconnect_duration(nowms);
-			if (dur) {
+			/*if (dur) {
 				console.log(k + " reconnect duraction:" + dur);
-			}
+			}*/
 			if (dur && dur <= 0) {
 				s.open();
 			}

@@ -56,9 +56,29 @@ message Model {
 	}
 
 	message Channel {
+		enum IdentityLevel {
+			None = 0;		//no identity. it means no identifier for every post in this channel.
+			Topic = 1;		//topic-level identity. it means all post in same topic by same persona, will be assigned identifier.
+			Channel = 2;	//channel-level identify(default). it means among all post in same channel by same persona, it will have same identifier.
+			Account = 3;	//accont-level identity. it means among all post in this channel, it will show original account id of submitter.
+		}
+		enum TopicDisplayStyle {
+			Unknown = 0;
+			Tail = 1;		//all post show in time-series order(default). eg. 2ch, github, and most of forum
+			Tree = 2;		//post shows with respecting graph structure defined by "in reply to which post". eg. reddit, 4chan
+		}
+		message Options {
+			optional IdentityLevel identity  = 1 [(gogoproto.nullable) = true];					//how user can know identity of submitter
+			optional TopicDisplayStyle topic_display_style = 2 [(gogoproto.nullable) = true];	//how topic shows
+			optional uint32 topic_post_limit = 3 [(gogoproto.nullable) = true];					//how many post can be posted to same topic?
+			optional string anonymous_name = 4 [(gogoproto.nullable) = true];					//how anonymous to be shown its name? eg. 名無しさん.
+		}
 		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string name = 2;
-		required string style = 3;
+		required string description = 3;
+		required string style = 4;
+		required uint64 established = 5 [(gogoproto.casttype) = "UUID"];	//account id which create this channel TODO: forum creation limit per account.
+		required bytes options = 6;
 	}
 
 	message Device {
@@ -165,6 +185,13 @@ message RescueRequest {
 	required uint64 walltime = 3;
 }
 
+message ChannelCreateRequest {
+	required string name = 1;
+	optional string description = 2;
+	optional string style = 3;
+	optional Model.Channel.Options options = 4;
+}
+
 
 
 
@@ -203,6 +230,9 @@ message RescueResponse {
 	required int64 remain = 2;
 }
 
+message ChannelCreateResponse {
+}
+
 
 
 //response error
@@ -238,9 +268,9 @@ message Payload {
 	enum Type { 
 		Unknown = 0;
 		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7; 
-		RescueRequest = 8;
+		RescueRequest = 8; ChannelCreateRequest = 9;
 		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37; 
-		RescueResponse = 38;
+		RescueResponse = 38; ChannelCreateResponse = 39;
 		PostNotify = 61;
 		Error = 101;
 	}
@@ -254,6 +284,7 @@ message Payload {
 	optional ExitTopicRequest exit_topic_request = 8;
 	optional PingRequest ping_request = 9;
 	optional RescueRequest rescue_request = 10;
+	optional ChannelCreateRequest channel_create_request = 11;
 
 	optional Error error = 30;
 

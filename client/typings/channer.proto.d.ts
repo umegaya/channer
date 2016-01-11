@@ -56,6 +56,7 @@ declare module Proto2TypeScript {
 		ExitTopicRequest: ChannerProto.ExitTopicRequestBuilder;
 		PingRequest: ChannerProto.PingRequestBuilder;
 		RescueRequest: ChannerProto.RescueRequestBuilder;
+		ChannelCreateRequest: ChannerProto.ChannelCreateRequestBuilder;
 		LoginResponse: ChannerProto.LoginResponseBuilder;
 		PostResponse: ChannerProto.PostResponseBuilder;
 		FetchResponse: ChannerProto.FetchResponseBuilder;
@@ -64,6 +65,7 @@ declare module Proto2TypeScript {
 		ExitTopicResponse: ChannerProto.ExitTopicResponseBuilder;
 		PingResponse: ChannerProto.PingResponseBuilder;
 		RescueResponse: ChannerProto.RescueResponseBuilder;
+		ChannelCreateResponse: ChannerProto.ChannelCreateResponseBuilder;
 		Error: ChannerProto.ErrorBuilder;
 		Payload: ChannerProto.PayloadBuilder;
 		
@@ -282,9 +284,18 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		name: string;
 		getName() : string;
 		setName(name : string): void;
+		description: string;
+		getDescription() : string;
+		setDescription(description : string): void;
 		style: string;
 		getStyle() : string;
 		setStyle(style : string): void;
+		established: number;
+		getEstablished() : number;
+		setEstablished(established : number): void;
+		options: ByteBuffer;
+		getOptions() : ByteBuffer;
+		setOptions(options : ByteBuffer): void;
 		
 	}
 	
@@ -294,8 +305,58 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		//decode(buffer: NodeBuffer) : Channel;
 		//decode(buffer: ByteArrayBuffer) : Channel;
 		decode64(buffer: string) : Channel;
+		Options: Channel.OptionsBuilder;
+		IdentityLevel: Channel.IdentityLevel;
+		TopicDisplayStyle: Channel.TopicDisplayStyle;
 		
 	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.Model.Channel {
+
+	export interface Options extends ProtoBufModel {
+		identity?: IdentityLevel;
+		getIdentity() : IdentityLevel;
+		setIdentity(identity : IdentityLevel): void;
+		topic_display_style?: TopicDisplayStyle;
+		getTopicDisplayStyle() : TopicDisplayStyle;
+		setTopicDisplayStyle(topicDisplayStyle : TopicDisplayStyle): void;
+		topic_post_limit?: number;
+		getTopicPostLimit() : number;
+		setTopicPostLimit(topicPostLimit : number): void;
+		anonymous_name?: string;
+		getAnonymousName() : string;
+		setAnonymousName(anonymousName : string): void;
+		
+	}
+	
+	export interface OptionsBuilder {
+		new(): Options;
+		decode(buffer: ArrayBuffer) : Options;
+		//decode(buffer: NodeBuffer) : Options;
+		//decode(buffer: ByteArrayBuffer) : Options;
+		decode64(buffer: string) : Options;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.Model.Channel {
+	export const enum IdentityLevel {
+		None = 0,
+		Topic = 1,
+		Channel = 2,
+		Account = 3,
+		
+	}
+}
+
+declare module Proto2TypeScript.ChannerProto.Model.Channel {
+	export const enum TopicDisplayStyle {
+		Unknown = 0,
+		Tail = 1,
+		Tree = 2,
+		
+	}
 }
 
 declare module Proto2TypeScript.ChannerProto.Model {
@@ -704,6 +765,34 @@ declare module Proto2TypeScript.ChannerProto {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface ChannelCreateRequest extends ProtoBufModel {
+		name: string;
+		getName() : string;
+		setName(name : string): void;
+		description?: string;
+		getDescription() : string;
+		setDescription(description : string): void;
+		style?: string;
+		getStyle() : string;
+		setStyle(style : string): void;
+		options?: Model.Channel.Options;
+		getOptions() : Model.Channel.Options;
+		setOptions(options : Model.Channel.Options): void;
+		
+	}
+	
+	export interface ChannelCreateRequestBuilder {
+		new(): ChannelCreateRequest;
+		decode(buffer: ArrayBuffer) : ChannelCreateRequest;
+		//decode(buffer: NodeBuffer) : ChannelCreateRequest;
+		//decode(buffer: ByteArrayBuffer) : ChannelCreateRequest;
+		decode64(buffer: string) : ChannelCreateRequest;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface LoginResponse extends ProtoBufModel {
 		id: string;
 		getId() : string;
@@ -862,6 +951,22 @@ declare module Proto2TypeScript.ChannerProto {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface ChannelCreateResponse extends ProtoBufModel {
+		
+	}
+	
+	export interface ChannelCreateResponseBuilder {
+		new(): ChannelCreateResponse;
+		decode(buffer: ArrayBuffer) : ChannelCreateResponse;
+		//decode(buffer: NodeBuffer) : ChannelCreateResponse;
+		//decode(buffer: ByteArrayBuffer) : ChannelCreateResponse;
+		decode64(buffer: string) : ChannelCreateResponse;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface Error extends ProtoBufModel {
 		type: Error.Type;
 		getType() : Error.Type;
@@ -933,6 +1038,9 @@ declare module Proto2TypeScript.ChannerProto {
 		rescue_request?: RescueRequest;
 		getRescueRequest() : RescueRequest;
 		setRescueRequest(rescueRequest : RescueRequest): void;
+		channel_create_request?: ChannelCreateRequest;
+		getChannelCreateRequest() : ChannelCreateRequest;
+		setChannelCreateRequest(channelCreateRequest : ChannelCreateRequest): void;
 		error?: Error;
 		getError() : Error;
 		setError(error : Error): void;
@@ -988,6 +1096,7 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		ExitTopicRequest = 6,
 		PingRequest = 7,
 		RescueRequest = 8,
+		ChannelCreateRequest = 9,
 		LoginResponse = 31,
 		PostResponse = 32,
 		FetchResponse = 33,
@@ -996,6 +1105,7 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		ExitTopicResponse = 36,
 		PingResponse = 37,
 		RescueResponse = 38,
+		ChannelCreateResponse = 39,
 		PostNotify = 61,
 		Error = 101,
 		

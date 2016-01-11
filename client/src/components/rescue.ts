@@ -1,6 +1,6 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util} from "../uikit"
+import {m, Util, Template} from "../uikit"
 import {Config} from "../config"
 import {ProtoError} from "../watcher"
 import ChannerProto = Proto2TypeScript.ChannerProto;
@@ -35,20 +35,20 @@ export class RescueController implements UI.Controller {
 	} 
 }
 function RescueView(ctrl: RescueController) : UI.Element {
-	var elems : Array<UI.Element> = [
-		m("div", "send below url to device you want to login with same account."),
-	];
+	var elems = Template.header();
+    elems.push(m("div", {class: "div-text", id: "guide"}, 
+        "send below url to device you want to login with same account."));
 	var remain_nano = ctrl.remain_time();
 	if (remain_nano > 0) {
 		var hours = Math.floor((remain_nano / (1000000000 * 60 * 60)) * 10) / 10;
-		elems.push(m("div", "url valid during " + hours + " hours."));
+		elems.push(m("div", {class: "div-text", id: "remain"}, 
+            "url valid during " + hours + " hours."));
 	}
 	elems.push([
-		m("textarea", {
-			class: "textarea-url",
-		}, ctrl.url()),
+		m("textarea", {class: "textarea-readonly", id: "url"}, ctrl.url()),
 		m("button", {
 			onclick: ctrl.onsend,
+            id: "send",
 			class: "button-send", 
 		}, "Send"),
 	]);

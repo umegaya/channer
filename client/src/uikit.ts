@@ -1,5 +1,6 @@
 /// <reference path="../typings/extern.d.ts"/>
 
+import {Handler} from "./proto"
 export var m : any = window.channer.m;
 
 export class Util {
@@ -21,7 +22,8 @@ export class Util {
 	}
 }
 export class Template {
-	static textinput(bind: UI.Property<string>, klass: string, initval: string, secure?:boolean) {
+	static textinput(bind: UI.Property<string>, 
+        options: {class?:string, id?:string}, initval: string, secure?:boolean) {
 		var value = bind();
 		var has_input = (value != initval); 
 		return m("input", {
@@ -43,7 +45,30 @@ export class Template {
 			style: { color: has_input ? "#000000" : "#999999" },
 			type: (secure && has_input) ? "password" : "text",
 			value: value,
-			class: klass,
+            id: options.id, 
+			class: options.class,
 		})	
 	}
+    static radio(options: { [key:number]:string }, prop: UI.Property<number>): UI.Element {
+        for (var k in options) {
+            
+        }
+        return m("div", {class: "radio"});
+    }
+    static header(): Array<UI.Element> {
+        var elements : Array<UI.Element> = [];
+        var c : Handler = window.channer.conn;
+        var rd = c.reconnect_duration();
+        if (c.querying) {
+            elements.push(m("div", {class: "div-query"}, "sending request now"));
+        }
+        if (rd > 0) {
+            elements.push(m("div", {class: "div-reconnection"}, 
+                "reconnect within " + rd + " second"));            
+        }
+        else {
+            elements.push(m("div", {class: "div-latency"}, c.latency + "ms"));
+        }
+        return elements;
+    }
 }

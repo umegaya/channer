@@ -17,9 +17,9 @@ module.exports = {
             .pause(common.LOAD_PAUSE)
             .assert.title('Channer')
             .assert.elementPresent('.login')
-            .assert.elementPresent('.login .input-user')
-            .assert.elementPresent('.login .input-mail')
-            .assert.elementPresent('.login .button-login-disabled')
+            .assert.elementPresent('.login #user')
+            .assert.elementPresent('.login #mail')
+            .assert.elementPresent('.login .button-send-disabled')
             .execute(function () {
                 if (window.channer.mobile) {
                     return ["should not be mobile"];
@@ -51,14 +51,30 @@ module.exports = {
                 }
                 return this;
             })
-            .perform(common.inputter('.login .input-user', common.USERNAME))
+            .assert.containsText('.login .div-latency', 'ms')
+            .execute(function () {
+                window.channer.conn.debug_close(2);
+                return [false];
+            }, [], function (result) {
+                if (result.value[0]) {
+                    throw new Error(result.value[0]);
+                }
+                return this;                
+            })
+            .pause(common.TRANSITION_PAUSE)
+            .assert.elementNotPresent('.login .div-latency')
+            .assert.elementPresent('.login .div-reconnection')
+            .pause(1000 * 4)
+            .assert.elementPresent('.login .div-latency')
+            .assert.elementNotPresent('.login .div-reconnection')
+            .perform(common.inputter('.login #user', common.USERNAME))
             .pause(common.INPUT_PAUSE)
-            .assert.elementNotPresent('.login .button-login')
+            .assert.elementNotPresent('.login .button-send')
             //last setValue usually lose some of its key stroke. special input method required.
-            .perform(common.inputter('.login .input-mail', common.EMAIL))
+            .perform(common.inputter('.login #mail', common.EMAIL))
             .pause(common.INPUT_PAUSE)
-            .assert.elementPresent('.login .button-login')
-            .click('.login .button-login')
+            .assert.elementPresent('.login .button-send')
+            .click('.login .button-send')
             .pause(common.TRANSITION_PAUSE)
             .assert.elementNotPresent('.login')
             .assert.elementPresent('.channel-list')
@@ -129,7 +145,7 @@ module.exports = {
                         common.BASEURL + "?env=devtest/#/rescue/" + context.rescue_token;
                 }
                 this.assert.attributeEquals(
-                    '.rescue .textarea-url', 
+                    '.rescue .textarea-readonly', 
                     'value', "/rescue/" + context.rescue_token)
                 return this;
             })

@@ -229,8 +229,112 @@
                                 {
                                     "rule": "required",
                                     "type": "string",
-                                    "name": "style",
+                                    "name": "description",
                                     "id": 3
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "style",
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "established",
+                                    "id": 5,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "bytes",
+                                    "name": "options",
+                                    "id": 6
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "name": "Options",
+                                    "fields": [
+                                        {
+                                            "rule": "optional",
+                                            "type": "IdentityLevel",
+                                            "name": "identity",
+                                            "id": 1,
+                                            "options": {
+                                                "(gogoproto.nullable)": true
+                                            }
+                                        },
+                                        {
+                                            "rule": "optional",
+                                            "type": "TopicDisplayStyle",
+                                            "name": "topic_display_style",
+                                            "id": 2,
+                                            "options": {
+                                                "(gogoproto.nullable)": true
+                                            }
+                                        },
+                                        {
+                                            "rule": "optional",
+                                            "type": "uint32",
+                                            "name": "topic_post_limit",
+                                            "id": 3,
+                                            "options": {
+                                                "(gogoproto.nullable)": true
+                                            }
+                                        },
+                                        {
+                                            "rule": "optional",
+                                            "type": "string",
+                                            "name": "anonymous_name",
+                                            "id": 4,
+                                            "options": {
+                                                "(gogoproto.nullable)": true
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "enums": [
+                                {
+                                    "name": "IdentityLevel",
+                                    "values": [
+                                        {
+                                            "name": "None",
+                                            "id": 0
+                                        },
+                                        {
+                                            "name": "Topic",
+                                            "id": 1
+                                        },
+                                        {
+                                            "name": "Channel",
+                                            "id": 2
+                                        },
+                                        {
+                                            "name": "Account",
+                                            "id": 3
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "TopicDisplayStyle",
+                                    "values": [
+                                        {
+                                            "name": "Unknown",
+                                            "id": 0
+                                        },
+                                        {
+                                            "name": "Tail",
+                                            "id": 1
+                                        },
+                                        {
+                                            "name": "Tree",
+                                            "id": 2
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -704,6 +808,35 @@
                     ]
                 },
                 {
+                    "name": "ChannelCreateRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "name",
+                            "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "description",
+                            "id": 2
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "style",
+                            "id": 3
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "Model.Channel.Options",
+                            "name": "options",
+                            "id": 4
+                        }
+                    ]
+                },
+                {
                     "name": "LoginResponse",
                     "fields": [
                         {
@@ -808,6 +941,10 @@
                             "id": 2
                         }
                     ]
+                },
+                {
+                    "name": "ChannelCreateResponse",
+                    "fields": []
                 },
                 {
                     "name": "Error",
@@ -942,6 +1079,12 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "ChannelCreateRequest",
+                            "name": "channel_create_request",
+                            "id": 11
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Error",
                             "name": "error",
                             "id": 30
@@ -1042,6 +1185,10 @@
                                     "id": 8
                                 },
                                 {
+                                    "name": "ChannelCreateRequest",
+                                    "id": 9
+                                },
+                                {
                                     "name": "LoginResponse",
                                     "id": 31
                                 },
@@ -1072,6 +1219,10 @@
                                 {
                                     "name": "RescueResponse",
                                     "id": 38
+                                },
+                                {
+                                    "name": "ChannelCreateResponse",
+                                    "id": 39
                                 },
                                 {
                                     "name": "PostNotify",
