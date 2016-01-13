@@ -80,6 +80,9 @@ export class Socket {
 		var diff_msec = this.next_connection.getTime() - nowms;
 		return Math.ceil(diff_msec / 1000);
 	}
+    connecting = (): boolean => {
+        return this.state == SocketState.CONNECTING;
+    }
 	//don't call from outside of this module. only exposed for below setInterval callback.
 	open = () => {
 		if (this.state == SocketState.DISCONNECT) {

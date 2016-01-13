@@ -16,6 +16,7 @@ export class Handler {
 	watcher: ProtoWatcher;
 	latency: number;
     querying: boolean;
+    last_error: Error;
 	private url: string;
 	private socket: Socket;
 	private msgid_seed: number;
@@ -41,9 +42,10 @@ export class Handler {
 		return this.msgid_seed;
 	}
 	private redraw = () => {
+        //TODO: should use start/end Computation?
 		setTimeout(() => {
             this.querying = false;
-			m.redraw()
+			m.redraw();
 		}, 1);
 	}
     private debug_close = (error_count: number) => {
@@ -65,6 +67,7 @@ export class Handler {
 		this.watcher.subscribe_response(msgid, (model: Model) => {
 			df.resolve(model);
 		}, (e: Error) => {
+            this.last_error = e;
 			if (e instanceof ProtoError) {
 				var pe = <ProtoError>e;
 				if (!e.message && pe.payload) {
@@ -79,7 +82,7 @@ export class Handler {
 		return df.promise;
 	}
 	private ontimer = (nowms: number) => {
-        if (this.socket.next_connection) {
+        if (this.socket.next_connection || this.socket.connecting()) {
             this.redraw();
         }
 		else if ((nowms - this.last_ping) > window.channer.config.ping_interval_ms) {
@@ -141,6 +144,9 @@ export class Handler {
 	}
     reconnect_duration = (): number => {
         return this.socket.reconnect_duration();
+    }
+    connecting = (): boolean => {
+        return this.socket.connecting();
     }
 	resume = () => {
 		console.log("handler start");
@@ -211,7 +217,7 @@ export class Handler {
 		p.rescue_request = req;
 		return this.send(p);
 	}
-    create_channel = (name: string, desc?: string, style?: string, 
+    channel_create = (name: string, desc?: string, style?: string, 
         options?: ChannerProto.Model.Channel.Options): Q.Promise<Model> => {
         var req = new Builder.ChannelCreateRequest();
         req.name = name;
@@ -221,6 +227,12 @@ export class Handler {
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.ChannelCreateRequest;
         p.channel_create_request = req;
+        return this.send(p);
+    }
+    channel_list = (category?: string): Q.Promise<Model> => {
+        var p = new Builder.Payload();
+        p.type = ChannerProto.Payload.Type.ChannelCreateRequest;
+        //p.channel_create_request = req;
         return this.send(p);
     }
 	post = (topic_id: number, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {

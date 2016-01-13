@@ -1,8 +1,7 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util} from "../uikit"
+import {m, Util, ListComponent} from "../uikit"
 import {Config} from "../config"
-import {ListComponent} from "./list"
 
 export class MainController implements UI.Controller {
 	component: MainComponent;
@@ -15,10 +14,10 @@ export class MainController implements UI.Controller {
 		this.component = component;
 		this.selected = "joins";
 		this.tab_contents = {
-			joins: new ListComponent("joins"),
+/*			joins: new ListComponent("joins"),
 			topics: new ListComponent("topics"),
 			replies: new ListComponent("replies"),
-			reactions: new ListComponent("reactions")
+			reactions: new ListComponent("reactions") */
 		};
 	}
 	tabs = () => {
@@ -36,7 +35,7 @@ export class MainController implements UI.Controller {
 		}, name);
 	}
 	activetab = (): UI.Component => {
-		return this.tab_contents[this.selected] || m("div", "error!");
+		return this.tab_contents[this.selected];
 	}
 	onchange = (name: string) => {
 		this.selected = name;

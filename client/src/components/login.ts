@@ -13,7 +13,6 @@ export class LoginController implements UI.Controller {
 	mail: UI.Property<string>;
 	retype: UI.Property<string>;
 	error_message: string;
-	querying: boolean;
 	constructor(component: LoginComponent) {
 		Util.active(this, component);
 		this.component = component;
@@ -53,7 +52,6 @@ export class LoginController implements UI.Controller {
 		window.channer.conn.login(user, mail, secret, pass, this.component.rescue)
 		.then((r: ChannerProto.LoginResponse) => {
 			console.log("login success!:" + r.secret + "|" + r.id);
-			this.querying = false;
 			window.channer.settings.values.secret = r.secret;
 			window.channer.settings.values.mail = r.mail || mail;
 			window.channer.settings.values.account_id = r.id;
@@ -66,20 +64,16 @@ export class LoginController implements UI.Controller {
 			Util.route(this.component.next_url);
 		}, (e: ProtoError) => {
 			console.log("login error:" + e.message);
-			this.querying = false;
 			if (e.payload.type == ChannerProto.Error.Type.Login_OutdatedVersion) {
 				console.log("reload app for updating client:" + window.channer.config.client_version);
 				Util.restart_app();
 			}
 			else {
-				this.error_message = e.message;
 				window.channer.settings.values.secret = null;
 				window.channer.settings.save();
 				this.resetinput();
 			}
 		});
-		this.querying = true;
-		this.error_message = null;
 	}
 	sanitized_mail_address = (): string => {
 		var mail = this.mail();
@@ -95,21 +89,19 @@ export class LoginController implements UI.Controller {
 }
 function LoginView(ctrl: LoginController) : UI.Element {
 	var elements = Template.header();
-    var title_class = ctrl.error_message ? "div-caption-error" : "div-caption"; 
-    elements.push(m("div", {
-        class: title_class, id: "guide", 
-    }, ctrl.error_message || "please enter username"));
-    elements.push(Template.textinput(ctrl.user, {
-        class:"input-text", id:"user"
-    }, "username"));
-    elements.push(Template.textinput(ctrl.mail, {
-        class: "input-text", id:"mail" 
-    }, "mail address"));
-    elements.push(m("button", {
-        onclick: ctrl.onlogin,
-        id: "send",
-        class: ctrl.sendready() ? "button-send" : "button-send-disabled", 
-    }, "Login"));
+    if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
+        elements.push(m("div", {class: "div-caption"}, "please enter username"));
+        elements.push(Template.textinput(ctrl.user, {
+            class:"input-text user"
+        }, "username"));
+        elements.push(Template.textinput(ctrl.mail, {
+            class: "input-text mail" 
+        }, "mail address"));
+        elements.push(m("button", {
+            onclick: ctrl.onlogin,
+            class: ctrl.sendready() ? "button-send" : "button-send-disabled", 
+        }, "Login"));
+    }
 	return m("div", {class: "login"}, elements);
 }
 export class LoginComponent implements UI.Component {

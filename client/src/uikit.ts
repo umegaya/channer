@@ -1,8 +1,84 @@
 /// <reference path="../typings/extern.d.ts"/>
 
 import {Handler} from "./proto"
-export var m : any = window.channer.m;
+export var m : _mithril.MithrilStatic = window.channer.m;
 
+interface PropCondition {
+    init: any;
+    fallback?: any;
+    check?: any;
+}
+export class PropConditions {
+    required: {
+        [k:string]:PropCondition,
+    };
+    optional: {
+        [k:string]:PropCondition,
+    }
+};
+export class PropCollection {
+    cond: PropConditions;
+    props:{[k:string]: UI.Property<any>};
+    constructor(cond: PropConditions) {
+        this.props = {};
+        this.cond = cond;
+        for (var k in cond.required) {
+            var ini = cond.required[k].init;
+            this.create_prop(k, ini);
+        }
+        for (var k in cond.optional) {
+            var ini = cond.optional[k].init;
+            this.create_prop(k, ini);
+        }
+    }
+    check = (): {[k:string]:any} => {
+        var verified: {[k:string]:string|number} = {};
+        var cond = this.cond;
+        for (var k in cond.required || {}) {
+            var p = this.props[k];
+            var c = cond.required[k];
+            if (p) {
+                var v = p();
+                if (!this.validate(v, c)) {
+                    return;
+                }
+                verified[k] = v;
+            }
+        }
+        for (var k in cond.optional || {}) {
+            var p = this.props[k];
+            var c = cond.optional[k];
+            if (p) {
+                var v = p();
+                if (!this.validate(v, c)) {
+                    v = c.fallback || c.init;
+                }
+                verified[k] = v;
+            }
+        }
+        for (var k in this.props) {
+            if (!verified[k]) {
+                verified[k] = this.props[k]();
+            }
+        }
+        return verified;
+    }
+    private validate = (val: any, cond: PropCondition): boolean => {
+        if (typeof(val) == "string" && !val) {
+            return false;
+        }
+        if (typeof(cond.check) == "undefined") {
+            return val != cond.init;
+        }
+        else if (typeof(cond.check) == "function") {
+            return cond.check(val);
+        }
+        return cond.check != val;
+    }
+    private create_prop = (k: string, v: string|number) => {
+        this.props[k] = m.prop(v);
+    }
+};
 export class Util {
 	static active(ctrl: UI.Controller, component: UI.Component) {
         var current = window.channer.components.active;
@@ -21,13 +97,17 @@ export class Util {
 		document.location.reload();
 	}
 }
+export interface Router {
+    (rootElement: Element, defaultRoute: string, 
+        routes: _mithril.MithrilRoutes<UI.Controller>): void;
+}
 export class Template {
 	static textinput(bind: UI.Property<string>, 
-        options: {class?:string, id?:string}, initval: string, secure?:boolean) {
+        options: UI.Attributes, initval: string, secure?:boolean) {
 		var value = bind();
 		var has_input = (value != initval); 
 		return m("input", {
-			onchange: m.withAttr("value", bind),
+			oninput: m.withAttr("value", bind),
 			onfocus: function () { 
 				var v = bind()
 				if (v == initval) { 
@@ -47,28 +127,101 @@ export class Template {
 			value: value,
             id: options.id, 
 			class: options.class,
-		})	
+		});
 	}
-    static radio(options: { [key:number]:string }, prop: UI.Property<number>): UI.Element {
-        for (var k in options) {
-            
+    static radio(options: UI.Attributes, name: string,
+        selects: [[number, string]], prop: UI.Property<number>): UI.Element {
+        var elems: Array<UI.Element> = [];
+        var current = prop();
+        for (var k in selects) {
+            var sel = selects[k];
+            var active = (sel[0] == current);
+            elems.push(m("input[type=radio]", { 
+                class: active ? "active" : "not-active",
+                checked: active ? "checked" : undefined,
+                name: name,
+                value: sel[0],
+                onclick: m.withAttr("value", prop),
+            }));
+            elems.push(m("div", {class: "div-text"}, sel[1]));
         }
-        return m("div", {class: "radio"});
+        return m("div", options, elems);
     }
+    static tab(
+        active: UI.Property<string>, 
+        tabs: [string]
+    ): UI.Element {
+        var a : string = active();
+        var elems: Array<UI.Element> = [];
+        for (var i in tabs) {
+            var k = tabs[i];
+            var activeness = (k == a) ? "active" : "not-active";
+            elems.push(m("div", {
+                value: k,
+                class: "div-tab-element " + activeness,
+                onclick: m.withAttr("value", active),
+            }, k));
+        }
+        return m("div", {class: "div-tab"}, elems);
+    } 
     static header(): Array<UI.Element> {
         var elements : Array<UI.Element> = [];
         var c : Handler = window.channer.conn;
         var rd = c.reconnect_duration();
+        var connecting = c.connecting();
+        var err = c.last_error;
         if (c.querying) {
+            //TODO: replace to cool GIF anim
             elements.push(m("div", {class: "div-query"}, "sending request now"));
         }
+        //TODO: custom header message from current active component
+        //otherwise show system network status
         if (rd > 0) {
-            elements.push(m("div", {class: "div-reconnection"}, 
+            //TODO: tap to reconnection
+            elements.push(m("div", {class: "div-wait-reconnect"}, 
                 "reconnect within " + rd + " second"));            
         }
+        else if (connecting) {
+            elements.push(m("div", {class: "div-reconnecting"}, "reconnecting"));
+        }
         else {
+            if (err) {
+                //TODO: tap to remove message
+                elements.push(m("div", {class: "div-request-error"}, err)); 
+            }
             elements.push(m("div", {class: "div-latency"}, c.latency + "ms"));
         }
         return elements;
+    }
+}
+
+export interface ModelCollection {
+    map(fn: (m: any) => UI.Element);
+    refresh();
+    empty():boolean;
+}
+export class ListComponent implements UI.Component {
+	elemview: (c: ModelCollection, m: any) => UI.Element;
+    models: ModelCollection;
+    name: string;
+
+	constructor(name: string, 
+        models: ModelCollection, 
+        view: (c: ModelCollection, m: any) => UI.Element) {
+        this.elemview = view;
+        this.name = name;
+        this.models = models;
+        models.refresh();
+	}
+    controller = (): any => {
+        return this.models;
+    }
+    view = (models: ModelCollection): UI.Element => {
+        return m("div", {class: this.name + "-list"}, models.empty() ?
+            m("div", {class: "div-text"}, "no " + this.name + " elements") :  
+            models.map((m: any) => {
+                return this.elemview(models, m);
+            })
+        );
     }
 }

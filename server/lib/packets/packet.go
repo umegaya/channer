@@ -47,21 +47,28 @@ var handlers = map[proto.Payload_Type]func (pkt *RecvPacket, t Transport) {
 		}
 	},
 	proto.Payload_PingRequest: func (pkt *RecvPacket, t Transport) {
-		//go Process(pkt.From, pkt.Payload.PingRequest, t)
 		if pkt.Payload.PingRequest != nil {
 			go ProcessPing(pkt.From, pkt.Payload.Msgid, pkt.Payload.PingRequest, t)
 		}
 	},
 	proto.Payload_LoginRequest: func (pkt *RecvPacket, t Transport) {
-		//go Process(pkt.From, pkt.Payload.PingRequest, t)
 		if pkt.Payload.LoginRequest != nil {
 			go ProcessLogin(pkt.From, pkt.Payload.Msgid, pkt.Payload.LoginRequest, t)
 		}
 	},
 	proto.Payload_RescueRequest: func (pkt *RecvPacket, t Transport) {
-		//go Process(pkt.From, pkt.Payload.PingRequest, t)
 		if pkt.Payload.RescueRequest != nil {
 			go ProcessRescue(pkt.From, pkt.Payload.Msgid, pkt.Payload.RescueRequest, t)
+		}
+	},
+	proto.Payload_ChannelCreateRequest: func (pkt *RecvPacket, t Transport) {
+		if pkt.Payload.ChannelCreateRequest != nil {
+			go ProcessChannelCreate(pkt.From, pkt.Payload.Msgid, pkt.Payload.ChannelCreateRequest, t)
+		}
+	},
+	proto.Payload_ChannelListRequest: func (pkt *RecvPacket, t Transport) {
+		if pkt.Payload.ChannelListRequest != nil {
+			go ProcessChannelList(pkt.From, pkt.Payload.Msgid, pkt.Payload.ChannelListRequest, t)
 		}
 	},
 }
@@ -102,7 +109,7 @@ func SendError(src Source, msgid uint32, reason proto.Error_Type) {
 //TopicDestination is destination which specifies topic. packet send to
 //all participant of the topic
 type TopicDestination struct {
-	TopicId uint64
+	TopicId proto.UUID
 }
 
 //String implements Destination intarface

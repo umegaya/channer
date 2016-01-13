@@ -17,8 +17,8 @@ module.exports = {
             .pause(common.LOAD_PAUSE)
             .assert.title('Channer')
             .assert.elementPresent('.login')
-            .assert.elementPresent('.login #user')
-            .assert.elementPresent('.login #mail')
+            .assert.elementPresent('.login .input-text.user')
+            .assert.elementPresent('.login .input-text.mail')
             .assert.elementPresent('.login .button-send-disabled')
             .execute(function () {
                 if (window.channer.mobile) {
@@ -66,12 +66,12 @@ module.exports = {
             .assert.elementPresent('.login .div-reconnection')
             .pause(1000 * 4)
             .assert.elementPresent('.login .div-latency')
-            .assert.elementNotPresent('.login .div-reconnection')
-            .perform(common.inputter('.login #user', common.USERNAME))
+            .assert.elementNotPresent('.login .div-wait-reconnect')
+            .perform(common.inputter('.login .user', common.USERNAME))
             .pause(common.INPUT_PAUSE)
             .assert.elementNotPresent('.login .button-send')
             //last setValue usually lose some of its key stroke. special input method required.
-            .perform(common.inputter('.login #mail', common.EMAIL))
+            .perform(common.inputter('.login .mail', common.EMAIL))
             .pause(common.INPUT_PAUSE)
             .assert.elementPresent('.login .button-send')
             .click('.login .button-send')

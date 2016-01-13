@@ -57,6 +57,7 @@ declare module Proto2TypeScript {
 		PingRequest: ChannerProto.PingRequestBuilder;
 		RescueRequest: ChannerProto.RescueRequestBuilder;
 		ChannelCreateRequest: ChannerProto.ChannelCreateRequestBuilder;
+		ChannelListRequest: ChannerProto.ChannelListRequestBuilder;
 		LoginResponse: ChannerProto.LoginResponseBuilder;
 		PostResponse: ChannerProto.PostResponseBuilder;
 		FetchResponse: ChannerProto.FetchResponseBuilder;
@@ -66,6 +67,7 @@ declare module Proto2TypeScript {
 		PingResponse: ChannerProto.PingResponseBuilder;
 		RescueResponse: ChannerProto.RescueResponseBuilder;
 		ChannelCreateResponse: ChannerProto.ChannelCreateResponseBuilder;
+		ChannelListResponse: ChannerProto.ChannelListResponseBuilder;
 		Error: ChannerProto.ErrorBuilder;
 		Payload: ChannerProto.PayloadBuilder;
 		
@@ -284,7 +286,7 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		name: string;
 		getName() : string;
 		setName(name : string): void;
-		description: string;
+		description?: string;
 		getDescription() : string;
 		setDescription(description : string): void;
 		style: string;
@@ -342,10 +344,11 @@ declare module Proto2TypeScript.ChannerProto.Model.Channel {
 
 declare module Proto2TypeScript.ChannerProto.Model.Channel {
 	export const enum IdentityLevel {
-		None = 0,
-		Topic = 1,
-		Channel = 2,
-		Account = 3,
+		Unknown = 0,
+		None = 1,
+		Topic = 2,
+		Channel = 3,
+		Account = 4,
 		
 	}
 }
@@ -793,6 +796,35 @@ declare module Proto2TypeScript.ChannerProto {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface ChannelListRequest extends ProtoBufModel {
+		category?: ChannelListRequest.Category;
+		getCategory() : ChannelListRequest.Category;
+		setCategory(category : ChannelListRequest.Category): void;
+		
+	}
+	
+	export interface ChannelListRequestBuilder {
+		new(): ChannelListRequest;
+		decode(buffer: ArrayBuffer) : ChannelListRequest;
+		//decode(buffer: NodeBuffer) : ChannelListRequest;
+		//decode(buffer: ByteArrayBuffer) : ChannelListRequest;
+		decode64(buffer: string) : ChannelListRequest;
+		Category: ChannelListRequest.Category;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.ChannelListRequest {
+	export const enum Category {
+		None = 0,
+		New = 1,
+		Popular = 2,
+		
+	}
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface LoginResponse extends ProtoBufModel {
 		id: string;
 		getId() : string;
@@ -952,6 +984,9 @@ declare module Proto2TypeScript.ChannerProto {
 declare module Proto2TypeScript.ChannerProto {
 
 	export interface ChannelCreateResponse extends ProtoBufModel {
+		channel_id: number;
+		getChannelId() : number;
+		setChannelId(channelId : number): void;
 		
 	}
 	
@@ -961,6 +996,25 @@ declare module Proto2TypeScript.ChannerProto {
 		//decode(buffer: NodeBuffer) : ChannelCreateResponse;
 		//decode(buffer: ByteArrayBuffer) : ChannelCreateResponse;
 		decode64(buffer: string) : ChannelCreateResponse;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
+	export interface ChannelListResponse extends ProtoBufModel {
+		list: Model.Channel[];
+		getList() : Model.Channel[];
+		setList(list : Model.Channel[]): void;
+		
+	}
+	
+	export interface ChannelListResponseBuilder {
+		new(): ChannelListResponse;
+		decode(buffer: ArrayBuffer) : ChannelListResponse;
+		//decode(buffer: NodeBuffer) : ChannelListResponse;
+		//decode(buffer: ByteArrayBuffer) : ChannelListResponse;
+		decode64(buffer: string) : ChannelListResponse;
 		
 	}	
 }
@@ -1041,6 +1095,9 @@ declare module Proto2TypeScript.ChannerProto {
 		channel_create_request?: ChannelCreateRequest;
 		getChannelCreateRequest() : ChannelCreateRequest;
 		setChannelCreateRequest(channelCreateRequest : ChannelCreateRequest): void;
+		channel_list_request?: ChannelListRequest;
+		getChannelListRequest() : ChannelListRequest;
+		setChannelListRequest(channelListRequest : ChannelListRequest): void;
 		error?: Error;
 		getError() : Error;
 		setError(error : Error): void;
@@ -1068,6 +1125,12 @@ declare module Proto2TypeScript.ChannerProto {
 		rescue_response?: RescueResponse;
 		getRescueResponse() : RescueResponse;
 		setRescueResponse(rescueResponse : RescueResponse): void;
+		channel_create_response?: ChannelCreateResponse;
+		getChannelCreateResponse() : ChannelCreateResponse;
+		setChannelCreateResponse(channelCreateResponse : ChannelCreateResponse): void;
+		channel_list_response?: ChannelListResponse;
+		getChannelListResponse() : ChannelListResponse;
+		setChannelListResponse(channelListResponse : ChannelListResponse): void;
 		post_notify?: Post;
 		getPostNotify() : Post;
 		setPostNotify(postNotify : Post): void;
@@ -1097,6 +1160,7 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		PingRequest = 7,
 		RescueRequest = 8,
 		ChannelCreateRequest = 9,
+		ChannelListRequest = 10,
 		LoginResponse = 31,
 		PostResponse = 32,
 		FetchResponse = 33,
@@ -1106,6 +1170,7 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		PingResponse = 37,
 		RescueResponse = 38,
 		ChannelCreateResponse = 39,
+		ChannelListResponse = 40,
 		PostNotify = 61,
 		Error = 101,
 		
