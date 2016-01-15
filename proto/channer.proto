@@ -64,7 +64,7 @@ message Model {
 			Account = 4;	//accont-level identity. it means among all post in this channel, it will show original account id of submitter.
 		}
 		enum TopicDisplayStyle {
-			Unknown = 0;
+			Invalid = 0;
 			Tail = 1;		//all post show in time-series order(default). eg. 2ch, github, and most of forum
 			Tree = 2;		//post shows with respecting graph structure defined by "in reply to which post". eg. reddit, 4chan
 		}
@@ -200,6 +200,7 @@ message ChannelListRequest {
 		Popular = 2;
 	}
 	optional Category category = 1;
+	optional int32 limit = 2;
 
 }
 
@@ -241,7 +242,7 @@ message RescueResponse {
 }
 
 message ChannelCreateResponse {
-	required uint64 channel_id = 1 [(gogoproto.casttype) = "UUID"];
+	required Model.Channel channel = 1;
 }
 
 message ChannelListResponse {
@@ -265,6 +266,10 @@ message Error {
 		Rescue_DatabaseError = 10;
 		Rescue_CannotRescue = 11;
 		Rescue_InvalidAuth = 12;
+
+		ChannelCreate_DatabaseError = 20;
+
+		ChannelList_DatabaseError = 30;
 	}
 	required Type type = 1;
 	optional string explanation = 2;

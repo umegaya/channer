@@ -87,8 +87,7 @@ func AssetsConfig() *assets.Config {
 
 //Process processes packet according to its type
 func (pkt *RecvPacket) Process(t Transport) {
-	handler, ok := handlers[pkt.Payload.Type]
-	if ok {
+	if handler, ok := handlers[pkt.Payload.Type]; ok {
 		handler(pkt, t);
 	}
 }

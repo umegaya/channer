@@ -315,7 +315,7 @@
                                     "name": "TopicDisplayStyle",
                                     "values": [
                                         {
-                                            "name": "Unknown",
+                                            "name": "Invalid",
                                             "id": 0
                                         },
                                         {
@@ -848,6 +848,12 @@
                             "type": "Category",
                             "name": "category",
                             "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "int32",
+                            "name": "limit",
+                            "id": 2
                         }
                     ],
                     "enums": [
@@ -981,12 +987,9 @@
                     "fields": [
                         {
                             "rule": "required",
-                            "type": "uint64",
-                            "name": "channel_id",
-                            "id": 1,
-                            "options": {
-                                "(gogoproto.casttype)": "UUID"
-                            }
+                            "type": "Model.Channel",
+                            "name": "channel",
+                            "id": 1
                         }
                     ]
                 },
@@ -1064,6 +1067,14 @@
                                 {
                                     "name": "Rescue_InvalidAuth",
                                     "id": 12
+                                },
+                                {
+                                    "name": "ChannelCreate_DatabaseError",
+                                    "id": 20
+                                },
+                                {
+                                    "name": "ChannelList_DatabaseError",
+                                    "id": 30
                                 }
                             ]
                         }

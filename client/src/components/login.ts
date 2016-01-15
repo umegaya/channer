@@ -113,7 +113,7 @@ export class LoginComponent implements UI.Component {
 	constructor(config: Config) {
 		this.view = LoginView;
 		this.controller = () => {
-			this.next_url = m.route.param("next") || "/channel";
+			this.next_url = m.route.param("next") || "/top";
 			this.rescue = m.route.param("rescue");
 			return new LoginController(this);
 		}

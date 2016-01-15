@@ -11,6 +11,7 @@ import {HelpComponent} from "./components/help"
 var truncate_settings = window.environment.match(/test/);
 
 window.channer.bootstrap = function (config: any) {	
+    console.log("bootstrap");
 	//create system modules
 	var c : Config = new Config(config);
 	var t : Timer = new Timer();
@@ -75,14 +76,15 @@ window.channer.bootstrap = function (config: any) {
 		var start_url: string = last_url ? ("/login?next=" + last_url) : "/login"; 
         //typescript wrongly resolve m.route signature here. so explicit cast required.
 		(<Router>m.route)(document.body, start_url, {
-			"/login":					new window.channer.components.Login(c),
-			"/rescue":                  new window.channer.components.Rescue(c),
-			"/rescue/:rescue":          new window.channer.components.Login(c),
-			"/help/:title":             new HelpComponent(c),
-			"/channel":					new window.channer.components.Channel(c),
-			"/channel/:ch/": 			new window.channer.components.Main(c),
-			"/channel/:ch/topic": 		new window.channer.components.Compose(c),
-			"/channel/:ch/topic/:id": 	new window.channer.components.Topic(c),
+			"/login":            new window.channer.components.Login(c),
+			"/rescue":           new window.channer.components.Rescue(c),
+			"/rescue/:rescue":   new window.channer.components.Login(c),
+			"/help/:title":      new HelpComponent(c),
+            "/top":              new window.channer.components.Top(c),
+			"/top/:tab":         new window.channer.components.Top(c),
+			"/channel/:ch":      new window.channer.components.Channel(c),
+			"/channel/:ch/:tab": new window.channer.components.Channel(c),
+			"/topic/:id":        new window.channer.components.Topic(c),
 		});
 	}, (e: Error) => {
 		console.log("bootstrap error: " + e.message);

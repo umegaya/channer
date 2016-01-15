@@ -23,7 +23,7 @@ func insertWithId(address string) (*Node, error) {
 	if err := dbm.Txn(func (tx Dbif) error {
 RETRY:
 		var max_id uint32
-		if err := tx.SelectOne(&max_id, "select max(id)+1 from nodes"); err != nil {
+		if err := tx.SelectOne(&max_id, dbm.Stmt("select max(id)+1 from %s.nodes")); err != nil {
 			log.Printf("select max(id) fails: %v", err)
 			max_id = 1
 		}
@@ -49,7 +49,7 @@ RETRY:
 
 func NewNode(dbif Dbif, address string) (*Node, bool, error) {
 	node := &Node{}
-	if err := dbif.SelectOne(node, "select * from nodes where address = $1", address); err != nil {
+	if err := dbif.SelectOne(node, dbm.Stmt("select * from %s.nodes where address = $1"), address); err != nil {
 		node, err := insertWithId(address)
 		if err != nil {
 			return nil, false, err

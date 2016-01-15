@@ -10,6 +10,13 @@ function ChannelInfoView(
     model: ChannerProto.Model.Channel
 ): UI.Element {
     var options = Builder.Model.Channel.Options.decode(model.options);
+    /*console.log("dumpkv:" + model.options);
+    for (var k in options) {
+        if (typeof(options[k]) != "function") {
+            console.log("kv:" + k + "|" + options[k]);
+        }
+    }
+    console.log("end dumpkv");*/
     var elems: Array<UI.Element> = [];
     elems.push(m("div", {class: "div-title name"}, model.name));
     elems.push(m("div", {class: "div-image idlevel-" + options.identity}));

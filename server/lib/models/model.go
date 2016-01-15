@@ -13,6 +13,7 @@ import (
 
 type Database struct {
 	gorp.DbMap
+	Name string
 	node *Node
 }
 type Txn struct {
@@ -48,10 +49,7 @@ func Init(db_addr, certs, host_addr string) error {
 		return err
 	}
 	//setup database
-	if _, err := db.Exec("CREATE DATABASE IF NOT EXISTS channer; SET DATABASE = 'channer';"); err != nil {
-		return err
-	}
-	dbm = Database{gorp.DbMap{Db: db, Dialect: gorp.NewCockroachDialect()}, nil}
+	dbm = Database{gorp.DbMap{Db: db, Dialect: gorp.NewCockroachDialect()}, "channer", nil}
 	//add model 
 	InitNode()
 	InitAccount()
@@ -83,7 +81,7 @@ func DBM() *Database {
 }
 
 func create_table(tmpl interface {}, name string, pkey_column string) *gorp.TableMap {
-	return dbm.AddTableWithName(tmpl, name).SetKeys(false, pkey_column)
+	return dbm.AddTableWithNameAndSchema(tmpl, dbm.Name, name).SetKeys(false, pkey_column)
 }
 
 func StoreColumns(dbif Dbif, record interface {}, columns []string) (int64, error) {
@@ -95,6 +93,10 @@ func StoreColumns(dbif Dbif, record interface {}, columns []string) (int64, erro
 		}
 		return false
 	}, record)
+}
+
+func (dbm *Database) Stmt(stmt string) string {
+	return fmt.Sprintf(stmt, dbm.Name)
 }
 
 func (dbm *Database) UUID() proto.UUID {

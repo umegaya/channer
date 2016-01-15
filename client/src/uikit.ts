@@ -196,8 +196,8 @@ export class Template {
 }
 
 export interface ModelCollection {
-    map(fn: (m: any) => UI.Element);
-    refresh();
+    map(fn: (m: any) => UI.Element): Array<any>;
+    refresh(): void;
     empty():boolean;
 }
 export class ListComponent implements UI.Component {

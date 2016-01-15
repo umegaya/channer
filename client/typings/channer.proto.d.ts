@@ -355,7 +355,7 @@ declare module Proto2TypeScript.ChannerProto.Model.Channel {
 
 declare module Proto2TypeScript.ChannerProto.Model.Channel {
 	export const enum TopicDisplayStyle {
-		Unknown = 0,
+		Invalid = 0,
 		Tail = 1,
 		Tree = 2,
 		
@@ -800,6 +800,9 @@ declare module Proto2TypeScript.ChannerProto {
 		category?: ChannelListRequest.Category;
 		getCategory() : ChannelListRequest.Category;
 		setCategory(category : ChannelListRequest.Category): void;
+		limit?: number;
+		getLimit() : number;
+		setLimit(limit : number): void;
 		
 	}
 	
@@ -984,9 +987,9 @@ declare module Proto2TypeScript.ChannerProto {
 declare module Proto2TypeScript.ChannerProto {
 
 	export interface ChannelCreateResponse extends ProtoBufModel {
-		channel_id: number;
-		getChannelId() : number;
-		setChannelId(channelId : number): void;
+		channel: Model.Channel;
+		getChannel() : Model.Channel;
+		setChannel(channel : Model.Channel): void;
 		
 	}
 	
@@ -1055,6 +1058,8 @@ declare module Proto2TypeScript.ChannerProto.Error {
 		Rescue_DatabaseError = 10,
 		Rescue_CannotRescue = 11,
 		Rescue_InvalidAuth = 12,
+		ChannelCreate_DatabaseError = 20,
+		ChannelList_DatabaseError = 30,
 		
 	}
 }

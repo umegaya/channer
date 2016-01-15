@@ -36,10 +36,10 @@ interface ChannerModules {
 	components: {
 		Login: UI.ComponentFactory;
 		Rescue: UI.ComponentFactory;
-		Channel: UI.ComponentFactory;
+		Top: UI.ComponentFactory;
 		Compose: UI.ComponentFactory;
 		Topic: UI.ComponentFactory;
-		Main: UI.ComponentFactory;
+		Channel: UI.ComponentFactory;
 		Edit: UI.ComponentFactory;
         active: {
             component: UI.Component;

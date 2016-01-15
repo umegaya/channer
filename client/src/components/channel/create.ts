@@ -60,7 +60,7 @@ var cond: PropConditions = {
         },
         display: {
             init: ChannerProto.Model.Channel.TopicDisplayStyle.Tail,
-            check: ChannerProto.Model.Channel.TopicDisplayStyle.Unknown,
+            check: ChannerProto.Model.Channel.TopicDisplayStyle.Invalid,
         },
     }
 }
@@ -84,8 +84,8 @@ export class ChannelCreateController implements UI.Controller {
             options.topic_display_style = vals["display"];
             conn.channel_create(vals["name"], vals["desc"], vals["style"], options)
             .then((r: ChannerProto.ChannelCreateResponse) => {
-                console.log("new channel create:" + r.channel_id);
-                Util.route("/channel/" + r.channel_id);
+                console.log("new channel create:" + r.channel.id);
+                Util.route("/channel/" + r.channel.id);
             }, (e: ProtoError) => {
                 console.log("error:" + e.message);
             });
@@ -128,7 +128,7 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
         [ChannerProto.Model.Channel.TopicDisplayStyle.Tree, "tree"],
     ], disp));
     var d = disp();
-    if (d != ChannerProto.Model.Channel.TopicDisplayStyle.Unknown) {
+    if (d != ChannerProto.Model.Channel.TopicDisplayStyle.Invalid) {
         elements.push(m("div", {
             class: "div-text display-style"
         }, display_text[d]));

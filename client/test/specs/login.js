@@ -25,7 +25,7 @@ module.exports = {
                     return ["should not be mobile"];
                 }
                 var current = window.channer.components.active;
-                if (current.component.next_url != "/channel") {
+                if (current.component.next_url != "/top") {
                     return ["login component should be loaded correctly"];
                 }
                 var expect_keys = [
@@ -63,24 +63,23 @@ module.exports = {
             })
             .pause(common.TRANSITION_PAUSE)
             .assert.elementNotPresent('.login .div-latency')
-            .assert.elementPresent('.login .div-reconnection')
+            .assert.elementPresent('.login .div-wait-reconnect')
             .pause(1000 * 4)
             .assert.elementPresent('.login .div-latency')
             .assert.elementNotPresent('.login .div-wait-reconnect')
-            .perform(common.inputter('.login .user', common.USERNAME))
+            .perform(common.inputter('.login .mail', common.EMAIL))
             .pause(common.INPUT_PAUSE)
             .assert.elementNotPresent('.login .button-send')
-            //last setValue usually lose some of its key stroke. special input method required.
-            .perform(common.inputter('.login .mail', common.EMAIL))
+            .perform(common.inputter('.login .user', common.USERNAME))
             .pause(common.INPUT_PAUSE)
             .assert.elementPresent('.login .button-send')
             .click('.login .button-send')
             .pause(common.TRANSITION_PAUSE)
             .assert.elementNotPresent('.login')
-            .assert.elementPresent('.channel-list')
+            .assert.elementPresent('.top')
             .execute(function (user, mail) {
                 var current = window.channer.components.active;
-                if (!(current.component instanceof window.channer.components.Channel)) {
+                if (!(current.component instanceof window.channer.components.Top)) {
                     return ["channel component should be loaded"];
                 }
                 if (window.channer.settings.values.user != user) {
@@ -157,7 +156,7 @@ module.exports = {
             .pause(common.LOAD_PAUSE)
             .execute(function (username, mail, password, secret, account) {
                 var current = window.channer.components.active;
-                if (!(current.component instanceof window.channer.components.Channel)) {
+                if (!(current.component instanceof window.channer.components.Top)) {
                     return ["channel component should be loaded"];
                 }
                 if (window.channer.settings.values.user != username) {

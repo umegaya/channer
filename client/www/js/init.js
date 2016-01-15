@@ -95,6 +95,7 @@ document.addEventListener("deviceready", function () {
 				var script = document.createElement("script");
 				script.onload = function (ev) {
 					window.channer.patch(window.endpoint, function (config) {
+                        console.log("end patch");
 						try {
 							window.channer.bootstrap(config);
 						}
@@ -130,7 +131,7 @@ document.addEventListener("deviceready", function () {
 							return;
 						}
 						if (config_prev.versions[0].hash != config_next.versions[0].hash) {
-							console.log("use new ver:" + new_url);
+							console.log("use new ver1:" + new_url);
 							load_patch_script(new_url);
 						}
 						else {
@@ -148,7 +149,7 @@ document.addEventListener("deviceready", function () {
 					})
 				});				
 			}, function (err) {
-				console.log("use new ver:" + new_url);
+				console.log("use new ver2:" + new_url);
 				load_patch_script(new_url);
 			});			
 		}

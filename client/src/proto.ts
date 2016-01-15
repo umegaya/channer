@@ -229,10 +229,20 @@ export class Handler {
         p.channel_create_request = req;
         return this.send(p);
     }
-    channel_list = (category?: string): Q.Promise<Model> => {
+    channel_list = (category?: string, limit?: number): Q.Promise<Model> => {
         var p = new Builder.Payload();
-        p.type = ChannerProto.Payload.Type.ChannelCreateRequest;
-        //p.channel_create_request = req;
+        p.type = ChannerProto.Payload.Type.ChannelListRequest;
+        var req = new Builder.ChannelListRequest();
+        var map : {
+            [k:string]:ChannerProto.ChannelListRequest.Category
+        } = {
+            "latest": ChannerProto.ChannelListRequest.Category.New,
+            "popular": ChannerProto.ChannelListRequest.Category.Popular,
+        }
+        console.log("category:" + category);
+        req.category = map[category];
+        req.limit = limit || null;
+        p.channel_list_request = req;
         return this.send(p);
     }
 	post = (topic_id: number, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
