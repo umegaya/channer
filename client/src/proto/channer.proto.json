@@ -227,10 +227,106 @@
                                     "id": 2
                                 },
                                 {
+                                    "rule": "optional",
+                                    "type": "string",
+                                    "name": "description",
+                                    "id": 3
+                                },
+                                {
                                     "rule": "required",
                                     "type": "string",
                                     "name": "style",
-                                    "id": 3
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "established",
+                                    "id": 5,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "bytes",
+                                    "name": "options",
+                                    "id": 6
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "name": "Options",
+                                    "fields": [
+                                        {
+                                            "rule": "optional",
+                                            "type": "IdentityLevel",
+                                            "name": "identity",
+                                            "id": 1
+                                        },
+                                        {
+                                            "rule": "optional",
+                                            "type": "TopicDisplayStyle",
+                                            "name": "topic_display_style",
+                                            "id": 2
+                                        },
+                                        {
+                                            "rule": "optional",
+                                            "type": "uint32",
+                                            "name": "topic_post_limit",
+                                            "id": 3
+                                        },
+                                        {
+                                            "rule": "optional",
+                                            "type": "string",
+                                            "name": "anonymous_name",
+                                            "id": 4
+                                        }
+                                    ]
+                                }
+                            ],
+                            "enums": [
+                                {
+                                    "name": "IdentityLevel",
+                                    "values": [
+                                        {
+                                            "name": "Unknown",
+                                            "id": 0
+                                        },
+                                        {
+                                            "name": "None",
+                                            "id": 1
+                                        },
+                                        {
+                                            "name": "Topic",
+                                            "id": 2
+                                        },
+                                        {
+                                            "name": "Channel",
+                                            "id": 3
+                                        },
+                                        {
+                                            "name": "Account",
+                                            "id": 4
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "TopicDisplayStyle",
+                                    "values": [
+                                        {
+                                            "name": "Invalid",
+                                            "id": 0
+                                        },
+                                        {
+                                            "name": "Tail",
+                                            "id": 1
+                                        },
+                                        {
+                                            "name": "Tree",
+                                            "id": 2
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -591,7 +687,10 @@
                             "rule": "required",
                             "type": "uint64",
                             "name": "topic_id",
-                            "id": 1
+                            "id": 1,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
                         },
                         {
                             "rule": "required",
@@ -637,7 +736,10 @@
                             "rule": "required",
                             "type": "uint64",
                             "name": "topic_id",
-                            "id": 1
+                            "id": 1,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
                         },
                         {
                             "rule": "required",
@@ -654,7 +756,10 @@
                             "rule": "required",
                             "type": "uint64",
                             "name": "topic_id",
-                            "id": 1
+                            "id": 1,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
                         }
                     ]
                 },
@@ -665,7 +770,10 @@
                             "rule": "required",
                             "type": "uint64",
                             "name": "topic_id",
-                            "id": 1
+                            "id": 1,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
                         }
                     ]
                 },
@@ -700,6 +808,71 @@
                             "type": "uint64",
                             "name": "walltime",
                             "id": 3
+                        }
+                    ]
+                },
+                {
+                    "name": "ChannelCreateRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "name",
+                            "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "description",
+                            "id": 2
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "style",
+                            "id": 3
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "Model.Channel.Options",
+                            "name": "options",
+                            "id": 4
+                        }
+                    ]
+                },
+                {
+                    "name": "ChannelListRequest",
+                    "fields": [
+                        {
+                            "rule": "optional",
+                            "type": "Category",
+                            "name": "category",
+                            "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "int32",
+                            "name": "limit",
+                            "id": 2
+                        }
+                    ],
+                    "enums": [
+                        {
+                            "name": "Category",
+                            "values": [
+                                {
+                                    "name": "None",
+                                    "id": 0
+                                },
+                                {
+                                    "name": "New",
+                                    "id": 1
+                                },
+                                {
+                                    "name": "Popular",
+                                    "id": 2
+                                }
+                            ]
                         }
                     ]
                 },
@@ -810,6 +983,28 @@
                     ]
                 },
                 {
+                    "name": "ChannelCreateResponse",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "Model.Channel",
+                            "name": "channel",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "ChannelListResponse",
+                    "fields": [
+                        {
+                            "rule": "repeated",
+                            "type": "Model.Channel",
+                            "name": "list",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
                     "name": "Error",
                     "fields": [
                         {
@@ -872,6 +1067,14 @@
                                 {
                                     "name": "Rescue_InvalidAuth",
                                     "id": 12
+                                },
+                                {
+                                    "name": "ChannelCreate_DatabaseError",
+                                    "id": 20
+                                },
+                                {
+                                    "name": "ChannelList_DatabaseError",
+                                    "id": 30
                                 }
                             ]
                         }
@@ -942,6 +1145,18 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "ChannelCreateRequest",
+                            "name": "channel_create_request",
+                            "id": 11
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "ChannelListRequest",
+                            "name": "channel_list_request",
+                            "id": 12
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Error",
                             "name": "error",
                             "id": 30
@@ -996,6 +1211,18 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "ChannelCreateResponse",
+                            "name": "channel_create_response",
+                            "id": 39
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "ChannelListResponse",
+                            "name": "channel_list_response",
+                            "id": 40
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Post",
                             "name": "post_notify",
                             "id": 61
@@ -1042,6 +1269,14 @@
                                     "id": 8
                                 },
                                 {
+                                    "name": "ChannelCreateRequest",
+                                    "id": 9
+                                },
+                                {
+                                    "name": "ChannelListRequest",
+                                    "id": 10
+                                },
+                                {
                                     "name": "LoginResponse",
                                     "id": 31
                                 },
@@ -1072,6 +1307,14 @@
                                 {
                                     "name": "RescueResponse",
                                     "id": 38
+                                },
+                                {
+                                    "name": "ChannelCreateResponse",
+                                    "id": 39
+                                },
+                                {
+                                    "name": "ChannelListResponse",
+                                    "id": 40
                                 },
                                 {
                                     "name": "PostNotify",

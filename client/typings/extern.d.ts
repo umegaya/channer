@@ -4,6 +4,7 @@
 /// <reference path="./Q/q.d.ts"/>
 /// <reference path="./UI.d.ts"/>
 /// <reference path="./mithril.d.ts"/>
+/// <reference path="./protobuf.d.ts"/>
 /// <reference path="./webpack-runtime.d.ts"/>
 
 interface Window {
@@ -36,10 +37,10 @@ interface ChannerModules {
 	components: {
 		Login: UI.ComponentFactory;
 		Rescue: UI.ComponentFactory;
-		Channel: UI.ComponentFactory;
+		Top: UI.ComponentFactory;
 		Compose: UI.ComponentFactory;
 		Topic: UI.ComponentFactory;
-		Main: UI.ComponentFactory;
+		Channel: UI.ComponentFactory;
 		Edit: UI.ComponentFactory;
         active: {
             component: UI.Component;

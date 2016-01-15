@@ -11,9 +11,13 @@ declare namespace UI {
 	
 	interface View<T extends Controller> extends _mithril.MithrilView<T> {	
 	}
-	
+    
+    interface Attributes extends _mithril.MithrilAttributes {
+        id?: string;
+    }
+    	
 	interface Component {
-		controller: () => Controller;
+		controller: (args?:any) => Controller;
 		view: View<Controller>;
 	}
 	

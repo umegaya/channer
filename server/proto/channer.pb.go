@@ -21,6 +21,8 @@
 		ExitTopicRequest
 		PingRequest
 		RescueRequest
+		ChannelCreateRequest
+		ChannelListRequest
 		LoginResponse
 		PostResponse
 		FetchResponse
@@ -29,6 +31,8 @@
 		ExitTopicResponse
 		PingResponse
 		RescueResponse
+		ChannelCreateResponse
+		ChannelListResponse
 		Error
 		Payload
 */
@@ -120,6 +124,84 @@ func (x *Model_Account_Status) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type Model_Channel_IdentityLevel int32
+
+const (
+	Model_Channel_Unknown Model_Channel_IdentityLevel = 0
+	Model_Channel_None    Model_Channel_IdentityLevel = 1
+	Model_Channel_Topic   Model_Channel_IdentityLevel = 2
+	Model_Channel_Channel Model_Channel_IdentityLevel = 3
+	Model_Channel_Account Model_Channel_IdentityLevel = 4
+)
+
+var Model_Channel_IdentityLevel_name = map[int32]string{
+	0: "Unknown",
+	1: "None",
+	2: "Topic",
+	3: "Channel",
+	4: "Account",
+}
+var Model_Channel_IdentityLevel_value = map[string]int32{
+	"Unknown": 0,
+	"None":    1,
+	"Topic":   2,
+	"Channel": 3,
+	"Account": 4,
+}
+
+func (x Model_Channel_IdentityLevel) Enum() *Model_Channel_IdentityLevel {
+	p := new(Model_Channel_IdentityLevel)
+	*p = x
+	return p
+}
+func (x Model_Channel_IdentityLevel) String() string {
+	return proto.EnumName(Model_Channel_IdentityLevel_name, int32(x))
+}
+func (x *Model_Channel_IdentityLevel) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(Model_Channel_IdentityLevel_value, data, "Model_Channel_IdentityLevel")
+	if err != nil {
+		return err
+	}
+	*x = Model_Channel_IdentityLevel(value)
+	return nil
+}
+
+type Model_Channel_TopicDisplayStyle int32
+
+const (
+	Model_Channel_Invalid Model_Channel_TopicDisplayStyle = 0
+	Model_Channel_Tail    Model_Channel_TopicDisplayStyle = 1
+	Model_Channel_Tree    Model_Channel_TopicDisplayStyle = 2
+)
+
+var Model_Channel_TopicDisplayStyle_name = map[int32]string{
+	0: "Invalid",
+	1: "Tail",
+	2: "Tree",
+}
+var Model_Channel_TopicDisplayStyle_value = map[string]int32{
+	"Invalid": 0,
+	"Tail":    1,
+	"Tree":    2,
+}
+
+func (x Model_Channel_TopicDisplayStyle) Enum() *Model_Channel_TopicDisplayStyle {
+	p := new(Model_Channel_TopicDisplayStyle)
+	*p = x
+	return p
+}
+func (x Model_Channel_TopicDisplayStyle) String() string {
+	return proto.EnumName(Model_Channel_TopicDisplayStyle_name, int32(x))
+}
+func (x *Model_Channel_TopicDisplayStyle) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(Model_Channel_TopicDisplayStyle_value, data, "Model_Channel_TopicDisplayStyle")
+	if err != nil {
+		return err
+	}
+	*x = Model_Channel_TopicDisplayStyle(value)
+	return nil
+}
+
 type Model_Reaction_Type int32
 
 const (
@@ -159,20 +241,58 @@ func (x *Model_Reaction_Type) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type ChannelListRequest_Category int32
+
+const (
+	ChannelListRequest_None    ChannelListRequest_Category = 0
+	ChannelListRequest_New     ChannelListRequest_Category = 1
+	ChannelListRequest_Popular ChannelListRequest_Category = 2
+)
+
+var ChannelListRequest_Category_name = map[int32]string{
+	0: "None",
+	1: "New",
+	2: "Popular",
+}
+var ChannelListRequest_Category_value = map[string]int32{
+	"None":    0,
+	"New":     1,
+	"Popular": 2,
+}
+
+func (x ChannelListRequest_Category) Enum() *ChannelListRequest_Category {
+	p := new(ChannelListRequest_Category)
+	*p = x
+	return p
+}
+func (x ChannelListRequest_Category) String() string {
+	return proto.EnumName(ChannelListRequest_Category_name, int32(x))
+}
+func (x *ChannelListRequest_Category) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(ChannelListRequest_Category_value, data, "ChannelListRequest_Category")
+	if err != nil {
+		return err
+	}
+	*x = ChannelListRequest_Category(value)
+	return nil
+}
+
 type Error_Type int32
 
 const (
-	Error_Unknown                 Error_Type = 0
-	Error_Timeout                 Error_Type = 1
-	Error_Login_InvalidAuth       Error_Type = 2
-	Error_Login_UserNotFound      Error_Type = 3
-	Error_Login_UserAlreadyExists Error_Type = 4
-	Error_Login_OutdatedVersion   Error_Type = 5
-	Error_Login_DatabaseError     Error_Type = 6
-	Error_Login_BrokenClientData  Error_Type = 7
-	Error_Rescue_DatabaseError    Error_Type = 10
-	Error_Rescue_CannotRescue     Error_Type = 11
-	Error_Rescue_InvalidAuth      Error_Type = 12
+	Error_Unknown                     Error_Type = 0
+	Error_Timeout                     Error_Type = 1
+	Error_Login_InvalidAuth           Error_Type = 2
+	Error_Login_UserNotFound          Error_Type = 3
+	Error_Login_UserAlreadyExists     Error_Type = 4
+	Error_Login_OutdatedVersion       Error_Type = 5
+	Error_Login_DatabaseError         Error_Type = 6
+	Error_Login_BrokenClientData      Error_Type = 7
+	Error_Rescue_DatabaseError        Error_Type = 10
+	Error_Rescue_CannotRescue         Error_Type = 11
+	Error_Rescue_InvalidAuth          Error_Type = 12
+	Error_ChannelCreate_DatabaseError Error_Type = 20
+	Error_ChannelList_DatabaseError   Error_Type = 30
 )
 
 var Error_Type_name = map[int32]string{
@@ -187,19 +307,23 @@ var Error_Type_name = map[int32]string{
 	10: "Rescue_DatabaseError",
 	11: "Rescue_CannotRescue",
 	12: "Rescue_InvalidAuth",
+	20: "ChannelCreate_DatabaseError",
+	30: "ChannelList_DatabaseError",
 }
 var Error_Type_value = map[string]int32{
-	"Unknown":                 0,
-	"Timeout":                 1,
-	"Login_InvalidAuth":       2,
-	"Login_UserNotFound":      3,
-	"Login_UserAlreadyExists": 4,
-	"Login_OutdatedVersion":   5,
-	"Login_DatabaseError":     6,
-	"Login_BrokenClientData":  7,
-	"Rescue_DatabaseError":    10,
-	"Rescue_CannotRescue":     11,
-	"Rescue_InvalidAuth":      12,
+	"Unknown":                     0,
+	"Timeout":                     1,
+	"Login_InvalidAuth":           2,
+	"Login_UserNotFound":          3,
+	"Login_UserAlreadyExists":     4,
+	"Login_OutdatedVersion":       5,
+	"Login_DatabaseError":         6,
+	"Login_BrokenClientData":      7,
+	"Rescue_DatabaseError":        10,
+	"Rescue_CannotRescue":         11,
+	"Rescue_InvalidAuth":          12,
+	"ChannelCreate_DatabaseError": 20,
+	"ChannelList_DatabaseError":   30,
 }
 
 func (x Error_Type) Enum() *Error_Type {
@@ -222,25 +346,29 @@ func (x *Error_Type) UnmarshalJSON(data []byte) error {
 type Payload_Type int32
 
 const (
-	Payload_Unknown            Payload_Type = 0
-	Payload_LoginRequest       Payload_Type = 1
-	Payload_PostRequest        Payload_Type = 2
-	Payload_FetchRequest       Payload_Type = 3
-	Payload_ReadRequest        Payload_Type = 4
-	Payload_EnterTopicRequest  Payload_Type = 5
-	Payload_ExitTopicRequest   Payload_Type = 6
-	Payload_PingRequest        Payload_Type = 7
-	Payload_RescueRequest      Payload_Type = 8
-	Payload_LoginResponse      Payload_Type = 31
-	Payload_PostResponse       Payload_Type = 32
-	Payload_FetchResponse      Payload_Type = 33
-	Payload_ReadResponse       Payload_Type = 34
-	Payload_EnterTopicResponse Payload_Type = 35
-	Payload_ExitTopicResponse  Payload_Type = 36
-	Payload_PingResponse       Payload_Type = 37
-	Payload_RescueResponse     Payload_Type = 38
-	Payload_PostNotify         Payload_Type = 61
-	Payload_Error              Payload_Type = 101
+	Payload_Unknown               Payload_Type = 0
+	Payload_LoginRequest          Payload_Type = 1
+	Payload_PostRequest           Payload_Type = 2
+	Payload_FetchRequest          Payload_Type = 3
+	Payload_ReadRequest           Payload_Type = 4
+	Payload_EnterTopicRequest     Payload_Type = 5
+	Payload_ExitTopicRequest      Payload_Type = 6
+	Payload_PingRequest           Payload_Type = 7
+	Payload_RescueRequest         Payload_Type = 8
+	Payload_ChannelCreateRequest  Payload_Type = 9
+	Payload_ChannelListRequest    Payload_Type = 10
+	Payload_LoginResponse         Payload_Type = 31
+	Payload_PostResponse          Payload_Type = 32
+	Payload_FetchResponse         Payload_Type = 33
+	Payload_ReadResponse          Payload_Type = 34
+	Payload_EnterTopicResponse    Payload_Type = 35
+	Payload_ExitTopicResponse     Payload_Type = 36
+	Payload_PingResponse          Payload_Type = 37
+	Payload_RescueResponse        Payload_Type = 38
+	Payload_ChannelCreateResponse Payload_Type = 39
+	Payload_ChannelListResponse   Payload_Type = 40
+	Payload_PostNotify            Payload_Type = 61
+	Payload_Error                 Payload_Type = 101
 )
 
 var Payload_Type_name = map[int32]string{
@@ -253,6 +381,8 @@ var Payload_Type_name = map[int32]string{
 	6:   "ExitTopicRequest",
 	7:   "PingRequest",
 	8:   "RescueRequest",
+	9:   "ChannelCreateRequest",
+	10:  "ChannelListRequest",
 	31:  "LoginResponse",
 	32:  "PostResponse",
 	33:  "FetchResponse",
@@ -261,29 +391,35 @@ var Payload_Type_name = map[int32]string{
 	36:  "ExitTopicResponse",
 	37:  "PingResponse",
 	38:  "RescueResponse",
+	39:  "ChannelCreateResponse",
+	40:  "ChannelListResponse",
 	61:  "PostNotify",
 	101: "Error",
 }
 var Payload_Type_value = map[string]int32{
-	"Unknown":            0,
-	"LoginRequest":       1,
-	"PostRequest":        2,
-	"FetchRequest":       3,
-	"ReadRequest":        4,
-	"EnterTopicRequest":  5,
-	"ExitTopicRequest":   6,
-	"PingRequest":        7,
-	"RescueRequest":      8,
-	"LoginResponse":      31,
-	"PostResponse":       32,
-	"FetchResponse":      33,
-	"ReadResponse":       34,
-	"EnterTopicResponse": 35,
-	"ExitTopicResponse":  36,
-	"PingResponse":       37,
-	"RescueResponse":     38,
-	"PostNotify":         61,
-	"Error":              101,
+	"Unknown":               0,
+	"LoginRequest":          1,
+	"PostRequest":           2,
+	"FetchRequest":          3,
+	"ReadRequest":           4,
+	"EnterTopicRequest":     5,
+	"ExitTopicRequest":      6,
+	"PingRequest":           7,
+	"RescueRequest":         8,
+	"ChannelCreateRequest":  9,
+	"ChannelListRequest":    10,
+	"LoginResponse":         31,
+	"PostResponse":          32,
+	"FetchResponse":         33,
+	"ReadResponse":          34,
+	"EnterTopicResponse":    35,
+	"ExitTopicResponse":     36,
+	"PingResponse":          37,
+	"RescueResponse":        38,
+	"ChannelCreateResponse": 39,
+	"ChannelListResponse":   40,
+	"PostNotify":            61,
+	"Error":                 101,
 }
 
 func (x Payload_Type) Enum() *Payload_Type {
@@ -516,9 +652,12 @@ func (m *Model_Rescue) GetValidDate() int64 {
 }
 
 type Model_Channel struct {
-	Id    UUID   `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
-	Name  string `protobuf:"bytes,2,req,name=name" json:"name"`
-	Style string `protobuf:"bytes,3,req,name=style" json:"style"`
+	Id          UUID   `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
+	Name        string `protobuf:"bytes,2,req,name=name" json:"name"`
+	Description string `protobuf:"bytes,3,opt,name=description" json:"description"`
+	Style       string `protobuf:"bytes,4,req,name=style" json:"style"`
+	Established UUID   `protobuf:"varint,5,req,name=established,casttype=UUID" json:"established"`
+	Options     []byte `protobuf:"bytes,6,req,name=options" json:"options"`
 }
 
 func (m *Model_Channel) Reset()         { *m = Model_Channel{} }
@@ -539,9 +678,69 @@ func (m *Model_Channel) GetName() string {
 	return ""
 }
 
+func (m *Model_Channel) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
 func (m *Model_Channel) GetStyle() string {
 	if m != nil {
 		return m.Style
+	}
+	return ""
+}
+
+func (m *Model_Channel) GetEstablished() UUID {
+	if m != nil {
+		return m.Established
+	}
+	return 0
+}
+
+func (m *Model_Channel) GetOptions() []byte {
+	if m != nil {
+		return m.Options
+	}
+	return nil
+}
+
+type Model_Channel_Options struct {
+	Identity          Model_Channel_IdentityLevel     `protobuf:"varint,1,opt,name=identity,enum=ChannerProto.Model_Channel_IdentityLevel" json:"identity"`
+	TopicDisplayStyle Model_Channel_TopicDisplayStyle `protobuf:"varint,2,opt,name=topic_display_style,enum=ChannerProto.Model_Channel_TopicDisplayStyle" json:"topic_display_style"`
+	TopicPostLimit    uint32                          `protobuf:"varint,3,opt,name=topic_post_limit" json:"topic_post_limit"`
+	AnonymousName     string                          `protobuf:"bytes,4,opt,name=anonymous_name" json:"anonymous_name"`
+}
+
+func (m *Model_Channel_Options) Reset()         { *m = Model_Channel_Options{} }
+func (m *Model_Channel_Options) String() string { return proto.CompactTextString(m) }
+func (*Model_Channel_Options) ProtoMessage()    {}
+
+func (m *Model_Channel_Options) GetIdentity() Model_Channel_IdentityLevel {
+	if m != nil {
+		return m.Identity
+	}
+	return Model_Channel_Unknown
+}
+
+func (m *Model_Channel_Options) GetTopicDisplayStyle() Model_Channel_TopicDisplayStyle {
+	if m != nil {
+		return m.TopicDisplayStyle
+	}
+	return Model_Channel_Invalid
+}
+
+func (m *Model_Channel_Options) GetTopicPostLimit() uint32 {
+	if m != nil {
+		return m.TopicPostLimit
+	}
+	return 0
+}
+
+func (m *Model_Channel_Options) GetAnonymousName() string {
+	if m != nil {
+		return m.AnonymousName
 	}
 	return ""
 }
@@ -900,7 +1099,7 @@ func (m *LoginRequest) GetRescue() string {
 }
 
 type PostRequest struct {
-	TopicId  uint64 `protobuf:"varint,1,req,name=topic_id" json:"topic_id"`
+	TopicId  UUID   `protobuf:"varint,1,req,name=topic_id,casttype=UUID" json:"topic_id"`
 	Walltime uint64 `protobuf:"varint,2,req,name=walltime" json:"walltime"`
 	Post     *Post  `protobuf:"bytes,3,req,name=post" json:"post,omitempty"`
 }
@@ -909,7 +1108,7 @@ func (m *PostRequest) Reset()         { *m = PostRequest{} }
 func (m *PostRequest) String() string { return proto.CompactTextString(m) }
 func (*PostRequest) ProtoMessage()    {}
 
-func (m *PostRequest) GetTopicId() uint64 {
+func (m *PostRequest) GetTopicId() UUID {
 	if m != nil {
 		return m.TopicId
 	}
@@ -962,15 +1161,15 @@ func (m *FetchRequest) GetCount() uint32 {
 }
 
 type ReadRequest struct {
-	TopicId    uint64 `protobuf:"varint,1,req,name=topic_id" json:"topic_id"`
-	ReadPostTs *HLC   `protobuf:"bytes,2,req,name=read_post_ts" json:"read_post_ts,omitempty"`
+	TopicId    UUID `protobuf:"varint,1,req,name=topic_id,casttype=UUID" json:"topic_id"`
+	ReadPostTs *HLC `protobuf:"bytes,2,req,name=read_post_ts" json:"read_post_ts,omitempty"`
 }
 
 func (m *ReadRequest) Reset()         { *m = ReadRequest{} }
 func (m *ReadRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadRequest) ProtoMessage()    {}
 
-func (m *ReadRequest) GetTopicId() uint64 {
+func (m *ReadRequest) GetTopicId() UUID {
 	if m != nil {
 		return m.TopicId
 	}
@@ -985,14 +1184,14 @@ func (m *ReadRequest) GetReadPostTs() *HLC {
 }
 
 type EnterTopicRequest struct {
-	TopicId uint64 `protobuf:"varint,1,req,name=topic_id" json:"topic_id"`
+	TopicId UUID `protobuf:"varint,1,req,name=topic_id,casttype=UUID" json:"topic_id"`
 }
 
 func (m *EnterTopicRequest) Reset()         { *m = EnterTopicRequest{} }
 func (m *EnterTopicRequest) String() string { return proto.CompactTextString(m) }
 func (*EnterTopicRequest) ProtoMessage()    {}
 
-func (m *EnterTopicRequest) GetTopicId() uint64 {
+func (m *EnterTopicRequest) GetTopicId() UUID {
 	if m != nil {
 		return m.TopicId
 	}
@@ -1000,14 +1199,14 @@ func (m *EnterTopicRequest) GetTopicId() uint64 {
 }
 
 type ExitTopicRequest struct {
-	TopicId uint64 `protobuf:"varint,1,req,name=topic_id" json:"topic_id"`
+	TopicId UUID `protobuf:"varint,1,req,name=topic_id,casttype=UUID" json:"topic_id"`
 }
 
 func (m *ExitTopicRequest) Reset()         { *m = ExitTopicRequest{} }
 func (m *ExitTopicRequest) String() string { return proto.CompactTextString(m) }
 func (*ExitTopicRequest) ProtoMessage()    {}
 
-func (m *ExitTopicRequest) GetTopicId() uint64 {
+func (m *ExitTopicRequest) GetTopicId() UUID {
 	if m != nil {
 		return m.TopicId
 	}
@@ -1056,6 +1255,68 @@ func (m *RescueRequest) GetSign() string {
 func (m *RescueRequest) GetWalltime() uint64 {
 	if m != nil {
 		return m.Walltime
+	}
+	return 0
+}
+
+type ChannelCreateRequest struct {
+	Name        string                 `protobuf:"bytes,1,req,name=name" json:"name"`
+	Description string                 `protobuf:"bytes,2,opt,name=description" json:"description"`
+	Style       string                 `protobuf:"bytes,3,opt,name=style" json:"style"`
+	Options     *Model_Channel_Options `protobuf:"bytes,4,opt,name=options" json:"options,omitempty"`
+}
+
+func (m *ChannelCreateRequest) Reset()         { *m = ChannelCreateRequest{} }
+func (m *ChannelCreateRequest) String() string { return proto.CompactTextString(m) }
+func (*ChannelCreateRequest) ProtoMessage()    {}
+
+func (m *ChannelCreateRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *ChannelCreateRequest) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *ChannelCreateRequest) GetStyle() string {
+	if m != nil {
+		return m.Style
+	}
+	return ""
+}
+
+func (m *ChannelCreateRequest) GetOptions() *Model_Channel_Options {
+	if m != nil {
+		return m.Options
+	}
+	return nil
+}
+
+type ChannelListRequest struct {
+	Category ChannelListRequest_Category `protobuf:"varint,1,opt,name=category,enum=ChannerProto.ChannelListRequest_Category" json:"category"`
+	Limit    int32                       `protobuf:"varint,2,opt,name=limit" json:"limit"`
+}
+
+func (m *ChannelListRequest) Reset()         { *m = ChannelListRequest{} }
+func (m *ChannelListRequest) String() string { return proto.CompactTextString(m) }
+func (*ChannelListRequest) ProtoMessage()    {}
+
+func (m *ChannelListRequest) GetCategory() ChannelListRequest_Category {
+	if m != nil {
+		return m.Category
+	}
+	return ChannelListRequest_None
+}
+
+func (m *ChannelListRequest) GetLimit() int32 {
+	if m != nil {
+		return m.Limit
 	}
 	return 0
 }
@@ -1197,6 +1458,36 @@ func (m *RescueResponse) GetRemain() int64 {
 	return 0
 }
 
+type ChannelCreateResponse struct {
+	Channel *Model_Channel `protobuf:"bytes,1,req,name=channel" json:"channel,omitempty"`
+}
+
+func (m *ChannelCreateResponse) Reset()         { *m = ChannelCreateResponse{} }
+func (m *ChannelCreateResponse) String() string { return proto.CompactTextString(m) }
+func (*ChannelCreateResponse) ProtoMessage()    {}
+
+func (m *ChannelCreateResponse) GetChannel() *Model_Channel {
+	if m != nil {
+		return m.Channel
+	}
+	return nil
+}
+
+type ChannelListResponse struct {
+	List []*Model_Channel `protobuf:"bytes,1,rep,name=list" json:"list,omitempty"`
+}
+
+func (m *ChannelListResponse) Reset()         { *m = ChannelListResponse{} }
+func (m *ChannelListResponse) String() string { return proto.CompactTextString(m) }
+func (*ChannelListResponse) ProtoMessage()    {}
+
+func (m *ChannelListResponse) GetList() []*Model_Channel {
+	if m != nil {
+		return m.List
+	}
+	return nil
+}
+
 // response error
 type Error struct {
 	Type        Error_Type `protobuf:"varint,1,req,name=type,enum=ChannerProto.Error_Type" json:"type"`
@@ -1223,26 +1514,30 @@ func (m *Error) GetExplanation() string {
 
 // total payload
 type Payload struct {
-	Type               Payload_Type        `protobuf:"varint,1,req,name=type,enum=ChannerProto.Payload_Type" json:"type"`
-	Msgid              uint32              `protobuf:"varint,2,opt,name=msgid" json:"msgid"`
-	LoginRequest       *LoginRequest       `protobuf:"bytes,3,opt,name=login_request" json:"login_request,omitempty"`
-	PostRequest        *PostRequest        `protobuf:"bytes,4,opt,name=post_request" json:"post_request,omitempty"`
-	FetchRequest       *FetchRequest       `protobuf:"bytes,5,opt,name=fetch_request" json:"fetch_request,omitempty"`
-	ReadRequest        *ReadRequest        `protobuf:"bytes,6,opt,name=read_request" json:"read_request,omitempty"`
-	EnterTopicRequest  *EnterTopicRequest  `protobuf:"bytes,7,opt,name=enter_topic_request" json:"enter_topic_request,omitempty"`
-	ExitTopicRequest   *ExitTopicRequest   `protobuf:"bytes,8,opt,name=exit_topic_request" json:"exit_topic_request,omitempty"`
-	PingRequest        *PingRequest        `protobuf:"bytes,9,opt,name=ping_request" json:"ping_request,omitempty"`
-	RescueRequest      *RescueRequest      `protobuf:"bytes,10,opt,name=rescue_request" json:"rescue_request,omitempty"`
-	Error              *Error              `protobuf:"bytes,30,opt,name=error" json:"error,omitempty"`
-	LoginResponse      *LoginResponse      `protobuf:"bytes,31,opt,name=login_response" json:"login_response,omitempty"`
-	PostResponse       *PostResponse       `protobuf:"bytes,32,opt,name=post_response" json:"post_response,omitempty"`
-	FetchResponse      *FetchResponse      `protobuf:"bytes,33,opt,name=fetch_response" json:"fetch_response,omitempty"`
-	ReadResponse       *ReadResponse       `protobuf:"bytes,34,opt,name=read_response" json:"read_response,omitempty"`
-	EnterTopicResponse *EnterTopicResponse `protobuf:"bytes,35,opt,name=enter_topic_response" json:"enter_topic_response,omitempty"`
-	ExitTopicResponse  *ExitTopicResponse  `protobuf:"bytes,36,opt,name=exit_topic_response" json:"exit_topic_response,omitempty"`
-	PingResponse       *PingResponse       `protobuf:"bytes,37,opt,name=ping_response" json:"ping_response,omitempty"`
-	RescueResponse     *RescueResponse     `protobuf:"bytes,38,opt,name=rescue_response" json:"rescue_response,omitempty"`
-	PostNotify         *Post               `protobuf:"bytes,61,opt,name=post_notify" json:"post_notify,omitempty"`
+	Type                  Payload_Type           `protobuf:"varint,1,req,name=type,enum=ChannerProto.Payload_Type" json:"type"`
+	Msgid                 uint32                 `protobuf:"varint,2,opt,name=msgid" json:"msgid"`
+	LoginRequest          *LoginRequest          `protobuf:"bytes,3,opt,name=login_request" json:"login_request,omitempty"`
+	PostRequest           *PostRequest           `protobuf:"bytes,4,opt,name=post_request" json:"post_request,omitempty"`
+	FetchRequest          *FetchRequest          `protobuf:"bytes,5,opt,name=fetch_request" json:"fetch_request,omitempty"`
+	ReadRequest           *ReadRequest           `protobuf:"bytes,6,opt,name=read_request" json:"read_request,omitempty"`
+	EnterTopicRequest     *EnterTopicRequest     `protobuf:"bytes,7,opt,name=enter_topic_request" json:"enter_topic_request,omitempty"`
+	ExitTopicRequest      *ExitTopicRequest      `protobuf:"bytes,8,opt,name=exit_topic_request" json:"exit_topic_request,omitempty"`
+	PingRequest           *PingRequest           `protobuf:"bytes,9,opt,name=ping_request" json:"ping_request,omitempty"`
+	RescueRequest         *RescueRequest         `protobuf:"bytes,10,opt,name=rescue_request" json:"rescue_request,omitempty"`
+	ChannelCreateRequest  *ChannelCreateRequest  `protobuf:"bytes,11,opt,name=channel_create_request" json:"channel_create_request,omitempty"`
+	ChannelListRequest    *ChannelListRequest    `protobuf:"bytes,12,opt,name=channel_list_request" json:"channel_list_request,omitempty"`
+	Error                 *Error                 `protobuf:"bytes,30,opt,name=error" json:"error,omitempty"`
+	LoginResponse         *LoginResponse         `protobuf:"bytes,31,opt,name=login_response" json:"login_response,omitempty"`
+	PostResponse          *PostResponse          `protobuf:"bytes,32,opt,name=post_response" json:"post_response,omitempty"`
+	FetchResponse         *FetchResponse         `protobuf:"bytes,33,opt,name=fetch_response" json:"fetch_response,omitempty"`
+	ReadResponse          *ReadResponse          `protobuf:"bytes,34,opt,name=read_response" json:"read_response,omitempty"`
+	EnterTopicResponse    *EnterTopicResponse    `protobuf:"bytes,35,opt,name=enter_topic_response" json:"enter_topic_response,omitempty"`
+	ExitTopicResponse     *ExitTopicResponse     `protobuf:"bytes,36,opt,name=exit_topic_response" json:"exit_topic_response,omitempty"`
+	PingResponse          *PingResponse          `protobuf:"bytes,37,opt,name=ping_response" json:"ping_response,omitempty"`
+	RescueResponse        *RescueResponse        `protobuf:"bytes,38,opt,name=rescue_response" json:"rescue_response,omitempty"`
+	ChannelCreateResponse *ChannelCreateResponse `protobuf:"bytes,39,opt,name=channel_create_response" json:"channel_create_response,omitempty"`
+	ChannelListResponse   *ChannelListResponse   `protobuf:"bytes,40,opt,name=channel_list_response" json:"channel_list_response,omitempty"`
+	PostNotify            *Post                  `protobuf:"bytes,61,opt,name=post_notify" json:"post_notify,omitempty"`
 }
 
 func (m *Payload) Reset()         { *m = Payload{} }
@@ -1319,6 +1614,20 @@ func (m *Payload) GetRescueRequest() *RescueRequest {
 	return nil
 }
 
+func (m *Payload) GetChannelCreateRequest() *ChannelCreateRequest {
+	if m != nil {
+		return m.ChannelCreateRequest
+	}
+	return nil
+}
+
+func (m *Payload) GetChannelListRequest() *ChannelListRequest {
+	if m != nil {
+		return m.ChannelListRequest
+	}
+	return nil
+}
+
 func (m *Payload) GetError() *Error {
 	if m != nil {
 		return m.Error
@@ -1382,6 +1691,20 @@ func (m *Payload) GetRescueResponse() *RescueResponse {
 	return nil
 }
 
+func (m *Payload) GetChannelCreateResponse() *ChannelCreateResponse {
+	if m != nil {
+		return m.ChannelCreateResponse
+	}
+	return nil
+}
+
+func (m *Payload) GetChannelListResponse() *ChannelListResponse {
+	if m != nil {
+		return m.ChannelListResponse
+	}
+	return nil
+}
+
 func (m *Payload) GetPostNotify() *Post {
 	if m != nil {
 		return m.PostNotify
@@ -1398,6 +1721,7 @@ func init() {
 	proto.RegisterType((*Model_Account)(nil), "ChannerProto.Model.Account")
 	proto.RegisterType((*Model_Rescue)(nil), "ChannerProto.Model.Rescue")
 	proto.RegisterType((*Model_Channel)(nil), "ChannerProto.Model.Channel")
+	proto.RegisterType((*Model_Channel_Options)(nil), "ChannerProto.Model.Channel.Options")
 	proto.RegisterType((*Model_Device)(nil), "ChannerProto.Model.Device")
 	proto.RegisterType((*Model_Node)(nil), "ChannerProto.Model.Node")
 	proto.RegisterType((*Model_Persona)(nil), "ChannerProto.Model.Persona")
@@ -1413,6 +1737,8 @@ func init() {
 	proto.RegisterType((*ExitTopicRequest)(nil), "ChannerProto.ExitTopicRequest")
 	proto.RegisterType((*PingRequest)(nil), "ChannerProto.PingRequest")
 	proto.RegisterType((*RescueRequest)(nil), "ChannerProto.RescueRequest")
+	proto.RegisterType((*ChannelCreateRequest)(nil), "ChannerProto.ChannelCreateRequest")
+	proto.RegisterType((*ChannelListRequest)(nil), "ChannerProto.ChannelListRequest")
 	proto.RegisterType((*LoginResponse)(nil), "ChannerProto.LoginResponse")
 	proto.RegisterType((*PostResponse)(nil), "ChannerProto.PostResponse")
 	proto.RegisterType((*FetchResponse)(nil), "ChannerProto.FetchResponse")
@@ -1421,11 +1747,16 @@ func init() {
 	proto.RegisterType((*ExitTopicResponse)(nil), "ChannerProto.ExitTopicResponse")
 	proto.RegisterType((*PingResponse)(nil), "ChannerProto.PingResponse")
 	proto.RegisterType((*RescueResponse)(nil), "ChannerProto.RescueResponse")
+	proto.RegisterType((*ChannelCreateResponse)(nil), "ChannerProto.ChannelCreateResponse")
+	proto.RegisterType((*ChannelListResponse)(nil), "ChannerProto.ChannelListResponse")
 	proto.RegisterType((*Error)(nil), "ChannerProto.Error")
 	proto.RegisterType((*Payload)(nil), "ChannerProto.Payload")
 	proto.RegisterEnum("ChannerProto.Model_Account_Type", Model_Account_Type_name, Model_Account_Type_value)
 	proto.RegisterEnum("ChannerProto.Model_Account_Status", Model_Account_Status_name, Model_Account_Status_value)
+	proto.RegisterEnum("ChannerProto.Model_Channel_IdentityLevel", Model_Channel_IdentityLevel_name, Model_Channel_IdentityLevel_value)
+	proto.RegisterEnum("ChannerProto.Model_Channel_TopicDisplayStyle", Model_Channel_TopicDisplayStyle_name, Model_Channel_TopicDisplayStyle_value)
 	proto.RegisterEnum("ChannerProto.Model_Reaction_Type", Model_Reaction_Type_name, Model_Reaction_Type_value)
+	proto.RegisterEnum("ChannerProto.ChannelListRequest_Category", ChannelListRequest_Category_name, ChannelListRequest_Category_value)
 	proto.RegisterEnum("ChannerProto.Error_Type", Error_Type_name, Error_Type_value)
 	proto.RegisterEnum("ChannerProto.Payload_Type", Payload_Type_name, Payload_Type_value)
 }
@@ -1695,8 +2026,52 @@ func (m *Model_Channel) MarshalTo(data []byte) (int, error) {
 	i += copy(data[i:], m.Name)
 	data[i] = 0x1a
 	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Description)))
+	i += copy(data[i:], m.Description)
+	data[i] = 0x22
+	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Style)))
 	i += copy(data[i:], m.Style)
+	data[i] = 0x28
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Established))
+	if m.Options != nil {
+		data[i] = 0x32
+		i++
+		i = encodeVarintChanner(data, i, uint64(len(m.Options)))
+		i += copy(data[i:], m.Options)
+	}
+	return i, nil
+}
+
+func (m *Model_Channel_Options) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *Model_Channel_Options) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	data[i] = 0x8
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Identity))
+	data[i] = 0x10
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.TopicDisplayStyle))
+	data[i] = 0x18
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.TopicPostLimit))
+	data[i] = 0x22
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.AnonymousName)))
+	i += copy(data[i:], m.AnonymousName)
 	return i, nil
 }
 
@@ -2188,6 +2563,70 @@ func (m *RescueRequest) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
+func (m *ChannelCreateRequest) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ChannelCreateRequest) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	data[i] = 0xa
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Name)))
+	i += copy(data[i:], m.Name)
+	data[i] = 0x12
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Description)))
+	i += copy(data[i:], m.Description)
+	data[i] = 0x1a
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Style)))
+	i += copy(data[i:], m.Style)
+	if m.Options != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.Options.Size()))
+		n8, err := m.Options.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n8
+	}
+	return i, nil
+}
+
+func (m *ChannelListRequest) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ChannelListRequest) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	data[i] = 0x8
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Category))
+	data[i] = 0x10
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Limit))
+	return i, nil
+}
+
 func (m *LoginResponse) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -2253,11 +2692,11 @@ func (m *PostResponse) MarshalTo(data []byte) (int, error) {
 		data[i] = 0xa
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PostedAt.Size()))
-		n8, err := m.PostedAt.MarshalTo(data[i:])
+		n9, err := m.PostedAt.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n8
+		i += n9
 	}
 	return i, nil
 }
@@ -2392,6 +2831,66 @@ func (m *RescueResponse) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
+func (m *ChannelCreateResponse) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ChannelCreateResponse) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Channel == nil {
+		return 0, github_com_gogo_protobuf_proto.NewRequiredNotSetError("channel")
+	} else {
+		data[i] = 0xa
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.Channel.Size()))
+		n10, err := m.Channel.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n10
+	}
+	return i, nil
+}
+
+func (m *ChannelListResponse) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ChannelListResponse) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.List) > 0 {
+		for _, msg := range m.List {
+			data[i] = 0xa
+			i++
+			i = encodeVarintChanner(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	return i, nil
+}
+
 func (m *Error) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -2442,81 +2941,101 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x1a
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.LoginRequest.Size()))
-		n9, err := m.LoginRequest.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n9
-	}
-	if m.PostRequest != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintChanner(data, i, uint64(m.PostRequest.Size()))
-		n10, err := m.PostRequest.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n10
-	}
-	if m.FetchRequest != nil {
-		data[i] = 0x2a
-		i++
-		i = encodeVarintChanner(data, i, uint64(m.FetchRequest.Size()))
-		n11, err := m.FetchRequest.MarshalTo(data[i:])
+		n11, err := m.LoginRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n11
 	}
-	if m.ReadRequest != nil {
-		data[i] = 0x32
+	if m.PostRequest != nil {
+		data[i] = 0x22
 		i++
-		i = encodeVarintChanner(data, i, uint64(m.ReadRequest.Size()))
-		n12, err := m.ReadRequest.MarshalTo(data[i:])
+		i = encodeVarintChanner(data, i, uint64(m.PostRequest.Size()))
+		n12, err := m.PostRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n12
 	}
-	if m.EnterTopicRequest != nil {
-		data[i] = 0x3a
+	if m.FetchRequest != nil {
+		data[i] = 0x2a
 		i++
-		i = encodeVarintChanner(data, i, uint64(m.EnterTopicRequest.Size()))
-		n13, err := m.EnterTopicRequest.MarshalTo(data[i:])
+		i = encodeVarintChanner(data, i, uint64(m.FetchRequest.Size()))
+		n13, err := m.FetchRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n13
 	}
-	if m.ExitTopicRequest != nil {
-		data[i] = 0x42
+	if m.ReadRequest != nil {
+		data[i] = 0x32
 		i++
-		i = encodeVarintChanner(data, i, uint64(m.ExitTopicRequest.Size()))
-		n14, err := m.ExitTopicRequest.MarshalTo(data[i:])
+		i = encodeVarintChanner(data, i, uint64(m.ReadRequest.Size()))
+		n14, err := m.ReadRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n14
 	}
-	if m.PingRequest != nil {
-		data[i] = 0x4a
+	if m.EnterTopicRequest != nil {
+		data[i] = 0x3a
 		i++
-		i = encodeVarintChanner(data, i, uint64(m.PingRequest.Size()))
-		n15, err := m.PingRequest.MarshalTo(data[i:])
+		i = encodeVarintChanner(data, i, uint64(m.EnterTopicRequest.Size()))
+		n15, err := m.EnterTopicRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n15
 	}
-	if m.RescueRequest != nil {
-		data[i] = 0x52
+	if m.ExitTopicRequest != nil {
+		data[i] = 0x42
 		i++
-		i = encodeVarintChanner(data, i, uint64(m.RescueRequest.Size()))
-		n16, err := m.RescueRequest.MarshalTo(data[i:])
+		i = encodeVarintChanner(data, i, uint64(m.ExitTopicRequest.Size()))
+		n16, err := m.ExitTopicRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n16
+	}
+	if m.PingRequest != nil {
+		data[i] = 0x4a
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.PingRequest.Size()))
+		n17, err := m.PingRequest.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n17
+	}
+	if m.RescueRequest != nil {
+		data[i] = 0x52
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.RescueRequest.Size()))
+		n18, err := m.RescueRequest.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n18
+	}
+	if m.ChannelCreateRequest != nil {
+		data[i] = 0x5a
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.ChannelCreateRequest.Size()))
+		n19, err := m.ChannelCreateRequest.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n19
+	}
+	if m.ChannelListRequest != nil {
+		data[i] = 0x62
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.ChannelListRequest.Size()))
+		n20, err := m.ChannelListRequest.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n20
 	}
 	if m.Error != nil {
 		data[i] = 0xf2
@@ -2524,11 +3043,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x1
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.Error.Size()))
-		n17, err := m.Error.MarshalTo(data[i:])
+		n21, err := m.Error.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n17
+		i += n21
 	}
 	if m.LoginResponse != nil {
 		data[i] = 0xfa
@@ -2536,11 +3055,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x1
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.LoginResponse.Size()))
-		n18, err := m.LoginResponse.MarshalTo(data[i:])
+		n22, err := m.LoginResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n18
+		i += n22
 	}
 	if m.PostResponse != nil {
 		data[i] = 0x82
@@ -2548,11 +3067,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PostResponse.Size()))
-		n19, err := m.PostResponse.MarshalTo(data[i:])
+		n23, err := m.PostResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n19
+		i += n23
 	}
 	if m.FetchResponse != nil {
 		data[i] = 0x8a
@@ -2560,11 +3079,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.FetchResponse.Size()))
-		n20, err := m.FetchResponse.MarshalTo(data[i:])
+		n24, err := m.FetchResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n20
+		i += n24
 	}
 	if m.ReadResponse != nil {
 		data[i] = 0x92
@@ -2572,11 +3091,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ReadResponse.Size()))
-		n21, err := m.ReadResponse.MarshalTo(data[i:])
+		n25, err := m.ReadResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n21
+		i += n25
 	}
 	if m.EnterTopicResponse != nil {
 		data[i] = 0x9a
@@ -2584,11 +3103,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.EnterTopicResponse.Size()))
-		n22, err := m.EnterTopicResponse.MarshalTo(data[i:])
+		n26, err := m.EnterTopicResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n22
+		i += n26
 	}
 	if m.ExitTopicResponse != nil {
 		data[i] = 0xa2
@@ -2596,11 +3115,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ExitTopicResponse.Size()))
-		n23, err := m.ExitTopicResponse.MarshalTo(data[i:])
+		n27, err := m.ExitTopicResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n23
+		i += n27
 	}
 	if m.PingResponse != nil {
 		data[i] = 0xaa
@@ -2608,11 +3127,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PingResponse.Size()))
-		n24, err := m.PingResponse.MarshalTo(data[i:])
+		n28, err := m.PingResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n24
+		i += n28
 	}
 	if m.RescueResponse != nil {
 		data[i] = 0xb2
@@ -2620,11 +3139,35 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.RescueResponse.Size()))
-		n25, err := m.RescueResponse.MarshalTo(data[i:])
+		n29, err := m.RescueResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n25
+		i += n29
+	}
+	if m.ChannelCreateResponse != nil {
+		data[i] = 0xba
+		i++
+		data[i] = 0x2
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.ChannelCreateResponse.Size()))
+		n30, err := m.ChannelCreateResponse.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n30
+	}
+	if m.ChannelListResponse != nil {
+		data[i] = 0xc2
+		i++
+		data[i] = 0x2
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.ChannelListResponse.Size()))
+		n31, err := m.ChannelListResponse.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n31
 	}
 	if m.PostNotify != nil {
 		data[i] = 0xea
@@ -2632,11 +3175,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x3
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PostNotify.Size()))
-		n26, err := m.PostNotify.MarshalTo(data[i:])
+		n32, err := m.PostNotify.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n26
+		i += n32
 	}
 	return i, nil
 }
@@ -2765,7 +3308,25 @@ func (m *Model_Channel) Size() (n int) {
 	n += 1 + sovChanner(uint64(m.Id))
 	l = len(m.Name)
 	n += 1 + l + sovChanner(uint64(l))
+	l = len(m.Description)
+	n += 1 + l + sovChanner(uint64(l))
 	l = len(m.Style)
+	n += 1 + l + sovChanner(uint64(l))
+	n += 1 + sovChanner(uint64(m.Established))
+	if m.Options != nil {
+		l = len(m.Options)
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	return n
+}
+
+func (m *Model_Channel_Options) Size() (n int) {
+	var l int
+	_ = l
+	n += 1 + sovChanner(uint64(m.Identity))
+	n += 1 + sovChanner(uint64(m.TopicDisplayStyle))
+	n += 1 + sovChanner(uint64(m.TopicPostLimit))
+	l = len(m.AnonymousName)
 	n += 1 + l + sovChanner(uint64(l))
 	return n
 }
@@ -2954,6 +3515,30 @@ func (m *RescueRequest) Size() (n int) {
 	return n
 }
 
+func (m *ChannelCreateRequest) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Name)
+	n += 1 + l + sovChanner(uint64(l))
+	l = len(m.Description)
+	n += 1 + l + sovChanner(uint64(l))
+	l = len(m.Style)
+	n += 1 + l + sovChanner(uint64(l))
+	if m.Options != nil {
+		l = m.Options.Size()
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	return n
+}
+
+func (m *ChannelListRequest) Size() (n int) {
+	var l int
+	_ = l
+	n += 1 + sovChanner(uint64(m.Category))
+	n += 1 + sovChanner(uint64(m.Limit))
+	return n
+}
+
 func (m *LoginResponse) Size() (n int) {
 	var l int
 	_ = l
@@ -3032,6 +3617,28 @@ func (m *RescueResponse) Size() (n int) {
 	return n
 }
 
+func (m *ChannelCreateResponse) Size() (n int) {
+	var l int
+	_ = l
+	if m.Channel != nil {
+		l = m.Channel.Size()
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	return n
+}
+
+func (m *ChannelListResponse) Size() (n int) {
+	var l int
+	_ = l
+	if len(m.List) > 0 {
+		for _, e := range m.List {
+			l = e.Size()
+			n += 1 + l + sovChanner(uint64(l))
+		}
+	}
+	return n
+}
+
 func (m *Error) Size() (n int) {
 	var l int
 	_ = l
@@ -3078,6 +3685,14 @@ func (m *Payload) Size() (n int) {
 		l = m.RescueRequest.Size()
 		n += 1 + l + sovChanner(uint64(l))
 	}
+	if m.ChannelCreateRequest != nil {
+		l = m.ChannelCreateRequest.Size()
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	if m.ChannelListRequest != nil {
+		l = m.ChannelListRequest.Size()
+		n += 1 + l + sovChanner(uint64(l))
+	}
 	if m.Error != nil {
 		l = m.Error.Size()
 		n += 2 + l + sovChanner(uint64(l))
@@ -3112,6 +3727,14 @@ func (m *Payload) Size() (n int) {
 	}
 	if m.RescueResponse != nil {
 		l = m.RescueResponse.Size()
+		n += 2 + l + sovChanner(uint64(l))
+	}
+	if m.ChannelCreateResponse != nil {
+		l = m.ChannelCreateResponse.Size()
+		n += 2 + l + sovChanner(uint64(l))
+	}
+	if m.ChannelListResponse != nil {
+		l = m.ChannelListResponse.Size()
 		n += 2 + l + sovChanner(uint64(l))
 	}
 	if m.PostNotify != nil {
@@ -4157,6 +4780,35 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 			hasFields[0] |= uint64(0x00000002)
 		case 3:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Style", wireType)
 			}
 			var stringLen uint64
@@ -4185,6 +4837,55 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 			m.Style = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 			hasFields[0] |= uint64(0x00000004)
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Established", wireType)
+			}
+			m.Established = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Established |= (UUID(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000008)
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Options", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Options = append([]byte{}, data[iNdEx:postIndex]...)
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000010)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -4208,6 +4909,148 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 	}
 	if hasFields[0]&uint64(0x00000004) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("style")
+	}
+	if hasFields[0]&uint64(0x00000008) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("established")
+	}
+	if hasFields[0]&uint64(0x00000010) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("options")
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Model_Channel_Options) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Options: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Options: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Identity", wireType)
+			}
+			m.Identity = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Identity |= (Model_Channel_IdentityLevel(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TopicDisplayStyle", wireType)
+			}
+			m.TopicDisplayStyle = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.TopicDisplayStyle |= (Model_Channel_TopicDisplayStyle(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TopicPostLimit", wireType)
+			}
+			m.TopicPostLimit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.TopicPostLimit |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AnonymousName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AnonymousName = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
 	}
 
 	if iNdEx > l {
@@ -5666,7 +6509,7 @@ func (m *PostRequest) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.TopicId |= (uint64(b) & 0x7F) << shift
+				m.TopicId |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -5940,7 +6783,7 @@ func (m *ReadRequest) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.TopicId |= (uint64(b) & 0x7F) << shift
+				m.TopicId |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -6051,7 +6894,7 @@ func (m *EnterTopicRequest) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.TopicId |= (uint64(b) & 0x7F) << shift
+				m.TopicId |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -6125,7 +6968,7 @@ func (m *ExitTopicRequest) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.TopicId |= (uint64(b) & 0x7F) << shift
+				m.TopicId |= (UUID(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -6362,6 +7205,269 @@ func (m *RescueRequest) Unmarshal(data []byte) error {
 	}
 	if hasFields[0]&uint64(0x00000004) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("walltime")
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ChannelCreateRequest) Unmarshal(data []byte) error {
+	var hasFields [1]uint64
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ChannelCreateRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ChannelCreateRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000001)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Style", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Style = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Options", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Options == nil {
+				m.Options = &Model_Channel_Options{}
+			}
+			if err := m.Options.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+	if hasFields[0]&uint64(0x00000001) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("name")
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ChannelListRequest) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ChannelListRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ChannelListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Category", wireType)
+			}
+			m.Category = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Category |= (ChannelListRequest_Category(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Limit", wireType)
+			}
+			m.Limit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Limit |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
 	}
 
 	if iNdEx > l {
@@ -7076,6 +8182,175 @@ func (m *RescueResponse) Unmarshal(data []byte) error {
 	}
 	return nil
 }
+func (m *ChannelCreateResponse) Unmarshal(data []byte) error {
+	var hasFields [1]uint64
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ChannelCreateResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ChannelCreateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Channel", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Channel == nil {
+				m.Channel = &Model_Channel{}
+			}
+			if err := m.Channel.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000001)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+	if hasFields[0]&uint64(0x00000001) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("channel")
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ChannelListResponse) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ChannelListResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ChannelListResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field List", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.List = append(m.List, &Model_Channel{})
+			if err := m.List[len(m.List)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *Error) Unmarshal(data []byte) error {
 	var hasFields [1]uint64
 	l := len(data)
@@ -7512,6 +8787,72 @@ func (m *Payload) Unmarshal(data []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChannelCreateRequest", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ChannelCreateRequest == nil {
+				m.ChannelCreateRequest = &ChannelCreateRequest{}
+			}
+			if err := m.ChannelCreateRequest.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 12:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChannelListRequest", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ChannelListRequest == nil {
+				m.ChannelListRequest = &ChannelListRequest{}
+			}
+			if err := m.ChannelListRequest.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		case 30:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Error", wireType)
@@ -7806,6 +9147,72 @@ func (m *Payload) Unmarshal(data []byte) error {
 				m.RescueResponse = &RescueResponse{}
 			}
 			if err := m.RescueResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 39:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChannelCreateResponse", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ChannelCreateResponse == nil {
+				m.ChannelCreateResponse = &ChannelCreateResponse{}
+			}
+			if err := m.ChannelCreateResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 40:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChannelListResponse", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ChannelListResponse == nil {
+				m.ChannelListResponse = &ChannelListResponse{}
+			}
+			if err := m.ChannelListResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

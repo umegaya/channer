@@ -18,7 +18,7 @@ func InitDevice() {
 
 func NewDevice(dbif Dbif, id, typ, from string, account proto.UUID) (*Device, bool, error) {
 	d := &Device{}
-	if err := dbif.SelectOne(d, "select * from devices where id=$1", id); err != nil {
+	if err := dbif.SelectOne(d, dbm.Stmt("select * from %s.devices where id=$1"), id); err != nil {
 		d.Id = id
 		d.Type = typ
 		d.Account = account

@@ -6,6 +6,7 @@ export class FS {
     constructor(fs: FileSystem) {
         this.fs = fs;        
     }
+    //path need to be relative. otherwise FileNotFound raises
     openfile = (path: string, options?: Flags): Q.Promise<FileEntry> => {
         var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
         this.fs.root.getFile(path, options, function (entry: FileEntry) {
@@ -44,7 +45,7 @@ export class FS {
         }, function (e: FileError) {
             df.reject(e);
         });
-        return df.promise;   
+        return df.promise;
     }
     rename = (src: string, to: string, name?: string): Q.Promise<Entry> => {
         var df: Q.Deferred<Entry> = Q.defer<Entry>();
@@ -64,6 +65,24 @@ export class FS {
             return df.promise;
         });
     }
+    truncate = (entry: FileEntry): Q.Promise<Entry> => {
+        var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
+        this.writefile(entry).then((w: FileWriter) => {
+            try {
+                w.onwriteend = function(e: ProgressEvent) {
+                    df.resolve(entry);
+                };
+                w.truncate(0);
+            }
+            catch (e) {
+                df.reject(e);
+            }
+        }, (e: any) => {
+            console.log("fail to writer:" + e.message);
+            df.reject(e);
+        });
+        return df.promise;
+    }
     opendir = (path: string, options?: Flags): Q.Promise<DirectoryEntry> => {
         var df: Q.Deferred<DirectoryEntry> = Q.defer<DirectoryEntry>();
         this.fs.root.getDirectory(path, options, function (entry: DirectoryEntry) {
@@ -76,11 +95,21 @@ export class FS {
     download = (url: string, dest: string): Q.Promise<FileEntry> => {
         var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
         var ft: FileTransfer = new FileTransfer();
-        ft.download(encodeURI(url), this.fs.root.toURL() + dest, function(entry: FileEntry) {
-            df.resolve(entry);
-        }, function (e: FileTransferError) {
+        var dldest = this.fs.root.toURL() + dest;
+        var p = this.openfile(dest, {create: true}).then((entry: FileEntry) => {
+            this.truncate(entry).then((entry: FileEntry) => {
+                ft.download(encodeURI(url), dldest, (entry: FileEntry) => {
+                    df.resolve(entry);
+                }, (e: FileTransferError) => {
+                    df.reject(e);
+                });
+            }, (e: any) => {
+                df.reject(e);
+            });
+        }, (e: any) =>  {
+            console.log("cannot open file:" + e.message);
             df.reject(e);
-        });
+        });        
         return df.promise;
     }
     load = (file: FileEntry): Q.Promise<FileEntry> => {
@@ -104,6 +133,9 @@ export class FS {
         var scriptTag = document.createElement('script');
         scriptTag.onload = function (event : any) {
             df.resolve(js);
+        }
+        scriptTag.onerror = function (event: any) {
+            df.reject(event);
         }
         scriptTag.type = "text/javascript";
         scriptTag.src = js.toURL();

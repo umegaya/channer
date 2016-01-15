@@ -36,18 +36,18 @@ class Patcher {
                 var ext: string = ent.ext;
                 var dest: string = 'assets/' + name + "." + ext;
                 if (vs[i].updated) {
-                    var src: string = baseUrl + '/assets/' + name + "." + ent.hash + "." + ent.ext;
+                    var src: string = baseUrl + "/assets/" + name + "." + ent.hash + "." + ent.ext;
                     console.log("download:" + src + " => " + dest);
                     loaders.push(this.fs.download(src, dest));
                 }
                 else {
                     console.log("load:" + dest);
-                    loaders.push(this.fs.openfile(dest))
+                    loaders.push(this.fs.openfile(dest));
                 }
             }
-            return Q.all(loaders)
-            .then((entries : Array<FileEntry>) => {
+            return Q.all(loaders).then((entries : Array<FileEntry>) => {
                 entries.shift(); //prevent patch.js from loading
+                console.log("entry:" + entries.length);
                 if (entries.length > 0) {
                     //setup sequencial js loader (because halfway loaded js may cause error)
                     var promise : Q.Promise<any> = this.fs.load(entries[0]);
@@ -60,6 +60,7 @@ class Patcher {
                     for (var i = 1; i < entries.length; i++) {
                         var ent = entries[i];
                         var idx = i;
+                        console.log("loadjs:" + entries[i].toURL());
                         promise = promise.then(_loadnext(ent));
                     }
                     return promise;
@@ -123,15 +124,15 @@ window.channer.patch = function (loaderURL: string, onfinished: (config: any) =>
     console.log("start patch " + loaderURL);
     window.channer.fs = new FS(window.channer.rawfs);
     var patcher = new Patcher(window.channer.fs, debug);
-    patcher.patch(loaderURL)
-    .then(function (config: any) {
+    patcher.patch(loaderURL).then(function (config: any) {
         if (!config.url) {
             config.url = loaderURL.replace(/[0-9]+$/, "8888").replace(/^http/, "wss") + "/ws";
         }
         console.log("end patch: endpoint = " + config.url);
         onfinished(config);
     }, function (e: any) {
-        console.log("error patch:" + e.stack);
+        console.log("error patch:" + JSON.stringify(e));
+        alert("pause");
         onerror(e);
     });
 }

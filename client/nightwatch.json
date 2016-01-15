@@ -1,5 +1,5 @@
 {
-  "src_folders": ["test/specs"],
+  "src_folders": ["test/src"],
   "output_folder": "test/reports",
   "selenium": {
     "start_process": true,

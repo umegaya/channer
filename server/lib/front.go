@@ -18,7 +18,7 @@ import (
 type FrontServerConn struct {
 	ws *websocket.Conn 
 	send chan *proto.Payload
-	//Account Account
+	account *models.Account
 }
 
 //newFrontServerConn creates new frontend connection
@@ -47,6 +47,16 @@ func (c *FrontServerConn) addr() net.Addr {
 //String implements packets.Source interface
 func (c *FrontServerConn) String() string {
 	return c.addr().String()
+}
+
+//Account implements packets.Source interface
+func (c *FrontServerConn) Account() *models.Account {
+	return c.account
+}
+
+//SetAccount implements packets.Source interface
+func (c *FrontServerConn) SetAccount(a *models.Account) {
+	c.account = a
 }
 
 //writer used as goroutine, receive send message via send channel, write it to 

@@ -2,6 +2,7 @@ package models
 
 import (
 	"log"
+	"fmt"
 	"bytes"
 	"strconv"
 	"crypto/sha256"
@@ -42,7 +43,7 @@ func NewAccount(dbif Dbif, id *string, typ proto.Model_Account_Type, user string
 		}
 		a.Id = proto.UUID(tmp)
 	}
-	if err := dbif.SelectOne(a, "select * from accounts where id=$1", a.Id); err != nil {
+	if err := dbif.SelectOne(a, dbm.Stmt("select * from %s.accounts where id=$1"), a.Id); err != nil {
 		return nil, false, err
 	}
 	return a, created, nil
@@ -58,7 +59,7 @@ func FindAccount(dbif Dbif, id string) (*Account, error) {
 			Id: proto.UUID(tmp),
 		},
 	}
-	if err := dbif.SelectOne(a, "select * from accounts where id=$1", a.Id); err != nil {
+	if err := dbif.SelectOne(a, dbm.Stmt("select * from %s.accounts where id=$1"), a.Id); err != nil {
 		return nil, err
 	}
 	return a, nil
@@ -112,5 +113,11 @@ func (a *Account) VerifySign(sign string, walltime uint64) bool {
 	}
 	log.Printf("invalid sign %v:%v:%v:%v:%v", sign, computed, a.StringId(), a.Secret, walltime)
 	return false
+}
 
+func (a *Account) CanCreateChannel(created uint64) error {
+	if created > 0 {
+		return fmt.Errorf("too many channel created")
+	}
+	return nil
 }

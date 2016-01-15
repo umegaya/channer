@@ -25,7 +25,7 @@ func NewRescue(dbif Dbif, account string) (*Rescue, error) {
 			Account: account,
 		},
 	}
-	if err := dbif.SelectOne(res, "select * from rescues where account=$1", res.Account); err == nil {
+	if err := dbif.SelectOne(res, dbm.Stmt("select * from %s.rescues where account=$1"), res.Account); err == nil {
 		if res.RemainTime() > 0 {
 			return res, nil
 		}
@@ -34,7 +34,7 @@ func NewRescue(dbif Dbif, account string) (*Rescue, error) {
 	res.ValidDate = time.Now().Add(72 * time.Hour).UnixNano()
 RETRY:
 	rand.Read(res.Id)
-	if err := dbif.SelectOne(res, "select * from rescues where id=$1", res.Id); err == nil {
+	if err := dbif.SelectOne(res, dbm.Stmt("select * from %s.rescues where id=$1"), res.Id); err == nil {
 		goto RETRY
 	}
 	if err := dbif.Insert(res); err != nil {
@@ -59,7 +59,7 @@ func FindRescueAccount(rescue string) (*Account, error) {
 	}
 	var a *Account
 	if err = dbm.Txn(func (tx Dbif) error {
-		if err = tx.SelectOne(res, "select * from rescues where id=$1", res.Id); err != nil {
+		if err = tx.SelectOne(res, dbm.Stmt("select * from %s.rescues where id=$1"), res.Id); err != nil {
 			return err
 		}
 		if res.RemainTime() <= 0 {

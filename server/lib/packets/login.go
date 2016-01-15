@@ -7,7 +7,6 @@ import (
 	"../models"
 )
 
-//TODO: entirely use database as datastore
 func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transport) {
 	user := req.User
 	version := req.Version
@@ -45,7 +44,6 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 				return
 			}
 		}
-		//TODO: replace user with id value
 		secret := a.ComputeSecret(*pass, walltime)
 		a.Secret = secret
 		a.Pass = *pass
@@ -97,6 +95,7 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	}
 	//send post notification to all member in this Topic
 	log.Printf("secret:%v, id:%v", a.Secret, idstr)
+	from.SetAccount(a)
 	from.Send(&proto.Payload {
 		Type: proto.Payload_LoginResponse,
 		Msgid: msgid,

@@ -7,7 +7,7 @@
     },
     "files": [
         "./typings/phonegap.d.ts",
-        "./typings/compat.d.ts",
+        "./typings/protobuf.d.ts",
         "./typings/channer.proto.d.ts",
         "./typings/Q/q.d.ts",
         "./typings/extern.d.ts"

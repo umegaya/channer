@@ -12,7 +12,7 @@ module.exports = function (settings) {
             patch: "./src/patch.ts",
             boot: "./src/boot.ts",
             channel: "./src/components/channel.ts",
-            main: "./src/components/main.ts",
+            top: "./src/components/top.ts",
             login: "./src/components/login.ts",
             topic: "./src/components/topic.ts",
             rescue: "./src/components/rescue.ts",
@@ -57,7 +57,7 @@ module.exports = function (settings) {
                 transform: function (data) {
                     //declare simple dependency of each assets
                     //TODO : if it goes really complex, enable graph-style dependency declaration
-                    var deps = ["vendor", "boot", "channel", "main", "login", "rescue", "topic", "compose"];
+                    var deps = ["vendor", "boot", "channel", "top", "login", "rescue", "topic", "compose"];
                     function sorter(a, b) {
                         return deps.indexOf(a.name) - deps.indexOf(b.name);
                     }
