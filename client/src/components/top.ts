@@ -52,7 +52,7 @@ export class TopController implements UI.Controller {
             "popular", this.component.models.popular
         );
         this.map = {
-            "+": this.create,
+            "create": this.create,
             "latest": this.latest,
             "popular": this.popular,
         }
@@ -60,7 +60,7 @@ export class TopController implements UI.Controller {
 }
 function TopView(ctrl: TopController) : UI.Element {
     var elems = Template.header();
-    elems.push(Template.tab(ctrl.active, ["latest", "popular", "+"]));
+    elems.push(Template.tab(ctrl.active, ["latest", "popular", "create"]));
     var active = ctrl.active();
     var contents = ctrl.map[active];
     if (contents) {

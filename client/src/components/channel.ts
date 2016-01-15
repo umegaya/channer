@@ -3,13 +3,13 @@
 import {m, Util, ListComponent} from "../uikit"
 import {Config} from "../config"
 
-export class MainController implements UI.Controller {
-	component: MainComponent;
+export class ChannelController implements UI.Controller {
+	component: ChannelComponent;
 	selected: string;
 	tab_contents: {
 		[x: string]: UI.Component;
 	}
-	constructor(component: MainComponent) {
+	constructor(component: ChannelComponent) {
 //        console.log("channel")
 		Util.active(this, component);
 		this.component = component;
@@ -32,7 +32,7 @@ export class MainController implements UI.Controller {
     
 	tab = (name: string) => {
 		return m("a", {
-			class: "main-tab" + (this.selected == name ? "_selected" : ""), 
+			class: "Channel-tab" + (this.selected == name ? "_selected" : ""), 
 			onclick: function () { this.onchange(name) },
 		}, name);
 	}
@@ -43,22 +43,24 @@ export class MainController implements UI.Controller {
 		this.selected = name;
 	}
 }
-function MainView(ctrl: MainController) : UI.Element {
+function ChannelView(ctrl: ChannelController) : UI.Element {
 	return [
 		ctrl.tabs(),
 		ctrl.activetab(),
 	];
 }
-export class MainComponent implements UI.Component {
-	controller: () => MainController;
-	view: UI.View<MainController>;
+export class ChannelComponent implements UI.Component {
+	controller: () => ChannelController;
+	view: UI.View<ChannelController>;
+    id: string;
 
 	constructor(config: Config) {
-		this.view = MainView;
+		this.view = ChannelView;
 		this.controller = () => {
-			return new MainController(this);
+            this.id = m.route.param("ch");
+			return new ChannelController(this);
 		}
 	}
 }
 
-window.channer.components.Channel = MainComponent
+window.channer.components.Channel = ChannelComponent

@@ -1,1 +1,1 @@
-declare type ByteBuffer = ArrayBuffer;
+//declare type ByteBuffer = ArrayBuffer;

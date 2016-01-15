@@ -6,13 +6,22 @@ stop:
 	-@killall gulp
 	-@killall node
 
-runtest: stop
+setuptest:
 	@gulp webpack-watch &
 	@sleep 2
 	@make -C ../server restart &
 	@phonegap serve --browser 2>&1 > /dev/null &
 	@sleep 1
+
+runtest: stop setuptest
 	@gulp test
+	@make -C ../server stop
+	-@killall gulp
+	-@killall node
+	@echo "test OK"
+    
+devtest: stop setuptest
+	@gulp testdev
 	@make -C ../server stop
 	-@killall gulp
 	-@killall node

@@ -51,13 +51,20 @@ export class PropCollection {
             if (p) {
                 var v = p();
                 if (!this.validate(v, c)) {
-                    v = c.fallback || c.init;
+                    if (c.fallback == "") {
+                        console.log("fallback is empty str: set it");
+                        v = c.fallback;
+                    }
+                    else {
+                        v = c.fallback || c.init;
+                    }
                 }
                 verified[k] = v;
             }
         }
         for (var k in this.props) {
-            if (!verified[k]) {
+            var val = verified[k];
+            if (!val && (val != "")) {
                 verified[k] = this.props[k]();
             }
         }
@@ -96,6 +103,17 @@ export class Util {
 		document.location.pathname = "/";
 		document.location.reload();
 	}
+    static hexdump(b: Uint8Array) {
+		var hex = "0123456789abcdef";
+		var str = "";
+		for (var i = 0; i < b.length; i++) {
+			var byte = b[i];
+			var hi = Math.floor(byte / 16);
+			var lo = Math.floor(byte % 16);
+			str += (hex.charAt(hi) + hex.charAt(lo));
+		}
+		return str;
+    }
 }
 export interface Router {
     (rootElement: Element, defaultRoute: string, 
@@ -106,17 +124,17 @@ export class Template {
         options: UI.Attributes, initval: string, secure?:boolean) {
 		var value = bind();
 		var has_input = (value != initval); 
-		return m("input", {
+     	return m("input", {
 			oninput: m.withAttr("value", bind),
 			onfocus: function () { 
-				var v = bind()
+				var v = bind();
 				if (v == initval) { 
 					bind(""); 
 					m.redraw();
 				} 
 			},
 			onblur: function () { 
-				var v = bind()
+				var v = bind();
 				if (v == "") { 
 					bind(initval); 
 					m.redraw();
@@ -125,8 +143,7 @@ export class Template {
 			style: { color: has_input ? "#000000" : "#999999" },
 			type: (secure && has_input) ? "password" : "text",
 			value: value,
-            id: options.id, 
-			class: options.class,
+        	class: options.class,
 		});
 	}
     static radio(options: UI.Attributes, name: string,
@@ -136,14 +153,12 @@ export class Template {
         for (var k in selects) {
             var sel = selects[k];
             var active = (sel[0] == current);
-            elems.push(m("input[type=radio]", { 
-                class: active ? "active" : "not-active",
-                checked: active ? "checked" : undefined,
-                name: name,
+            elems.push(m("button", { 
+                class: sel[1] + " " + (active ? "active" : "not-active"),
+                style: { "background-color": active ? "#9999FF" : "#FFFFFF"},
                 value: sel[0],
                 onclick: m.withAttr("value", prop),
-            }));
-            elems.push(m("div", {class: "div-text"}, sel[1]));
+            }, sel[1]));
         }
         return m("div", options, elems);
     }
@@ -158,7 +173,7 @@ export class Template {
             var activeness = (k == a) ? "active" : "not-active";
             elems.push(m("div", {
                 value: k,
-                class: "div-tab-element " + activeness,
+                class: "div-tab-element " + activeness + " " + k,
                 onclick: m.withAttr("value", active),
             }, k));
         }

@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, ListComponent, ModelCollection} from "../../uikit"
+import {m, Util, ListComponent, ModelCollection} from "../../uikit"
 import {Handler, Builder} from "../../proto"
 import {Model, ProtoError} from "../../watcher"
 import ChannerProto = Proto2TypeScript.ChannerProto;
@@ -9,14 +9,8 @@ function ChannelInfoView(
     c: ModelCollection, 
     model: ChannerProto.Model.Channel
 ): UI.Element {
-    var options = Builder.Model.Channel.Options.decode(model.options);
-    /*console.log("dumpkv:" + model.options);
-    for (var k in options) {
-        if (typeof(options[k]) != "function") {
-            console.log("kv:" + k + "|" + options[k]);
-        }
-    }
-    console.log("end dumpkv");*/
+    var copied = model.options.slice();
+    var options = Builder.Model.Channel.Options.decode(copied);
     var elems: Array<UI.Element> = [];
     elems.push(m("div", {class: "div-title name"}, model.name));
     elems.push(m("div", {class: "div-image idlevel-" + options.identity}));

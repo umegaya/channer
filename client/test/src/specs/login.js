@@ -1,6 +1,6 @@
 'use strict';
 
-var common = require('../utils/common');
+var common = require('../../utils/common');
 
 var context = {
     secret: null,

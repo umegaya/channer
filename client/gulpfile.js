@@ -102,6 +102,17 @@ gulp.task("webpack-watch", function() {
 gulp.task('test', function () {
     nightwatch.runner({
         config: 'nightwatch.json',
+        group: 'specs',
+        env: 'chrome'
+    }, function (passed) {
+        process.exit(passed ? 0 : 1);
+    });
+});
+
+gulp.task('testdev', function () {
+    nightwatch.runner({
+        config: 'nightwatch.json',
+        group: 'lab',
         env: 'chrome'
     }, function (passed) {
         process.exit(passed ? 0 : 1);

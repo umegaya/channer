@@ -4,6 +4,7 @@
 /// <reference path="./Q/q.d.ts"/>
 /// <reference path="./UI.d.ts"/>
 /// <reference path="./mithril.d.ts"/>
+/// <reference path="./protobuf.d.ts"/>
 /// <reference path="./webpack-runtime.d.ts"/>
 
 interface Window {
