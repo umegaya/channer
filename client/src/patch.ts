@@ -47,7 +47,6 @@ class Patcher {
             }
             return Q.all(loaders).then((entries : Array<FileEntry>) => {
                 entries.shift(); //prevent patch.js from loading
-                console.log("entry:" + entries.length);
                 if (entries.length > 0) {
                     //setup sequencial js loader (because halfway loaded js may cause error)
                     var promise : Q.Promise<any> = this.fs.load(entries[0]);
@@ -60,7 +59,6 @@ class Patcher {
                     for (var i = 1; i < entries.length; i++) {
                         var ent = entries[i];
                         var idx = i;
-                        console.log("loadjs:" + entries[i].toURL());
                         promise = promise.then(_loadnext(ent));
                     }
                     return promise;

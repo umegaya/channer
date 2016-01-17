@@ -82,7 +82,7 @@ export class Handler {
 		return df.promise;
 	}
 	private ontimer = (nowms: number) => {
-        if (this.socket.next_connection || this.socket.connecting()) {
+        if (this.socket.next_connection || !this.socket.connected()) {
             this.redraw();
         }
 		else if ((nowms - this.last_ping) > window.channer.config.ping_interval_ms) {
@@ -145,8 +145,8 @@ export class Handler {
     reconnect_duration = (): number => {
         return this.socket.reconnect_duration();
     }
-    connecting = (): boolean => {
-        return this.socket.connecting();
+    connected = (): boolean => {
+        return this.socket.connected();
     }
 	resume = () => {
 		console.log("handler start");

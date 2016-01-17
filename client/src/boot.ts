@@ -61,7 +61,7 @@ window.channer.bootstrap = function (config: any) {
 		window.channer.settings.values.device_id = resp.registrationId;
 		return window.channer.settings.save();
 	})
-	.then((u: UserSettings) => {
+	.then(() => {
 		return window.channer.fs.applycss("base", require("./styles/base.styl"));
 	})
 	.then(() => {
@@ -86,9 +86,6 @@ window.channer.bootstrap = function (config: any) {
 			"/channel/:ch/:tab": new window.channer.components.Channel(c),
 			"/topic/:id":        new window.channer.components.Topic(c),
 		});
-	}, (e: Error) => {
-		console.log("bootstrap error: " + e.message);
-		throw e;
 	})
 	.done(null, (e: Error) => {
 		console.log("bootstrap error: " + e.message);

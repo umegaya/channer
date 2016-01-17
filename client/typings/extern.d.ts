@@ -31,6 +31,7 @@ interface ChannerModules {
 	storage: any;
 	patch: any;
 	mobile: boolean;
+    l10n: { translate(text: string, ...args:Array<any>): string; };
 	onResume: Array<() => void>;
 	onPause: Array<() => void>;
 	onPush: Array<(resp:any) => void>;/*PushReceiver*/
