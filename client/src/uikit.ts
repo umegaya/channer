@@ -2,6 +2,7 @@
 
 import {Handler} from "./proto"
 export var m : _mithril.MithrilStatic = window.channer.m;
+var _L = window.channer.l10n.translate;
 
 interface PropCondition {
     init: any;
@@ -164,18 +165,18 @@ export class Template {
     }
     static tab(
         active: UI.Property<string>, 
-        tabs: [string]
+        tabs: {[k:string]:string}
     ): UI.Element {
         var a : string = active();
         var elems: Array<UI.Element> = [];
-        for (var i in tabs) {
-            var k = tabs[i];
+        for (var k in tabs) {
+            var v = tabs[k];
             var activeness = (k == a) ? "active" : "not-active";
             elems.push(m("div", {
                 value: k,
                 class: "div-tab-element " + activeness + " " + k,
                 onclick: m.withAttr("value", active),
-            }, k));
+            }, v));
         }
         return m("div", {class: "div-tab"}, elems);
     } 
@@ -183,21 +184,21 @@ export class Template {
         var elements : Array<UI.Element> = [];
         var c : Handler = window.channer.conn;
         var rd = c.reconnect_duration();
-        var connecting = c.connecting();
+        var connected = c.connected();
         var err = c.last_error;
         if (c.querying) {
             //TODO: replace to cool GIF anim
-            elements.push(m("div", {class: "div-query"}, "sending request now"));
+            elements.push(m("div", {class: "div-query"}, _L("sending request now")));
         }
         //TODO: custom header message from current active component
         //otherwise show system network status
         if (rd > 0) {
             //TODO: tap to reconnection
             elements.push(m("div", {class: "div-wait-reconnect"}, 
-                "reconnect within " + rd + " second"));            
+                _L("reconnect within $1 second", rd)));
         }
-        else if (connecting) {
-            elements.push(m("div", {class: "div-reconnecting"}, "reconnecting"));
+        else if (!connected) {
+            elements.push(m("div", {class: "div-reconnecting"}, _L("reconnecting")));
         }
         else {
             if (err) {
@@ -233,7 +234,7 @@ export class ListComponent implements UI.Component {
     }
     view = (models: ModelCollection): UI.Element => {
         return m("div", {class: this.name + "-list"}, models.empty() ?
-            m("div", {class: "div-text"}, "no " + this.name + " elements") :  
+            m("div", {class: "div-text"}, _L("no elements")) :  
             models.map((m: any) => {
                 return this.elemview(models, m);
             })

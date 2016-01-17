@@ -6,6 +6,7 @@ import {Handler} from "../proto"
 import {ChannelCreateComponent} from "./channel/create"
 import {ChannelListComponent} from "./channel/list"
 import ChannerProto = Proto2TypeScript.ChannerProto;
+var _L = window.channer.l10n.translate;
 
 class ChannelCollection implements ModelCollection {
     category: string;
@@ -60,7 +61,11 @@ export class TopController implements UI.Controller {
 }
 function TopView(ctrl: TopController) : UI.Element {
     var elems = Template.header();
-    elems.push(Template.tab(ctrl.active, ["latest", "popular", "create"]));
+    elems.push(Template.tab(ctrl.active, {
+        "latest":_L("latest"),
+        "popular": _L("popular"), 
+        "create": _L("+"),
+    }));
     var active = ctrl.active();
     var contents = ctrl.map[active];
     if (contents) {

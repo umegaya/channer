@@ -128,7 +128,6 @@ export class FS {
         }
     }
     loadjs = (js: FileEntry): Q.Promise<FileEntry> => {
-        console.log("loadjs:" + js.toURL());
         var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
         var scriptTag = document.createElement('script');
         scriptTag.onload = function (event : any) {

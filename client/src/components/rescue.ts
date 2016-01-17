@@ -4,6 +4,7 @@ import {m, Util, Template} from "../uikit"
 import {Config} from "../config"
 import {ProtoError} from "../watcher"
 import ChannerProto = Proto2TypeScript.ChannerProto;
+var _L = window.channer.l10n.translate;
 
 export class RescueController implements UI.Controller {
 	component: RescueComponent;
@@ -37,19 +38,19 @@ export class RescueController implements UI.Controller {
 function RescueView(ctrl: RescueController) : UI.Element {
 	var elems = Template.header();
     elems.push(m("div", {class: "div-text guide"}, 
-        "send below url to device you want to login with same account."));
+        _L("open below url with the device you want to login with same account.")));
 	var remain_nano = ctrl.remain_time();
 	if (remain_nano > 0) {
 		var hours = Math.floor((remain_nano / (1000000000 * 60 * 60)) * 10) / 10;
 		elems.push(m("div", {class: "div-text remain"}, 
-            "url valid during " + hours + " hours."));
+            _L("url valid during $1 hours.", hours)));
 	}
 	elems.push([
 		m("textarea", {class: "textarea-readonly"}, ctrl.url()),
 		m("button", {
 			onclick: ctrl.onsend,
 			class: "button-send", 
-		}, "Send"),
+		}, _L("Send")),
 	]);
 	return m("div", {class: "rescue"}, elems);
 }

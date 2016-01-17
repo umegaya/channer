@@ -4,10 +4,11 @@ import {m, Template, Util} from "../uikit"
 import {ProtoError} from "../watcher"
 import {Config} from "../config"
 import ChannerProto = Proto2TypeScript.ChannerProto;
+var _L = window.channer.l10n.translate;
 
 export class LoginController implements UI.Controller {
-	static DEFAULT_USER_NAME = "username";
-	static DEFAULT_MAIL_ADDR = "mail address";
+	static DEFAULT_USER_NAME = _L("user name");
+	static DEFAULT_MAIL_ADDR = _L("mail address (optional)");
 	component: LoginComponent;
 	user: UI.Property<string>;
 	mail: UI.Property<string>;
@@ -33,8 +34,8 @@ export class LoginController implements UI.Controller {
 			this.sendlogin(user, mail, secret);
 		}
 		else if (!user) {
-			this.user = m.prop(user || LoginController.DEFAULT_USER_NAME);
-			this.mail = m.prop(mail || LoginController.DEFAULT_MAIL_ADDR);
+			this.user = m.prop(user || _L(LoginController.DEFAULT_USER_NAME));
+			this.mail = m.prop(mail || _L(LoginController.DEFAULT_MAIL_ADDR));
 		}
 		else {
 			console.log("auto login with:" + user + "&" + mail);
@@ -90,17 +91,17 @@ export class LoginController implements UI.Controller {
 function LoginView(ctrl: LoginController) : UI.Element {
 	var elements = Template.header();
     if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
-        elements.push(m("div", {class: "div-caption"}, "please enter username"));
+        elements.push(m("div", {class: "div-caption"}, _L("please enter user name")));
         elements.push(Template.textinput(ctrl.user, {
             class:"input-text user"
-        }, "username"));
+        }, _L(LoginController.DEFAULT_USER_NAME)));
         elements.push(Template.textinput(ctrl.mail, {
             class: "input-text mail" 
-        }, "mail address"));
+        }, _L(LoginController.DEFAULT_MAIL_ADDR)));
         elements.push(m("button", {
             onclick: ctrl.onlogin,
             class: ctrl.sendready() ? "button-send" : "button-send-disabled", 
-        }, "Login"));
+        }, _L("Login")));
     }
 	return m("div", {class: "login"}, elements);
 }

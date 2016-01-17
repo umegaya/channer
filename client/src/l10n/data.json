@@ -1,0 +1,89 @@
+{
+    "topic: in each topic, all post by same account will be assigned same identifier.": {
+        "ja": "topic: 同じトピック内の同一アカウントによる投稿には同じIDが割り当てられます"
+    },
+    "channel: in this channel, all post by same account will be assigned same identifier.": {
+        "ja": "channel: このチャンネル内における同一アカウントによる投稿には同じIDが割り当てられます"
+    },
+    "account: all post show its meta account id of submitter, which is unique for all channel.": {
+        "ja": "account: 投稿には全てのチャンネルで同一な、投稿者のメタアカウントIDが割り当てられます"
+    },
+    "none: no identifier is assigned to any post in this channel.": {
+        "ja": "none: 全ての投稿には一切のIDが割り当てられません"
+    },
+    "tail: all post show in time-series order. eg) 2ch, github, and most of forum.": {
+        "ja": "tail: 全ての投稿は時系列順に表示されます。 例：2ch, github, ほとんどのフォーラム"
+    },
+    "tree: post shows with respecting relation of 'in reply to which post' eg) reddit, 4chan": {
+        "ja": "tree: 投稿は、どの投稿に対する返信か、という関係を元にツリー状に表示されます。 例：reddit, 4chan"  
+    },
+    "channel name": {
+        "ja": "チャンネル名"
+    },
+    "anonymous signature": {
+        "ja": "匿名投稿者の署名"
+    },
+    "channel description": {
+        "ja": "チャンネルの説明"
+    },
+    "plugin css URL": {
+        "ja": "追加するスタイルシートのURL"
+    },
+    "max posts for topic": {
+        "ja": "トピックへの最大投稿数"
+    },
+    "anonymous": {
+        "ja": "名無しさん"
+    },
+    "choose identity level": {
+        "ja": "投稿者の匿名性のレベルを選んでください"
+    },
+    "choose display style": {
+        "ja": "投稿の表示のされ方を選んでください"
+    },
+    "user name": {
+        "ja": "ユーザー名"
+    },
+    "mail address (optional)": {
+        "ja": "メールアドレス(あれば)"
+    },
+    "Login": {
+        "ja": "ログイン"
+    },
+    "Create": {
+        "ja": "作成"
+    },
+    "open below url with the device you want to login with same account.": {
+        "ja": "下記のURLを同じアカウントを利用したい端末で開いてください。"
+    },
+    "url valid during $1 hours.": {
+        "ja": "URLはあと$1時間の間有効です。"
+    },
+    "Send": {
+        "ja": "送信"
+    },
+    "please enter user name": {
+        "ja": "ユーザー名を入力してください。"
+    },
+    "sending request now": {
+        "ja": "リクエスト送信中"
+    },
+    "reconnect within $1 second": {
+        "ja": "あと$1秒後に再接続します"
+    },
+    "reconnecting": {
+        "ja": "再接続中..."
+    },
+    "no elements": {
+        "ja": "表示する内容はありません"
+    },
+    "latest": {
+        "ja": "新着"
+    },
+    "popular": {
+        "ja": "人気"
+    },
+    "+": {
+        "ja": "+"
+    }
+}

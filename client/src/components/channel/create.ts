@@ -5,30 +5,31 @@ import {Config} from "../../config"
 import {Handler, Builder} from "../../proto"
 import {ProtoError} from "../../watcher"
 import ChannerProto = Proto2TypeScript.ChannerProto;
+var _L = window.channer.l10n.translate;
 
 var idlevel_text : { [t:number]:string } = {
     [ChannerProto.Model.Channel.IdentityLevel.Topic]: 
-        "in each topic, all post by same person will be assigned same identifier.",
+        _L("topic: in each topic, all post by same account will be assigned same identifier."),
     [ChannerProto.Model.Channel.IdentityLevel.Channel]: 
-        "in this channel, all post by same person will be assigned same identifier.",
+        _L("channel: in this channel, all post by same account will be assigned same identifier."),
     [ChannerProto.Model.Channel.IdentityLevel.Account]: 
-        "all post show its account id of submitter.",
+        _L("account: all post show its meta account id of submitter, which is unique for all channel."),
     [ChannerProto.Model.Channel.IdentityLevel.None]: 
-        "no identifier is assigned to any post in this channel.",
+        _L("none: no identifier is assigned to any post in this channel."),
 }
 var display_text : { [t:number]:string } = {
     [ChannerProto.Model.Channel.TopicDisplayStyle.Tail]: 
-        "all post show in time-series order. eg) 2ch, github, and most of forum.",
+        _L("tail: all post show in time-series order. eg) 2ch, github, and most of forum."),
     [ChannerProto.Model.Channel.TopicDisplayStyle.Tree]: 
-        "post shows with respecting relation of 'in reply to which post' eg) reddit, 4chan",
+        _L("tree: post shows with respecting relation of 'in reply to which post' eg) reddit, 4chan"),
 }
 
 var texts = {
-    DEFAULT_NAME: "channel name",
-    DEFAULT_ANONYMOUS: "anonymous name",
-    DEFAULT_DESCRIPTION: "description",
-    DEFAULT_STYLE_URL: "plugin css URL",
-    DEFAULT_POST_LIMIT: "max posts for topic",
+    DEFAULT_NAME: _L("channel name"),
+    DEFAULT_ANONYMOUS: _L("anonymous signature"),
+    DEFAULT_DESCRIPTION: _L("channel description"),
+    DEFAULT_STYLE_URL: _L("plugin css URL"),
+    DEFAULT_POST_LIMIT: _L("max posts for topic"),
 }
 
 var cond: PropConditions = {
@@ -40,7 +41,7 @@ var cond: PropConditions = {
     optional: {
         anon: {
             init: texts.DEFAULT_ANONYMOUS, 
-            fallback: "anonymous", 
+            fallback: _L("anonymous"), 
         },
         desc: {
             init: texts.DEFAULT_DESCRIPTION, 
@@ -102,7 +103,7 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
         {class: "input-text name"}, texts.DEFAULT_NAME));
     elements.push(Template.textinput(props["anon"], 
         {class: "input-text anon"}, texts.DEFAULT_ANONYMOUS));
-    elements.push(m("div", {class: "div-title id-level"}, "choose identity level"));
+    elements.push(m("div", {class: "div-title id-level"}, _L("choose identity level")));
     //idlevel radiobox
     var idlevel = props["idlevel"];
     elements.push(Template.radio({
@@ -119,7 +120,7 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
     }
     //disp radiobox
     var disp = props["display"];
-    elements.push(m("div", {class: "div-title display-style"}, "choose display style"));
+    elements.push(m("div", {class: "div-title display-style"}, _L("choose display style")));
     elements.push(Template.radio({
         id: "display-style",
         class: "radio-options display-style",
@@ -143,7 +144,7 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
     elements.push(m("button", {
         onclick: ctrl.onsend,
         class: ctrl.sendready() ? "button-send" : "button-send-disabled", 
-    }, "Create"));
+    }, _L("Create")));
 	return m("div", {class: "create"}, elements);
 }
 export class ChannelCreateComponent implements UI.Component {
