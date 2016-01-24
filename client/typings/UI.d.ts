@@ -14,6 +14,7 @@ declare namespace UI {
     
     interface Attributes extends _mithril.MithrilAttributes {
         id?: string;
+        secure?: string;
     }
     	
 	interface Component {

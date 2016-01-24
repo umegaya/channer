@@ -1,0 +1,81 @@
+gs("fluid")
+
+inactive-text-color = #999
+active-text-color = #000
+inactive-color = #aaa
+inactive-border-color = rgb(197,197,197)
+active-border-color = #2780f8
+inactive-bg-color = #fff
+active-bg-color = #2780f8
+
+
+.block
+    width: 95%
+    margin-left: 2.5%
+
+.title-h1
+    font-size: 130%
+    
+.title-h2
+    font-size: 110%
+    
+button
+    border-radius: 2px
+    border-width: 1px        
+    border-style: solid
+    outline-style: none
+    outline-width: 0px
+    width: 100%
+    border: 0px
+    padding: 0px
+    margin: 0px
+    height: 5vh
+    min-height: 30px
+button.disabled
+    background-color: inactive-color
+    color: rgb(255, 255, 255)
+button.enabled
+    background-color: active-bg-color
+    color: rgb(255, 255, 255)
+    
+.explaination
+    font-size: 75%
+    color: inactive-text-color
+
+.tab-element
+    text-align: center
+    display: inline
+    height: 5vh
+
+.input-text
+    border-width: 1px        
+    border-radius: 2px
+    border-style: solid
+    padding: 0px
+    outline-style: none
+    outline-width: 0px
+    height: 5vh
+    min-height: 30px
+.input-text:hober
+    border-color: active-border-color
+.input-text.active
+    color: active-text-color
+    border-color: active-border-color
+.input-text.not-active
+    color: inactive-text-color
+    border-color: inactive-border-color 
+.input-text
+    width: 100%
+    padding: 4px
+    box-sizing: border-box
+
+.radio-options
+    button
+        border-color: inactive-border-color
+    button.active
+        background-color: active-bg-color
+        color: #fff
+    button.not-active
+        background-color: inactive-bg-color
+        
+    

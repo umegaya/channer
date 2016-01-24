@@ -38,8 +38,11 @@ export class Socket {
 		this.state = SocketState.DISCONNECT;
 		this.set_delegate(d || {});
 	}
-    connected = () => {
+    connected = (): boolean => {
         return this.state == SocketState.CONNECTED;
+    }
+    connecting = (): boolean => {
+        return this.state == SocketState.CONNECTING;
     }
 	set_delegate = (d: Delegate) => {
 		this.d.onopen = d.onopen || Socket.default_d.onopen;
@@ -91,6 +94,7 @@ export class Socket {
 			this.ws.onerror = this.onerror;
 			this.pendings = [];
 			this.state = SocketState.CONNECTING;
+            console.log("websocket become connecting");
 		}
 	}
 	private clear_error_streak = () => {
@@ -103,13 +107,14 @@ export class Socket {
 		this.next_connection = t;
 	}
 	private add_error_streak = () => {
-        console.log("err:" + this.error_streak + " ~> " + this.error_streak);
+        console.log("err:" + this.error_streak + " ~> " + (this.error_streak + 1));
 		this.error_streak++;
 		this.set_reconnect_duration(
             1000 * Math.min(300, Math.pow(2, this.error_streak - 1))
         );
 	}
 	private onopen = () => {
+        console.log("websocket connected");
 		this.state = SocketState.CONNECTED;
 		for (var i = 0; i < this.pendings.length; i++) {
 			this.send(this.pendings[i]);

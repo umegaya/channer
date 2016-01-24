@@ -60,18 +60,17 @@ export class TopController implements UI.Controller {
 	}
 }
 function TopView(ctrl: TopController) : UI.Element {
-    var elems = Template.header();
-    elems.push(Template.tab(ctrl.active, {
+    var elems = [Template.tab(ctrl.active, {
         "latest":_L("latest"),
         "popular": _L("popular"), 
         "create": _L("+"),
-    }));
+    })];
     var active = ctrl.active();
     var contents = ctrl.map[active];
     if (contents) {
         elems.push(m.component(ctrl.map[active]));
     }
-    return m("div", {class: "top"}, elems);
+    return [Template.header(), m("div", {class: "top"}, elems)];
 }
 export class TopComponent implements UI.Component {
 	controller: () => TopController;

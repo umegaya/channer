@@ -15,3 +15,7 @@ errorMessages[ChannerProto.Error.Type.Login_BrokenClientData] = "Login: client d
 errorMessages[ChannerProto.Error.Type.Rescue_CannotRescue] = "Rescue: something wrong with rescue";
 errorMessages[ChannerProto.Error.Type.Rescue_DatabaseError] = "Rescue: database error";
 errorMessages[ChannerProto.Error.Type.Rescue_InvalidAuth] = "Rescue: authentification failure";
+
+errorMessages[ChannerProto.Error.Type.ChannelCreate_DatabaseError] = "Channel Create: database error";
+errorMessages[ChannerProto.Error.Type.ChannelList_DatabaseError] = "Channel List: database error";
+

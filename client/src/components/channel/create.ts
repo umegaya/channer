@@ -69,10 +69,12 @@ var cond: PropConditions = {
 export class ChannelCreateController implements UI.Controller {
 	component: ChannelCreateComponent;
     input: PropCollection;
+    show_advanced: boolean;
 
 	constructor(component: ChannelCreateComponent) {
 		this.component = component;
         this.input = new PropCollection(cond);
+        this.show_advanced = false;
 	}
     onsend = () => {
         var conn: Handler = window.channer.conn;
@@ -92,6 +94,9 @@ export class ChannelCreateController implements UI.Controller {
             });
         }
     }
+    on_advanced_settings = () => {
+        this.show_advanced = !this.show_advanced;
+    }
     sendready = ():boolean => {
         return !!this.input.check();
     }
@@ -99,52 +104,73 @@ export class ChannelCreateController implements UI.Controller {
 function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
 	var elements : Array<UI.Element> = []; 
     var props = ctrl.input.props;
-    elements.push(Template.textinput(props["name"], 
-        {class: "input-text name"}, texts.DEFAULT_NAME));
-    elements.push(Template.textinput(props["anon"], 
-        {class: "input-text anon"}, texts.DEFAULT_ANONYMOUS));
-    elements.push(m("div", {class: "div-title id-level"}, _L("choose identity level")));
-    //idlevel radiobox
-    var idlevel = props["idlevel"];
-    elements.push(Template.radio({
-        class: "radio-options id-level",
-    }, "id-level", [
-        [ChannerProto.Model.Channel.IdentityLevel.None, "none"],
-        [ChannerProto.Model.Channel.IdentityLevel.Topic, "topic"],
-        [ChannerProto.Model.Channel.IdentityLevel.Channel, "channel"],
-        [ChannerProto.Model.Channel.IdentityLevel.Account, "account"],
-    ], idlevel));
-    var idl = idlevel();
-    if (idl != ChannerProto.Model.Channel.IdentityLevel.Unknown) {
-        elements.push(m("div", {class: "div-text id-level"}, idlevel_text[idl]));
+    elements.push(m("div", {class: "block"}, [
+        m("div", {class: "title-h1"}, _L("Create new channel")),
+        Template.textinput(props["name"], 
+            {class: "input-text name"}, texts.DEFAULT_NAME),
+        Template.textinput(props["desc"], 
+            {class: "input-text desc"}, texts.DEFAULT_DESCRIPTION, true)
+    ]));
+    if (ctrl.show_advanced) {
+        //idlevel radiobox
+        var idlevel = props["idlevel"];
+        var idlevel_block = [m("div", {class: "title"}, _L("identity level"))];
+        idlevel_block.push(Template.radio({
+            class: "radio-options",
+        }, "id-level", [
+            [ChannerProto.Model.Channel.IdentityLevel.None, "none"],
+            [ChannerProto.Model.Channel.IdentityLevel.Topic, "topic"],
+            [ChannerProto.Model.Channel.IdentityLevel.Channel, "channel"],
+            [ChannerProto.Model.Channel.IdentityLevel.Account, "account"],
+        ], idlevel));
+        var idl = idlevel();
+        if (idl != ChannerProto.Model.Channel.IdentityLevel.Unknown) {
+            idlevel_block.push(m("div", {class: "explaination"}, idlevel_text[idl]));
+        }
+        elements.push(m("div", {class: "block id-level"}, idlevel_block));
+
+        //disp radiobox
+        var disp = props["display"];
+        var disp_block = [m("div", {class: "title"}, _L("display style"))];
+        disp_block.push(Template.radio({
+            class: "radio-options",
+        }, "display-style", [
+            [ChannerProto.Model.Channel.TopicDisplayStyle.Tail, "tail"],
+            [ChannerProto.Model.Channel.TopicDisplayStyle.Tree, "tree"],
+        ], disp));
+        var d = disp();
+        if (d != ChannerProto.Model.Channel.TopicDisplayStyle.Invalid) {
+            disp_block.push(m("div", {class: "explaination"}, display_text[d]));
+        }
+        elements.push(m("div", {class: "block display-style"}, disp_block));
+
+        //anon signature
+        elements.push(m("div", {class: "block"}, [
+            Template.textinput(props["anon"], 
+                {class: "input-text anon"}, texts.DEFAULT_ANONYMOUS)
+        ]));
+        //postlimit, styl, textarea
+        elements.push(m("div", {class: "block"}, [
+            Template.textinput(props["postlimit"], 
+                {class: "input-text postlimit"}, texts.DEFAULT_POST_LIMIT)
+        ]));
+        elements.push(m("div", {class: "block"}, [
+            Template.textinput(props["style"], 
+                {class: "input-text style"}, texts.DEFAULT_STYLE_URL)
+        ]));
     }
-    //disp radiobox
-    var disp = props["display"];
-    elements.push(m("div", {class: "div-title display-style"}, _L("choose display style")));
-    elements.push(Template.radio({
-        id: "display-style",
-        class: "radio-options display-style",
-    }, "display-style", [
-        [ChannerProto.Model.Channel.TopicDisplayStyle.Tail, "tail"],
-        [ChannerProto.Model.Channel.TopicDisplayStyle.Tree, "tree"],
-    ], disp));
-    var d = disp();
-    if (d != ChannerProto.Model.Channel.TopicDisplayStyle.Invalid) {
-        elements.push(m("div", {
-            class: "div-text display-style"
-        }, display_text[d]));
-    }
-    //postlimit, styl, textarea
-    elements.push(Template.textinput(props["postlimit"], 
-        {class: "input-text postlimit"}, texts.DEFAULT_POST_LIMIT));
-    elements.push(Template.textinput(props["style"], 
-        {class: "input-text style"}, texts.DEFAULT_STYLE_URL));
-    elements.push(m("textarea", {class: "textarea"}, props["desc"]()));
     //send button
-    elements.push(m("button", {
-        onclick: ctrl.onsend,
-        class: ctrl.sendready() ? "button-send" : "button-send-disabled", 
-    }, _L("Create")));
+    elements.push(m("div", {class: "block"}, [
+        m("button", {
+            onclick: ctrl.onsend,
+            class: ctrl.sendready() ? "enabled" : "disabled",
+            disabled: !ctrl.sendready(), 
+        }, _L("Create")),
+        m("button", {
+            onclick: ctrl.on_advanced_settings,
+            class: "enabled",
+        }, _L("Advanced settings"))    
+    ]));
 	return m("div", {class: "create"}, elements);
 }
 export class ChannelCreateComponent implements UI.Component {

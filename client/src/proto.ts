@@ -148,6 +148,9 @@ export class Handler {
     connected = (): boolean => {
         return this.socket.connected();
     }
+    connecting = (): boolean => {
+        return this.socket.connecting();
+    }
 	resume = () => {
 		console.log("handler start");
 		this.stop_deactivate();

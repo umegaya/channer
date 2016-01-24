@@ -35,11 +35,11 @@
     "anonymous": {
         "ja": "名無しさん"
     },
-    "choose identity level": {
-        "ja": "投稿者の匿名性のレベルを選んでください"
+    "identity level": {
+        "ja": "投稿者の匿名性レベル"
     },
-    "choose display style": {
-        "ja": "投稿の表示のされ方を選んでください"
+    "display style": {
+        "ja": "投稿の表示のされ方"
     },
     "user name": {
         "ja": "ユーザー名"
@@ -85,5 +85,8 @@
     },
     "+": {
         "ja": "+"
+    },
+    "Create new channel": {
+        "ja": "チャンネルの作成"
     }
 }

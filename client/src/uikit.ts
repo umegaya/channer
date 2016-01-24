@@ -122,10 +122,10 @@ export interface Router {
 }
 export class Template {
 	static textinput(bind: UI.Property<string>, 
-        options: UI.Attributes, initval: string, secure?:boolean) {
+        options: UI.Attributes, initval: string, textarea?:boolean) {
 		var value = bind();
 		var has_input = (value != initval); 
-     	return m("input", {
+     	return m(textarea ? "textarea": "input", {
 			oninput: m.withAttr("value", bind),
 			onfocus: function () { 
 				var v = bind();
@@ -141,10 +141,9 @@ export class Template {
 					m.redraw();
 				} 
 			},
-			style: { color: has_input ? "#000000" : "#999999" },
-			type: (secure && has_input) ? "password" : "text",
+			type: (options.secure && has_input) ? "password" : "text",
 			value: value,
-        	class: options.class,
+        	class: options.class + " " + (has_input ? "active" : "not-active"),
 		});
 	}
     static radio(options: UI.Attributes, name: string,
@@ -156,7 +155,6 @@ export class Template {
             var active = (sel[0] == current);
             elems.push(m("button", { 
                 class: sel[1] + " " + (active ? "active" : "not-active"),
-                style: { "background-color": active ? "#9999FF" : "#FFFFFF"},
                 value: sel[0],
                 onclick: m.withAttr("value", prop),
             }, sel[1]));
@@ -174,13 +172,13 @@ export class Template {
             var activeness = (k == a) ? "active" : "not-active";
             elems.push(m("div", {
                 value: k,
-                class: "div-tab-element " + activeness + " " + k,
+                class: "tab-element " + activeness + " " + k,
                 onclick: m.withAttr("value", active),
             }, v));
         }
-        return m("div", {class: "div-tab"}, elems);
+        return m("div", {class: "tab"}, elems);
     } 
-    static header(): Array<UI.Element> {
+    static header(): UI.Element {
         var elements : Array<UI.Element> = [];
         var c : Handler = window.channer.conn;
         var rd = c.reconnect_duration();
@@ -188,26 +186,26 @@ export class Template {
         var err = c.last_error;
         if (c.querying) {
             //TODO: replace to cool GIF anim
-            elements.push(m("div", {class: "div-query"}, _L("sending request now")));
+            elements.push(m("div", {class: "query"}, _L("sending request now")));
         }
         //TODO: custom header message from current active component
         //otherwise show system network status
         if (rd > 0) {
             //TODO: tap to reconnection
-            elements.push(m("div", {class: "div-wait-reconnect"}, 
+            elements.push(m("div", {class: "wait-reconnect"}, 
                 _L("reconnect within $1 second", rd)));
         }
-        else if (!connected) {
-            elements.push(m("div", {class: "div-reconnecting"}, _L("reconnecting")));
+        else if (c.connecting()) {
+            elements.push(m("div", {class: "reconnecting"}, _L("reconnecting")));
         }
-        else {
+        else if (connected) {
             if (err) {
                 //TODO: tap to remove message
-                elements.push(m("div", {class: "div-request-error"}, err)); 
+                elements.push(m("div", {class: "request-error"}, err)); 
             }
-            elements.push(m("div", {class: "div-latency"}, c.latency + "ms"));
+            elements.push(m("div", {class: "latency"}, c.latency + "ms"));
         }
-        return elements;
+        return m("div", {class: "header"}, elements);
     }
 }
 
@@ -234,7 +232,7 @@ export class ListComponent implements UI.Component {
     }
     view = (models: ModelCollection): UI.Element => {
         return m("div", {class: this.name + "-list"}, models.empty() ?
-            m("div", {class: "div-text"}, _L("no elements")) :  
+            m("div", {class: "text"}, _L("no elements")) :  
             models.map((m: any) => {
                 return this.elemview(models, m);
             })

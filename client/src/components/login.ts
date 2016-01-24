@@ -34,8 +34,8 @@ export class LoginController implements UI.Controller {
 			this.sendlogin(user, mail, secret);
 		}
 		else if (!user) {
-			this.user = m.prop(user || _L(LoginController.DEFAULT_USER_NAME));
-			this.mail = m.prop(mail || _L(LoginController.DEFAULT_MAIL_ADDR));
+			this.user = m.prop(user || LoginController.DEFAULT_USER_NAME);
+			this.mail = m.prop(mail || LoginController.DEFAULT_MAIL_ADDR);
 		}
 		else {
 			console.log("auto login with:" + user + "&" + mail);
@@ -89,21 +89,29 @@ export class LoginController implements UI.Controller {
 	}
 }
 function LoginView(ctrl: LoginController) : UI.Element {
-	var elements = Template.header();
-    if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
-        elements.push(m("div", {class: "div-caption"}, _L("please enter user name")));
-        elements.push(Template.textinput(ctrl.user, {
-            class:"input-text user"
-        }, _L(LoginController.DEFAULT_USER_NAME)));
-        elements.push(Template.textinput(ctrl.mail, {
-            class: "input-text mail" 
-        }, _L(LoginController.DEFAULT_MAIL_ADDR)));
-        elements.push(m("button", {
-            onclick: ctrl.onlogin,
-            class: ctrl.sendready() ? "button-send" : "button-send-disabled", 
-        }, _L("Login")));
+	if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
+        return [
+            Template.header(), m("div", {class: "login"}, [
+                m("div", {class: "logo"}, "channer"),
+                m("div", {class: "block"}, 
+                    Template.textinput(ctrl.user, {
+                        class:"input-text user"
+                    }, LoginController.DEFAULT_USER_NAME)
+                ),
+                m("div", {class: "block"}, 
+                    Template.textinput(ctrl.mail, {
+                        class: "input-text mail" 
+                    }, LoginController.DEFAULT_MAIL_ADDR)
+                ),
+                m("div", {class: "block"}, m("button", {
+                    onclick: ctrl.onlogin,
+                    class: ctrl.sendready() ? "enabled" : "disabled",
+                    disabled: !ctrl.sendready(), 
+                }, _L("Login")))
+            ])
+        ];
     }
-	return m("div", {class: "login"}, elements);
+	return Template.header();
 }
 export class LoginComponent implements UI.Component {
 	controller: () => LoginController;
