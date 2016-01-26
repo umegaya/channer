@@ -7,7 +7,14 @@ inactive-border-color = rgb(197,197,197)
 active-border-color = #2780f8
 inactive-bg-color = #fff
 active-bg-color = #2780f8
+active-link-color = #2780f8
 
++media-query( all, max-device-width 400px )
+    div
+        font-size: 16px
++media-query( all, min-device-width 400px, max-device-width 640px )
+    div
+        font-size: 20px
 
 .block
     width: 95%
@@ -42,10 +49,24 @@ button.enabled
     font-size: 75%
     color: inactive-text-color
 
+a 
+    color: active-link-color
+    text-decoration: underline
+    
+.tab
+    display: flex
 .tab-element
     text-align: center
-    display: inline
+    display: table-cell
+    vertical-align: middle
     height: 5vh
+    div.label
+        position: relative
+        top: 50%
+        transform: translateY(-50%)
+.tab-element.active
+    background-color: active-bg-color
+    color: #fff
 
 .input-text
     border-width: 1px        

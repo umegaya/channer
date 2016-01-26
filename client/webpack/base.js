@@ -46,9 +46,10 @@ module.exports = function (settings) {
                 {test: /\.json$/,   loader: 'raw-loader'},
                 {test: /\.css$/,    loader: 'css-loader'},
                 {test: /\.styl$/,   loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'},
-                {test: /\.(png|gif|jpe?g)$/, loader: 'file-loader'},
+                {test: /\.svg$/,    loader: 'url-loader?mimetype=image/svg+xml&limit=10000&name=[hash:6].[ext]' },
+                {test: /\.(png|gif|jpe?g)$/, loader: 'url-loader?mimetype=image/png&limit=10000&name=[hash:6].[ext]' },
                 {test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url?limit=10000&minetype=application/font-woff'},
-                {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file'}
+                {test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file'}
             ]
         },
         plugins: [

@@ -5,6 +5,7 @@
 /// <reference path="./UI.d.ts"/>
 /// <reference path="./mithril.d.ts"/>
 /// <reference path="./protobuf.d.ts"/>
+/// <reference path="./long/long.d.ts"/>
 /// <reference path="./webpack-runtime.d.ts"/>
 
 interface Window {
@@ -31,7 +32,10 @@ interface ChannerModules {
 	storage: any;
 	patch: any;
 	mobile: boolean;
-    l10n: { translate(text: string, ...args:Array<any>): string; };
+    l10n: { 
+        translate(text: string, ...args:Array<any>): string; 
+        translateDate(date: Date): any;
+    };
 	onResume: Array<() => void>;
 	onPause: Array<() => void>;
 	onPush: Array<(resp:any) => void>;/*PushReceiver*/

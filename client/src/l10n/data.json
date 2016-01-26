@@ -88,5 +88,8 @@
     },
     "Create new channel": {
         "ja": "チャンネルの作成"
+    },
+    "detail": {
+        "ja": "詳細"
     }
 }

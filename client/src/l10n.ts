@@ -44,6 +44,15 @@ class L10n {
             return args[parseInt(captures[0], 10) - 1];
         });
     }
+    translateDate = (date: Date): Q.Promise<string> => {
+        var df: Q.Deferred<string> = Q.defer<string>();
+        this.g.dateToString(date, (d: {value : string}) => {
+            df.resolve(d.value);
+        }, (e: GlobalizationError) => {
+            df.reject(e);
+        });
+        return df.promise;
+    }
 }
 
 window.channer.l10n = new L10n(navigator.globalization, JSON.parse(require("./l10n/data.json")));

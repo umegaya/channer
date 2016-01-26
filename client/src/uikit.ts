@@ -3,6 +3,7 @@
 import {Handler} from "./proto"
 export var m : _mithril.MithrilStatic = window.channer.m;
 var _L = window.channer.l10n.translate;
+var _LD = window.channer.l10n.translateDate;
 
 interface PropCondition {
     init: any;
@@ -115,6 +116,21 @@ export class Util {
 		}
 		return str;
     }
+    static epoc: Date = new Date(2015, 0, 1, 0, 0, 0);//2015/01/01 00:00:00
+    static uuid2date(uuid: Long): Date {
+        //shift 15bit => convert to msec (1 == 10us)
+        var date: Date = new Date(
+            Util.epoc.getTime() + uuid.divide(32768).divide(100).toNumber()
+        );
+        return date;
+    }
+    static long2date(long: Long): Date {
+        //long date has nano seconds (1000000000 ns == 1s) precision.
+        var date: Date = new Date(
+            Util.epoc.getTime() + long.divide(1000000).toNumber()
+        );
+        return date;
+    }
 }
 export interface Router {
     (rootElement: Element, defaultRoute: string, 
@@ -161,6 +177,39 @@ export class Template {
         }
         return m("div", options, elems);
     }
+    static date(d: Date, duration?:boolean) {
+        var str: string;
+        if (duration) {
+            var diff: number = ((new Date()).getTime() - d.getTime());
+            if (diff < 1000) {
+                str = _L("just now")
+            }
+            //TODO: correctly handle singular/plural form, 
+            //like a second/2 seconds
+            else if (diff < 60000) {
+                str = _L("$1 seconds", Math.floor(diff / 1000));
+            }
+            else if (diff < 3600000) {
+                str = _L("$1 minutes", Math.floor(diff / 60000));
+            }
+            else if (diff < 86400000) {
+                str = _L("$1 hours", Math.floor(diff / 3600000));
+            }
+            else {
+                str = _L("$1 days", Math.floor(diff / 86400000));
+            }
+        }
+        else {
+            str = d.getHours() + ":" + d.getMinutes();
+        }
+        return m("div", {class: "date"}, str);
+    }
+    static datebyuuid(uuid: any, duration?:boolean) {
+        return Template.date(Util.uuid2date(<Long>uuid), duration);
+    }
+    static datebylong(long: any, duration?:boolean) {
+        return Template.date(Util.long2date(<Long>long), duration);
+    }
     static tab(
         active: UI.Property<string>, 
         tabs: {[k:string]:string}
@@ -174,7 +223,7 @@ export class Template {
                 value: k,
                 class: "tab-element " + activeness + " " + k,
                 onclick: m.withAttr("value", active),
-            }, v));
+            }, m("div", {class: "label"}, v)));
         }
         return m("div", {class: "tab"}, elems);
     } 
@@ -182,7 +231,6 @@ export class Template {
         var elements : Array<UI.Element> = [];
         var c : Handler = window.channer.conn;
         var rd = c.reconnect_duration();
-        var connected = c.connected();
         var err = c.last_error;
         if (c.querying) {
             //TODO: replace to cool GIF anim
@@ -195,15 +243,15 @@ export class Template {
             elements.push(m("div", {class: "wait-reconnect"}, 
                 _L("reconnect within $1 second", rd)));
         }
-        else if (c.connecting()) {
-            elements.push(m("div", {class: "reconnecting"}, _L("reconnecting")));
-        }
-        else if (connected) {
+        else if (c.connected()) {
             if (err) {
                 //TODO: tap to remove message
                 elements.push(m("div", {class: "request-error"}, err)); 
             }
             elements.push(m("div", {class: "latency"}, c.latency + "ms"));
+        }
+        else if (c.connecting() || rd <= 0) {
+            elements.push(m("div", {class: "reconnecting"}, _L("reconnecting")));
         }
         return m("div", {class: "header"}, elements);
     }
@@ -231,7 +279,7 @@ export class ListComponent implements UI.Component {
         return this.models;
     }
     view = (models: ModelCollection): UI.Element => {
-        return m("div", {class: this.name + "-list"}, models.empty() ?
+        return m("div", {class: this.name + " listview"}, models.empty() ?
             m("div", {class: "text"}, _L("no elements")) :  
             models.map((m: any) => {
                 return this.elemview(models, m);

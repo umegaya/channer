@@ -104,8 +104,17 @@ export class ChannelCreateController implements UI.Controller {
 function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
 	var elements : Array<UI.Element> = []; 
     var props = ctrl.input.props;
+    if (!ctrl.show_advanced) {
+        elements.push(m("div", {class: "padding"}));
+    }
     elements.push(m("div", {class: "block"}, [
-        m("div", {class: "title-h1"}, _L("Create new channel")),
+        m("div", {class: "title-h1"}, [
+            m("div", _L("Create new channel")),
+            m("a", {
+                onclick: ctrl.on_advanced_settings,
+                class: "enabled",
+            }, (ctrl.show_advanced ? "-" : "+") + _L("detail"))
+        ]),
         Template.textinput(props["name"], 
             {class: "input-text name"}, texts.DEFAULT_NAME),
         Template.textinput(props["desc"], 
@@ -160,16 +169,12 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
         ]));
     }
     //send button
-    elements.push(m("div", {class: "block"}, [
+    elements.push(m("div", {class: "block send"}, [
         m("button", {
             onclick: ctrl.onsend,
-            class: ctrl.sendready() ? "enabled" : "disabled",
+            class: "send " + (ctrl.sendready() ? "enabled" : "disabled"),
             disabled: !ctrl.sendready(), 
-        }, _L("Create")),
-        m("button", {
-            onclick: ctrl.on_advanced_settings,
-            class: "enabled",
-        }, _L("Advanced settings"))    
+        }, _L("Create"))
     ]));
 	return m("div", {class: "create"}, elements);
 }
