@@ -1,0 +1,79 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-battery-status": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-contacts": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-device-motion": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-device-orientation": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-media-capture": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-vibration": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "phonegap-plugin-contentsync": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-globalization": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        },
+        "phonegap-plugin-push": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        }
+    },
+    "dependent_plugins": {
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "{b0b9dec0-c4a4-11e5-8c83-cf184b1c60fb}"
+        }
+    }
+}
