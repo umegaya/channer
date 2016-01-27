@@ -184,6 +184,10 @@ export class Handler {
 		if (device_id && device_id.length > 0) {
 			req.device_id = device_id;
 		}
+        else if (window.channer.mobile) {
+            req.device_id = device.uuid;
+        }
+        req.device_type = device.platform;
 		req.version = window.channer.config.client_version;
 		req.id = window.channer.settings.values.account_id || null;
 		req.user = user;
