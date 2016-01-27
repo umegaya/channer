@@ -22,7 +22,7 @@ mod.setup = function (browser, test) {
         .pause(mod.LOAD_PAUSE)
         .perform(mod.inputter('.login .user', mod.USERNAME))
         .pause(mod.INPUT_PAUSE)
-        .click('.login .button-send')
+        .click('.login button.enabled')
         .pause(mod.TRANSITION_PAUSE)
         .perform(test)
         .end();

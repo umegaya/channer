@@ -11,35 +11,45 @@ module.exports = {
         common.setup(browser, function (browser, done) {
             browser
                 //test expected tab is active
-                .assert.elementPresent('.top .div-tab-element.not-active.create')
-                .assert.elementPresent('.top .div-tab-element.active.latest')
-                .assert.elementPresent('.top .div-tab-element.not-active.popular')
+                .assert.elementPresent('.top .tab-element.not-active.create')
+                .assert.elementPresent('.top .tab-element.active.latest')
+                .assert.elementPresent('.top .tab-element.not-active.popular')
                 //test tab active-ness is changed as expected
-                .click('.top .div-tab-element.create')
+                .click('.top .tab-element.create')
                 .pause(common.INPUT_PAUSE)
                 //test expected elements exist
-                .assert.elementPresent('.top .div-tab-element.active.create')
-                .assert.elementPresent('.top .div-tab-element.not-active.latest')
+                .assert.elementPresent('.top .tab-element.active.create')
+                .assert.elementPresent('.top .tab-element.not-active.latest')
                 .assert.elementPresent('.top .name')
+                .assert.elementPresent('.top .desc')
+                //test expected element not exists (because detail link has not clicked)
+                .assert.elementNotPresent('.top .anon')
+                .assert.elementNotPresent('.top .id-level')
+                .assert.elementNotPresent('.top .display-style')
+                .assert.elementNotPresent('.top .postlimit')
+                .assert.elementNotPresent('.top .style')
+                //test expected element exists (after detail link clicked)
+                .click('a.enabled')
+                .pause(common.INPUT_PAUSE)
                 .assert.elementPresent('.top .anon')
                 .assert.elementPresent('.top .id-level')
                 .assert.elementPresent('.top .display-style')
                 .assert.elementPresent('.top .postlimit')
                 .assert.elementPresent('.top .style')
                 //test radiobutton behavior
-                .assert.valueContains('.top .radio-options.id-level .active', "3")
-                .click('.top .radio-options.id-level .none')
+                .assert.valueContains('.top .block.id-level .radio-options .active', "3")
+                .click('.top .block.id-level .radio-options .none')
                 .pause(common.INPUT_PAUSE)
-                .assert.valueContains('.top .radio-options.id-level .active', "1")
+                .assert.valueContains('.top .block.id-level .radio-options .active', "1")
                 //test parameter validation works
-                .assert.elementNotPresent('.top .button-send')
-                .assert.elementPresent('.top .button-send-disabled')
+                .assert.elementNotPresent('.top button.enabled')
+                .assert.elementPresent('.top button.disabled')
                 .perform(common.inputter('.top .name', common.CHANNEL_NAME))
                 .pause(common.INPUT_PAUSE)
-                .assert.elementPresent('.top .button-send')
-                .assert.elementNotPresent('.top .button-send-disabled')
+                .assert.elementPresent('.top button.enabled')
+                .assert.elementNotPresent('.top button.disabled')
                 //test transition when channel created
-                .click('.top .button-send')
+                .click('.top button.enabled')
                 .pause(common.TRANSITION_PAUSE)
                 .execute(function () {
                     var current = window.channer.components.active;
@@ -62,19 +72,19 @@ module.exports = {
                 //test tab URL works
                 .url(common.BASEURL + '#/top/create')
                 .pause(common.LOAD_PAUSE)
-                .assert.elementPresent('.top .div-tab-element.active.create')
-                .assert.elementPresent('.top .div-tab-element.not-active.latest')
-                .click('.top .div-tab-element.latest')
+                .assert.elementPresent('.top .tab-element.active.create')
+                .assert.elementPresent('.top .tab-element.not-active.latest')
+                .click('.top .tab-element.latest')
                 .pause(common.INPUT_PAUSE)
                 //test expected elements exist
-                .assert.elementPresent('.top .latest-list .div-container')
+                .assert.elementPresent('.top .listview.latest .block')
                 .perform(function (client, done) {
-                    client.assert.value('.top .latest-list .div-container:nth-of-type(1)', "/channel/" + context.channel_id)
+                    client.assert.value('.top .listview.latest .block:nth-of-type(1)', "/channel/" + context.channel_id)
                     done();
                 })
-                .assert.containsText('.top .latest-list .div-container:nth-of-type(1) .div-title.name', common.CHANNEL_NAME)
-                .assert.elementPresent('.top .latest-list .div-container:nth-of-type(1) .div-image.idlevel-1')
-                .expect.element('.top .latest-list .div-container:nth-of-type(1) .div-text.desc').text.to.equal("");
+                .assert.containsText('.top .listview.latest .block:nth-of-type(1) .title-h2', common.CHANNEL_NAME)
+                .assert.elementPresent('.top .listview.latest .block:nth-of-type(1) .idlevel-1')
+                .expect.element('.top .listview.latest .block:nth-of-type(1) .desc').text.to.equal("");
                 done();
         })
     },
