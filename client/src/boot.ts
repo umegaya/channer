@@ -49,13 +49,13 @@ window.channer.bootstrap = function (config: any) {
 		}
 		u.values.init();
 		window.channer.settings = u;
-		return p.start(window.channer.mobile);
+        return p.start(window.channer.mobile);  
 	}, (e: Error) => {
 		console.log("user setting broken. remove all");
 		setting_io.rm();
 		throw e;
 		//never reach here. to make compiler feel good. :<
-		return p.start(window.channer.mobile); 
+        return p.start(window.channer.mobile);  
 	})
 	.then((resp: PhonegapPluginPush.RegistrationEventResponse) => {
 		window.channer.settings.values.device_id = resp.registrationId;

@@ -21,8 +21,11 @@ function ChannelInfoView(
     var options = Builder.Model.Channel.Options.decode(copied);
     var elems: Array<UI.Element> = [];
     elems.push(m("div", {class: "title-h2"}, model.name));
-    elems.push(m("div", {class: "desc"}, model.description));
     elems.push(m("div", {class: "attributes"}, [
+        m("div", {class: "attr"}, [
+            m("img", {class: "clock"}),
+            Template.datebyuuid(model.id, true)
+        ]),
         m("div", {class: "attr"}, [
             m("img", {class: "user"}),
             m("div", {class: "user"}, 11111),
@@ -36,10 +39,8 @@ function ChannelInfoView(
                 class: "idlevel idlevel-" + options.identity
             }, idlevel_text[options.identity])
         ),
-        m("div", {class: "attr"}, 
-            Template.datebyuuid(model.id, true)
-        ),
     ]));
+    elems.push(m("div", {class: "desc"}, model.description));
     return m("div", {
         class: "block",
         id: "channel-" + model.id,

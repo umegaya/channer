@@ -35,7 +35,9 @@ interface ChannerModules {
     l10n: { 
         translate(text: string, ...args:Array<any>): string; 
         translateDate(date: Date): any;
+        setuplang(): any;
     };
+    jsloader_promise: any;
 	onResume: Array<() => void>;
 	onPause: Array<() => void>;
 	onPush: Array<(resp:any) => void>;/*PushReceiver*/

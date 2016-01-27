@@ -41,7 +41,7 @@ class Patcher {
                     loaders.push(this.fs.download(src, dest));
                 }
                 else {
-                    console.log("load:" + dest);
+                    //console.log("load:" + dest);
                     loaders.push(this.fs.openfile(dest));
                 }
             }
@@ -99,6 +99,7 @@ class Patcher {
                     nv.updated = true;
                 }    
             }
+            console.log("start update");
             return this.update(baseUrl, next.versions);
         }, (e: any) => {
             console.log("error occurs:"+ e.stack);
@@ -109,6 +110,7 @@ class Patcher {
             return this.update(baseUrl, next.versions);
         })
         .then(() => {
+            console.log("rename configjson");
             return this.fs.rename('config.json.next', '/', 'config.json');
         })
         .then(() => {
