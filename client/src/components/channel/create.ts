@@ -70,11 +70,15 @@ export class ChannelCreateController implements UI.Controller {
 	component: ChannelCreateComponent;
     input: PropCollection;
     show_advanced: boolean;
+    oncreate: (ch: ChannerProto.Model.Channel) => void;
 
-	constructor(component: ChannelCreateComponent) {
+	constructor(
+        component: ChannelCreateComponent, 
+        oncreate: (ch: ChannerProto.Model.Channel) => void) {
 		this.component = component;
         this.input = new PropCollection(cond);
         this.show_advanced = false;
+        this.oncreate = oncreate;
 	}
     onsend = () => {
         var conn: Handler = window.channer.conn;
@@ -88,6 +92,7 @@ export class ChannelCreateController implements UI.Controller {
             conn.channel_create(vals["name"], vals["desc"], vals["style"], options)
             .then((r: ChannerProto.ChannelCreateResponse) => {
                 console.log("new channel create:" + r.channel.id);
+                this.oncreate(r.channel);
                 Util.route("/channel/" + r.channel.id);
             }, (e: ProtoError) => {
                 console.log("error:" + e.message);
@@ -179,13 +184,16 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
 	return m("div", {class: "create"}, elements);
 }
 export class ChannelCreateComponent implements UI.Component {
-	controller: () => ChannelCreateController;
+	controller: (args?: any) => ChannelCreateController;
 	view: UI.View<ChannelCreateController>;
+    oncreate: (ch: ChannerProto.Model.Channel) => void;
 
 	constructor() {
 		this.view = ChannelCreateView;
-		this.controller = () => {
-			return new ChannelCreateController(this);
+		this.controller = (args: {
+           oncreate?: (ch: ChannerProto.Model.Channel) => void
+        }) => {
+			return new ChannelCreateController(this, args.oncreate);
 		}
 	}
 }

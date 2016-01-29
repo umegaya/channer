@@ -91,5 +91,11 @@
     },
     "detail": {
         "ja": "詳細"
+    },
+    "no description": {
+        "ja": "説明はありません"
+    },
+    "dismiss": {
+        "ja": "消去"
     }
 }

@@ -49,6 +49,7 @@ interface ChannerModules {
 		Topic: UI.ComponentFactory;
 		Channel: UI.ComponentFactory;
 		Edit: UI.ComponentFactory;
+        Menu: UI.ComponentFactory;
         active: {
             component: UI.Component;
             ctrl: UI.Controller;

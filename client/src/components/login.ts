@@ -1,6 +1,6 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Template, Util} from "../uikit"
+import {m, Template, BaseComponent, Util} from "../uikit"
 import {ProtoError} from "../watcher"
 import {Config} from "../config"
 import ChannerProto = Proto2TypeScript.ChannerProto;
@@ -70,7 +70,13 @@ export class LoginController implements UI.Controller {
 				Util.restart_app();
 			}
 			else {
-				window.channer.settings.values.secret = null;
+                if (window.environment.match(/dev/) && 
+                    e.payload.type == ChannerProto.Error.Type.Login_DatabaseError) {
+                    //maybe database initialized. reset user to open login form again.
+                    window.channer.settings.values.user = null;
+                    window.channer.settings.values.account_id = null;
+                }
+                window.channer.settings.values.secret = null;
 				window.channer.settings.save();
 				this.resetinput();
 			}
@@ -89,37 +95,36 @@ export class LoginController implements UI.Controller {
 	}
 }
 function LoginView(ctrl: LoginController) : UI.Element {
-	if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
-        return [
-            Template.header(), m("div", {class: "login"}, [
-                m("div", {class: "logo"}, "channer"),
-                m("div", {class: "block"}, 
-                    Template.textinput(ctrl.user, {
-                        class:"input-text user"
-                    }, LoginController.DEFAULT_USER_NAME)
-                ),
-                m("div", {class: "block"}, 
-                    Template.textinput(ctrl.mail, {
-                        class: "input-text mail" 
-                    }, LoginController.DEFAULT_MAIL_ADDR)
-                ),
-                m("div", {class: "block"}, m("button", {
-                    onclick: ctrl.onlogin,
-                    class: ctrl.sendready() ? "enabled" : "disabled",
-                    disabled: !ctrl.sendready(), 
-                }, _L("Login")))
-            ])
-        ];
+    if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
+        return ctrl.component.overlay(m("div", {class: "login"}, [
+            m("div", {class: "logo"}, "channer"),
+            m("div", {class: "block"}, 
+                Template.textinput(ctrl.user, {
+                    class:"input-text user"
+                }, LoginController.DEFAULT_USER_NAME)
+            ),
+            m("div", {class: "block"}, 
+                Template.textinput(ctrl.mail, {
+                    class: "input-text mail" 
+                }, LoginController.DEFAULT_MAIL_ADDR)
+            ),
+            m("div", {class: "block"}, m("button", {
+                onclick: ctrl.onlogin,
+                class: ctrl.sendready() ? "enabled" : "disabled",
+                disabled: !ctrl.sendready(), 
+            }, _L("Login"))),
+        ]));
     }
-	return Template.header();
+    return ctrl.component.overlay();
 }
-export class LoginComponent implements UI.Component {
+export class LoginComponent extends BaseComponent {
 	controller: () => LoginController;
-	view: UI.View<LoginController>;
+    view: UI.View<LoginController>;
 	next_url: string;
 	rescue: string;
 
 	constructor(config: Config) {
+        super();
 		this.view = LoginView;
 		this.controller = () => {
 			this.next_url = m.route.param("next") || "/top";

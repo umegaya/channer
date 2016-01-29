@@ -20,7 +20,7 @@ function ChannelInfoView(
     var copied = model.options.slice();
     var options = Builder.Model.Channel.Options.decode(copied);
     var elems: Array<UI.Element> = [];
-    elems.push(m("div", {class: "title-h2"}, model.name));
+    elems.push(m("div", {class: "title-h2 name"}, model.name));
     elems.push(m("div", {class: "attributes"}, [
         m("div", {class: "attr"}, [
             m("img", {class: "clock"}),
@@ -40,7 +40,7 @@ function ChannelInfoView(
             }, idlevel_text[options.identity])
         ),
     ]));
-    elems.push(m("div", {class: "desc"}, model.description));
+    elems.push(m("div", {class: "desc"}, model.description || _L("no description")));
     return m("div", {
         class: "block",
         id: "channel-" + model.id,

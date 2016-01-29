@@ -23,6 +23,6 @@ declare namespace UI {
 	}
 	
 	interface ComponentFactory {
-		new (config: any): Component;
+		new (...args: any[]): Component;
 	}
 }

@@ -1,6 +1,7 @@
 /// <reference path="../typings/extern.d.ts"/>
 
 import {Handler} from "./proto"
+import {MenuComponent} from "./components/menu"
 export var m : _mithril.MithrilStatic = window.channer.m;
 var _L = window.channer.l10n.translate;
 var _LD = window.channer.l10n.translateDate;
@@ -54,7 +55,7 @@ export class PropCollection {
                 var v = p();
                 if (!this.validate(v, c)) {
                     if (c.fallback == "") {
-                        console.log("fallback is empty str: set it");
+                        //console.log("fallback is empty str: set it");
                         v = c.fallback;
                     }
                     else {
@@ -238,17 +239,26 @@ export class Template {
         }
         //TODO: custom header message from current active component
         //otherwise show system network status
-        if (rd > 0) {
+        if (rd && rd > 0) {
             //TODO: tap to reconnection
             elements.push(m("div", {class: "wait-reconnect"}, 
                 _L("reconnect within $1 second", rd)));
         }
         else if (c.connected()) {
-            if (err) {
-                //TODO: tap to remove message
-                elements.push(m("div", {class: "request-error"}, err)); 
+            var msgs: UI.Element;
+            if (err && err.message) {
+                msgs = [m("div", {class: "msg"}, err.message), m("div", {class: "x"}, _L("dismiss"))];
             }
-            elements.push(m("div", {class: "latency"}, c.latency + "ms"));
+            else {
+                msgs = m("div", {class: "msg"});
+            }
+            elements.push(m("div", {class: "stats"}, [
+                m("div", {
+                    class: "request-error",
+                    onclick: () => { c.last_error = null; },
+                }, msgs),
+                m("div", {class: "latency"}, c.latency + "ms"),
+            ]));
         }
         else if (c.connecting() || rd <= 0) {
             elements.push(m("div", {class: "reconnecting"}, _L("reconnecting")));
@@ -285,5 +295,34 @@ export class ListComponent implements UI.Component {
                 return this.elemview(models, m);
             })
         );
+    }
+    refresh = () => {
+        this.models.refresh();
+    }
+}
+export class BaseComponent implements UI.Component {
+    mc: MenuComponent;
+    constructor() {
+        var menus = this.menus();
+        if (menus != null) {
+            this.mc = new MenuComponent(menus);
+        }        
+    }
+    controller = (): any => {
+        throw new Error("override this");
+    }
+    view = (ctrl: UI.Controller): UI.Element => {
+        throw new Error("override this");
+    }
+    menus = (): Array<UI.Component> => {
+        return null;
+    }
+    overlay = (contents?: UI.Element): UI.Element => {
+        if (contents) {
+            return [Template.header(), this.mc, contents];
+        }
+        else {
+            return [Template.header(), this.mc];
+        }
     }
 }
