@@ -24,6 +24,8 @@ export class Handler {
 	private last_auth: number;
 	private deactivate_limit_ms: number;
 	private timer: Timer;
+    private reconnect_attempt: number;
+    private reconnect_wait: number;
 	constructor(url: string, timer: Timer) {
 		this.url = url;
 		this.msgid_seed = 0;
@@ -33,6 +35,8 @@ export class Handler {
 		this.deactivate_limit_ms = 0;
 		this.timer = timer;
         this.querying = false;
+        this.reconnect_attempt = 0;
+        this.reconnect_wait = 0;
 	}
 	private new_msgid = (): number => {
 		this.msgid_seed++;
@@ -150,6 +154,14 @@ export class Handler {
     }
     connecting = (): boolean => {
         return this.socket.connecting();
+    }
+    reconnect_enabled = (): boolean => {
+        return Timer.now() > this.reconnect_wait;
+    }
+    reconnect_now = () => {
+        this.socket.set_reconnect_duration(0);
+        this.reconnect_attempt++;
+        this.reconnect_wait = Timer.now() + (3000 * this.reconnect_attempt);
     }
 	resume = () => {
 		console.log("handler start");

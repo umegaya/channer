@@ -83,6 +83,11 @@ export class Socket {
 		var diff_msec = this.next_connection.getTime() - nowms;
 		return Math.ceil(diff_msec / 1000);
 	}
+	set_reconnect_duration = (dt: number) => {
+		var t = new Date();
+		t.setTime(t.getTime() + dt);
+		this.next_connection = t;
+	}
 	//don't call from outside of this module. only exposed for below setInterval callback.
 	open = () => {
 		if (this.state == SocketState.DISCONNECT) {
@@ -100,11 +105,6 @@ export class Socket {
 	private clear_error_streak = () => {
 		this.next_connection = null;
 		this.error_streak = 0;		
-	}
-	private set_reconnect_duration = (dt: number) => {
-		var t = new Date();
-		t.setTime(t.getTime() + dt);
-		this.next_connection = t;
 	}
 	private add_error_streak = () => {
         console.log("err:" + this.error_streak + " ~> " + (this.error_streak + 1));

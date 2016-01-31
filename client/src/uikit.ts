@@ -233,37 +233,49 @@ export class Template {
         var c : Handler = window.channer.conn;
         var rd = c.reconnect_duration();
         var err = c.last_error;
-        if (c.querying) {
-            //TODO: replace to cool GIF anim
-            elements.push(m("div", {class: "query"}, _L("sending request now")));
-        }
-        //TODO: custom header message from current active component
-        //otherwise show system network status
+        var msgs: UI.Element;
+        var attrs : any = {
+            class: "container full-length",
+        };
         if (rd && rd > 0) {
             //TODO: tap to reconnection
-            elements.push(m("div", {class: "wait-reconnect"}, 
-                _L("reconnect within $1 second", rd)));
+            var tmp: Array<UI.Element> = [
+                m("div", {class: "msg"}, _L("reconnect within $1 second", rd)),
+            ];
+            if (c.reconnect_enabled()) {
+                tmp.push(m("div", {class: "connect"}, _L("do it now")));
+                attrs.onclick = () => { c.reconnect_now(); };
+            }
+            msgs = tmp;
         }
         else if (c.connected()) {
-            var msgs: UI.Element;
-            if (err && err.message) {
-                msgs = [m("div", {class: "msg"}, err.message), m("div", {class: "x"}, _L("dismiss"))];
+            if (c.querying) {
+                //TODO: replace to cool CSS anim
+                msgs = m("div", {class: "msg"}, _L("sending request now"));
+            }
+            else if (err && err.message) {
+                msgs = [
+                    m("div", {class: "msg"}, err.message), 
+                    m("div", {class: "x"}, _L("dismiss"))
+                ];
+                attrs.onclick = () => { c.last_error = null; };
             }
             else {
                 msgs = m("div", {class: "msg"});
             }
-            elements.push(m("div", {class: "stats"}, [
-                m("div", {
-                    class: "request-error",
-                    onclick: () => { c.last_error = null; },
-                }, msgs),
-                m("div", {class: "latency"}, c.latency + "ms"),
-            ]));
+            attrs.class = "container";
+            return m("div", {class: "header"}, 
+                m("div", {class: "stats"}, [
+                    m("div", attrs, msgs), 
+                    m("div", {class: "latency"}, c.latency + "ms")
+                ])
+            );
         }
         else if (c.connecting() || rd <= 0) {
-            elements.push(m("div", {class: "reconnecting"}, _L("reconnecting")));
+            msgs = m("div", {class: "msg"}, _L("reconnecting"));
         }
-        return m("div", {class: "header"}, elements);
+        return m("div", {class: "header"}, 
+            m("div", {class: "stats"}, m("div", attrs, msgs)));
     }
 }
 

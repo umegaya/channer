@@ -4,14 +4,15 @@
     z-index: 10
     width: 100%
     height: 3vh
+    top: 0%
     .stats
         display: flex
         .latency
             text-align: right
+            outline-text: 0.25px #fff
             col(2)
-        .request-error, .query
+        .container
             col(10)
-        .request-error
             display: table-cell
             color: #fff
             .msg
@@ -20,19 +21,23 @@
                 background-color: #e70
                 text-align: center
                 vertical-align: middle
-                width: 40%
+                width: 100vw
                 pointer-events:auto
                 height: 5vh
             .msg:empty
                 opacity: 0 
                 pointer-events:none
-            .x
+            .x, .connect
                 font-size: 80%
                 display: table-cell
                 text-align: center
                 vertical-align: middle
                 background-color: #e70
                 text-decoration: underline
-                width: 5%
+                width: 15%
                 pointer-events:auto
                 height: 5vh
+            .connect
+                width: 20%
+        .container.full-length
+            col(12)
