@@ -1,7 +1,12 @@
 /// <reference path="../typings/extern.d.ts"/>
 window.channer.ProtoBuf = require('protobufjs');
 window.channer.m = require('mithril');
+//window.m must exist for initializing mithril plugin
+window.m = window.channer.m;
 window.channer.mtransit = require('mithril-transition');
+(require('mithril.bindings'))(window.channer.m);
+require('mithril.animate');
+window.m = undefined;
 window.channer.hash = require('jshashes');
 
 //utility method for member ByteBuffer of protobuf data structure.

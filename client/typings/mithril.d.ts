@@ -61,6 +61,8 @@ declare module _mithril {
 			factory: Object;
 		}
 
+        trigger: any;
+        e: any;
 	}
 
 	interface MithrilVirtualElement {

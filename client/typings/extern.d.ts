@@ -10,6 +10,7 @@
 
 interface Window {
     channer: ChannerModules;
+    m: any; //temporary for loading mithril.animate
     environment: string;
 }
 
