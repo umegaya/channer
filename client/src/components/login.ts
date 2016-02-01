@@ -62,7 +62,9 @@ export class LoginController implements UI.Controller {
 			}
 			window.channer.settings.save();
 			console.log("login success redirect to:" + this.component.next_url);
-			Util.route(this.component.next_url);
+			Util.route(this.component.next_url, null, {
+                replace_history: true,
+            });
 		}, (e: ProtoError) => {
 			console.log("login error:" + e.message);
 			if (e.payload.type == ChannerProto.Error.Type.Login_OutdatedVersion) {
@@ -96,26 +98,26 @@ export class LoginController implements UI.Controller {
 }
 function LoginView(ctrl: LoginController) : UI.Element {
     if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
-        return ctrl.component.overlay(m("div", {class: "login"}, [
-            m("div", {class: "logo"}, "channer"),
-            m("div", {class: "block"}, 
+        return ctrl.component.layout(m(".login", [
+            m(".logo", "channer"),
+            m(".block", 
                 Template.textinput(ctrl.user, {
                     class:"input-text user"
                 }, LoginController.DEFAULT_USER_NAME)
             ),
-            m("div", {class: "block"}, 
+            m(".block",
                 Template.textinput(ctrl.mail, {
                     class: "input-text mail" 
                 }, LoginController.DEFAULT_MAIL_ADDR)
             ),
-            m("div", {class: "block"}, m("button", {
+            m(".block", m("button", {
                 onclick: ctrl.onlogin,
                 class: ctrl.sendready() ? "enabled" : "disabled",
                 disabled: !ctrl.sendready(), 
             }, _L("Login"))),
         ]));
     }
-    return ctrl.component.overlay();
+    return ctrl.component.layout();
 }
 export class LoginComponent extends BaseComponent {
 	controller: () => LoginController;

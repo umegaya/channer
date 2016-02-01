@@ -1,6 +1,7 @@
 /// <reference path="../typings/extern.d.ts"/>
 window.channer.ProtoBuf = require('protobufjs');
 window.channer.m = require('mithril');
+window.channer.mtransit = require('mithril-transition');
 window.channer.hash = require('jshashes');
 
 //utility method for member ByteBuffer of protobuf data structure.

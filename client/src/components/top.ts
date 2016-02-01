@@ -50,7 +50,6 @@ function TopView(ctrl: TopController) : UI.Element {
     var elems = [Template.tab(ctrl.active, {
         "latest":_L("latest"),
         "popular": _L("popular"), 
-        "create": _L("+"),
     })];
     var active = ctrl.active();
     var contents = ctrl.component.map[active];
@@ -59,7 +58,7 @@ function TopView(ctrl: TopController) : UI.Element {
             oncreate: ctrl.oncreate,
         }));
     }
-    return ctrl.component.overlay(m("div", {class: "top"}, elems));
+    return ctrl.component.layout(m(".top", elems));
 }
 export class TopComponent extends BaseComponent {
 	controller: () => TopController;
@@ -70,11 +69,11 @@ export class TopComponent extends BaseComponent {
         popular: ChannelCollection;
     };
     //tab contents
-    create: ChannelCreateComponent;
     latest: ChannelListComponent;
     popular: ChannelListComponent;
     map: { [k:string]:UI.Component; };
     //menu components
+    create: ChannelCreateComponent;
     
 	constructor(config: Config) {
         super();
@@ -91,7 +90,6 @@ export class TopComponent extends BaseComponent {
             "popular", this.models.popular
         );
         this.map = {
-            "create": this.create,
             "latest": this.latest,
             "popular": this.popular,
         }
@@ -100,6 +98,11 @@ export class TopComponent extends BaseComponent {
 			return new TopController(this);
 		}
 	}
+    menus = (): Array<UI.Component> => {
+        return [
+            this.create,
+        ]
+    }
 }
 
 window.channer.components.Top = TopComponent;

@@ -95,12 +95,15 @@ export class Util {
 		current.component = component;
 		current.ctrl = ctrl;
 	}
-	static route(dest: string, route_only?: boolean) {
-		if (!route_only) {
+	static route(dest: string, params?: any, options?: {
+            route_only?: boolean; 
+            replace_history?: boolean; 
+    }) {
+		if (!options || !options.route_only) {
 			window.channer.settings.values.last_url = dest;
 			window.channer.settings.save();
 		}
-		m.route(dest);
+		m.route(dest, params, options.replace_history);
 	}
 	static restart_app() {
 		document.location.pathname = "/";
@@ -312,13 +315,24 @@ export class ListComponent implements UI.Component {
         this.models.refresh();
     }
 }
+var transit = window.channer.mtransit({
+    anim: (last: Element, next: Element, dir: string, 
+        cblast: () => void, cbnext: () => void) => {
+        last.addEventListener('animationend', cblast);
+        next.addEventListener('animationend', () => {
+            next.classList.remove('transition-in', 'transition-out');
+            cbnext();
+        });
+        last.classList.add('transition-out');
+        next.classList.add('transition-in');
+    } 
+});
+
 export class BaseComponent implements UI.Component {
     mc: MenuComponent;
+    checked: boolean;
+    name: string;
     constructor() {
-        var menus = this.menus();
-        if (menus != null) {
-            this.mc = new MenuComponent(menus);
-        }        
     }
     controller = (): any => {
         throw new Error("override this");
@@ -329,12 +343,21 @@ export class BaseComponent implements UI.Component {
     menus = (): Array<UI.Component> => {
         return null;
     }
-    overlay = (contents?: UI.Element): UI.Element => {
+    layout = (contents?: UI.Element): UI.Element => {
+        if (!this.checked && !this.mc) {
+            var menus = this.menus();
+            if (menus != null) {
+                this.mc = new MenuComponent(menus);
+            }
+            this.checked = true;
+        }
+        var tmp: [any] = [Template.header()];
+        if (this.mc) {
+            tmp.push(this.mc);
+        }
         if (contents) {
-            return [Template.header(), this.mc, contents];
+            tmp.push(contents);
         }
-        else {
-            return [Template.header(), this.mc];
-        }
+        return m(".screen", <UI.Attributes>{config: transit, key: m.route()}, tmp);
     }
 }

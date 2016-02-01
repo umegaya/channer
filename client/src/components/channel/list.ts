@@ -20,32 +20,29 @@ function ChannelInfoView(
     var copied = model.options.slice();
     var options = Builder.Model.Channel.Options.decode(copied);
     var elems: Array<UI.Element> = [];
-    elems.push(m("div", {class: "title-h2 name"}, model.name));
-    elems.push(m("div", {class: "attributes"}, [
-        m("div", {class: "attr"}, [
-            m("img", {class: "clock"}),
+    elems.push(m(".title-h2.name", model.name));
+    elems.push(m(".attributes", [
+        m(".attr", [
+            m("img.clock"),
             Template.datebyuuid(model.id, true)
         ]),
-        m("div", {class: "attr"}, [
-            m("img", {class: "user"}),
-            m("div", {class: "user"}, 11111),
+        m(".attr", [
+            m("img.user"),
+            m(".user", 11111),
         ]),
-        m("div", {class: "attr"}, [
-            m("img", {class: "star"}),
-            m("div", {class: "star"}, 33333),
+        m(".attr", [
+            m("img.star"),
+            m(".star", 33333),
         ]),
-        m("div", {class: "attr"}, 
-            m("div", {
-                class: "idlevel idlevel-" + options.identity
-            }, idlevel_text[options.identity])
+        m(".attr", 
+            m(".idlevel.idlevel-" + options.identity, idlevel_text[options.identity])
         ),
     ]));
-    elems.push(m("div", {class: "desc"}, model.description || _L("no description")));
-    return m("div", {
-        class: "block",
+    elems.push(m(".desc", model.description || _L("no description")));
+    return m(".block", {
         id: "channel-" + model.id,
-        value: "/channel/" + model.id,
-        onclick: m.withAttr("value", m.route),
+        href: "/channel/" + model.id,
+        onclick: m.withAttr("href", m.route),
     }, elems);
 }
 export class ChannelListComponent extends ListComponent {

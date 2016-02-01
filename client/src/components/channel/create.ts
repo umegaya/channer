@@ -110,10 +110,10 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
 	var elements : Array<UI.Element> = []; 
     var props = ctrl.input.props;
     if (!ctrl.show_advanced) {
-        elements.push(m("div", {class: "padding"}));
+        elements.push(m(".padding"));
     }
-    elements.push(m("div", {class: "block"}, [
-        m("div", {class: "title-h1"}, [
+    elements.push(m(".block", [
+        m(".title-h1", [
             m("div", _L("Create new channel")),
             m("a", {
                 onclick: ctrl.on_advanced_settings,
@@ -128,7 +128,7 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
     if (ctrl.show_advanced) {
         //idlevel radiobox
         var idlevel = props["idlevel"];
-        var idlevel_block = [m("div", {class: "title"}, _L("identity level"))];
+        var idlevel_block = [m(".title", _L("identity level"))];
         idlevel_block.push(Template.radio({
             class: "radio-options",
         }, "id-level", [
@@ -145,7 +145,7 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
 
         //disp radiobox
         var disp = props["display"];
-        var disp_block = [m("div", {class: "title"}, _L("display style"))];
+        var disp_block = [m(".title", _L("display style"))];
         disp_block.push(Template.radio({
             class: "radio-options",
         }, "display-style", [
@@ -156,32 +156,32 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
         if (d != ChannerProto.Model.Channel.TopicDisplayStyle.Invalid) {
             disp_block.push(m("div", {class: "explaination"}, display_text[d]));
         }
-        elements.push(m("div", {class: "block display-style"}, disp_block));
+        elements.push(m(".block.display-style", disp_block));
 
         //anon signature
-        elements.push(m("div", {class: "block"}, [
+        elements.push(m(".block", [
             Template.textinput(props["anon"], 
                 {class: "input-text anon"}, texts.DEFAULT_ANONYMOUS)
         ]));
         //postlimit, styl, textarea
-        elements.push(m("div", {class: "block"}, [
+        elements.push(m(".block", [
             Template.textinput(props["postlimit"], 
                 {class: "input-text postlimit"}, texts.DEFAULT_POST_LIMIT)
         ]));
-        elements.push(m("div", {class: "block"}, [
+        elements.push(m(".block", [
             Template.textinput(props["style"], 
                 {class: "input-text style"}, texts.DEFAULT_STYLE_URL)
         ]));
     }
     //send button
-    elements.push(m("div", {class: "block send"}, [
+    elements.push(m(".block.send", [
         m("button", {
             onclick: ctrl.onsend,
             class: "send " + (ctrl.sendready() ? "enabled" : "disabled"),
             disabled: !ctrl.sendready(), 
         }, _L("Create"))
     ]));
-	return m("div", {class: "create"}, elements);
+	return m(".create", elements);
 }
 export class ChannelCreateComponent implements UI.Component {
 	controller: (args?: any) => ChannelCreateController;

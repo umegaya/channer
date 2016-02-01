@@ -24,6 +24,7 @@
     "gulp-util": "^3.0.7",
     "kouto-swiss": "^0.11.14",
     "merge2": "^0.3.6",
+    "mithril.animate": "^0.1.1",
     "nightwatch": "^0.8.14",
     "phantomjs": "^1.9.19",
     "proto-js-loader": "^0.0.10",

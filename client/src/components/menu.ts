@@ -17,7 +17,7 @@ export class MenuController implements UI.Controller {
 	}
 }
 function MenuView(ctrl: MenuController) : UI.Element {
-    var menus: Array<UI.Element> = [];
+    var menus: Array<UI.Element> = [m("img", {class:"plus"})];
     for (var k in this.menus) {
         menus.push(m("div", {class: "menu-" + k}, this.menus[k]));
     }

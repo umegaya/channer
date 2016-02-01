@@ -1,6 +1,6 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, ListComponent} from "../uikit"
+import {m, Util, BaseComponent, ListComponent} from "../uikit"
 import {Config} from "../config"
 
 export class ChannelController implements UI.Controller {
@@ -44,17 +44,18 @@ export class ChannelController implements UI.Controller {
 	}
 }
 function ChannelView(ctrl: ChannelController) : UI.Element {
-	return [
+	return ctrl.component.layout([
 		ctrl.tabs(),
 		ctrl.activetab(),
-	];
+	]);
 }
-export class ChannelComponent implements UI.Component {
+export class ChannelComponent extends BaseComponent {
 	controller: () => ChannelController;
 	view: UI.View<ChannelController>;
     id: string;
 
 	constructor(config: Config) {
+        super();
 		this.view = ChannelView;
 		this.controller = () => {
             this.id = m.route.param("ch");
