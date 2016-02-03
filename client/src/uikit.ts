@@ -99,7 +99,8 @@ export class Util {
             route_only?: boolean; 
             replace_history?: boolean; 
     }) {
-		if (!options || !options.route_only) {
+        options = options || {};
+		if (!options.route_only) {
 			window.channer.settings.values.last_url = dest;
 			window.channer.settings.save();
 		}

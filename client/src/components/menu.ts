@@ -31,20 +31,41 @@ export class MenuController implements UI.Controller {
         this.container_opac = m.prop(0);
         this.button_color = m.prop(BUTTON_CLOSE_COLOR);
 	}
+    
+    onbtnclick = () => {
+        if (this.enabled(!this.enabled())) {
+            this.cover_opac(0.9);
+            this.menu_opac(1);
+            this.rotate(225);
+            this.button_color(BUTTON_OPEN_COLOR)
+            this.opened = null;
+        }
+        else {
+            this.cover_opac(0);
+            this.menu_opac(0);
+            this.rotate(0);
+            this.container_opac(0);
+            this.button_color(BUTTON_CLOSE_COLOR)
+        }        
+    }
 }
 function MenuView(ctrl: MenuController) : UI.Element {
     var r: Array<UI.Element> = [];
     var contained: UI.Element;
     var state_class: string = ctrl.enabled() ? ".open" : ".close";
+    var ct_state_class: string = ".none";
     if (ctrl.opened) {
         if (ctrl.enabled()) {
             ctrl.cover_opac(1);
             ctrl.menu_opac(0);
+            ct_state_class = "";
         }
-        contained = m.component(ctrl.opened);
         state_class = ".none";
+        contained = m.component(ctrl.opened);
     }
-    r.push(m.e(".container" + state_class, {opacity: ctrl.container_opac}, contained));
+    r.push(m.e(".container" + ct_state_class, {
+        opacity: ctrl.container_opac
+    }, contained));
     for (var k in ctrl.menus) {
         var mn = ctrl.menus[k];
         r.push(
@@ -62,22 +83,7 @@ function MenuView(ctrl: MenuController) : UI.Element {
     //whether .cover element put or not
     r.splice(0, 0, 
         m.e(".button", {
-            onclick: () => { 
-                if (ctrl.enabled(!ctrl.enabled())) {
-                    ctrl.cover_opac(0.9);
-                    ctrl.menu_opac(1);
-                    ctrl.rotate(225);
-                    ctrl.button_color(BUTTON_OPEN_COLOR)
-                    ctrl.opened = null;
-                }
-                else {
-                    ctrl.cover_opac(0);
-                    ctrl.menu_opac(0);
-                    ctrl.rotate(0);
-                    ctrl.container_opac(0);
-                    ctrl.button_color(BUTTON_CLOSE_COLOR)
-                }
-            },
+            onclick: ctrl.onbtnclick,
             backgroundColor: ctrl.button_color,
         }, m.e("img.plus", {rotate: ctrl.rotate})),
         m.e(".cover", { opacity: ctrl.cover_opac })

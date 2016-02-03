@@ -42,7 +42,7 @@ function ChannelInfoView(
     return m(".block", {
         id: "channel-" + model.id,
         href: "/channel/" + model.id,
-        onclick: m.withAttr("href", m.route),
+        onclick: m.withAttr("href", Util.route),
     }, elems);
 }
 export class ChannelListComponent extends ListComponent {
