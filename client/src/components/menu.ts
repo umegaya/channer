@@ -17,6 +17,7 @@ export class MenuController implements UI.Controller {
     rotate: UI.Property<number>;
     cover_opac: UI.Property<number>;
     menu_opac: UI.Property<number>;
+    container_opac: UI.Property<number>;
     
     button_color: UI.Property<string>;
 	constructor(component: MenuComponent, menus: Array<MenuElementComponent>) {
@@ -27,33 +28,30 @@ export class MenuController implements UI.Controller {
         this.rotate = m.prop(0);
         this.cover_opac = m.prop(0);
         this.menu_opac = m.prop(0);
+        this.container_opac = m.prop(0);
         this.button_color = m.prop(BUTTON_CLOSE_COLOR);
 	}
 }
 function MenuView(ctrl: MenuController) : UI.Element {
     var r: Array<UI.Element> = [];
     var contained: UI.Element;
-    var state_class: string = ".none";
-    if (ctrl.enabled()) {
-        if (ctrl.opened) {
+    var state_class: string = ctrl.enabled() ? ".open" : ".close";
+    if (ctrl.opened) {
+        if (ctrl.enabled()) {
             ctrl.cover_opac(1);
             ctrl.menu_opac(0);
-            contained = m.component(ctrl.opened);
         }
-        else {
-            state_class = ".open";
-        }
+        contained = m.component(ctrl.opened);
+        state_class = ".none";
     }
-    else {
-        state_class = ".close";
-    }
-    r.push(m(".container", contained));
+    r.push(m.e(".container" + state_class, {opacity: ctrl.container_opac}, contained));
     for (var k in ctrl.menus) {
         var mn = ctrl.menus[k];
         r.push(
             m.e(".menu-elem.menu-" + k + state_class, {
                 onclick: (function () { 
                     ctrl.opened = this; 
+                    ctrl.container_opac(1);
                 }).bind(mn),
                 opacity: ctrl.menu_opac,
             }, mn.iconview())
@@ -66,18 +64,19 @@ function MenuView(ctrl: MenuController) : UI.Element {
         m.e(".button", {
             onclick: () => { 
                 if (ctrl.enabled(!ctrl.enabled())) {
-                    ctrl.cover_opac(0.9)
-                    ctrl.menu_opac(1)
+                    ctrl.cover_opac(0.9);
+                    ctrl.menu_opac(1);
                     ctrl.rotate(225);
                     ctrl.button_color(BUTTON_OPEN_COLOR)
+                    ctrl.opened = null;
                 }
                 else {
-                    ctrl.cover_opac(0)
-                    ctrl.menu_opac(0)
+                    ctrl.cover_opac(0);
+                    ctrl.menu_opac(0);
                     ctrl.rotate(0);
+                    ctrl.container_opac(0);
                     ctrl.button_color(BUTTON_CLOSE_COLOR)
                 }
-                ctrl.opened = null;
             },
             backgroundColor: ctrl.button_color,
         }, m.e("img.plus", {rotate: ctrl.rotate})),
