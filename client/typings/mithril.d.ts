@@ -61,8 +61,10 @@ declare module _mithril {
 			factory: Object;
 		}
 
+        // declaration from mithril.animate
         trigger: any;
         e: any;
+        addAnimation: any;
 	}
 
 	interface MithrilVirtualElement {

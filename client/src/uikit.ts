@@ -1,7 +1,7 @@
 /// <reference path="../typings/extern.d.ts"/>
 
 import {Handler} from "./proto"
-import {MenuComponent} from "./components/menu"
+import {MenuComponent, MenuElementComponent} from "./components/menu"
 export var m : _mithril.MithrilStatic = window.channer.m;
 var _L = window.channer.l10n.translate;
 var _LD = window.channer.l10n.translateDate;
@@ -315,20 +315,19 @@ export class ListComponent implements UI.Component {
         this.models.refresh();
     }
 }
-var transit = window.channer.mtransit({
-    anim: (last: Element, next: Element, dir: string, 
-        cblast: () => void, cbnext: () => void) => {
-        last.addEventListener('animationend', cblast);
-        next.addEventListener('animationend', () => {
-            next.classList.remove('transition-in', 'transition-out');
-            cbnext();
-        });
-        last.classList.add('transition-out');
-        next.classList.add('transition-in');
-    } 
-});
-
 export class BaseComponent implements UI.Component {
+    static transit = window.channer.mtransit({
+        anim: (last: Element, next: Element, dir: string, 
+            cblast: () => void, cbnext: () => void) => {
+            last.addEventListener('animationend', cblast);
+            next.addEventListener('animationend', () => {
+                next.classList.remove('transition-in', 'transition-out');
+                cbnext();
+            });
+            last.classList.add('transition-out');
+            next.classList.add('transition-in');
+        } 
+    });
     mc: MenuComponent;
     checked: boolean;
     name: string;
@@ -340,7 +339,7 @@ export class BaseComponent implements UI.Component {
     view = (ctrl: UI.Controller): UI.Element => {
         throw new Error("override this");
     }
-    menus = (): Array<UI.Component> => {
+    menus = (): Array<MenuElementComponent> => {
         return null;
     }
     layout = (contents?: UI.Element): UI.Element => {
@@ -358,6 +357,8 @@ export class BaseComponent implements UI.Component {
         if (contents) {
             tmp.push(contents);
         }
-        return m(".screen", <UI.Attributes>{config: transit, key: m.route()}, tmp);
+        return m(".screen", <UI.Attributes>{
+            config: BaseComponent.transit, key: m.route()
+        }, tmp);
     }
 }

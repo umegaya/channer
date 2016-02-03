@@ -1,10 +1,12 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
 import {m, Util, Template, BaseComponent, ModelCollection} from "../uikit"
+import {MenuElementComponent} from "./menu"
 import {Config} from "../config"
 import {Handler} from "../proto"
 import {ChannelCreateComponent} from "./channel/create"
 import {ChannelListComponent} from "./channel/list"
+import {ChannelFilterComponent} from "./channel/filter"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 
@@ -41,10 +43,6 @@ export class TopController implements UI.Controller {
 		this.component = component;
         this.active = m.prop(component.start);
 	}
-    oncreate = (ch: ChannerProto.Model.Channel) => {
-        this.component.latest.refresh();
-        this.component.popular.refresh();
-    }
 }
 function TopView(ctrl: TopController) : UI.Element {
     var elems = [Template.tab(ctrl.active, {
@@ -54,9 +52,7 @@ function TopView(ctrl: TopController) : UI.Element {
     var active = ctrl.active();
     var contents = ctrl.component.map[active];
     if (contents) {
-        elems.push(m.component(ctrl.component.map[active], {
-            oncreate: ctrl.oncreate,
-        }));
+        elems.push(m.component(ctrl.component.map[active]));
     }
     return ctrl.component.layout(m(".top", elems));
 }
@@ -74,6 +70,7 @@ export class TopComponent extends BaseComponent {
     map: { [k:string]:UI.Component; };
     //menu components
     create: ChannelCreateComponent;
+    filter: ChannelFilterComponent;
     
 	constructor(config: Config) {
         super();
@@ -82,7 +79,8 @@ export class TopComponent extends BaseComponent {
             latest: new ChannelCollection("latest"),
             popular: new ChannelCollection("popular"),
         }
-        this.create = new ChannelCreateComponent();
+        this.create = new ChannelCreateComponent(this);
+        this.filter = new ChannelFilterComponent(this);
         this.latest = new ChannelListComponent(
             "latest", this.models.latest
         );
@@ -98,10 +96,16 @@ export class TopComponent extends BaseComponent {
 			return new TopController(this);
 		}
 	}
-    menus = (): Array<UI.Component> => {
+    menus = (): Array<MenuElementComponent> => {
         return [
+            this.filter,
             this.create,
+            this.filter,
         ]
+    }
+    oncreate = (ch: ChannerProto.Model.Channel) => {
+        this.latest.refresh();
+        this.popular.refresh();
     }
 }
 

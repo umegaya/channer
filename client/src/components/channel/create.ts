@@ -1,6 +1,8 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
 import {m, Util, Template, PropConditions, PropCollection} from "../../uikit"
+import {TopComponent} from "../top"
+import {MenuElementComponent} from "../menu"
 import {Config} from "../../config"
 import {Handler, Builder} from "../../proto"
 import {ProtoError} from "../../watcher"
@@ -72,13 +74,11 @@ export class ChannelCreateController implements UI.Controller {
     show_advanced: boolean;
     oncreate: (ch: ChannerProto.Model.Channel) => void;
 
-	constructor(
-        component: ChannelCreateComponent, 
-        oncreate: (ch: ChannerProto.Model.Channel) => void) {
+	constructor(component: ChannelCreateComponent) {
 		this.component = component;
         this.input = new PropCollection(cond);
         this.show_advanced = false;
-        this.oncreate = oncreate;
+        this.oncreate = component.parent<TopComponent>().oncreate;
 	}
     onsend = () => {
         var conn: Handler = window.channer.conn;
@@ -183,17 +183,21 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
     ]));
 	return m(".create", elements);
 }
-export class ChannelCreateComponent implements UI.Component {
+export class ChannelCreateComponent extends MenuElementComponent {
 	controller: (args?: any) => ChannelCreateController;
 	view: UI.View<ChannelCreateController>;
-    oncreate: (ch: ChannerProto.Model.Channel) => void;
 
-	constructor() {
+	constructor(parent: TopComponent) {
+        super(parent);
 		this.view = ChannelCreateView;
-		this.controller = (args: {
-           oncreate?: (ch: ChannerProto.Model.Channel) => void
-        }) => {
-			return new ChannelCreateController(this, args.oncreate);
+		this.controller = () => {
+			return new ChannelCreateController(this);
 		}
 	}
+    iconview = (): UI.Element => {
+        return this.format_iconview("img.create_channel", _L("create channel"));
+    }
+    name = (): string => {
+        return "channel create";
+    }
 }

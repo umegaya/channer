@@ -2,6 +2,7 @@
 /// <reference path="./compat.d.ts"/>
 /// <reference path="./channer.proto.d.ts"/>
 /// <reference path="./Q/q.d.ts"/>
+/// <reference path="./hammerjs/hammerjs.d.ts"/>
 /// <reference path="./UI.d.ts"/>
 /// <reference path="./mithril.d.ts"/>
 /// <reference path="./protobuf.d.ts"/>
