@@ -244,7 +244,8 @@ export class Template {
         if (rd && rd > 0) {
             //TODO: tap to reconnection
             var tmp: Array<UI.Element> = [
-                m("div", {class: "msg"}, _L("reconnect within $1 second", rd)),
+                m("div", {class: "msg wait-reconnect"},
+                    _L("reconnect within $1 second", rd)),
             ];
             if (c.reconnect_enabled()) {
                 tmp.push(m("div", {class: "connect"}, _L("do it now")));

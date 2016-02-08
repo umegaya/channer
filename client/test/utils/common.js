@@ -6,6 +6,7 @@ var mod = {
     EMAIL: 'test@test.com',
     CHANNEL_NAME: "chtest",
     INPUT_PAUSE: 100,
+    ANIM_PAUSE: 500,
     TRANSITION_PAUSE: 1000,
     LOAD_PAUSE: 4000,
 }

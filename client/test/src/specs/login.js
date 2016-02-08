@@ -29,7 +29,7 @@ module.exports = {
                     return ["login component should be loaded correctly"];
                 }
                 var expect_keys = [
-                    "bootstrap", "conn", "config", "m", "ProtoBuf", 
+                    "bootstrap", "conn", "config", "m", "mtransit", "ProtoBuf", 
                     "timer", "settings", "push", "rawfs", "fs", "hash", "storage",
                     "patch", "mobile", "onResume", "onPause", "onPush", "components", 
                     "testtmp", "l10n", "jsloader_promise"
