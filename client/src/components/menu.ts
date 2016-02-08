@@ -70,10 +70,7 @@ function MenuView(ctrl: MenuController) : UI.Element {
         var mn = ctrl.menus[k];
         r.push(
             m.e(".menu-elem.menu-" + k + state_class, {
-                onclick: (function () { 
-                    ctrl.opened = this; 
-                    ctrl.container_opac(1);
-                }).bind(mn),
+                onclick: (function () { this.onselected(ctrl) }).bind(mn),
                 opacity: ctrl.menu_opac,
             }, mn.iconview())
         );
@@ -129,6 +126,28 @@ export class MenuElementComponent implements UI.Component {
     }
     name = (): string => {
         throw new Error("override this");
+    }
+    onselected = (ctrl: MenuController) => {
+        ctrl.opened = this; 
+        ctrl.container_opac(1);     
+    }
+}
+
+export class TransitMenuElementComponent extends MenuElementComponent {
+    icon: string;
+    text: string;
+    url: string
+    constructor(parent: UI.Component, icon: string, text: string, url: string) {
+        super(parent);
+        this.icon = icon;
+        this.text = text;
+        this.url = url;
+    }
+    iconview = (): UI.Element => {
+        return this.format_iconview(this.icon, this.text);
+    }
+    onselected = (ctrl: MenuController) => {
+        Util.route(this.url);
     }
 }
 

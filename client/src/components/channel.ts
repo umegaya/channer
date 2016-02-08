@@ -1,6 +1,7 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
 import {m, Util, BaseComponent, ListComponent} from "../uikit"
+import {MenuElementComponent, TransitMenuElementComponent} from "./menu"
 import {Config} from "../config"
 
 export class ChannelController implements UI.Controller {
@@ -53,15 +54,25 @@ export class ChannelComponent extends BaseComponent {
 	controller: () => ChannelController;
 	view: UI.View<ChannelController>;
     id: string;
+    //menu components
+    top: TransitMenuElementComponent
 
 	constructor(config: Config) {
         super();
 		this.view = ChannelView;
+        this.top = new TransitMenuElementComponent(
+            this, "img.home", "go to top", "/top"
+        );
 		this.controller = () => {
             this.id = m.route.param("ch");
 			return new ChannelController(this);
 		}
 	}
+    menus = (): Array<MenuElementComponent> => {
+        return [
+            this.top
+        ]
+    }
 }
 
 window.channer.components.Channel = ChannelComponent
