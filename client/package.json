@@ -25,6 +25,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-typescript": "^2.9.2",
     "gulp-util": "^3.0.7",
+    "json": "^9.0.3",
     "json-locale": "0.0.44",
     "kouto-swiss": "^0.11.14",
     "merge2": "^0.3.6",

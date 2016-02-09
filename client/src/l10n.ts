@@ -8,11 +8,7 @@ class L10nDictionary {
 }
 
 class LocaleSettings {
-    localeDisplayNames: {
-        languages: {
-            [k:string]:string
-        }
-    };
+    [k:string]:string;
 }
 
 class L10n {
@@ -23,24 +19,24 @@ class L10n {
     static normalizeLangCode: {
         [k:string]:[string]
     } = {
-        "ja":["ja_JP"],
-        "ko":["ko_KP", "ko_KR"],
-        "zh_Hant":["zh_Hant_HK", "zh_Hant_MO", "zh_Hant_TW"],
+        "ja":["ja-JP"],
+        "ko":["ko-KP", "ko-KR"],
+        "zh_Hant":["zh-Hant-HK", "zh-Hant-MO", "zh-Hant-TW"],
     };
     g: Globalization;
     language: string;
+    settings: Array<{key:string, value:string}>;
     dict: L10nDictionary;    
     constructor(g: Globalization, dict: L10nDictionary) {
         this.g = g;
         this.dict = dict;
-        var data = require("./l10n/lang/en.json");
-        console.log("data = " + data);
-        /*
+        this.settings = null;
         L10n.supportedLanguages = {
             "en": JSON.parse(require("./l10n/lang/en.json")),
             "ja": JSON.parse(require("./l10n/lang/ja.json")),
             "ko": JSON.parse(require("./l10n/lang/ko.json")),
             "zh_Hant": JSON.parse(require("./l10n/lang/zh_Hant.json")),
+            "zh_Hans": JSON.parse(require("./l10n/lang/zh_Hans.json")),
         };
         var supported = JSON.parse(require("./l10n/supported.json"));
         for (var k in supported) {
@@ -50,7 +46,6 @@ class L10n {
                 throw Error("want to support " + v + " but no data");
             }
         }
-        */
     }
     setuplang = (): Q.Promise<boolean> => {
         var df: Q.Deferred<boolean> = Q.defer<boolean>();
@@ -104,8 +99,21 @@ class L10n {
         });
         return df.promise;
     }
-    localeSettings = (): LocaleSettings => {
-        return L10n.supportedLanguages[this.language] || L10n.supportedLanguages["en"];
+    localeSettings = (): Array<{key:string, value:any}> => {
+        if (!this.settings) {
+            this.settings = [];
+            var data = L10n.supportedLanguages[this.language] || L10n.supportedLanguages["en"];
+            var keys: Array<string> = [];
+            for (var k in data) {
+                keys.push(k);
+            }
+            keys = keys.sort();
+            for (var i in keys) {
+                var key: string = keys[i];
+                this.settings.push({key: key, value: data[key]});
+            }
+        }
+        return this.settings;
     }
 }
 window.channer.l10n = new L10n(navigator.globalization, JSON.parse(require("./l10n/data.json")));

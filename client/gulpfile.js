@@ -54,7 +54,7 @@ gulp.task('locale', function () {
     return gulp.src(LOCALE_PATH + '/lang/*.json')
         .pipe(exec("curl " 
             + UNICODE_LOCALE_URL 
-            + "<%= options.basenamer(file.path) %> -o <%= file.path %>", {
+            + "<%= options.basenamer(file.path) %> | node node_modules/json/lib/json.js localeDisplayNames.languages > <%= file.path %>", {
                 basenamer: path.basename,
             }));
 });

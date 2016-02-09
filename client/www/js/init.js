@@ -5,11 +5,26 @@ window.channer = {
 	onPause: [],
 	onPush: [],
 	components: {
+        parts: {},
         active: {},
     },
 	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
     testtmp: {},
 };
+
+function initfs(quota, bootstrap) {
+    if (navigator.webkitPersistentStorage) {
+        navigator.webkitPersistentStorage.requestQuota(quota, function(grantedBytes) {
+            window.requestFileSystem(window.PERSISTENT, grantedBytes, bootstrap);
+        }, function (e) {
+            console.log("initfs error:" + e);
+            setTimeout(initfs.bind(quota, bootstrap), 1);
+        }); 
+    }
+    else {
+         window.requestFileSystem(window.PERSISTENT, quota, bootstrap);
+    }
+}
 
 document.addEventListener("deviceready", function () {
 	var env = document.URL.match(/env=([^&]+)/);
@@ -23,7 +38,7 @@ document.addEventListener("deviceready", function () {
 	document.addEventListener("pause", function () {
 		window.channer.onPause.forEach(function (f){ f(); })			
 	});
-	window.requestFileSystem(window.PERSISTENT, 0, function(fs) {
+	initfs(50 * 1024 * 1024, function(fs) {
 		window.channer.rawfs = fs;
 		
 		if (window.environment.match(/dev/) && 
@@ -39,7 +54,7 @@ document.addEventListener("deviceready", function () {
 				throw new Error((error && error.message) ? error.message : "dummy");
 			}
 			catch (e) {
-				console.log("env = " + window.environment);
+				console.log("env = " + window.environment + "|" + window.channer.mobile);
 				alert("this device under bad network connection. " + 
 					"go to the place where provides good connection, then retry. " + 
 					"error at " + e.stack);

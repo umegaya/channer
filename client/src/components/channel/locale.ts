@@ -25,7 +25,7 @@ export class ChannelLocaleController implements UI.Controller {
 function ChannelLocaleView(ctrl: ChannelLocaleController) : UI.Element {
     var settings = window.channer.l10n.localeSettings();
 	return m(".locale .block", [
-        Template.pulldown(settings.localeDisplayNames.languages, ctrl.locale), 
+        Template.pulldown(settings, ctrl.locale), 
     ]);
 }
 export class ChannelLocaleComponent extends MenuElementComponent {

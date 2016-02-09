@@ -6,6 +6,7 @@ window.m = window.channer.m;
 window.channer.mtransit = require('mithril-transition');
 (require('mithril.bindings'))(window.channer.m);
 require('mithril.animate');
+window.channer.components.parts.scroller = require('mithril-infinite');
 window.m = undefined;
 window.channer.hash = require('jshashes');
 

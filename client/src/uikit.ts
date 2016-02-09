@@ -2,6 +2,7 @@
 
 import {Handler} from "./proto"
 import {MenuComponent, MenuElementComponent} from "./components/menu"
+import Q = require('q');
 export var m : _mithril.MithrilStatic = window.channer.m;
 var _L = window.channer.l10n.translate;
 var _LD = window.channer.l10n.translateDate;
@@ -233,16 +234,23 @@ export class Template {
         return m("div", {class: "tab"}, elems);
     } 
     static pulldown(
-        list: {[k:string]:string|UI.Element}, 
+        list: [{key:string, value:any}], 
         receiver: (v:string) => void): UI.Element {
-        var elems: Array<UI.Element> = [];
-        for (var k in list) {
-            elems.push(m(".pulldown-elem", {
-                value: k,
-                onselect: m.withAttr("value", receiver),
-            }, m(".container", list[k])));
-        }
-        return m(".pulldown", elems);
+        return m(".pulldown", m.component(window.channer.components.parts.scroller, {
+            pageData: (page:number): () => Array<{key:string, value:string}> => {
+                return (): Array<{key:string, value:string}> => {
+                    console.log("pagedata:" + page);
+                    return list.slice(page * 10, page * 10 + 9);
+                }
+            },
+            preloadPages: 3,
+            item: (data: {key:string, value:any}) => {
+                return m(".pulldown-elem", {
+                    value: data.key,
+                    onclick: m.withAttr("value", receiver),
+                }, m(".container", data.value))
+            },
+        }));
     }
     static header(): UI.Element {
         var elements : Array<UI.Element> = [];
