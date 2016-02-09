@@ -6,6 +6,9 @@ stop:
 	-@killall gulp
 	-@killall node
 
+locale:
+	gulp locale
+
 setuptest:
 	@gulp webpack-watch &
 	@sleep 2

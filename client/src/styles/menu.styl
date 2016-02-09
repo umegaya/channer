@@ -10,7 +10,7 @@ menu_elem_index = 7
 cover_z_index = 5
 delay_unit = 50ms
 .menu
-    .button 
+    .main-button 
         background-color: active-bg-color
         width: menu_btn_w
         height: menu_btn_h
@@ -26,14 +26,14 @@ delay_unit = 50ms
             position: relative
             top: 1.5vw
             left: 1.5vw
-    .container
+    .main-container
         z-index: menu_elem_index
         width: 100%
         position: absolute
         //customized layout setting for each contents
         .create //channel create
             margin-top: 7vh
-    .container.none
+    .main-container.none
         pointer-events: none
     .menu-elem
         z-index: menu_z_index
@@ -61,6 +61,8 @@ delay_unit = 50ms
                 position: relative
                 width: 100%
                 height: 50%
+            .locale
+                text-align: center
         .balloon
             shadowing()
             display: table-cell

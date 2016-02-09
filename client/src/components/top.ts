@@ -6,6 +6,7 @@ import {Config} from "../config"
 import {Handler} from "../proto"
 import {ChannelCreateComponent} from "./channel/create"
 import {ChannelListComponent} from "./channel/list"
+import {ChannelLocaleComponent} from "./channel/locale"
 import {ChannelFilterComponent} from "./channel/filter"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
@@ -71,6 +72,7 @@ export class TopComponent extends BaseComponent {
     //menu components
     create: ChannelCreateComponent;
     filter: ChannelFilterComponent;
+    locale: ChannelLocaleComponent;
     
 	constructor(config: Config) {
         super();
@@ -81,6 +83,7 @@ export class TopComponent extends BaseComponent {
         }
         this.create = new ChannelCreateComponent(this);
         this.filter = new ChannelFilterComponent(this);
+        this.locale = new ChannelLocaleComponent(this);
         this.latest = new ChannelListComponent(
             "latest", this.models.latest
         );
@@ -98,9 +101,9 @@ export class TopComponent extends BaseComponent {
 	}
     menus = (): Array<MenuElementComponent> => {
         return [
+            this.locale,
             this.filter,
             this.create,
-            this.filter,
         ]
     }
     oncreate = (ch: ChannerProto.Model.Channel) => {

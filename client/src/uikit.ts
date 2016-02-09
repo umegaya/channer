@@ -232,6 +232,18 @@ export class Template {
         }
         return m("div", {class: "tab"}, elems);
     } 
+    static pulldown(
+        list: {[k:string]:string|UI.Element}, 
+        receiver: (v:string) => void): UI.Element {
+        var elems: Array<UI.Element> = [];
+        for (var k in list) {
+            elems.push(m(".pulldown-elem", {
+                value: k,
+                onselect: m.withAttr("value", receiver),
+            }, m(".container", list[k])));
+        }
+        return m(".pulldown", elems);
+    }
     static header(): UI.Element {
         var elements : Array<UI.Element> = [];
         var c : Handler = window.channer.conn;

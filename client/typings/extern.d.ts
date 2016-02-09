@@ -39,6 +39,8 @@ interface ChannerModules {
         translate(text: string, ...args:Array<any>): string; 
         translateDate(date: Date): any;
         setuplang(): any;
+        localeSettings(): any;
+        language: string;
     };
     jsloader_promise: any;
 	onResume: Array<() => void>;
