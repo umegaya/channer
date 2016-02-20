@@ -5,8 +5,10 @@ window.channer = {
 	onPause: [],
 	onPush: [],
 	components: {
-        parts: {},
         active: {},
+    },
+    parts: {
+        
     },
 	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
     testtmp: {},

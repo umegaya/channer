@@ -5,6 +5,8 @@ import {ProtoError} from "../watcher"
 import {Config} from "../config"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
+var Button = window.channer.parts.Button;
+var TextField = window.channer.parts.TextField;
 
 export class LoginController implements UI.Controller {
 	static DEFAULT_USER_NAME = _L("user name");
@@ -98,23 +100,28 @@ export class LoginController implements UI.Controller {
 }
 function LoginView(ctrl: LoginController) : UI.Element {
     if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
-        return ctrl.component.layout(m(".login", [
-            m(".logo", "channer"),
-            m(".block", 
-                Template.textinput(ctrl.user, {
-                    class:"input-text user"
-                }, LoginController.DEFAULT_USER_NAME)
-            ),
-            m(".block",
-                Template.textinput(ctrl.mail, {
-                    class: "input-text mail" 
-                }, LoginController.DEFAULT_MAIL_ADDR)
-            ),
-            m(".block", m("button", {
-                onclick: ctrl.onlogin,
-                class: ctrl.sendready() ? "enabled" : "disabled",
+        return ctrl.component.layout(m(".login.form.fullWidth", [
+            m(".bg"),
+            m(".logo", m(".title", "channer")),
+            m.component(TextField, {
+                label: LoginController.DEFAULT_USER_NAME,
+                fullWidth: true,
+                required: true,
+                oninput: ctrl.user,
+            }),
+            m.component(TextField, {
+                label: LoginController.DEFAULT_MAIL_ADDR,
+                fullWidth: true,
+                oninput: ctrl.mail,
+            }),
+            m.component(Button, {
+                class: "send-login",
+                label: _L("Login"),
                 disabled: !ctrl.sendready(), 
-            }, _L("Login"))),
+                events: {
+                    onclick: ctrl.onlogin,
+                }
+            }),
         ]));
     }
     return ctrl.component.layout();

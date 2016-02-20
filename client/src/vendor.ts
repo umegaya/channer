@@ -1,14 +1,23 @@
 /// <reference path="../typings/extern.d.ts"/>
 window.channer.ProtoBuf = require('protobufjs');
 window.channer.m = require('mithril');
-//window.m must exist for initializing mithril plugin
+//window.m must exist for initializing some of mithril plugin
 window.m = window.channer.m;
 window.channer.mtransit = require('mithril-transition');
 (require('mithril.bindings'))(window.channer.m);
 require('mithril.animate');
-window.channer.components.parts.scroller = require('mithril-infinite');
 window.m = undefined;
 window.channer.hash = require('jshashes');
+//UI parts from polythene and mithril-infinite
+window.channer.parts.Scroll = require('mithril-infinite');
+//these 2 are not for importing UI parts, 
+//but for apply correct theme to show polythene component correctly
+require('polythene/theme/theme');
+require('polythene/layout/theme/theme');
+//importing necessary polythene components.
+window.channer.parts.Button = require('polythene/button/button');
+window.channer.parts.TextField = require('polythene/textfield/textfield');
+window.channer.parts.Tabs = require('polythene/tabs/tabs');
 
 //utility method for member ByteBuffer of protobuf data structure.
 window.channer.ProtoBuf.ByteBuffer.prototype.slice = 

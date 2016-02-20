@@ -51,7 +51,6 @@ class L10n {
         var df: Q.Deferred<boolean> = Q.defer<boolean>();
         this.g.getPreferredLanguage((lang: {value: string}) => {
             var v = lang.value.replace("-", "_"); //sometimes _ is used for sperator
-            console.log("lang:" + lang.value);
             for (var k in L10n.normalizeLangCode) {
                 if (k == lang.value) {
                     this.language = k;
@@ -70,10 +69,8 @@ class L10n {
             if (!this.language) {
                 this.language = "en";
             }
-            console.log("language = " + this.language);
             df.resolve(true);
         }, () => {
-            console.log("fail to get lang");
             df.reject(new Error("fail to get language"));
         });
         return df.promise;

@@ -2,6 +2,7 @@
 
 import {Handler} from "./proto"
 import {MenuComponent, MenuElementComponent} from "./components/menu"
+import {ScrollComponent} from "./components/parts/scroll"
 import Q = require('q');
 export var m : _mithril.MithrilStatic = window.channer.m;
 var _L = window.channer.l10n.translate;
@@ -236,20 +237,8 @@ export class Template {
     static pulldown(
         list: [{key:string, value:any}], 
         receiver: (v:string) => void): UI.Element {
-        return m(".pulldown", m.component(window.channer.components.parts.scroller, {
-            pageData: (page:number): () => Array<{key:string, value:string}> => {
-                return (): Array<{key:string, value:string}> => {
-                    console.log("pagedata:" + page);
-                    return list.slice(page * 10, page * 10 + 9);
-                }
-            },
-            preloadPages: 3,
-            item: (data: {key:string, value:any}) => {
-                return m(".pulldown-elem", {
-                    value: data.key,
-                    onclick: m.withAttr("value", receiver),
-                }, m(".container", data.value))
-            },
+        return m(".pulldown", m.component(new ScrollComponent(), {
+            items: list,
         }));
     }
     static header(): UI.Element {
@@ -320,6 +309,9 @@ export class ListComponent implements UI.Component {
         this.elemview = view;
         this.name = name;
         this.models = models;
+        if (!models) {
+            console.error("models invalid");
+        }
         models.refresh();
 	}
     controller = (): any => {

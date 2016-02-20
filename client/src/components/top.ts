@@ -10,6 +10,16 @@ import {ChannelLocaleComponent} from "./channel/locale"
 import {ChannelFilterComponent} from "./channel/filter"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
+var Tabs = window.channer.parts.Tabs;
+
+
+const TABS = [{
+    label: _L("latest"),
+    id: "latest",
+}, {
+    label: _L("popular"),
+    id: "popular",
+}];
 
 class ChannelCollection implements ModelCollection {
     category: string;
@@ -37,25 +47,32 @@ class ChannelCollection implements ModelCollection {
 }
 export class TopController implements UI.Controller {
 	component: TopComponent
-    active: UI.Property<string>;
+    active: UI.Property<number>;
     
 	constructor(component: TopComponent) {
 		Util.active(this, component);
 		this.component = component;
-        this.active = m.prop(component.start);
+        this.active = m.prop(0);
+        TABS.map((tab, idx) => {
+            if (tab.id == component.start) {
+                this.active(Number(idx));
+            }
+        });
 	}
 }
 function TopView(ctrl: TopController) : UI.Element {
-    var elems = [Template.tab(ctrl.active, {
-        "latest":_L("latest"),
-        "popular": _L("popular"), 
-    })];
-    var active = ctrl.active();
-    var contents = ctrl.component.map[active];
-    if (contents) {
-        elems.push(m.component(ctrl.component.map[active]));
-    }
-    return ctrl.component.layout(m(".top", elems));
+    return ctrl.component.layout(m(".top", [ 
+        m.component(Tabs, {
+            buttons: TABS,
+            autofit: true,
+            selectedTab: ctrl.active(),
+            activeSelected: true,
+            getState: (state: { index: number }) => {
+                ctrl.active(state.index);
+            }
+        }),
+        m.component(ctrl.component.map[ctrl.active()])
+    ]));
 }
 export class TopComponent extends BaseComponent {
 	controller: () => TopController;
@@ -68,7 +85,7 @@ export class TopComponent extends BaseComponent {
     //tab contents
     latest: ChannelListComponent;
     popular: ChannelListComponent;
-    map: { [k:string]:UI.Component; };
+    map: [UI.Component];
     //menu components
     create: ChannelCreateComponent;
     filter: ChannelFilterComponent;
@@ -81,19 +98,19 @@ export class TopComponent extends BaseComponent {
             latest: new ChannelCollection("latest"),
             popular: new ChannelCollection("popular"),
         }
-        this.create = new ChannelCreateComponent(this);
-        this.filter = new ChannelFilterComponent(this);
-        this.locale = new ChannelLocaleComponent(this);
         this.latest = new ChannelListComponent(
             "latest", this.models.latest
         );
         this.popular = new ChannelListComponent(
             "popular", this.models.popular
         );
-        this.map = {
-            "latest": this.latest,
-            "popular": this.popular,
-        }
+        this.map = [
+            this.latest,
+            this.popular,
+        ]
+        this.create = new ChannelCreateComponent(this);
+        this.filter = new ChannelFilterComponent(this);
+        this.locale = new ChannelLocaleComponent(this);
 		this.controller = () => {
             this.start = m.route.param("tab") || "latest";
 			return new TopController(this);

@@ -49,7 +49,7 @@ module.exports = function (settings) {
                 {test: /\.css$/,    loader: 'css-loader'},
                 {test: /\.styl$/,   loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'},
                 {test: /\.svg$/,    loader: 'url-loader?mimetype=image/svg+xml&limit=10000&name=[hash:6].[ext]' },
-                {test: /\.(png|gif|jpe?g)$/, loader: 'url-loader?mimetype=image/png&limit=10000&name=[hash:6].[ext]' },
+                {test: /\.gif$/,     loader: 'url-loader?mimetype=image/gif&limit=100000&name=[hash:6].[ext]' },
                 {test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url?limit=10000&minetype=application/font-woff'},
                 {test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file'}
             ]

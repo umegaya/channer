@@ -208,6 +208,7 @@ export class Handler {
 		req.user = user;
 		req.mail = mail;
 		req.walltime = Timer.now();
+        console.log("data:" + req.user + "|" + req.mail);
 		if (secret) {
 			if (!req.id) {
 				return this.send(null, ChannerProto.Error.Type.Login_BrokenClientData);

@@ -62,7 +62,7 @@ window.channer.bootstrap = function (config: any) {
 		return window.channer.settings.save();
 	})
 	.then(() => {
-		return window.channer.fs.applycss("base", require("./styles/base.styl"));
+		return window.channer.fs.applycss("base", require("./css/main.styl"));
 	})
 	.then(() => {
 		window.channer.onResume.push(h.resume);

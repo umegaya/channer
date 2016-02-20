@@ -55,13 +55,16 @@ interface ChannerModules {
 		Channel: UI.ComponentFactory;
 		Edit: UI.ComponentFactory;
         Menu: UI.ComponentFactory;
-        parts: {
-            scroller: UI.Component;
-        }
         active: {
             component: UI.Component;
             ctrl: UI.Controller;
         }
 	}
+    parts: {
+        Scroll: UI.Component;
+        Button: UI.Component;
+        TextField: UI.Component;
+        Tabs: UI.Component;
+    }
     testtmp: any;
 }
