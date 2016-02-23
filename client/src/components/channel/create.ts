@@ -120,8 +120,6 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
             m.component(TextFieldComponent, {
                 label: texts.DEFAULT_NAME,
                 required: true,
-                multiline: true,
-                rows: 2,
                 value: props["name"],
                 onchange: ctrl.onchange,
             }),

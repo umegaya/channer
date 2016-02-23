@@ -58,6 +58,7 @@ function MenuView(ctrl: MenuController) : UI.Element {
     var contained: UI.Element;
     var state_class: string = ctrl.enabled() ? ".open" : ".close";
     var ct_state_class: string = ".none";
+    var cover_class: string = ctrl.enabled() ? "" : ".disable";
     if (ctrl.opened) {
         if (ctrl.enabled()) {
             ctrl.cover_opac(1);
@@ -87,7 +88,10 @@ function MenuView(ctrl: MenuController) : UI.Element {
             onclick: ctrl.onbtnclick,
             backgroundColor: ctrl.button_color,
         }, m.e("img.plus", {rotate: ctrl.rotate})),
-        m.e(".cover", { opacity: ctrl.cover_opac })
+        m.e(".cover" + cover_class, { 
+            opacity: ctrl.cover_opac,
+            onclick: () => {},
+        })
     );
     return m(".menu", r);
 }

@@ -28,9 +28,6 @@ delay_unit = 50ms
         z-index: menu_elem_index
         width: 100%
         position: fixed
-        //customized layout setting for each contents
-        .create //channel create
-            margin-top: 7vh
     .main-container.none
         pointer-events: none
     .menu-elem
@@ -69,7 +66,7 @@ delay_unit = 50ms
             text-align: center
             vertical-align: middle
             background-color: #fff
-    .menu-elem.close
+    .menu-elem.none, .menu-elem.close
         pointer-events:none;
     //0th menu
     .menu-0
@@ -111,6 +108,8 @@ delay_unit = 50ms
         left: 0vw
         opacity: 0.9
         background-color: #fff
-        pointer-events: none;
+        //pointer-events: none;
         z-index: cover_z_index
+    .cover.disable
+        pointer-events: none;
         

@@ -191,7 +191,7 @@ export class Handler {
 		var p = new Builder.Payload();
 		p.type = ChannerProto.Payload.Type.PingRequest;
 		p.setPingRequest(req);
-		return this.send(p);//, null, true);
+		return this.send(p);
 	}
 	login = (user: string, mail: string, secret: string, pass?: string, rescue?: string): Q.Promise<Model> => {
 		var req = new Builder.LoginRequest();
