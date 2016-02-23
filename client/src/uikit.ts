@@ -8,6 +8,7 @@ import Q = require('q');
 export var m : _mithril.MithrilStatic = window.channer.m;
 var _L = window.channer.l10n.translate;
 var _LD = window.channer.l10n.translateDate;
+var Scroll = window.channer.parts.Scroll;
 
 interface PropCondition {
     init: any;
@@ -102,7 +103,7 @@ export class PropCollection implements Persistable {
 		}
 	}
 	write = (): string => {
-        var values = {}
+        var values: { [k:string]: any } = {}
         for (var k in this.props) {
             values[k] = this.props[k]();
         }
@@ -301,6 +302,7 @@ export class Template {
 
 export interface ModelCollection {
     map(fn: (m: any) => UI.Element): Array<any>;
+    fetch(page: number): void;
     refresh(): void;
     empty():boolean;
 }
@@ -315,21 +317,16 @@ export class ListComponent implements UI.Component {
         this.elemview = view;
         this.name = name;
         this.models = models;
-        if (!models) {
-            console.error("models invalid");
-        }
-        models.refresh();
 	}
     controller = (): any => {
         return this.models;
     }
     view = (models: ModelCollection): UI.Element => {
-        return m("div", {class: this.name + " listview"}, models.empty() ?
-            m("div", {class: "text"}, _L("no elements")) :  
-            models.map((model: any) => {
-                return this.elemview(models, model);
-            })
-        );
+        return m(".scroll-container", m.component(Scroll, {
+            class: this.name + " listview",
+            item: (model: any) => { return this.elemview(this.models, model); },
+            pageData: this.models.fetch
+        }));
     }
     refresh = () => {
         this.models.refresh();

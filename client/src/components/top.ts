@@ -33,20 +33,30 @@ class ChannelCollection implements ModelCollection {
 		//conn.watcher.subscribe(ChannerProto.Payload.Type.PostNotify, this.onpostnotify);
     }
     map = (fn: (m: ChannerProto.Model.Channel) => void): Array<any> => {
-        var ret: Array<any> = [];
-        for (var i = 1; i < 20; i++) {
-            ret.push(fn(this.channels[0]));
-        }
-        return ret;
+        return this.channels.map(fn);
     }
     empty = (): boolean => {
         return this.channels.length <= 0;
     }
     refresh = () => {
+        this.fetch(1);
+    }
+    fetch = (page: number) => {
+        console.error("fetch");
         var conn : Handler = window.channer.conn;
+        var ret: {
+            list: Array<ChannerProto.Model.Channel>;
+        } = { list: [] };
         conn.channel_list(this.category).then((r: ChannerProto.ChannelListResponse) => {
-            this.channels = r.list;
+            //for debug
+            for (var i = 1; i < 20; i++) {
+                ret.list.push(r.list[0]);
+                this.channels.push(r.list[0]);
+            }
         })
+        return () => {
+            return ret.list;
+        }
     }
 }
 export class TopController implements UI.Controller {

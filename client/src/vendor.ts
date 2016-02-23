@@ -10,6 +10,8 @@ window.m = undefined;
 window.channer.hash = require('jshashes');
 //UI parts from polythene and mithril-infinite
 window.channer.parts.Scroll = require('mithril-infinite');
+var styler = require('polythene/common/styler');
+styler.add("mithril-infinite", require('mithril-infinite/lib/mithril-infinite-style'))
 //these 2 are not for importing UI parts, 
 //but for apply correct theme to show polythene component correctly
 require('polythene/theme/theme');
