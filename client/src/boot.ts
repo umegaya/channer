@@ -75,15 +75,18 @@ window.channer.bootstrap = function (config: any) {
 		var last_url: string = window.channer.settings.values.last_url;
 		var start_url: string = last_url ? ("/login?next=" + last_url) : "/login"; 
         //typescript wrongly resolve m.route signature here. so explicit cast required.
+        var top = new window.channer.components.Top(c);
+        var login = new window.channer.components.Login(c);
+        var ch = new window.channer.components.Channel(c);
 		(<Router>m.route)(document.body, start_url, {
-			"/login":            new window.channer.components.Login(c),
+			"/login":            login,
 			"/rescue":           new window.channer.components.Rescue(c),
-			"/rescue/:rescue":   new window.channer.components.Login(c),
+			"/rescue/:rescue":   login,
 			"/help/:title":      new HelpComponent(c),
-            "/top":              new window.channer.components.Top(c),
-			"/top/:tab":         new window.channer.components.Top(c),
-			"/channel/:ch":      new window.channer.components.Channel(c),
-			"/channel/:ch/:tab": new window.channer.components.Channel(c),
+            "/top":              top,
+			"/top/:tab":         top,
+			"/channel/:ch":      ch,
+			"/channel/:ch/:tab": ch,
 			"/topic/:id":        new window.channer.components.Topic(c),
 		});
 	})

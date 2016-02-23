@@ -112,5 +112,17 @@
     },
     "$1 seconds": {
         "ja": "$1秒前"
+    },
+    "filter channel": {
+        "ja": "チャンネルを探す"
+    },
+    "create channel": {
+        "ja": "チャンネルの作成"
+    },
+    "Detail": {
+        "ja": "詳細設定"
+    },
+    "Back": {
+        "ja": "戻る"
     }
 }

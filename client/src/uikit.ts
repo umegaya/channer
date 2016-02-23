@@ -3,6 +3,7 @@
 import {Handler} from "./proto"
 import {MenuComponent, MenuElementComponent} from "./components/menu"
 import {ScrollComponent} from "./components/parts/scroll"
+import {Storage, StorageIO, Persistable} from "./storage"
 import Q = require('q');
 export var m : _mithril.MithrilStatic = window.channer.m;
 var _L = window.channer.l10n.translate;
@@ -21,12 +22,20 @@ export class PropConditions {
         [k:string]:PropCondition,
     }
 };
-export class PropCollection {
+export class PropCollection implements Persistable {
+    name: string;
+    save_scheduled: any;
     cond: PropConditions;
     props:{[k:string]: UI.Property<any>};
-    constructor(cond: PropConditions) {
+    constructor(name: string, cond: PropConditions) {
         this.props = {};
+        this.name = name;
+        this.save_scheduled = undefined;
         this.cond = cond;
+        this.init();
+    }
+    init = (clear?: boolean) => {
+        var cond = this.cond;
         for (var k in cond.required) {
             var ini = cond.required[k].init;
             this.create_prop(k, ini);
@@ -35,7 +44,71 @@ export class PropCollection {
             var ini = cond.optional[k].init;
             this.create_prop(k, ini);
         }
+        if (clear) {
+            window.channer.storage.open("form/" + this.name).then(
+                (io: StorageIO) => { return io.rm(); }
+            );
+        }
+        else {
+            //trigger redraw
+            this.loadprop().then(() => { 
+                m.endComputation(); 
+            }, (e: Error) => {
+            console.log("PropCollection init error by " + e.message);
+                m.endComputation();             
+            });
+        }
     }
+    clear = () => {
+        this.init(true);
+    }
+    private create_prop = (k: string, v: string|number) => {
+        this.props[k] = m.prop(v);
+    }
+    //storage IO
+    save = () => {
+        if (!this.save_scheduled) {
+            this.save_scheduled = setTimeout(this.saveprop, 1000);
+        }
+    }
+    private saveprop = (): Q.Promise<PropCollection> => {
+        console.log("save");
+        this.save_scheduled = undefined;
+        return window.channer.storage.open("form/" + this.name, {create: true})
+            .then(
+                (io: StorageIO) => { return io.write(this) },
+                (e: Error) => { console.log("save error: " + e.message)});
+    }
+    private loadprop = (): Q.Promise<PropCollection> => {
+        return window.channer.storage.open("form/" + this.name, {create: true})
+            .then((io: StorageIO) => { return io.read(this) });  
+    }
+    //implement persistable
+    type = () => {
+		return "text/plain";
+	}
+	read = (blob: string) => {
+		console.log("form blob:" + blob)
+		if (blob.length > 0) {
+			var loaded = JSON.parse(blob);
+            for (var k in loaded) {
+                if (!this.props[k]) {
+                    this.props[k] = m.prop(loaded[k]);
+                }
+                else {
+                    this.props[k](loaded[k]);
+                }
+            }
+		}
+	}
+	write = (): string => {
+        var values = {}
+        for (var k in this.props) {
+            values[k] = this.props[k]();
+        }
+		return JSON.stringify(values);
+	}
+    //validation
     check = (): {[k:string]:any} => {
         var verified: {[k:string]:string|number} = {};
         var cond = this.cond;
@@ -86,9 +159,6 @@ export class PropCollection {
             return cond.check(val);
         }
         return cond.check != val;
-    }
-    private create_prop = (k: string, v: string|number) => {
-        this.props[k] = m.prop(v);
     }
 };
 export class Util {

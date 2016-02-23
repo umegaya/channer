@@ -108,6 +108,7 @@ export class TopComponent extends BaseComponent {
             this.latest,
             this.popular,
         ]
+        console.error("topcomponent: ctor");
         this.create = new ChannelCreateComponent(this);
         this.filter = new ChannelFilterComponent(this);
         this.locale = new ChannelLocaleComponent(this);

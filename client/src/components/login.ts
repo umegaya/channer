@@ -105,13 +105,13 @@ function LoginView(ctrl: LoginController) : UI.Element {
             m(".logo", m(".title", "channer")),
             m.component(TextField, {
                 label: LoginController.DEFAULT_USER_NAME,
-                fullWidth: true,
+                floatingLabel: true,
                 required: true,
                 oninput: ctrl.user,
             }),
             m.component(TextField, {
                 label: LoginController.DEFAULT_MAIL_ADDR,
-                fullWidth: true,
+                floatingLabel: true,
                 oninput: ctrl.mail,
             }),
             m.component(Button, {

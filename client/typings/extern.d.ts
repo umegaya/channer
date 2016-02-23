@@ -65,6 +65,7 @@ interface ChannerModules {
         Button: UI.Component;
         TextField: UI.Component;
         Tabs: UI.Component;
+        Radio: UI.Component;
     }
     testtmp: any;
 }
