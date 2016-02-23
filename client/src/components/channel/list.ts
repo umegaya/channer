@@ -21,6 +21,7 @@ function ChannelInfoView(
     var options = Builder.Model.Channel.Options.decode(copied);
     var elems: Array<UI.Element> = [];
     elems.push(m(".title-h2.name", model.name));
+    elems.push(m(".desc", model.description || _L("no description")));
     elems.push(m(".attributes", [
         m(".attr", [
             m("img.clock"),
@@ -38,7 +39,6 @@ function ChannelInfoView(
             m(".idlevel.idlevel-" + options.identity, idlevel_text[options.identity])
         ),
     ]));
-    elems.push(m(".desc", model.description || _L("no description")));
     return m(".block", {
         id: "channel-" + model.id,
         href: "/channel/" + model.id,
