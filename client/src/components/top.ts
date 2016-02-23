@@ -32,8 +32,12 @@ class ChannelCollection implements ModelCollection {
         //TODO: handling notification from server.
 		//conn.watcher.subscribe(ChannerProto.Payload.Type.PostNotify, this.onpostnotify);
     }
-    map = (fn: (m: ChannerProto.Model.Channel) => void) => {
-        return this.channels.map(fn);
+    map = (fn: (m: ChannerProto.Model.Channel) => void): Array<any> => {
+        var ret: Array<any> = [];
+        for (var i = 1; i < 20; i++) {
+            ret.push(fn(this.channels[0]));
+        }
+        return ret;
     }
     empty = (): boolean => {
         return this.channels.length <= 0;

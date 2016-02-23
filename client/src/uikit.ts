@@ -214,46 +214,6 @@ export interface Router {
         routes: _mithril.MithrilRoutes<UI.Controller>): void;
 }
 export class Template {
-	static textinput(bind: UI.Property<string>, 
-        options: UI.Attributes, initval: string, textarea?:boolean) {
-		var value = bind();
-		var has_input = (value != initval); 
-     	return m(textarea ? "textarea": "input", {
-			oninput: m.withAttr("value", bind),
-			onfocus: function () { 
-				var v = bind();
-				if (v == initval) { 
-					bind(""); 
-					m.redraw();
-				} 
-			},
-			onblur: function () { 
-				var v = bind();
-				if (v == "") { 
-					bind(initval); 
-					m.redraw();
-				} 
-			},
-			type: (options.secure && has_input) ? "password" : "text",
-			value: value,
-        	class: options.class + " " + (has_input ? "active" : "not-active"),
-		});
-	}
-    static radio(options: UI.Attributes, name: string,
-        selects: [[number, string]], prop: UI.Property<number>): UI.Element {
-        var elems: Array<UI.Element> = [];
-        var current = prop();
-        for (var k in selects) {
-            var sel = selects[k];
-            var active = (sel[0] == current);
-            elems.push(m("button", { 
-                class: sel[1] + " " + (active ? "active" : "not-active"),
-                value: sel[0],
-                onclick: m.withAttr("value", prop),
-            }, sel[1]));
-        }
-        return m("div", options, elems);
-    }
     static date(d: Date, duration?:boolean) {
         var str: string;
         if (duration) {
@@ -286,30 +246,6 @@ export class Template {
     }
     static datebylong(long: any, duration?:boolean) {
         return Template.date(Util.long2date(<Long>long), duration);
-    }
-    static tab(
-        active: UI.Property<string>, 
-        tabs: {[k:string]:string}
-    ): UI.Element {
-        var a : string = active();
-        var elems: Array<UI.Element> = [];
-        for (var k in tabs) {
-            var v = tabs[k];
-            var activeness = (k == a) ? "active" : "not-active";
-            elems.push(m("div", {
-                value: k,
-                class: "tab-element " + activeness + " " + k,
-                onclick: m.withAttr("value", active),
-            }, m("div", {class: "label"}, v)));
-        }
-        return m("div", {class: "tab"}, elems);
-    } 
-    static pulldown(
-        list: [{key:string, value:any}], 
-        receiver: (v:string) => void): UI.Element {
-        return m(".pulldown", m.component(new ScrollComponent(), {
-            items: list,
-        }));
     }
     static header(): UI.Element {
         var elements : Array<UI.Element> = [];
@@ -369,13 +305,13 @@ export interface ModelCollection {
     empty():boolean;
 }
 export class ListComponent implements UI.Component {
-	elemview: (c: ModelCollection, m: any) => UI.Element;
+	elemview: (c: ModelCollection, model: any) => UI.Element;
     models: ModelCollection;
     name: string;
 
 	constructor(name: string, 
         models: ModelCollection, 
-        view: (c: ModelCollection, m: any) => UI.Element) {
+        view: (c: ModelCollection, model: any) => UI.Element) {
         this.elemview = view;
         this.name = name;
         this.models = models;
@@ -390,8 +326,8 @@ export class ListComponent implements UI.Component {
     view = (models: ModelCollection): UI.Element => {
         return m("div", {class: this.name + " listview"}, models.empty() ?
             m("div", {class: "text"}, _L("no elements")) :  
-            models.map((m: any) => {
-                return this.elemview(models, m);
+            models.map((model: any) => {
+                return this.elemview(models, model);
             })
         );
     }

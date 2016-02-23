@@ -15,7 +15,7 @@ delay_unit = 50ms
         width: menu_btn_w
         height: menu_btn_h
         z-index: menu_z_index
-        position: absolute
+        position: fixed
         top: menu_btn_y
         left: menu_btn_x
         border-radius: 50%
@@ -27,7 +27,7 @@ delay_unit = 50ms
     .main-container
         z-index: menu_elem_index
         width: 100%
-        position: absolute
+        position: fixed
         //customized layout setting for each contents
         .create //channel create
             margin-top: 7vh
@@ -35,7 +35,7 @@ delay_unit = 50ms
         pointer-events: none
     .menu-elem
         z-index: menu_z_index
-        position: absolute
+        position: fixed
         left: menu_btn_x + menu_btn_w - menu_elem_w
         width: menu_elem_w + balloon_icon_gap
         height: menu_elem_h
@@ -68,6 +68,7 @@ delay_unit = 50ms
             width: menu_elem_w - menu_btn_w - balloon_icon_gap
             text-align: center
             vertical-align: middle
+            background-color: #fff
     .menu-elem.none
         pointer-events:none;
     //0th menu
@@ -103,7 +104,7 @@ delay_unit = 50ms
     .menu-3.open
         transition-delay: delay_unit * 3
     .cover
-        position: absolute
+        position: fixed
         width: 100vw
         height: 100vh
         top: 0vh

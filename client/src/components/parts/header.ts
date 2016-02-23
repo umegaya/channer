@@ -16,11 +16,7 @@ export class HeaderController implements UI.Controller {
     }
 }
 export class HeaderComponent implements UI.Component {
-    pageY: number;
-    pageHeight: number;
 	constructor() {
-        this.pageY = 0;
-        this.pageHeight = window.innerHeight;
     }
 	controller = (): HeaderController => {
         return new HeaderController(this);
