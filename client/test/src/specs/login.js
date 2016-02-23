@@ -19,7 +19,7 @@ module.exports = {
             .assert.elementPresent('.login')
             .assert.elementPresent('.login .input-text.user')
             .assert.elementPresent('.login .input-text.mail')
-            .assert.elementPresent('.login .button-send-disabled')
+            .assert.elementPresent('.login button.disabled')
             .execute(function () {
                 if (window.channer.mobile) {
                     return ["should not be mobile"];
@@ -29,10 +29,10 @@ module.exports = {
                     return ["login component should be loaded correctly"];
                 }
                 var expect_keys = [
-                    "bootstrap", "conn", "config", "m", "ProtoBuf", 
+                    "bootstrap", "conn", "config", "m", "mtransit", "ProtoBuf", 
                     "timer", "settings", "push", "rawfs", "fs", "hash", "storage",
                     "patch", "mobile", "onResume", "onPause", "onPush", "components", 
-                    "testtmp"
+                    "testtmp", "l10n", "jsloader_promise"
                 ];
                 var found_count = 0;
                 for (var k in window.channer) {
@@ -51,29 +51,13 @@ module.exports = {
                 }
                 return this;
             })
-            .assert.containsText('.login .div-latency', 'ms')
-            .execute(function () {
-                window.channer.conn.debug_close(2);
-                return [false];
-            }, [], function (result) {
-                if (result.value[0]) {
-                    throw new Error(result.value[0]);
-                }
-                return this;                
-            })
-            .pause(common.TRANSITION_PAUSE)
-            .assert.elementNotPresent('.login .div-latency')
-            .assert.elementPresent('.login .div-wait-reconnect')
-            .pause(1000 * 4)
-            .assert.elementPresent('.login .div-latency')
-            .assert.elementNotPresent('.login .div-wait-reconnect')
             .perform(common.inputter('.login .mail', common.EMAIL))
             .pause(common.INPUT_PAUSE)
-            .assert.elementNotPresent('.login .button-send')
+            .assert.elementNotPresent('.login button.enabled')
             .perform(common.inputter('.login .user', common.USERNAME))
             .pause(common.INPUT_PAUSE)
-            .assert.elementPresent('.login .button-send')
-            .click('.login .button-send')
+            .assert.elementPresent('.login button.enabled')
+            .click('.login button.enabled')
             .pause(common.TRANSITION_PAUSE)
             .assert.elementNotPresent('.login')
             .assert.elementPresent('.top')
@@ -116,6 +100,22 @@ module.exports = {
                 }
                 return this;
             })
+            .assert.containsText('.header .latency', 'ms')
+            .execute(function () {
+                window.channer.conn.debug_close(2);
+                return [false];
+            }, [], function (result) {
+                if (result.value[0]) {
+                    throw new Error(result.value[0]);
+                }
+                return this;                
+            })
+            .pause(common.TRANSITION_PAUSE)
+            .assert.elementNotPresent('.header .latency')
+            .assert.elementPresent('.header .wait-reconnect')
+            .pause(1000 * 4)
+            .assert.elementPresent('.header .latency')
+            .assert.elementNotPresent('.header .wait-reconnect')
             .url(common.BASEURL + '#/rescue')
             .pause(common.LOAD_PAUSE)
             .execute(function (baseurl) {

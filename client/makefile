@@ -6,6 +6,9 @@ stop:
 	-@killall gulp
 	-@killall node
 
+locale:
+	node node_modules/json-locale/json-locale.js --keep=identity --localeFilter=en,ja,ko,zh_Hant,zh_Hans
+	
 setuptest:
 	@gulp webpack-watch &
 	@sleep 2

@@ -7,9 +7,26 @@ window.channer = {
 	components: {
         active: {},
     },
+    parts: {
+        
+    },
 	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
     testtmp: {},
 };
+
+function initfs(quota, bootstrap) {
+    if (navigator.webkitPersistentStorage) {
+        navigator.webkitPersistentStorage.requestQuota(quota, function(grantedBytes) {
+            window.requestFileSystem(window.PERSISTENT, grantedBytes, bootstrap);
+        }, function (e) {
+            console.log("initfs error:" + e);
+            setTimeout(initfs.bind(quota, bootstrap), 1);
+        }); 
+    }
+    else {
+         window.requestFileSystem(window.PERSISTENT, quota, bootstrap);
+    }
+}
 
 document.addEventListener("deviceready", function () {
 	var env = document.URL.match(/env=([^&]+)/);
@@ -23,22 +40,23 @@ document.addEventListener("deviceready", function () {
 	document.addEventListener("pause", function () {
 		window.channer.onPause.forEach(function (f){ f(); })			
 	});
-	window.requestFileSystem(window.PERSISTENT, 0, function(fs) {
+	initfs(50 * 1024 * 1024, function(fs) {
 		window.channer.rawfs = fs;
 		
-		if (window.environment.match(/dev/) && window.endpoint.match('http://localhost')) {
+		if (window.environment.match(/dev/) && 
+            window.endpoint.match('http://localhost') && 
+            window.location.hostname) {
 			window.endpoint = window.endpoint.replace("localhost", window.location.hostname);
 			console.log("replace endpoint to " + window.endpoint + " " + window.location.hostname);
 		}
 
-		var config_url = window.endpoint + "/assets/config.json";
 		var ft = new FileTransfer();
 		function alert_bad_network(error) {
 			try {
-				throw new Error("dummy");
+				throw new Error((error && error.message) ? error.message : "dummy");
 			}
 			catch (e) {
-				console.log("env = " + window.environment);
+				console.log("env = " + window.environment + "|" + window.channer.mobile);
 				alert("this device under bad network connection. " + 
 					"go to the place where provides good connection, then retry. " + 
 					"error at " + e.stack);
@@ -48,6 +66,7 @@ document.addEventListener("deviceready", function () {
 			if (error) {
 				alert_bad_network(error);
 			}
+		    var config_url = window.endpoint + "/assets/config.json";
 			try {
 				ft.download(encodeURI(config_url), fs.root.toURL() + "config.json.next", function(entry) {
 					if (window.environment.match(/chaos/) && Math.random() < 0.1) {
@@ -66,7 +85,7 @@ document.addEventListener("deviceready", function () {
 					});				
 				}, function (e) {
 					//retry download
-					console.log("download error:" + e.code + "|" + window.endpoint);
+					console.log("download error:" + e.code + "|" + config_url);
 					launch(e);
 				});
 			}
@@ -153,7 +172,34 @@ document.addEventListener("deviceready", function () {
 				load_patch_script(new_url);
 			});			
 		}
-		launch();
+		fs.root.getFile("pg_devapp_config.json", null, function (entry) {
+			entry.file(function (file) {    
+                console.log("entry file:" + entry.toURL());
+				var reader = new FileReader();
+				reader.onloadend = function (event) {
+					try {
+                        console.log("entry contents:" + reader.result);
+						var devapp_config = JSON.parse(reader.result);
+						if (devapp_config.address) {
+							var m = devapp_config.address.match(/([^:]+):?[0-9]*/);
+							if (m) {
+                                console.log("pg settings: " + m[1]);
+								window.endpoint = window.endpoint.replace("localhost", m[1]);
+								console.log("use devapp config: replace endpoint to " + window.endpoint);
+							}
+						}
+					}
+					catch (e) {
+					}
+					launch();
+				}
+			    reader.readAsText(file);
+			}, function (err) {
+				launch();
+			});
+		}, function (err) {
+			launch();
+		});
 	});
 });
 

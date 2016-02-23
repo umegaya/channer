@@ -14,6 +14,7 @@ declare namespace UI {
     
     interface Attributes extends _mithril.MithrilAttributes {
         id?: string;
+        secure?: string;
     }
     	
 	interface Component {
@@ -22,6 +23,6 @@ declare namespace UI {
 	}
 	
 	interface ComponentFactory {
-		new (config: any): Component;
+		new (...args: any[]): Component;
 	}
 }

@@ -35,11 +35,11 @@
     "anonymous": {
         "ja": "名無しさん"
     },
-    "choose identity level": {
-        "ja": "投稿者の匿名性のレベルを選んでください"
+    "identity level": {
+        "ja": "投稿者の匿名性レベル"
     },
-    "choose display style": {
-        "ja": "投稿の表示のされ方を選んでください"
+    "display style": {
+        "ja": "投稿の表示のされ方"
     },
     "user name": {
         "ja": "ユーザー名"
@@ -85,5 +85,44 @@
     },
     "+": {
         "ja": "+"
+    },
+    "Create new channel": {
+        "ja": "チャンネルの作成"
+    },
+    "detail": {
+        "ja": "詳細"
+    },
+    "no description": {
+        "ja": "説明はありません"
+    },
+    "dismiss": {
+        "ja": "消去"
+    },
+    "do it now": {
+        "ja": "今すぐ実行"
+    },
+    "$1 days": {
+        "ja": "$1日前"
+    },
+    "$1 hours": {
+        "ja": "$1時間前"
+    },
+    "$1 minutes": {
+        "ja": "$1分前"
+    },
+    "$1 seconds": {
+        "ja": "$1秒前"
+    },
+    "filter channel": {
+        "ja": "チャンネルを探す"
+    },
+    "create channel": {
+        "ja": "チャンネルの作成"
+    },
+    "Detail": {
+        "ja": "詳細設定"
+    },
+    "Back": {
+        "ja": "戻る"
     }
 }

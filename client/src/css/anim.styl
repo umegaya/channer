@@ -1,0 +1,26 @@
+//keyframe definition for animation
+@keyframes fadeOut {
+	from { 
+    }
+	to {
+        opacity: 0 
+    }
+}
+@keyframes fadeIn {
+	from { 
+        transform: translateY(-10px);         
+        opacity: 0 
+    }
+	to { 
+        opacity: 1
+    }
+}
+
+
+
+//class for transit animation
+.transition-in
+	animation: fadeIn .4s ease both;
+
+.transition-out
+	animation: fadeOut .4s ease both;

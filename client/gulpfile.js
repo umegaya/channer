@@ -1,5 +1,7 @@
 /* global __dirname */
 /* global process */
+var fs = require('fs');
+var path = require('path');
 var gulp = require('gulp');
 var exec = require('gulp-exec');
 var rename = require('gulp-rename');
@@ -29,9 +31,33 @@ var execReportOptions = {
     stdout: false // default = true, false means don't write stdout
 };
 
+var UNICODE_LOCALE_URL = 'http://www.unicode.org/repos/cldr-aux/json/22.1/main/';
+var LOCALE_PATH = './src/l10n';
+
 //
 // gulp tasks
 //
+
+// update locale settings
+gulp.task('locale', function () {
+    var supported = JSON.parse(fs.readFileSync(LOCALE_PATH + '/supported.json'));
+    for (var k in supported) {
+        try {
+            fs.openSync(LOCALE_PATH + '/lang/' + supported[k] + '.json', 'wx');
+        }
+        catch (e) {
+            console.log("error:" + e);
+        }
+        finally {
+        }
+    }
+    return gulp.src(LOCALE_PATH + '/lang/*.json')
+        .pipe(exec("curl " 
+            + UNICODE_LOCALE_URL 
+            + "<%= options.basenamer(file.path) %> | node node_modules/json/lib/json.js localeDisplayNames.languages > <%= file.path %>", {
+                basenamer: path.basename,
+            }));
+});
 
 // generate JSON files for proto files. 
 gulp.task('proto-json', function () {

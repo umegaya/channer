@@ -131,9 +131,22 @@ export class FS {
         var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
         var scriptTag = document.createElement('script');
         scriptTag.onload = function (event : any) {
-            df.resolve(js);
+            console.log("JS loaded:" + js.toURL());
+            if (window.channer.jsloader_promise) {
+                console.log("JS set promise. wait this promise finished");
+                window.channer.jsloader_promise.then((ret: any) => {
+                    df.resolve(js);
+                }, (e: Error) => {
+                    df.reject(e);
+                });
+                window.channer.jsloader_promise = null;
+            }
+            else {
+                df.resolve(js);
+            }
         }
         scriptTag.onerror = function (event: any) {
+            console.log("err:" + js.toURL() + "|" + event.message);
             df.reject(event);
         }
         scriptTag.type = "text/javascript";

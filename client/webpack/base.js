@@ -34,6 +34,8 @@ module.exports = function (settings) {
                 long: __root + "/node_modules/protobufjs/node_modules/bytebuffer/node_modules/long/dist/Long.js",
                 ByteBuffer: __root + "/node_modules/protobufjs/node_modules/bytebuffer/dist/ByteBufferAB.js",
                 bytebuffer: __root + "/node_modules/protobufjs/node_modules/bytebuffer/dist/ByteBufferAB.js",
+                "mithril.animate": __root + "/node_modules/mithril.animate/dist/mithril.animate.js",
+                "mithril.bindings": __root + "/node_modules/mithril.animate/node_modules/mithril.bindings/dist/mithril.bindings.js"
             }
         },
         node: {
@@ -46,9 +48,10 @@ module.exports = function (settings) {
                 {test: /\.json$/,   loader: 'raw-loader'},
                 {test: /\.css$/,    loader: 'css-loader'},
                 {test: /\.styl$/,   loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'},
-                {test: /\.(png|gif|jpe?g)$/, loader: 'file-loader'},
+                {test: /\.svg$/,    loader: 'url-loader?mimetype=image/svg+xml&limit=10000&name=[hash:6].[ext]' },
+                {test: /\.gif$/,     loader: 'url-loader?mimetype=image/gif&limit=100000&name=[hash:6].[ext]' },
                 {test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url?limit=10000&minetype=application/font-woff'},
-                {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file'}
+                {test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file'}
             ]
         },
         plugins: [

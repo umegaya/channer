@@ -1,11 +1,16 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
 import {m, Util, Template, PropConditions, PropCollection} from "../../uikit"
+import {TopComponent} from "../top"
+import {MenuElementComponent} from "../menu"
 import {Config} from "../../config"
 import {Handler, Builder} from "../../proto"
 import {ProtoError} from "../../watcher"
+import {RadioComponent} from "../parts/radio"
+import {TextFieldComponent} from "../parts/textfield"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
+var Button = window.channer.parts.Button;
 
 var idlevel_text : { [t:number]:string } = {
     [ChannerProto.Model.Channel.IdentityLevel.Topic]: 
@@ -68,15 +73,17 @@ var cond: PropConditions = {
 
 export class ChannelCreateController implements UI.Controller {
 	component: ChannelCreateComponent;
-    input: PropCollection;
+    show_advanced: boolean;
+    oncreate: (ch: ChannerProto.Model.Channel) => void;
 
 	constructor(component: ChannelCreateComponent) {
 		this.component = component;
-        this.input = new PropCollection(cond);
+        this.show_advanced = false;
+        this.oncreate = component.parent<TopComponent>().oncreate;
 	}
     onsend = () => {
         var conn: Handler = window.channer.conn;
-        var vals = this.input.check();
+        var vals = this.component.input.check();
         if (vals) {
             var options = new Builder.Model.Channel.Options();
             options.anonymous_name = vals["anon"];
@@ -86,75 +93,141 @@ export class ChannelCreateController implements UI.Controller {
             conn.channel_create(vals["name"], vals["desc"], vals["style"], options)
             .then((r: ChannerProto.ChannelCreateResponse) => {
                 console.log("new channel create:" + r.channel.id);
+                this.component.input.clear(); //cleanup input data
+                this.oncreate(r.channel);
                 Util.route("/channel/" + r.channel.id);
             }, (e: ProtoError) => {
                 console.log("error:" + e.message);
             });
         }
     }
+    on_advanced_settings = () => {
+        this.show_advanced = !this.show_advanced;
+    }
+    onchange = (v: any) => {
+        this.component.input.save();
+    }
     sendready = ():boolean => {
-        return !!this.input.check();
+        return !!this.component.input.check();
     }
 }
 function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
 	var elements : Array<UI.Element> = []; 
-    var props = ctrl.input.props;
-    elements.push(Template.textinput(props["name"], 
-        {class: "input-text name"}, texts.DEFAULT_NAME));
-    elements.push(Template.textinput(props["anon"], 
-        {class: "input-text anon"}, texts.DEFAULT_ANONYMOUS));
-    elements.push(m("div", {class: "div-title id-level"}, _L("choose identity level")));
-    //idlevel radiobox
-    var idlevel = props["idlevel"];
-    elements.push(Template.radio({
-        class: "radio-options id-level",
-    }, "id-level", [
-        [ChannerProto.Model.Channel.IdentityLevel.None, "none"],
-        [ChannerProto.Model.Channel.IdentityLevel.Topic, "topic"],
-        [ChannerProto.Model.Channel.IdentityLevel.Channel, "channel"],
-        [ChannerProto.Model.Channel.IdentityLevel.Account, "account"],
-    ], idlevel));
-    var idl = idlevel();
-    if (idl != ChannerProto.Model.Channel.IdentityLevel.Unknown) {
-        elements.push(m("div", {class: "div-text id-level"}, idlevel_text[idl]));
+    var props = ctrl.component.input.props;
+    console.log("name/desc:" + props["name"]() + "|" + props["desc"]());
+    if (!ctrl.show_advanced) {
+        elements.push(m(".block", [
+            m.component(TextFieldComponent, {
+                label: texts.DEFAULT_NAME,
+                required: true,
+                multiline: true,
+                rows: 2,
+                value: props["name"],
+                onchange: ctrl.onchange,
+            }),
+            m.component(TextFieldComponent, {
+                label: texts.DEFAULT_DESCRIPTION,
+                multiline: true,
+                rows: 3,
+                value: props["desc"],
+                onchange: ctrl.onchange,
+            }),
+        ]));
     }
-    //disp radiobox
-    var disp = props["display"];
-    elements.push(m("div", {class: "div-title display-style"}, _L("choose display style")));
-    elements.push(Template.radio({
-        id: "display-style",
-        class: "radio-options display-style",
-    }, "display-style", [
-        [ChannerProto.Model.Channel.TopicDisplayStyle.Tail, "tail"],
-        [ChannerProto.Model.Channel.TopicDisplayStyle.Tree, "tree"],
-    ], disp));
-    var d = disp();
-    if (d != ChannerProto.Model.Channel.TopicDisplayStyle.Invalid) {
-        elements.push(m("div", {
-            class: "div-text display-style"
-        }, display_text[d]));
-    }
-    //postlimit, styl, textarea
-    elements.push(Template.textinput(props["postlimit"], 
-        {class: "input-text postlimit"}, texts.DEFAULT_POST_LIMIT));
-    elements.push(Template.textinput(props["style"], 
-        {class: "input-text style"}, texts.DEFAULT_STYLE_URL));
-    elements.push(m("textarea", {class: "textarea"}, props["desc"]()));
-    //send button
-    elements.push(m("button", {
-        onclick: ctrl.onsend,
-        class: ctrl.sendready() ? "button-send" : "button-send-disabled", 
-    }, _L("Create")));
-	return m("div", {class: "create"}, elements);
-}
-export class ChannelCreateComponent implements UI.Component {
-	controller: () => ChannelCreateController;
-	view: UI.View<ChannelCreateController>;
+    else {
+        //idlevel radiobox
+        var idlevel = props["idlevel"];
+        var idlevel_block = [m(".title", _L("identity level"))];
+        idlevel_block.push(m.component(RadioComponent, {
+            name: "id-level",
+            elements: {
+                none: ChannerProto.Model.Channel.IdentityLevel.None,
+                topic: ChannerProto.Model.Channel.IdentityLevel.Topic,
+                channel: ChannerProto.Model.Channel.IdentityLevel.Channel,
+                account: ChannerProto.Model.Channel.IdentityLevel.Account,
+            },
+            prop: idlevel,
+            onchange: ctrl.onchange,
+        }));
+        var idl = idlevel();
+        if (idl != ChannerProto.Model.Channel.IdentityLevel.Unknown) {
+            idlevel_block.push(m("div", {class: "explaination"}, idlevel_text[idl]));
+        }
+        elements.push(m("div", {class: "block id-level"}, idlevel_block));
 
-	constructor() {
+        //disp radiobox
+        var disp = props["display"];
+        var disp_block = [m(".title", _L("display style"))];
+        disp_block.push(m.component(RadioComponent, {
+            name: "radio-options",
+            elements: {
+                tail: ChannerProto.Model.Channel.TopicDisplayStyle.Tail,
+                tree: ChannerProto.Model.Channel.TopicDisplayStyle.Tree,
+            },
+            prop: disp,
+            onchange: ctrl.onchange,
+        }));
+        var d = disp();
+        if (d != ChannerProto.Model.Channel.TopicDisplayStyle.Invalid) {
+            disp_block.push(m("div", {class: "explaination"}, display_text[d]));
+        }
+        elements.push(m(".block.display-style", disp_block));
+
+        //anon signature
+        elements.push(m.component(TextFieldComponent, {
+            label: texts.DEFAULT_ANONYMOUS,
+            value: props["anon"],
+            onchange: ctrl.onchange,
+        }));
+        //postlimit, styl, textarea
+        elements.push(m.component(TextFieldComponent, {
+            label: texts.DEFAULT_POST_LIMIT,
+            value: props["postlimit"],
+            onchange: ctrl.onchange,
+        }));
+        elements.push(m.component(TextFieldComponent, {
+            label: texts.DEFAULT_STYLE_URL,
+            value: props["style"],
+            onchange: ctrl.onchange,
+        }));
+    }
+    //send button
+    elements.push(m(".buttons", [
+        m.component(Button, {
+            class: "send",
+            label: _L("Create"),
+            disabled: !ctrl.sendready(), 
+            events: {
+                onclick: ctrl.onsend,
+            }
+        }),
+        m.component(Button, {
+            class: "detail",
+            label: ctrl.show_advanced ? _L("Back") : _L("Detail"),
+            events: {
+                onclick: ctrl.on_advanced_settings,
+            }
+        })
+    ]));
+    return m(".create", elements);
+}
+export class ChannelCreateComponent extends MenuElementComponent {
+	controller: (args?: any) => ChannelCreateController;
+	view: UI.View<ChannelCreateController>;
+    input: PropCollection;
+
+	constructor(parent: TopComponent) {
+        super(parent);
 		this.view = ChannelCreateView;
+        this.input = new PropCollection("channel-create", cond);
 		this.controller = () => {
 			return new ChannelCreateController(this);
 		}
 	}
+    iconview = (): UI.Element => {
+        return this.format_iconview("img.create_channel", _L("create channel"));
+    }
+    name = (): string => {
+        return "channel create";
+    }
 }

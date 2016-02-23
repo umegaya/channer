@@ -24,6 +24,8 @@ export class Handler {
 	private last_auth: number;
 	private deactivate_limit_ms: number;
 	private timer: Timer;
+    private reconnect_attempt: number;
+    private reconnect_wait: number;
 	constructor(url: string, timer: Timer) {
 		this.url = url;
 		this.msgid_seed = 0;
@@ -33,6 +35,8 @@ export class Handler {
 		this.deactivate_limit_ms = 0;
 		this.timer = timer;
         this.querying = false;
+        this.reconnect_attempt = 0;
+        this.reconnect_wait = 0;
 	}
 	private new_msgid = (): number => {
 		this.msgid_seed++;
@@ -103,7 +107,10 @@ export class Handler {
 		var current = m.route();
 		if (!current.match(/^\/(login|rescue)/)) {
 			console.log("re-authenticate current url:" + current);
-			Util.route("/login?next=" + current, true);
+			Util.route("/login?next=" + current, null, {
+                route_only: true,
+                replace_history: true,
+            });
 		}		
 	}
 	private onopen = () => {
@@ -148,6 +155,17 @@ export class Handler {
     connected = (): boolean => {
         return this.socket.connected();
     }
+    connecting = (): boolean => {
+        return this.socket.connecting();
+    }
+    reconnect_enabled = (): boolean => {
+        return Timer.now() > this.reconnect_wait;
+    }
+    reconnect_now = () => {
+        this.socket.set_reconnect_duration(0);
+        this.reconnect_attempt++;
+        this.reconnect_wait = Timer.now() + (3000 * this.reconnect_attempt);
+    }
 	resume = () => {
 		console.log("handler start");
 		this.stop_deactivate();
@@ -173,7 +191,7 @@ export class Handler {
 		var p = new Builder.Payload();
 		p.type = ChannerProto.Payload.Type.PingRequest;
 		p.setPingRequest(req);
-		return this.send(p);
+		return this.send(p);//, null, true);
 	}
 	login = (user: string, mail: string, secret: string, pass?: string, rescue?: string): Q.Promise<Model> => {
 		var req = new Builder.LoginRequest();
@@ -181,11 +199,16 @@ export class Handler {
 		if (device_id && device_id.length > 0) {
 			req.device_id = device_id;
 		}
+        else if (window.channer.mobile) {
+            req.device_id = device.uuid;
+        }
+        req.device_type = device.platform;
 		req.version = window.channer.config.client_version;
 		req.id = window.channer.settings.values.account_id || null;
 		req.user = user;
 		req.mail = mail;
 		req.walltime = Timer.now();
+        console.log("data:" + req.user + "|" + req.mail);
 		if (secret) {
 			if (!req.id) {
 				return this.send(null, ChannerProto.Error.Type.Login_BrokenClientData);

@@ -16,26 +16,35 @@ export class StorageIO {
 		this.entry = entry;
 		this.fs = fs;
 	}
-	write = (f: Persistable): Q.Promise<Persistable> => {
+    private writeblob = (blob: Blob, 
+        onsuccess?: () => void, onerror?: (e: Error) => void) => {
 		var df : Q.Deferred<Persistable> = Q.defer<Persistable>();
 		this.fs.writefile(this.entry).then((w: FileWriter) => {
 			try {
-				var blob = new Blob([f.write()], {type:f.type()});
 				w.onwriteend = function(e: ProgressEvent) {
 					w.onwriteend = null;
 					w.truncate(w.position);
-					df.resolve(f);
+					onsuccess && onsuccess();
 				};
 				w.write(blob);
 			}
 			catch (e) {
-				df.reject(e);
+				onerror && onerror(e);
 			}
 		}, (e: Error) => {
-			df.reject(e);
-		})
+			onerror && onerror(e);
+		});
+    }
+	write = (f: Persistable): Q.Promise<Persistable> => {
+		var df : Q.Deferred<Persistable> = Q.defer<Persistable>();
+		var blob = new Blob([f.write()], {type:f.type()});
+        this.writeblob(blob, () => { df.resolve(f); }, (e: Error) => { df.reject(e)});
 		return df.promise;
 	}
+    truncate = () => {
+        var blob = new Blob([], {type: "text/plain"});
+        this.writeblob(blob);
+    }
 	read = (f: Persistable): Q.Promise<Persistable> => {
 		var df : Q.Deferred<Persistable> = Q.defer<Persistable>();
 		this.fs.readfile(this.entry).then((r: string) => {
@@ -62,6 +71,25 @@ export class Storage {
 		this.fs = fs;
 	}
 	open = (path: string, options?: Flags): Q.Promise<StorageIO> => {
+        var dirs: Array<string> = path.split("/");
+        if (dirs.length > 1) {
+            var dir = dirs[0];
+            console.log("opendir0:" + dir);
+            var p: Q.Promise<DirectoryEntry> = this.fs.opendir(dir, {create: true});
+            for (var i = 1; i < (dirs.length - 1); i++) {
+            console.log("opendir" + i + ":" + dir);
+                p = p.then(() => {
+                    dir = dir + "/" + dirs[i];
+                    return this.fs.opendir(dir, {create: true});
+                });
+            }
+            return p.then(() => {
+                return this.openfile(path, options);
+            });
+        }
+        return this.openfile(path, options);
+    }
+    openfile = (path: string, options?: Flags): Q.Promise<StorageIO> => {
 		var df : Q.Deferred<StorageIO> = Q.defer<StorageIO>();
 		this.fs.openfile(path, options).then((e: FileEntry) => {
 			df.resolve(new StorageIO(e, this.fs));

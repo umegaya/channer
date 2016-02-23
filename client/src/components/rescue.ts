@@ -36,9 +36,9 @@ export class RescueController implements UI.Controller {
 	} 
 }
 function RescueView(ctrl: RescueController) : UI.Element {
-	var elems = Template.header();
-    elems.push(m("div", {class: "div-text guide"}, 
-        _L("open below url with the device you want to login with same account.")));
+	var elems = [m("div", {class: "div-text guide"}, 
+        _L("open below url with the device you want to login with same account."))
+    ];
 	var remain_nano = ctrl.remain_time();
 	if (remain_nano > 0) {
 		var hours = Math.floor((remain_nano / (1000000000 * 60 * 60)) * 10) / 10;
@@ -52,7 +52,7 @@ function RescueView(ctrl: RescueController) : UI.Element {
 			class: "button-send", 
 		}, _L("Send")),
 	]);
-	return m("div", {class: "rescue"}, elems);
+	return [Template.header(), m("div", {class: "rescue"}, elems)];
 }
 export class RescueComponent implements UI.Component {
 	controller: () => RescueController;
