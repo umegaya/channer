@@ -14,7 +14,7 @@ export class TextFieldOptions {
 export var TextFieldComponent: UI.Component = {
     view: (ctrl: any, options: TextFieldOptions): UI.Element => {
         if (!options.hasOwnProperty("floatingLabel")) {
-            options.floatingLabel = true;
+            options.floatingLabel = true;//!window.channer.mobile;
         }
         if (options.hasOwnProperty("value") && 
             !(typeof options.value === "undefined")) {
