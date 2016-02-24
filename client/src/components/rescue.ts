@@ -1,23 +1,20 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, Template} from "../uikit"
+import {m, Util, Pagify, PageComponent} from "../uikit"
 import {Config} from "../config"
 import {ProtoError} from "../watcher"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 
 export class RescueController implements UI.Controller {
-	component: RescueComponent;
 	url: UI.Property<string>;
 	remain_time: UI.Property<number>;
-	constructor(component: RescueComponent) {
-		Util.active(this, component);
-		this.component = component;
+	constructor() {
 		this.url = m.prop("");
 		this.remain_time = m.prop(0);
 		this.generate_rescue_url();
 	}
-	generate_rescue_url = () => {
+	private generate_rescue_url() {
 		window.channer.conn.rescue()
 		.then((r: ChannerProto.RescueResponse) => {
 			console.log("rescue success!:" + r.url + "|" + r.remain);
@@ -52,18 +49,16 @@ function RescueView(ctrl: RescueController) : UI.Element {
 			class: "button-send", 
 		}, _L("Send")),
 	]);
-	return [Template.header(), m("div", {class: "rescue"}, elems)];
-}
-export class RescueComponent implements UI.Component {
-	controller: () => RescueController;
-	view: UI.View<RescueController>;
-
-	constructor(config: Config) {
-		this.view = RescueView;
-		this.controller = () => {
-			return new RescueController(this);
-		}
-	}
+	return m("div", {class: "rescue"}, elems);
 }
 
-window.channer.components.Rescue = RescueComponent
+class RescueComponent extends PageComponent {
+    controller = (): RescueController => {
+        return new RescueController();        
+    }
+    view = (ctrl: RescueController): UI.Element => {
+        return RescueView(ctrl);
+    }
+}
+
+window.channer.components.Rescue = Pagify(RescueComponent);

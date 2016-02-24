@@ -47,18 +47,11 @@ interface ChannerModules {
 	onPause: Array<() => void>;
 	onPush: Array<(resp:any) => void>;/*PushReceiver*/
 	components: {
-		Login: UI.ComponentFactory;
-		Rescue: UI.ComponentFactory;
-		Top: UI.ComponentFactory;
-		Compose: UI.ComponentFactory;
-		Topic: UI.ComponentFactory;
-		Channel: UI.ComponentFactory;
-		Edit: UI.ComponentFactory;
-        Menu: UI.ComponentFactory;
-        active: {
-            component: UI.Component;
-            ctrl: UI.Controller;
-        }
+		Login: UI.Component;
+		Rescue: UI.Component;
+		Top: UI.Component;
+		Topic: UI.Component;
+		Channel: UI.Component;
 	}
     parts: {
         Scroll: UI.Component;

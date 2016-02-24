@@ -17,7 +17,6 @@ module.exports = function (settings) {
             login: "./src/components/login.ts",
             topic: "./src/components/topic.ts",
             rescue: "./src/components/rescue.ts",
-            compose: "./src/components/compose.ts",
         },
         output: {
             path: __root + "/www/assets",

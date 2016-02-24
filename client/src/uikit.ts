@@ -2,7 +2,7 @@
 
 import {Handler} from "./proto"
 import {MenuComponent, MenuElementComponent} from "./components/menu"
-import {ScrollComponent} from "./components/parts/scroll"
+import {HeaderComponent} from "./components/parts/header"
 import {Storage, StorageIO, Persistable} from "./storage"
 import Q = require('q');
 export var m : _mithril.MithrilStatic = window.channer.m;
@@ -163,11 +163,6 @@ export class PropCollection implements Persistable {
     }
 };
 export class Util {
-	static active(ctrl: UI.Controller, component: UI.Component) {
-        var current = window.channer.components.active;
-		current.component = component;
-		current.ctrl = ctrl;
-	}
 	static route(dest: string, params?: any, options?: {
             route_only?: boolean; 
             replace_history?: boolean; 
@@ -308,31 +303,25 @@ export interface ModelCollection {
 }
 export class ListComponent implements UI.Component {
 	elemview: (c: ModelCollection, model: any) => UI.Element;
-    models: ModelCollection;
-    name: string;
-
-	constructor(name: string, 
-        models: ModelCollection, 
-        view: (c: ModelCollection, model: any) => UI.Element) {
+	constructor(view: (c: ModelCollection, model: any) => UI.Element) {
         this.elemview = view;
-        this.name = name;
-        this.models = models;
 	}
     controller = (): any => {
-        return this.models;
+        return null;
     }
-    view = (models: ModelCollection): UI.Element => {
-        return m(".scroll-container", m.component(Scroll, {
-            class: this.name + " listview",
-            item: (model: any) => { return this.elemview(this.models, model); },
-            pageData: this.models.fetch
-        }));
+    mkoption = (models: ModelCollection, options?: any): UI.Attributes => {
+        var base = options || {}
+        base.name = base.name || "";
+        base.class = base.class || (base.name + " listview");
+        base.item = base.item || ((model: any) => { return this.elemview(models, model); });
+        base.pageData = base.pageData || models.fetch;
+        return base;
     }
-    refresh = () => {
-        this.models.refresh();
+    view = (ctrl: any, models: ModelCollection, options?: any): UI.Element => {
+        return m(".scroll-container", m.component(Scroll, this.mkoption(models, options)));
     }
 }
-export class BaseComponent implements UI.Component {
+class BaseComponent implements UI.Component {
     static transit = window.channer.mtransit({
         anim: (last: Element, next: Element, dir: string, 
             cblast: () => void, cbnext: () => void) => {
@@ -345,37 +334,42 @@ export class BaseComponent implements UI.Component {
             next.classList.add('transition-in');
         } 
     });
-    mc: MenuComponent;
     checked: boolean;
-    name: string;
-    constructor() {
+    hasmenu: boolean;
+    content: PageComponent;
+    constructor(c: PageComponent) {
+        this.content = c;
     }
-    controller = (): any => {
-        throw new Error("override this");
+    view = (): UI.Element => {
+        if (!this.checked) {
+            if (this.content.menus() != null) {
+                this.hasmenu = true;
+            }
+            this.checked = true;
+        }
+        var tmp: [any] = [m.component(HeaderComponent)];
+        if (this.hasmenu) {
+            tmp.push(m.component(MenuComponent, this.content));
+        }
+        tmp.push(m.component(this.content));
+        return m(".screen", <UI.Attributes>{
+            config: BaseComponent.transit, key: m.route()
+        }, tmp);        
     }
-    view = (ctrl: UI.Controller): UI.Element => {
+}
+
+export class PageComponent implements UI.PageComponent {
+    view = (ctrl?: any): UI.Element => {
         throw new Error("override this");
     }
     menus = (): Array<MenuElementComponent> => {
         return null;
     }
-    layout = (contents?: UI.Element): UI.Element => {
-        if (!this.checked && !this.mc) {
-            var menus = this.menus();
-            if (menus != null) {
-                this.mc = new MenuComponent(menus);
-            }
-            this.checked = true;
-        }
-        var tmp: [any] = [Template.header()];
-        if (this.mc) {
-            tmp.push(this.mc);
-        }
-        if (contents) {
-            tmp.push(contents);
-        }
-        return m(".screen", <UI.Attributes>{
-            config: BaseComponent.transit, key: m.route()
-        }, tmp);
-    }
+}
+export interface PageFactory {
+    new(): PageComponent;
+}
+
+export function Pagify(pf: PageFactory): BaseComponent {
+    return new BaseComponent(new pf());
 }

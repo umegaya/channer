@@ -1,6 +1,6 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, BaseComponent, ListComponent} from "../uikit"
+import {m, Pagify, PageComponent, ListComponent} from "../uikit"
 import {MenuElementComponent, TransitMenuElementComponent} from "./menu"
 import {Config} from "../config"
 
@@ -12,7 +12,6 @@ export class ChannelController implements UI.Controller {
 	}
 	constructor(component: ChannelComponent) {
 //        console.log("channel")
-		Util.active(this, component);
 		this.component = component;
 		this.selected = "joins";
 		this.tab_contents = {
@@ -45,29 +44,33 @@ export class ChannelController implements UI.Controller {
 	}
 }
 function ChannelView(ctrl: ChannelController) : UI.Element {
-	return ctrl.component.layout([
+	return m(".channel", [
 		ctrl.tabs(),
 		ctrl.activetab(),
 	]);
 }
-export class ChannelComponent extends BaseComponent {
-	controller: () => ChannelController;
-	view: UI.View<ChannelController>;
+export class ChannelComponent extends PageComponent {
     id: string;
     //menu components
     top: TransitMenuElementComponent
 
-	constructor(config: Config) {
+	constructor() {
         super();
 		this.view = ChannelView;
         this.top = new TransitMenuElementComponent(
-            this, "img.home", "go to top", "/top"
+            "img.home", "go to top", "/top"
         );
 		this.controller = () => {
             this.id = m.route.param("ch");
 			return new ChannelController(this);
 		}
 	}
+    view = (ctrl: ChannelController): UI.Element => {
+        return ChannelView(ctrl);
+    }
+    controller = (): ChannelController => {
+        return new ChannelController(this);
+    }
     menus = (): Array<MenuElementComponent> => {
         return [
             this.top
@@ -75,4 +78,4 @@ export class ChannelComponent extends BaseComponent {
     }
 }
 
-window.channer.components.Channel = ChannelComponent
+window.channer.components.Channel = Pagify(ChannelComponent);

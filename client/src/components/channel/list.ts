@@ -2,7 +2,6 @@
 
 import {m, Template, Util, ListComponent, ModelCollection} from "../../uikit"
 import {Handler, Builder} from "../../proto"
-import {Model, ProtoError} from "../../watcher"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 
@@ -45,8 +44,9 @@ function ChannelInfoView(
         onclick: m.withAttr("href", Util.route),
     }, elems);
 }
-export class ChannelListComponent extends ListComponent {
-    constructor(name: string, models: ModelCollection) {
-        super(name, models, ChannelInfoView);
+class _ChannelList extends ListComponent {
+    constructor() {
+        super(ChannelInfoView);
     }
 }
+export var ChannelListComponent: _ChannelList = new _ChannelList();

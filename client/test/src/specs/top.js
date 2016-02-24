@@ -72,8 +72,7 @@ module.exports = {
                 .click(CREATE_MENU_SELECTOR + 'button.enabled')
                 .pause(common.TRANSITION_PAUSE)
                 .execute(function () {
-                    var current = window.channer.components.active;
-                    if (!(current.component instanceof window.channer.components.Channel)) {
+                    if (window.channer.m.route().contains("channel")) {
                         return ["channel component should be loaded"];
                     }
                     if (!current.component.id) {

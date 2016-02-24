@@ -74,10 +74,8 @@ export class Storage {
         var dirs: Array<string> = path.split("/");
         if (dirs.length > 1) {
             var dir = dirs[0];
-            console.log("opendir0:" + dir);
             var p: Q.Promise<DirectoryEntry> = this.fs.opendir(dir, {create: true});
             for (var i = 1; i < (dirs.length - 1); i++) {
-            console.log("opendir" + i + ":" + dir);
                 p = p.then(() => {
                     dir = dir + "/" + dirs[i];
                     return this.fs.opendir(dir, {create: true});

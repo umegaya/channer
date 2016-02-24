@@ -1,65 +1,39 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, Template} from "../../uikit"
-import {TopComponent} from "../top"
-import {ScrollComponent} from "../parts/scroll"
-import {MenuElementComponent} from "../menu"
-import {Config} from "../../config"
+import {m, Util, Template, ListComponent, ModelCollection} from "../../uikit"
 import {Handler, Builder} from "../../proto"
-import {ProtoError} from "../../watcher"
+import {MenuElementComponent} from "../menu"
+import {TopComponent} from "../top"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
-var scroller = window.channer.parts.Scroll;
 
-export class ChannelLocaleController implements UI.Controller {
-	component: ChannelLocaleComponent;
-    locale: UI.Property<string>;
-    settings: Array<{key:string, value:any}>;
-
-	constructor(component: ChannelLocaleComponent) {
-		this.component = component;
-        this.locale = m.prop("");
-        this.settings = window.channer.l10n.localeSettings();
-	}
-    onselected = () => {
-        
+export class LocaleCollection implements ModelCollection {
+    locales: Array<{key:string, value:any}>;
+    constructor() {
+        this.locales = window.channer.l10n.localeSettings();
     }
-    pagedata = (page: number): UI.Property<Array<{key:string, value:any}>> => {
-        console.log("pagedata: for: " + page);
-        return m.prop(this.settings.slice(page * 10, page * 10 + 9));
+    map = (fn: (m: {key:string, value:any}) => void): Array<any> => {
+        return this.locales.map(fn);
     }
-    renderer = (data: {key:string, value:any}, opts: any): UI.Element => {
-        return m("div", data.value);
+    empty = (): boolean => {
+        return this.locales.length <= 0;
+    }
+    refresh = () => {
+        this.fetch(1);
+    }
+    fetch = (page: number) => {
+        console.error("fetch:" + page);
+        return m.prop(this.locales.slice((page - 1) * 10, (page - 1) * 10 + 5));
     }
 }
-function ChannelLocaleView(ctrl: ChannelLocaleController) : UI.Element {
-	return m(".locale .block", [
-        m(".pulldown", m.component(scroller, {
-            pageData: ctrl.pagedata,
-            item: ctrl.renderer,
-        }))
-    ]);
-}
-export class ChannelLocaleComponent extends MenuElementComponent {
-	controller: (args?: any) => ChannelLocaleController;
-	view: UI.View<ChannelLocaleController>;
-    scroll: ScrollComponent;
-
-	constructor(parent: TopComponent) {
-        super(parent);
-		this.view = ChannelLocaleView;
-        this.scroll = new ScrollComponent();
-		this.controller = () => {
-			return new ChannelLocaleController(this);
-		}
-	}
-    iconview = (): UI.Element => {
-        return [
-            m(".balloon", "change locale"),
-            m(".bg", m(".locale", window.channer.l10n.language)),
-        ];
-    }
-    name = (): string => {
-        return "change Locale";
+//TODO: if supported languages become so-many, use ListComponent
+export class LocaleListComponent extends ListComponent {
+    constructor() {
+        super((
+            c: ModelCollection, 
+            model: {key:string, value:any}
+        ): UI.Element => {
+            return m(".block", { "data-value": model.key }, model.value);    
+        });
     }
 }

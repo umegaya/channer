@@ -8,20 +8,12 @@ import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 
 export class HeaderController implements UI.Controller {
-	component: HeaderComponent;
-	constructor(component: HeaderComponent) {
-		this.component = component;
-	}
-    onunload = (event: any) => {
-    }
 }
-export class HeaderComponent implements UI.Component {
-	constructor() {
-    }
-	controller = (): HeaderController => {
-        return new HeaderController(this);
-    }
-	view = (ctrl: HeaderController) : UI.Element => {
+export var HeaderComponent: UI.Component = {
+	controller: (): HeaderController => {
+        return new HeaderController();
+    },
+	view: () : UI.Element => {
         var elements : Array<UI.Element> = [];
         var c : Handler = window.channer.conn;
         var rd = c.reconnect_duration();

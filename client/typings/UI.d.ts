@@ -18,10 +18,14 @@ declare namespace UI {
     }
     	
 	interface Component {
-		controller: (args?:any) => Controller;
-		view: View<Controller>;
+		controller?: (args?:any) => Controller;
+		view: (ctrl: Controller, ...args: any[]) => Element;
 	}
-	
+    
+    interface PageComponent extends Component {
+        menus: () => Array<Component>;
+    }
+    
 	interface ComponentFactory {
 		new (...args: any[]): Component;
 	}

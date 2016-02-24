@@ -1,12 +1,11 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, Template, BaseComponent, ModelCollection} from "../uikit"
+import {m, Util, Pagify, PageComponent, ModelCollection} from "../uikit"
 import {MenuElementComponent} from "./menu"
 import {Config} from "../config"
 import {Handler} from "../proto"
 import {ChannelCreateComponent} from "./channel/create"
 import {ChannelListComponent} from "./channel/list"
-import {ChannelLocaleComponent} from "./channel/locale"
 import {ChannelFilterComponent} from "./channel/filter"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
@@ -27,7 +26,7 @@ class ChannelCollection implements ModelCollection {
     constructor(category: string) {
         //TODO: load from local store.
         this.category = category;
-        this.channels = new Array<ChannerProto.Model.Channel>();
+        this.channels = [];
         //var conn : Handler = window.channer.conn;
         //TODO: handling notification from server.
 		//conn.watcher.subscribe(ChannerProto.Payload.Type.PostNotify, this.onpostnotify);
@@ -42,7 +41,6 @@ class ChannelCollection implements ModelCollection {
         this.fetch(1);
     }
     fetch = (page: number) => {
-        console.error("fetch");
         var conn : Handler = window.channer.conn;
         var ret: {
             list: Array<ChannerProto.Model.Channel>;
@@ -59,23 +57,38 @@ class ChannelCollection implements ModelCollection {
         }
     }
 }
-export class TopController implements UI.Controller {
-	component: TopComponent
+class TopController implements UI.Controller {
     active: UI.Property<number>;
-    
+    start: string;
+    component: TopComponent;
+    static factory: Array<(s: TopComponent) => UI.Element> = [
+        (s: TopComponent) => {
+            return m.component(ChannelListComponent, s.models.latest, {
+                name: "latest",
+            });
+        },
+        (s: TopComponent) => {
+            return m.component(ChannelListComponent, s.models.popular, {
+                name: "popular",
+            });
+        },
+    ];
 	constructor(component: TopComponent) {
-		Util.active(this, component);
-		this.component = component;
         this.active = m.prop(0);
+        this.component = component;
+        this.start = m.route.param("tab") || "latest";
         TABS.map((tab, idx) => {
-            if (tab.id == component.start) {
+            if (tab.id == this.start) {
                 this.active(Number(idx));
             }
         });
 	}
+    content(): UI.Element {
+        return TopController.factory[this.active()](this.component);
+    }
 }
 function TopView(ctrl: TopController) : UI.Element {
-    return ctrl.component.layout(m(".top", [ 
+    return m(".top", [ 
         m.component(Tabs, {
             buttons: TABS,
             autofit: true,
@@ -85,63 +98,36 @@ function TopView(ctrl: TopController) : UI.Element {
                 ctrl.active(state.index);
             }
         }),
-        m.component(ctrl.component.map[ctrl.active()])
-    ]));
+        ctrl.content()
+    ]);
 }
-export class TopComponent extends BaseComponent {
-	controller: () => TopController;
-	view: UI.View<TopController>;
-    start: string;
+export class TopComponent extends PageComponent {
     models: {
         latest: ChannelCollection;
         popular: ChannelCollection;
     };
-    //tab contents
-    latest: ChannelListComponent;
-    popular: ChannelListComponent;
-    map: [UI.Component];
-    //menu components
-    create: ChannelCreateComponent;
-    filter: ChannelFilterComponent;
-    locale: ChannelLocaleComponent;
-    
-	constructor(config: Config) {
+    constructor() {
         super();
-		this.view = TopView;
         this.models = {
             latest: new ChannelCollection("latest"),
             popular: new ChannelCollection("popular"),
         }
-        this.latest = new ChannelListComponent(
-            "latest", this.models.latest
-        );
-        this.popular = new ChannelListComponent(
-            "popular", this.models.popular
-        );
-        this.map = [
-            this.latest,
-            this.popular,
-        ]
-        console.error("topcomponent: ctor");
-        this.create = new ChannelCreateComponent(this);
-        this.filter = new ChannelFilterComponent(this);
-        this.locale = new ChannelLocaleComponent(this);
-		this.controller = () => {
-            this.start = m.route.param("tab") || "latest";
-			return new TopController(this);
-		}
-	}
+    }
+    controller = (): TopController => {
+        return new TopController(this);
+    }
+    view = (ctrl: TopController): UI.Element => {
+    	return TopView(ctrl);
+    }
     menus = (): Array<MenuElementComponent> => {
         return [
-            this.locale,
-            this.filter,
-            this.create,
-        ]
+            ChannelFilterComponent,
+            ChannelCreateComponent,
+        ];
     }
     oncreate = (ch: ChannerProto.Model.Channel) => {
-        this.latest.refresh();
-        this.popular.refresh();
+        this.models.latest.refresh();
+        this.models.popular.refresh();
     }
 }
-
-window.channer.components.Top = TopComponent;
+window.channer.components.Top = Pagify(TopComponent);

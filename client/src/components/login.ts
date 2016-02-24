@@ -1,6 +1,6 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Template, BaseComponent, Util} from "../uikit"
+import {m, Pagify, PageComponent, Util} from "../uikit"
 import {ProtoError} from "../watcher"
 import {Config} from "../config"
 import ChannerProto = Proto2TypeScript.ChannerProto;
@@ -8,27 +8,38 @@ var _L = window.channer.l10n.translate;
 var Button = window.channer.parts.Button;
 var TextField = window.channer.parts.TextField;
 
-export class LoginController implements UI.Controller {
+class LoginController implements UI.Controller {
 	static DEFAULT_USER_NAME = _L("user name");
 	static DEFAULT_MAIL_ADDR = _L("mail address (optional)");
-	component: LoginComponent;
 	user: UI.Property<string>;
 	mail: UI.Property<string>;
 	retype: UI.Property<string>;
 	error_message: string;
-	constructor(component: LoginComponent) {
-		Util.active(this, component);
-		this.component = component;
+	next_url: string;
+	rescue: string;
+	constructor() {
+        this.next_url = m.route.param("next") || "/top";
+        this.rescue = m.route.param("rescue");
 		this.resetinput();
 	}
-	private resetinput = () => {
+	onlogin = () => {
+		var user = this.user();
+		var mail = this.sanitized_mail_address();
+		console.log("login with:" + user + "/" + mail);
+		this.sendlogin(user, mail);
+	}
+	sendready(): boolean {
+		var user: string = this.user();
+		return (user != LoginController.DEFAULT_USER_NAME && user.length > 0);
+	}
+	private resetinput() {
 		var user = window.channer.settings.values.user;
 		var secret = window.channer.settings.values.secret;
 		var mail = window.channer.settings.values.mail;
 		//note that mail is empty string, its treated as falsy value 
 		console.log("user/secret/mail " + user + "|" + secret + "|" + mail);
-		if (this.component.rescue) {
-			console.log("rescue login with:" + this.component.rescue);
+		if (this.rescue) {
+			console.log("rescue login with:" + this.rescue);
 			this.sendlogin("dummy", "");
 		}
 		else if (secret && user) {
@@ -44,15 +55,9 @@ export class LoginController implements UI.Controller {
 			this.sendlogin(user, mail);
 		}
 	}
-	onlogin = () => {
-		var user = this.user();
-		var mail = this.sanitized_mail_address();
-		console.log("login with:" + user + "/" + mail);
-		this.sendlogin(user, mail);
-	}
-	sendlogin = (user: string, mail: string, secret?: string) => {
+	private sendlogin(user: string, mail: string, secret?: string) {
 		var pass = window.channer.settings.values.pass;
-		window.channer.conn.login(user, mail, secret, pass, this.component.rescue)
+		window.channer.conn.login(user, mail, secret, pass, this.rescue)
 		.then((r: ChannerProto.LoginResponse) => {
 			console.log("login success!:" + r.secret + "|" + r.id);
 			window.channer.settings.values.secret = r.secret;
@@ -63,8 +68,8 @@ export class LoginController implements UI.Controller {
 				window.channer.settings.values.pass = r.pass;
 			}
 			window.channer.settings.save();
-			console.log("login success redirect to:" + this.component.next_url);
-			Util.route(this.component.next_url, null, {
+			console.log("login success redirect to:" + this.next_url);
+			Util.route(this.next_url, null, {
                 replace_history: true,
             });
 		}, (e: ProtoError) => {
@@ -86,21 +91,17 @@ export class LoginController implements UI.Controller {
 			}
 		});
 	}
-	sanitized_mail_address = (): string => {
+	private sanitized_mail_address = (): string => {
 		var mail = this.mail();
 		if (!mail.match(/[^@]+@[^@]+/)) {
 			mail = "";
 		}
 		return mail;		
 	}
-	sendready = (): boolean => {
-		var user: string = this.user();
-		return (user != LoginController.DEFAULT_USER_NAME && user.length > 0);
-	}
 }
 function LoginView(ctrl: LoginController) : UI.Element {
     if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
-        return ctrl.component.layout(m(".login.form.fullWidth", [
+        return m(".login.form.fullWidth", [
             m(".bg"),
             m(".logo", m(".title", "channer")),
             m.component(TextField, {
@@ -122,25 +123,17 @@ function LoginView(ctrl: LoginController) : UI.Element {
                     onclick: ctrl.onlogin,
                 }
             }),
-        ]));
+        ]);
     }
-    return ctrl.component.layout();
+    return m("div");
 }
-export class LoginComponent extends BaseComponent {
-	controller: () => LoginController;
-    view: UI.View<LoginController>;
-	next_url: string;
-	rescue: string;
-
-	constructor(config: Config) {
-        super();
-		this.view = LoginView;
-		this.controller = () => {
-			this.next_url = m.route.param("next") || "/top";
-			this.rescue = m.route.param("rescue");
-			return new LoginController(this);
-		}
-	}
+class LoginComponent extends PageComponent {
+    controller = (): LoginController => {
+        return new LoginController();        
+    }
+    view = (ctrl: LoginController): UI.Element => {
+        return LoginView(ctrl);
+    }
 }
 
-window.channer.components.Login = LoginComponent
+window.channer.components.Login = Pagify(LoginComponent);

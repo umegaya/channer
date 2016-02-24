@@ -26,7 +26,8 @@ class L10n {
     g: Globalization;
     language: string;
     settings: Array<{key:string, value:string}>;
-    dict: L10nDictionary;    
+    supported: Array<string>;
+    dict: L10nDictionary;
     constructor(g: Globalization, dict: L10nDictionary) {
         this.g = g;
         this.dict = dict;
@@ -38,10 +39,9 @@ class L10n {
             "zh_Hant": JSON.parse(require("./l10n/lang/zh_Hant.json")),
             "zh_Hans": JSON.parse(require("./l10n/lang/zh_Hans.json")),
         };
-        var supported = JSON.parse(require("./l10n/supported.json"));
-        for (var k in supported) {
-            var v = supported[k];
-            console.log("v = " + v);
+        this.supported = JSON.parse(require("./l10n/supported.json"));
+        for (var k in this.supported) {
+            var v = this.supported[k];
             if (!L10n.supportedLanguages[v]) {
                 throw Error("want to support " + v + " but no data");
             }
@@ -102,7 +102,9 @@ class L10n {
             var data = L10n.supportedLanguages[this.language] || L10n.supportedLanguages["en"];
             var keys: Array<string> = [];
             for (var k in data) {
-                keys.push(k);
+                if (this.supported.indexOf(k) >= 0) {
+                    keys.push(k);
+                }
             }
             keys = keys.sort();
             for (var i in keys) {

@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, Template, PropConditions, PropCollection} from "../../uikit"
+import {m, Util, PropConditions, PropCollection} from "../../uikit"
 import {TopComponent} from "../top"
 import {MenuElementComponent} from "../menu"
 import {Config} from "../../config"
@@ -72,16 +72,14 @@ var cond: PropConditions = {
 }
 
 export class ChannelCreateController implements UI.Controller {
-	component: ChannelCreateComponent;
+	component: ChannelCreate;
     show_advanced: boolean;
-    oncreate: (ch: ChannerProto.Model.Channel) => void;
 
-	constructor(component: ChannelCreateComponent) {
+	constructor(component: ChannelCreate) {
 		this.component = component;
         this.show_advanced = false;
-        this.oncreate = component.parent<TopComponent>().oncreate;
 	}
-    onsend = () => {
+    onsend(oncreate: (ch: ChannerProto.Model.Channel) => void) {
         var conn: Handler = window.channer.conn;
         var vals = this.component.input.check();
         if (vals) {
@@ -94,7 +92,7 @@ export class ChannelCreateController implements UI.Controller {
             .then((r: ChannerProto.ChannelCreateResponse) => {
                 console.log("new channel create:" + r.channel.id);
                 this.component.input.clear(); //cleanup input data
-                this.oncreate(r.channel);
+                oncreate(r.channel);
                 Util.route("/channel/" + r.channel.id);
             }, (e: ProtoError) => {
                 console.log("error:" + e.message);
@@ -107,14 +105,14 @@ export class ChannelCreateController implements UI.Controller {
     onchange = (v: any) => {
         this.component.input.save();
     }
-    sendready = ():boolean => {
+    sendready():boolean {
         return !!this.component.input.check();
     }
 }
-function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
+function ChannelCreateView(
+    ctrl: ChannelCreateController, parent: TopComponent) : UI.Element {
 	var elements : Array<UI.Element> = []; 
     var props = ctrl.component.input.props;
-    console.log("name/desc:" + props["name"]() + "|" + props["desc"]());
     if (!ctrl.show_advanced) {
         elements.push(m(".block", [
             m.component(TextFieldComponent, {
@@ -196,7 +194,7 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
             label: _L("Create"),
             disabled: !ctrl.sendready(), 
             events: {
-                onclick: ctrl.onsend,
+                onclick: ctrl.onsend.bind(ctrl, parent.oncreate),
             }
         }),
         m.component(Button, {
@@ -209,19 +207,21 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
     ]));
     return m(".create", elements);
 }
-export class ChannelCreateComponent extends MenuElementComponent {
-	controller: (args?: any) => ChannelCreateController;
-	view: UI.View<ChannelCreateController>;
+class ChannelCreate extends MenuElementComponent {
     input: PropCollection;
 
-	constructor(parent: TopComponent) {
-        super(parent);
-		this.view = ChannelCreateView;
-        this.input = new PropCollection("channel-create", cond);
-		this.controller = () => {
-			return new ChannelCreateController(this);
-		}
+	constructor() {
+        super();
 	}
+    controller = (): ChannelCreateController => {
+        if (!this.input) {
+            this.input = new PropCollection("channel-create", cond);
+        }
+        return new ChannelCreateController(this);
+    }
+    view = (ctrl: ChannelCreateController, parent: TopComponent): UI.Element => {
+        return ChannelCreateView(ctrl, parent);
+    }
     iconview = (): UI.Element => {
         return this.format_iconview("img.create_channel", _L("create channel"));
     }
@@ -229,3 +229,5 @@ export class ChannelCreateComponent extends MenuElementComponent {
         return "channel create";
     }
 }
+
+export var ChannelCreateComponent: ChannelCreate = new ChannelCreate();

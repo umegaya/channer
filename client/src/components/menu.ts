@@ -1,6 +1,6 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, Template, BaseComponent} from "../uikit"
+import {m, Util, PageComponent} from "../uikit"
 import {Config} from "../config"
 import {ProtoError} from "../watcher"
 import ChannerProto = Proto2TypeScript.ChannerProto;
@@ -9,20 +9,16 @@ var _L = window.channer.l10n.translate;
 var BUTTON_CLOSE_COLOR = "#2780f8";
 var BUTTON_OPEN_COLOR = "#ed6c63";
 
-export class MenuController implements UI.Controller {
-	component: MenuComponent;
-    menus: Array<MenuElementComponent>;
+class MenuController implements UI.Controller {
     enabled: UI.Property<boolean>;
-    opened: UI.Component;
+    opened: MenuElementComponent;
     rotate: UI.Property<number>;
     cover_opac: UI.Property<number>;
     menu_opac: UI.Property<number>;
     container_opac: UI.Property<number>;
     button_color: UI.Property<string>;
     
-	constructor(component: MenuComponent, menus: Array<MenuElementComponent>) {
-		this.component = component;
-        this.menus = menus;
+	constructor() {
         this.enabled = m.prop(false);
         this.opened = null;
         this.rotate = m.prop(0);
@@ -47,13 +43,12 @@ export class MenuController implements UI.Controller {
             this.button_color(BUTTON_CLOSE_COLOR)
         }        
     }
-    close = () => {
-        m.startComputation();
-        this.onbtnclick();
-        m.endComputation();
+    on_menu_selected(c: MenuElementComponent) {
+        this.container_opac(1);
     }
 }
-function MenuView(ctrl: MenuController) : UI.Element {
+function MenuView(ctrl: MenuController, parent: PageComponent) : UI.Element {
+    var menus: Array<MenuElementComponent> = parent.menus();
     var r: Array<UI.Element> = [];
     var contained: UI.Element;
     var state_class: string = ctrl.enabled() ? ".open" : ".close";
@@ -66,16 +61,16 @@ function MenuView(ctrl: MenuController) : UI.Element {
             ct_state_class = "";
         }
         state_class = ".none";
-        contained = m.component(ctrl.opened);
+        contained = m.component(ctrl.opened, parent);
     }
     r.push(m.e(".main-container" + ct_state_class, {
         opacity: ctrl.container_opac
     }, contained));
-    for (var k in ctrl.menus) {
-        var mn = ctrl.menus[k];
+    for (var k in menus) {
+        var mn = menus[k];
         r.push(
             m.e(".menu-elem.menu-" + k + state_class, {
-                onclick: (function () { this.onselected(ctrl) }).bind(mn),
+                onclick: (function () { this.onselected(ctrl); }).bind(mn),
                 opacity: ctrl.menu_opac,
             }, mn.iconview())
         );
@@ -95,68 +90,53 @@ function MenuView(ctrl: MenuController) : UI.Element {
     );
     return m(".menu", r);
 }
-export class MenuComponent implements UI.Component {
-	controller: () => MenuController;
-	view: UI.View<MenuController>;
-
-	constructor(menus: Array<MenuElementComponent>) {
-		this.view = MenuView;
-		this.controller = () => {
-			return new MenuController(this, menus);
-		}
-	}
+export var MenuComponent: UI.Component = {
+    controller: (menus?: Array<MenuElementComponent>) => {
+        return new MenuController();
+    },
+	view: MenuView,
 }
-
 export class MenuElementComponent implements UI.Component {
-    private pt: BaseComponent;
-    opened: boolean;
-    constructor(parent: BaseComponent) {
-        this.pt = parent;
-        this.opened = false;
-    }
-    parent<T extends BaseComponent>(): T {
-        return <T>this.pt;
-    }
     controller = (): any => {
-        throw new Error("override this");
+        throw new Error("override this");        
     }
-    view = (ctrl: UI.Controller): UI.Element => {
-        throw new Error("override this");
+    view = (ctrl?: UI.Controller, ...args: any[]): UI.Element => {
+        throw new Error("override this");        
     }
     iconview = (): UI.Element => {
-        throw new Error("override this");   
-    }
-    format_iconview = (icon: string, text: string): UI.Element => {
+        throw new Error("override this");        
+    };
+    format_iconview(icon: string, text: string): UI.Element {
         return [
             m(".balloon", text),
             m(".bg", m(icon)),
         ];
     }
-    name = (): string => {
-        throw new Error("override this");
-    }
     onselected = (ctrl: MenuController) => {
         ctrl.opened = this; 
-        ctrl.container_opac(1);     
+        ctrl.on_menu_selected(this);     
     }
 }
-
 export class TransitMenuElementComponent extends MenuElementComponent {
     icon: string;
     text: string;
     url: string
-    constructor(parent: BaseComponent, icon: string, text: string, url: string) {
-        super(parent);
+    constructor(icon: string, text: string, url: string) {
+        super();
         this.icon = icon;
         this.text = text;
         this.url = url;
     }
-    iconview = (): UI.Element => {
+    controller = (options?: { icon: string, text: string, url: string}) => {
+        return options;
+    }
+    view = (ctrl?: { icon: string, text: string, url: string}) => {
+        return m("div");
+    }
+    iconview = () => {
         return this.format_iconview(this.icon, this.text);
     }
     onselected = (ctrl: MenuController) => {
         Util.route(this.url);
     }
 }
-
-window.channer.components.Menu = MenuComponent

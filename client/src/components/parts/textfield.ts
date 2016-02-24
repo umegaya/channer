@@ -11,13 +11,8 @@ export class TextFieldOptions {
     oninput: (val: any) => void;
     onchange: (next: any) => void;
 }
-
-class _TextFieldComponent implements UI.Component {
-	constructor() {}
-    controller = (options?: TextFieldOptions) => {
-        return options;
-    }
-    view = (options: TextFieldOptions): UI.Element => {
+export var TextFieldComponent: UI.Component = {
+    view: (ctrl: any, options: TextFieldOptions): UI.Element => {
         if (!options.hasOwnProperty("floatingLabel")) {
             options.floatingLabel = true;
         }
@@ -36,5 +31,3 @@ class _TextFieldComponent implements UI.Component {
         return m.component(TextField, options);
     }
 }
-
-export var TextFieldComponent: _TextFieldComponent = new _TextFieldComponent();
