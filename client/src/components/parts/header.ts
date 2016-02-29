@@ -57,7 +57,7 @@ export var HeaderComponent: UI.Component = {
                 ])
             );
         }
-        else if (c.connecting() || rd <= 0) {
+        else if (c.connecting() || (rd && rd <= 0)) {
             msgs = m("div", {class: "msg"}, _L("reconnecting"));
         }
         return m("div", {class: "header"}, 
