@@ -6,15 +6,18 @@ var TextField = window.channer.parts.TextField;
 
 export class TextFieldOptions {
     label: string;
+    help: string;
+    focusHelp: boolean;
     floatingLabel: boolean;
     value: UI.Property<any>;
     oninput: (val: any) => void;
     onchange: (next: any) => void;
+    events: any;
 }
 export var TextFieldComponent: UI.Component = {
     view: (ctrl: any, options: TextFieldOptions): UI.Element => {
         if (!options.hasOwnProperty("floatingLabel")) {
-            options.floatingLabel = true;//!window.channer.mobile;
+            options.floatingLabel = false;
         }
         if (options.hasOwnProperty("value") && 
             !(typeof options.value === "undefined")) {

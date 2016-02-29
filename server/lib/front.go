@@ -164,8 +164,14 @@ func (sv *FrontServer) Run() {
 	http.Handle(sv.config.EndPoint, sv)
 	go sv.processEvents()
     go sv.updateAssetsConfig(sv.config.AssetsConfigURL)
- 	if err := http.ListenAndServeTLS(sv.config.ListenAddress, sv.config.CertPath, sv.config.KeyPath, nil); err != nil {
-        panic("FrontServer.Run fails to listen: " + err.Error())
+    if sv.config.CertPath == "" {
+		if err := http.ListenAndServe(sv.config.ListenAddress, nil); err != nil {
+        	panic("FrontServer.Run fails to listen: " + err.Error())
+    	}
+    } else {
+ 		if err := http.ListenAndServeTLS(sv.config.ListenAddress, sv.config.CertPath, sv.config.KeyPath, nil); err != nil {
+        	panic("FrontServer.Run fails to listen: " + err.Error())
+    	}
     }
 }
 

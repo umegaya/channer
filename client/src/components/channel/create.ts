@@ -73,11 +73,11 @@ var cond: PropConditions = {
 
 export class ChannelCreateController implements UI.Controller {
 	component: ChannelCreate;
-    show_advanced: boolean;
+    page: number;
 
 	constructor(component: ChannelCreate) {
 		this.component = component;
-        this.show_advanced = false;
+        this.page = 0;
 	}
     onsend(oncreate: (ch: ChannerProto.Model.Channel) => void) {
         var conn: Handler = window.channer.conn;
@@ -99,8 +99,15 @@ export class ChannelCreateController implements UI.Controller {
             });
         }
     }
-    on_advanced_settings = () => {
-        this.show_advanced = !this.show_advanced;
+    onnext = () => {
+        if (this.page < 2) {
+            this.page++;
+        }
+    }
+    onback = () => {
+        if (this.page > 0) {
+            this.page--;
+        }
     }
     onchange = (v: any) => {
         this.component.input.save();
@@ -109,15 +116,48 @@ export class ChannelCreateController implements UI.Controller {
         return !!this.component.input.check();
     }
 }
+function sendbutton(ctrl: ChannelCreateController, parent: TopComponent): UI.Element {
+    return m.component(Button, {
+        class: "send",
+        label: _L("Create"),
+        disabled: !ctrl.sendready(), 
+        events: {
+            onclick: ctrl.onsend.bind(ctrl, parent.oncreate),
+        }
+    });
+}
+function backbutton(ctrl: ChannelCreateController, parent: TopComponent): UI.Element {
+    return m.component(Button, {
+        class: "prev",
+        label: _L("Back"),
+        events: {
+            onclick: ctrl.onback,
+        }
+    });    
+}
+function nextbutton(
+    ctrl: ChannelCreateController, parent: TopComponent, label: string
+): UI.Element {
+    return m.component(Button, {
+        class: "next",
+        label: label,
+        events: {
+            onclick: ctrl.onnext,
+        }
+    });    
+}
 function ChannelCreateView(
     ctrl: ChannelCreateController, parent: TopComponent) : UI.Element {
 	var elements : Array<UI.Element> = []; 
+    var buttons: Array<UI.Element> = [];
     var props = ctrl.component.input.props;
-    if (!ctrl.show_advanced) {
-        elements.push(m(".block", [
+    switch (ctrl.page) {
+    case 0:
+        elements.push(m(".form", [
             m.component(TextFieldComponent, {
                 label: texts.DEFAULT_NAME,
                 required: true,
+                autofocus: true,
                 value: props["name"],
                 onchange: ctrl.onchange,
             }),
@@ -127,17 +167,19 @@ function ChannelCreateView(
                 rows: 3,
                 value: props["desc"],
                 onchange: ctrl.onchange,
-            }),
+            })
         ]));
-    }
-    else {
+        buttons.push(sendbutton(ctrl, parent));
+        buttons.push(nextbutton(ctrl, parent, _L("Detail")));
+        break;
+    case 1:
         //idlevel radiobox
         var idlevel = props["idlevel"];
         var idlevel_block = [m(".title", _L("identity level"))];
         idlevel_block.push(m.component(RadioComponent, {
             name: "id-level",
             elements: {
-                none: ChannerProto.Model.Channel.IdentityLevel.None,
+                //none: ChannerProto.Model.Channel.IdentityLevel.None,
                 topic: ChannerProto.Model.Channel.IdentityLevel.Topic,
                 channel: ChannerProto.Model.Channel.IdentityLevel.Channel,
                 account: ChannerProto.Model.Channel.IdentityLevel.Account,
@@ -149,7 +191,6 @@ function ChannelCreateView(
         if (idl != ChannerProto.Model.Channel.IdentityLevel.Unknown) {
             idlevel_block.push(m("div", {class: "explaination"}, idlevel_text[idl]));
         }
-        elements.push(m("div", {class: "block id-level"}, idlevel_block));
 
         //disp radiobox
         var disp = props["display"];
@@ -162,49 +203,42 @@ function ChannelCreateView(
             },
             prop: disp,
             onchange: ctrl.onchange,
-        }));
+        }));    
         var d = disp();
         if (d != ChannerProto.Model.Channel.TopicDisplayStyle.Invalid) {
             disp_block.push(m("div", {class: "explaination"}, display_text[d]));
         }
-        elements.push(m(".block.display-style", disp_block));
-
+        elements.push(m(".form", [
+            m(".block.id-level", idlevel_block),
+            m(".block.display-style", disp_block)
+        ]));
+        buttons.push(backbutton(ctrl, parent));
+        buttons.push(nextbutton(ctrl, parent, _L("Next")));
+        break;
+    case 2:
         //anon signature
-        elements.push(m.component(TextFieldComponent, {
-            label: texts.DEFAULT_ANONYMOUS,
-            value: props["anon"],
-            onchange: ctrl.onchange,
-        }));
-        //postlimit, styl, textarea
-        elements.push(m.component(TextFieldComponent, {
-            label: texts.DEFAULT_POST_LIMIT,
-            value: props["postlimit"],
-            onchange: ctrl.onchange,
-        }));
-        elements.push(m.component(TextFieldComponent, {
-            label: texts.DEFAULT_STYLE_URL,
-            value: props["style"],
-            onchange: ctrl.onchange,
-        }));
+        elements.push(m(".form", [
+            m.component(TextFieldComponent, {
+                label: texts.DEFAULT_ANONYMOUS,
+                value: props["anon"],
+                onchange: ctrl.onchange,
+            }),
+            m.component(TextFieldComponent, {
+                label: texts.DEFAULT_POST_LIMIT,
+                value: props["postlimit"],
+                onchange: ctrl.onchange,
+            }),
+            m.component(TextFieldComponent, {
+                label: texts.DEFAULT_STYLE_URL,
+                value: props["style"],
+                onchange: ctrl.onchange,
+            })
+        ]));
+        buttons.push(backbutton(ctrl, parent));
+        buttons.push(sendbutton(ctrl, parent));
     }
     //send button
-    elements.push(m(".buttons", [
-        m.component(Button, {
-            class: "send",
-            label: _L("Create"),
-            disabled: !ctrl.sendready(), 
-            events: {
-                onclick: ctrl.onsend.bind(ctrl, parent.oncreate),
-            }
-        }),
-        m.component(Button, {
-            class: "detail",
-            label: ctrl.show_advanced ? _L("Back") : _L("Detail"),
-            events: {
-                onclick: ctrl.on_advanced_settings,
-            }
-        })
-    ]));
+    elements.push(m(".buttons", buttons));
     return m(".create", elements);
 }
 class ChannelCreate extends MenuElementComponent {

@@ -1,6 +1,5 @@
 {
 	"endpoint": "/ws",
-	"cert": "./certs/public.key",
 	"key": "./certs/private.key",
 	"assets_config_url": "http://localhost:9999/assets/config.json",
 	"database_cert": "",

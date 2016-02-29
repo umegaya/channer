@@ -36,3 +36,6 @@ web:
 stopweb:
 	-@docker kill channerweb
 	@docker rm channerweb
+
+cert:
+	bash tools/genkeystore.sh channer.keystore channer

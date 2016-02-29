@@ -102,17 +102,15 @@ class LoginController implements UI.Controller {
 function LoginView(ctrl: LoginController) : UI.Element {
     if (ctrl.user) { //when auto login, ctrl.user/mail not initialized.
         return m(".login.form.fullWidth", [
-            m(".bg"),
             m(".logo", m(".title", "channer")),
             m.component(TextField, {
                 label: LoginController.DEFAULT_USER_NAME,
-                floatingLabel: true,
                 required: true,
+                autofocus: true,
                 oninput: ctrl.user,
             }),
             m.component(TextField, {
                 label: LoginController.DEFAULT_MAIL_ADDR,
-                floatingLabel: true,
                 oninput: ctrl.mail,
             }),
             m.component(Button, {
