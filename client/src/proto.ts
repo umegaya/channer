@@ -107,7 +107,7 @@ export class Handler {
 		var current = m.route();
 		if (!current.match(/^\/(login|rescue)/)) {
 			console.log("re-authenticate current url:" + current);
-			Util.route("/login?next=" + current, null, {
+			Util.route("/login?next=" + encodeURIComponent(current), null, {
                 route_only: true,
                 replace_history: true,
             });

@@ -9,6 +9,7 @@ export class TextFieldOptions {
     help: string;
     focusHelp: boolean;
     floatingLabel: boolean;
+    dontBlurOnMouseDown: boolean;
     value: UI.Property<any>;
     oninput: (val: any) => void;
     onchange: (next: any) => void;
@@ -19,6 +20,7 @@ export var TextFieldComponent: UI.Component = {
         if (!options.hasOwnProperty("floatingLabel")) {
             options.floatingLabel = true;
         }
+        options.dontBlurOnMouseDown = true;
         if (options.hasOwnProperty("value") && 
             !(typeof options.value === "undefined")) {
             var oninput = options.hasOwnProperty("oninput") ? 

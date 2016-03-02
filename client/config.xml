@@ -82,6 +82,7 @@
     </platform>
     <platform name="android">
         <preference name="SplashScreenDelay" value="0" />
+        <hook src="tools/mod_android_manifest.js" type="after_prepare" />
         <icon density="ldpi" src="src/res/icon/android/icon-36.png" />
         <icon density="mdpi" src="src/res/icon/android/icon-48.png" />
         <icon density="hdpi" src="src/res/icon/android/icon-72.png" />

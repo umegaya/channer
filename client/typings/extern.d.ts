@@ -35,6 +35,7 @@ interface ChannerModules {
 	storage: any;
 	patch: any;
 	mobile: boolean;
+    router: () => void;
     l10n: { 
         translate(text: string, ...args:Array<any>): string; 
         translateDate(date: Date): any;
@@ -52,6 +53,10 @@ interface ChannerModules {
 		Top: UI.Component;
 		Topic: UI.Component;
 		Channel: UI.Component;
+        Menu: UI.Component;
+        //menu
+        ChannelCreate: UI.Component;
+        ChannelFilter: UI.Component;
 	}
     parts: {
         Scroll: UI.Component;

@@ -76,9 +76,10 @@ export class ChannelCreateController implements UI.Controller {
     page: number;
 
 	constructor(component: ChannelCreate) {
-		this.component = component;
-        this.page = 0;
-	}
+ 		this.component = component;
+        var p = m.route.param("page");
+        this.page = p ? Number(p) : 1;
+ 	}
     onsend(oncreate: (ch: ChannerProto.Model.Channel) => void) {
         var conn: Handler = window.channer.conn;
         var vals = this.component.input.check();
@@ -99,15 +100,11 @@ export class ChannelCreateController implements UI.Controller {
             });
         }
     }
-    onnext = () => {
-        if (this.page < 2) {
-            this.page++;
-        }
+    nexturl = () => {
+        return "/menu/create/" + (this.page + 1);
     }
-    onback = () => {
-        if (this.page > 0) {
-            this.page--;
-        }
+    backurl = () => {
+        return "/menu/create/" + (this.page - 1);
     }
     onchange = (v: any) => {
         this.component.input.save();
@@ -116,43 +113,40 @@ export class ChannelCreateController implements UI.Controller {
         return !!this.component.input.check();
     }
 }
-function sendbutton(ctrl: ChannelCreateController, parent: TopComponent): UI.Element {
+function sendbutton(ctrl: ChannelCreateController): UI.Element {
     return m.component(Button, {
         class: "send",
         label: _L("Create"),
         disabled: !ctrl.sendready(), 
         events: {
-            onclick: ctrl.onsend.bind(ctrl, parent.oncreate),
+            onclick: ctrl.onsend.bind(ctrl),
         }
     });
 }
-function backbutton(ctrl: ChannelCreateController, parent: TopComponent): UI.Element {
+function backbutton(ctrl: ChannelCreateController): UI.Element {
     return m.component(Button, {
         class: "prev",
         label: _L("Back"),
         events: {
-            onclick: ctrl.onback,
+            onclick: (e: any) => { Util.route(ctrl.backurl()) },
         }
     });    
 }
-function nextbutton(
-    ctrl: ChannelCreateController, parent: TopComponent, label: string
-): UI.Element {
+function nextbutton(ctrl: ChannelCreateController, label: string): UI.Element {
     return m.component(Button, {
         class: "next",
         label: label,
         events: {
-            onclick: ctrl.onnext,
+            onclick: (e: any) => { Util.route(ctrl.nexturl()) },
         }
     });    
 }
-function ChannelCreateView(
-    ctrl: ChannelCreateController, parent: TopComponent) : UI.Element {
+function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
 	var elements : Array<UI.Element> = []; 
     var buttons: Array<UI.Element> = [];
     var props = ctrl.component.input.props;
     switch (ctrl.page) {
-    case 0:
+    case 1:
         elements.push(m(".form", [
             m.component(TextFieldComponent, {
                 label: texts.DEFAULT_NAME,
@@ -169,10 +163,10 @@ function ChannelCreateView(
                 onchange: ctrl.onchange,
             })
         ]));
-        buttons.push(sendbutton(ctrl, parent));
-        buttons.push(nextbutton(ctrl, parent, _L("Detail")));
+        buttons.push(sendbutton(ctrl));
+        buttons.push(nextbutton(ctrl, _L("Detail")));
         break;
-    case 1:
+    case 2:
         //idlevel radiobox
         var idlevel = props["idlevel"];
         var idlevel_block = [m(".title", _L("identity level"))];
@@ -212,10 +206,10 @@ function ChannelCreateView(
             m(".block.id-level", idlevel_block),
             m(".block.display-style", disp_block)
         ]));
-        buttons.push(backbutton(ctrl, parent));
-        buttons.push(nextbutton(ctrl, parent, _L("Next")));
+        buttons.push(backbutton(ctrl));
+        buttons.push(nextbutton(ctrl, _L("Next")));
         break;
-    case 2:
+    case 3:
         //anon signature
         elements.push(m(".form", [
             m.component(TextFieldComponent, {
@@ -234,8 +228,8 @@ function ChannelCreateView(
                 onchange: ctrl.onchange,
             })
         ]));
-        buttons.push(backbutton(ctrl, parent));
-        buttons.push(sendbutton(ctrl, parent));
+        buttons.push(backbutton(ctrl));
+        buttons.push(sendbutton(ctrl));
     }
     //send button
     elements.push(m(".buttons", buttons));
@@ -253,14 +247,23 @@ class ChannelCreate extends MenuElementComponent {
         }
         return new ChannelCreateController(this);
     }
-    view = (ctrl: ChannelCreateController, parent: TopComponent): UI.Element => {
-        return ChannelCreateView(ctrl, parent);
+    menuview = (ctrl: ChannelCreateController): UI.Element => {
+        return ChannelCreateView(ctrl);
     }
     iconview = (): UI.Element => {
         return this.format_iconview("img.create_channel", _L("create channel"));
     }
     name = (): string => {
         return "channel create";
+    }
+    pageurl = (): string => {
+        return "/menu/create";
+    }
+    pagert = (): Array<string> => {
+        return [
+            this.pageurl(),
+            "/menu/create/:page",
+        ];
     }
 }
 

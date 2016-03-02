@@ -31,7 +31,7 @@ class ChannelFilter extends MenuElementComponent {
     controller = (): ChannelFilterController => {
         return new ChannelFilterController(this);
     }
-    view = (ctrl: ChannelFilterController, parent: TopComponent): UI.Element => {
+    menuview = (ctrl: ChannelFilterController): UI.Element => {
     	return m(".filter");
     }
     iconview = (): UI.Element => {
@@ -40,6 +40,8 @@ class ChannelFilter extends MenuElementComponent {
     name = (): string => {
         return "channel filter";
     }
+    pageurl = (): string => {
+        return "/menu/filter";
+    }
 }
-
 export var ChannelFilterComponent: ChannelFilter = new ChannelFilter();

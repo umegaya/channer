@@ -169,7 +169,25 @@ export class Util {
     }) {
         options = options || {};
 		if (!options.route_only) {
+            if (!dest) {
+                console.error("invalid dest from");
+            }
 			window.channer.settings.values.last_url = dest;
+            console.log("last_page_url check:" + 
+            
+                (dest.indexOf("/menu") < 0 && dest.indexOf("menu=on") < 0) + "|" + 
+                
+                (window.channer.settings.values.last_page_url != dest) + "|" + 
+
+                dest + "|" + 
+                
+                window.channer.settings.values.last_page_url);
+            
+            if ((dest.indexOf("/menu") < 0 && dest.indexOf("menu=on") < 0) &&
+                (window.channer.settings.values.last_page_url != dest)) {
+                console.log("lastpageurl:" + dest);
+                window.channer.settings.values.last_page_url = dest;
+            }
 			window.channer.settings.save();
 		}
 		m.route(dest, params, options.replace_history);
@@ -204,10 +222,6 @@ export class Util {
         );
         return date;
     }
-}
-export interface Router {
-    (rootElement: Element, defaultRoute: string, 
-        routes: _mithril.MithrilRoutes<UI.Controller>): void;
 }
 export class Template {
     static date(d: Date, duration?:boolean) {
@@ -318,10 +332,12 @@ export class ListComponent implements UI.Component {
         return base;
     }
     view = (ctrl: any, models: ModelCollection, options?: any): UI.Element => {
-        return m(".scroll-container", m.component(Scroll, this.mkoption(models, options)));
+        return m(".scroll-container", 
+            m.component(Scroll, this.mkoption(models, options))
+        );
     }
 }
-class BaseComponent implements UI.Component {
+export class BaseComponent implements UI.Component {
     static transit = window.channer.mtransit({
         anim: (last: Element, next: Element, dir: string, 
             cblast: () => void, cbnext: () => void) => {
@@ -349,17 +365,18 @@ class BaseComponent implements UI.Component {
         }
         var tmp: [any] = [m.component(HeaderComponent)];
         if (this.hasmenu) {
-            tmp.push(m.component(MenuComponent, this.content));
+            tmp.push(m.component(window.channer.components.Menu, m.route()));
         }
         tmp.push(m.component(this.content));
-        return m(".screen", <UI.Attributes>{
+        return m(".screen", tmp);/*<UI.Attributes>{
             config: BaseComponent.transit, key: m.route()
-        }, tmp);        
+        }, tmp);        */
     }
 }
 
 export class PageComponent implements UI.PageComponent {
-    view = (ctrl?: any): UI.Element => {
+    static current_url: string;
+    view = (ctrl?: any, ...args: any[]): UI.Element => {
         throw new Error("override this");
     }
     menus = (): Array<MenuElementComponent> => {

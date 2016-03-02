@@ -46,10 +46,12 @@ class ChannelCollection implements ModelCollection {
             list: Array<ChannerProto.Model.Channel>;
         } = { list: [] };
         conn.channel_list(this.category).then((r: ChannerProto.ChannelListResponse) => {
-            //for debug
-            for (var i = 1; i < 20; i++) {
-                ret.list.push(r.list[0]);
-                this.channels.push(r.list[0]);
+            if (r.list.length > 0) {
+                //for debug
+                for (var i = 1; i < 20; i++) {
+                    ret.list.push(r.list[0]);
+                    this.channels.push(r.list[0]);
+                }
             }
         })
         return () => {
@@ -125,9 +127,7 @@ export class TopComponent extends PageComponent {
             ChannelCreateComponent,
         ];
     }
-    oncreate = (ch: ChannerProto.Model.Channel) => {
-        this.models.latest.refresh();
-        this.models.popular.refresh();
-    }
 }
 window.channer.components.Top = Pagify(TopComponent);
+window.channer.components.ChannelCreate = ChannelCreateComponent;
+window.channer.components.ChannelFilter = ChannelFilterComponent;

@@ -2,10 +2,9 @@
 import {Handler} from "./proto"
 import {Config, UserSettings, UserSettingsValues} from "./config"
 import {Timer} from "./timer"
-import {m, Util, Router} from "./uikit"
+import {m, Util} from "./uikit"
 import {Push, PushReceiver} from "./push"
 import {Storage, StorageIO} from "./storage"
-import {HelpComponent} from "./components/help"
 
 //for debug. remove user setting
 var truncate_settings = window.environment.match(/test/);
@@ -70,21 +69,8 @@ window.channer.bootstrap = function (config: any) {
 		//startup timer and network
 		t.start(c.timer_resolution_ms);
 		h.resume();
-		m.route.mode = "hash"; //prevent from refreshing page when route changes.
 		//setup client router
-		var last_url: string = window.channer.settings.values.last_url;
-		var start_url: string = last_url ? ("/login?next=" + last_url) : "/login"; 
-        //typescript wrongly resolve m.route signature here. so explicit cast required.
-		(<Router>m.route)(document.body, start_url, {
-			"/login":            window.channer.components.Login,
-			"/rescue":           window.channer.components.Rescue,
-			"/rescue/:rescue":   window.channer.components.Login,
-            "/top":              window.channer.components.Top,
-			"/top/:tab":         window.channer.components.Top,
-			"/channel/:ch":      window.channer.components.Channel,
-			"/channel/:ch/:tab": window.channer.components.Channel,
-			"/topic/:id":        window.channer.components.Topic,
-		});
+		window.channer.router();
 	})
 	.done(null, (e: Error) => {
 		console.log("bootstrap error: " + e.message);
