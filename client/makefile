@@ -39,3 +39,6 @@ stopweb:
 
 cert:
 	bash tools/genkeystore.sh channer.keystore channer
+
+crawl:
+    bash tools/crawl.sh $(BBS) # BBS = 2ch, 4chan, reddit
