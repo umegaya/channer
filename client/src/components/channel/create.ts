@@ -80,7 +80,7 @@ export class ChannelCreateController implements UI.Controller {
         var p = m.route.param("page");
         this.page = p ? Number(p) : 1;
  	}
-    onsend(oncreate: (ch: ChannerProto.Model.Channel) => void) {
+    onsend() {
         var conn: Handler = window.channer.conn;
         var vals = this.component.input.check();
         if (vals) {
@@ -93,7 +93,6 @@ export class ChannelCreateController implements UI.Controller {
             .then((r: ChannerProto.ChannelCreateResponse) => {
                 console.log("new channel create:" + r.channel.id);
                 this.component.input.clear(); //cleanup input data
-                oncreate(r.channel);
                 Util.route("/channel/" + r.channel.id);
             }, (e: ProtoError) => {
                 console.log("error:" + e.message);
@@ -220,6 +219,7 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
             m.component(TextFieldComponent, {
                 label: texts.DEFAULT_POST_LIMIT,
                 value: props["postlimit"],
+                type: 'number',
                 onchange: ctrl.onchange,
             }),
             m.component(TextFieldComponent, {

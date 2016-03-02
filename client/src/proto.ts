@@ -46,10 +46,10 @@ export class Handler {
 		return this.msgid_seed;
 	}
 	private redraw = () => {
-        //TODO: should use start/end Computation?
+        m.startComputation()
 		setTimeout(() => {
             this.querying = false;
-			m.redraw();
+			m.endComputation();
 		}, 1);
 	}
     private debug_close = (error_count: number) => {
@@ -66,20 +66,30 @@ export class Handler {
 		}
 		var msgid : number = this.new_msgid();
 		p.msgid = msgid;
-		this.socket.send(p);
+        try {
+    		this.socket.send(p);
+        }
+        catch (e) {
+            console.error("socket send error:" + e.message);
+        }
         this.querying = true;
-		this.watcher.subscribe_response(msgid, (model: Model) => {
-			df.resolve(model);
-		}, (e: Error) => {
-            this.last_error = e;
-			if (e instanceof ProtoError) {
-				var pe = <ProtoError>e;
-				if (!e.message && pe.payload) {
-					e.message = errorMessages[pe.payload.type];
-				}
-			}
-			df.reject(e);
-		});
+        try {
+            this.watcher.subscribe_response(msgid, (model: Model) => {
+                df.resolve(model);
+            }, (e: Error) => {
+                this.last_error = e;
+                if (e instanceof ProtoError) {
+                    var pe = <ProtoError>e;
+                    if (!e.message && pe.payload) {
+                        e.message = errorMessages[pe.payload.type];
+                    }
+                }
+                df.reject(e);
+            });
+        }
+        catch (e) {
+            console.error("subscribe_response error: " + e.message);
+        }
 		if (!no_redraw) {
 			df.promise.done(this.redraw, this.redraw);
 		}
@@ -90,12 +100,12 @@ export class Handler {
             this.redraw();
         }
 		else if ((nowms - this.last_ping) > window.channer.config.ping_interval_ms) {
-			this.ping(nowms).then((m: ChannerProto.PingResponse) => {
+			/*this.ping(nowms).then((m: ChannerProto.PingResponse) => {
 				this.latency = (Timer.now() - m.walltime);
 				//console.log("ping latency:" + this.latency);
 			}, (e: ProtoError) => {
 				console.log("ping error:" + e.message);
-			});
+			});*/
 			this.last_ping = nowms;
 		}
 		if ((nowms - this.last_auth) > window.channer.config.auth_interval_ms) {
@@ -208,7 +218,6 @@ export class Handler {
 		req.user = user;
 		req.mail = mail;
 		req.walltime = Timer.now();
-        console.log("data:" + req.user + "|" + req.mail);
 		if (secret) {
 			if (!req.id) {
 				return this.send(null, ChannerProto.Error.Type.Login_BrokenClientData);
@@ -262,7 +271,6 @@ export class Handler {
             "latest": ChannerProto.ChannelListRequest.Category.New,
             "popular": ChannerProto.ChannelListRequest.Category.Popular,
         }
-        console.log("category:" + category);
         req.category = map[category];
         req.limit = limit || null;
         p.channel_list_request = req;

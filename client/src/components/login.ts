@@ -111,6 +111,7 @@ function LoginView(ctrl: LoginController) : UI.Element {
             }),
             m.component(TextField, {
                 label: LoginController.DEFAULT_MAIL_ADDR,
+                type: 'email',
                 oninput: ctrl.mail,
             }),
             m.component(Button, {

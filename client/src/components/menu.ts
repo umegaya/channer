@@ -11,40 +11,57 @@ var BUTTON_CLOSE_COLOR = "#2780f8";
 var BUTTON_OPEN_COLOR = "#ed6c63";
 
 class MenuController implements UI.Controller {
-    component: MenuComponent;
     enabled: UI.Property<boolean>;
+    initialized: boolean;
     rotate: UI.Property<number>;
-    cover_opac: UI.Property<number>;
     menu_opac: UI.Property<number>;
-    container_opac: UI.Property<number>;
     button_color: UI.Property<string>;
     
-	constructor(component: MenuComponent) {
-        this.component = component;
+	constructor() {
         this.enabled = m.prop(false);
+        this.initialized = false;
         this.rotate = m.prop(0);
-        this.cover_opac = m.prop(0);
         this.menu_opac = m.prop(0);
-        this.container_opac = m.prop(0);
         this.button_color = m.prop(BUTTON_CLOSE_COLOR);
 	}
-    onbtnclick = (on: boolean, parent_path: string) => {
-        if (on) {
-            this.enabled(true);
-            this.cover_opac(0.9);
+    tryopen() {
+        if (!this.initialized) {
+            //showing open animation
+            m.startComputation();
+            setTimeout(() => {
+                this.onbtnclick(true, null);
+                m.endComputation();
+            }, 1);          
+            this.initialized = true; 
+        }   
+    }
+    onbtnclick = (open: boolean, parent_path: string) => {
+        this.switch(open);
+        if (open) {
             this.menu_opac(1);
-            this.rotate(225);
-            this.button_color(BUTTON_OPEN_COLOR)
         }
         else {
-            this.cover_opac(0);
             this.menu_opac(0);
-            this.rotate(0);
-            this.container_opac(0);
-            this.button_color(BUTTON_CLOSE_COLOR);
             //wait animation end, then route to parent
             setTimeout(() => { Util.route(parent_path); }, 300);
         }        
+    }
+    switch(open: boolean) {
+        this.enabled(open);
+        if (open) {
+            this.button_color(BUTTON_OPEN_COLOR);
+            this.rotate(225);
+        }
+        else {
+            this.button_color(BUTTON_CLOSE_COLOR);
+            this.rotate(0);
+        }
+    }
+    createbutton(onclick: (e: any) => void): UI.Element {
+        return m.e(".main-button", {
+            onclick: onclick,
+            backgroundColor: this.button_color,
+        }, m.e("img.plus", {rotate: this.rotate}))
     }
 }
 class Route {
@@ -54,7 +71,7 @@ export class MenuComponent extends PageComponent {
     rt: Route;
     setup = (route: Route): Route => {
         var rt: Route = new Route();
-        rt["/menus/:parent_path"] = this;
+        rt["/menus/:parent_path..."] = this;
         for (var k in route) {
             var b: BaseComponent = <BaseComponent>route[k]
             var p: PageComponent = b.content;
@@ -85,23 +102,23 @@ export class MenuComponent extends PageComponent {
         return null;
     }
     controller = (): MenuController => {
-        return new MenuController(this);
+        return new MenuController();
     }
 	view = (ctrl: MenuController, route: string) : UI.Element => {
         if (typeof route === "string") {
             //only show button for routing to /menu/:parent_path.
-            return m(".menu",  m.e(".main-button", {
-                onclick: () => { Util.route("/menus" + route); },
-                backgroundColor: ctrl.button_color,
-            }, m.e("img.plus", {rotate: ctrl.rotate})));
+            //TODO: if only one menu, should we route to the menu directly?
+            return m(".menu", ctrl.createbutton(() => { Util.route("/menus" + route); }));
         }
         //otherwise route contains :parent_path parameter.
         var parent_path = "/" + m.route.param("parent_path");
         var menus: Array<MenuElementComponent> = this.current_menus(parent_path);
         var r: Array<UI.Element> = [];
-        var contained: UI.Element;
         var state_class: string = ctrl.enabled() ? ".open" : ".close";
-        var cover_class: string = ctrl.enabled() ? "" : ".disable";
+        //!important: if virtual element pos is moved during its animation plays, 
+        //animation stops. so always put button element at first of .menu.
+        //whether .cover element put or not
+        r.push(ctrl.createbutton(ctrl.onbtnclick.bind(ctrl, false, parent_path)));
         for (var k in menus) {
             var mn = menus[k];
             r.push(
@@ -113,48 +130,36 @@ export class MenuComponent extends PageComponent {
                 }, mn.iconview())
             );
         }
-        //!important: if virtual element pos is moved during its animation plays, 
-        //animation stops. so always put button element at first of .menu.
-        //whether .cover element put or not
-        r.splice(0, 0, 
-            m.e(".main-button", {
-                onclick: ctrl.onbtnclick.bind(ctrl, false, parent_path),
-                backgroundColor: ctrl.button_color,
-            }, m.e("img.plus", {rotate: ctrl.rotate})),
-            m.e(".cover" + cover_class, { 
-                opacity: ctrl.cover_opac,
-                onclick: () => {},
-            })
-        );
-        if (!ctrl.enabled()) {
-            //showing open animation
-            m.startComputation();
-            setTimeout(() => {
-                ctrl.onbtnclick(true, null);
-                m.endComputation();
-            }, 1);
-        }
+        ctrl.tryopen();
         return [m.component(HeaderComponent), m(".menu", r)];
     }
 }
 window.channer.components.Menu = new MenuComponent();
 
 export class MenuElementComponent implements UI.Component {
-    static button_color: UI.Property<string>;
-    static rotate: UI.Property<number>;
+    static _factory: MenuController;
+    static factory():  MenuController {
+        if (!MenuElementComponent._factory) {
+            MenuElementComponent._factory = new MenuController();
+            MenuElementComponent._factory.switch(true);
+        }
+        return MenuElementComponent._factory;
+    }
     controller = (): any => {
         throw new Error("override this");        
     }
     view = (ctrl?: UI.Controller, ...args: any[]): UI.Element => {
-        if (!MenuElementComponent.button_color) {
-            MenuElementComponent.button_color = m.prop(BUTTON_OPEN_COLOR);
-            MenuElementComponent.rotate = m.prop(225);            
-        }
         return [
-            m(".menu", m.e(".main-button", {
-                onclick: (e: any) => { Util.route(window.channer.settings.values.last_page_url); },
-                backgroundColor: MenuElementComponent.button_color,
-            }, m.e("img.plus", {rotate: MenuElementComponent.rotate}))),
+            m.component(HeaderComponent),
+            //menu button in menu element alway start with opened state. 
+            m(".menu", MenuElementComponent.factory().createbutton(
+                (e: any) => { 
+                    MenuElementComponent.factory().switch(false);
+                    setTimeout(() => { 
+                        Util.route(window.channer.settings.values.last_page_url);
+                    }, 300);
+                }
+            )),
             this.menuview(ctrl, ...args)
         ]
     }
@@ -177,6 +182,7 @@ export class MenuElementComponent implements UI.Component {
         ];
     }
     onselected = (ctrl: MenuController) => {
+        MenuElementComponent.factory().switch(true);
         Util.route(this.pageurl());
     }
 }
