@@ -7,9 +7,8 @@ window.channer = {
 	components: {
         active: {},
     },
-    parts: {
-        
-    },
+    parts: {},
+    category: {},
 	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
     testtmp: {},
 };

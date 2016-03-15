@@ -286,6 +286,12 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		name: string;
 		getName() : string;
 		setName(name : string): void;
+		locale: string;
+		getLocale() : string;
+		setLocale(locale : string): void;
+		category: number;
+		getCategory() : number;
+		setCategory(category : number): void;
 		description?: string;
 		getDescription() : string;
 		setDescription(description : string): void;
@@ -772,6 +778,12 @@ declare module Proto2TypeScript.ChannerProto {
 		name: string;
 		getName() : string;
 		setName(name : string): void;
+		locale: string;
+		getLocale() : string;
+		setLocale(locale : string): void;
+		category: number;
+		getCategory() : number;
+		setCategory(category : number): void;
 		description?: string;
 		getDescription() : string;
 		setDescription(description : string): void;
@@ -797,9 +809,15 @@ declare module Proto2TypeScript.ChannerProto {
 declare module Proto2TypeScript.ChannerProto {
 
 	export interface ChannelListRequest extends ProtoBufModel {
-		category?: ChannelListRequest.Category;
-		getCategory() : ChannelListRequest.Category;
-		setCategory(category : ChannelListRequest.Category): void;
+		query: ChannelListRequest.QueryType;
+		getQuery() : ChannelListRequest.QueryType;
+		setQuery(query : ChannelListRequest.QueryType): void;
+		locale?: string;
+		getLocale() : string;
+		setLocale(locale : string): void;
+		category?: number;
+		getCategory() : number;
+		setCategory(category : number): void;
 		limit?: number;
 		getLimit() : number;
 		setLimit(limit : number): void;
@@ -812,13 +830,13 @@ declare module Proto2TypeScript.ChannerProto {
 		//decode(buffer: NodeBuffer) : ChannelListRequest;
 		//decode(buffer: ByteArrayBuffer) : ChannelListRequest;
 		decode64(buffer: string) : ChannelListRequest;
-		Category: ChannelListRequest.Category;
+		QueryType: ChannelListRequest.QueryType;
 		
 	}	
 }
 
 declare module Proto2TypeScript.ChannerProto.ChannelListRequest {
-	export const enum Category {
+	export const enum QueryType {
 		None = 0,
 		New = 1,
 		Popular = 2,
@@ -1049,17 +1067,18 @@ declare module Proto2TypeScript.ChannerProto.Error {
 	export const enum Type {
 		Unknown = 0,
 		Timeout = 1,
-		Login_InvalidAuth = 2,
-		Login_UserNotFound = 3,
-		Login_UserAlreadyExists = 4,
-		Login_OutdatedVersion = 5,
-		Login_DatabaseError = 6,
-		Login_BrokenClientData = 7,
-		Rescue_DatabaseError = 10,
-		Rescue_CannotRescue = 11,
-		Rescue_InvalidAuth = 12,
-		ChannelCreate_DatabaseError = 20,
-		ChannelList_DatabaseError = 30,
+		InvalidPayload = 2,
+		Login_InvalidAuth = 10,
+		Login_UserNotFound = 11,
+		Login_UserAlreadyExists = 12,
+		Login_OutdatedVersion = 13,
+		Login_DatabaseError = 14,
+		Login_BrokenClientData = 15,
+		Rescue_DatabaseError = 20,
+		Rescue_CannotRescue = 21,
+		Rescue_InvalidAuth = 22,
+		ChannelCreate_DatabaseError = 30,
+		ChannelList_DatabaseError = 40,
 		
 	}
 }

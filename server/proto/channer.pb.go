@@ -241,39 +241,39 @@ func (x *Model_Reaction_Type) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type ChannelListRequest_Category int32
+type ChannelListRequest_QueryType int32
 
 const (
-	ChannelListRequest_None    ChannelListRequest_Category = 0
-	ChannelListRequest_New     ChannelListRequest_Category = 1
-	ChannelListRequest_Popular ChannelListRequest_Category = 2
+	ChannelListRequest_None    ChannelListRequest_QueryType = 0
+	ChannelListRequest_New     ChannelListRequest_QueryType = 1
+	ChannelListRequest_Popular ChannelListRequest_QueryType = 2
 )
 
-var ChannelListRequest_Category_name = map[int32]string{
+var ChannelListRequest_QueryType_name = map[int32]string{
 	0: "None",
 	1: "New",
 	2: "Popular",
 }
-var ChannelListRequest_Category_value = map[string]int32{
+var ChannelListRequest_QueryType_value = map[string]int32{
 	"None":    0,
 	"New":     1,
 	"Popular": 2,
 }
 
-func (x ChannelListRequest_Category) Enum() *ChannelListRequest_Category {
-	p := new(ChannelListRequest_Category)
+func (x ChannelListRequest_QueryType) Enum() *ChannelListRequest_QueryType {
+	p := new(ChannelListRequest_QueryType)
 	*p = x
 	return p
 }
-func (x ChannelListRequest_Category) String() string {
-	return proto.EnumName(ChannelListRequest_Category_name, int32(x))
+func (x ChannelListRequest_QueryType) String() string {
+	return proto.EnumName(ChannelListRequest_QueryType_name, int32(x))
 }
-func (x *ChannelListRequest_Category) UnmarshalJSON(data []byte) error {
-	value, err := proto.UnmarshalJSONEnum(ChannelListRequest_Category_value, data, "ChannelListRequest_Category")
+func (x *ChannelListRequest_QueryType) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(ChannelListRequest_QueryType_value, data, "ChannelListRequest_QueryType")
 	if err != nil {
 		return err
 	}
-	*x = ChannelListRequest_Category(value)
+	*x = ChannelListRequest_QueryType(value)
 	return nil
 }
 
@@ -282,48 +282,51 @@ type Error_Type int32
 const (
 	Error_Unknown                     Error_Type = 0
 	Error_Timeout                     Error_Type = 1
-	Error_Login_InvalidAuth           Error_Type = 2
-	Error_Login_UserNotFound          Error_Type = 3
-	Error_Login_UserAlreadyExists     Error_Type = 4
-	Error_Login_OutdatedVersion       Error_Type = 5
-	Error_Login_DatabaseError         Error_Type = 6
-	Error_Login_BrokenClientData      Error_Type = 7
-	Error_Rescue_DatabaseError        Error_Type = 10
-	Error_Rescue_CannotRescue         Error_Type = 11
-	Error_Rescue_InvalidAuth          Error_Type = 12
-	Error_ChannelCreate_DatabaseError Error_Type = 20
-	Error_ChannelList_DatabaseError   Error_Type = 30
+	Error_InvalidPayload              Error_Type = 2
+	Error_Login_InvalidAuth           Error_Type = 10
+	Error_Login_UserNotFound          Error_Type = 11
+	Error_Login_UserAlreadyExists     Error_Type = 12
+	Error_Login_OutdatedVersion       Error_Type = 13
+	Error_Login_DatabaseError         Error_Type = 14
+	Error_Login_BrokenClientData      Error_Type = 15
+	Error_Rescue_DatabaseError        Error_Type = 20
+	Error_Rescue_CannotRescue         Error_Type = 21
+	Error_Rescue_InvalidAuth          Error_Type = 22
+	Error_ChannelCreate_DatabaseError Error_Type = 30
+	Error_ChannelList_DatabaseError   Error_Type = 40
 )
 
 var Error_Type_name = map[int32]string{
 	0:  "Unknown",
 	1:  "Timeout",
-	2:  "Login_InvalidAuth",
-	3:  "Login_UserNotFound",
-	4:  "Login_UserAlreadyExists",
-	5:  "Login_OutdatedVersion",
-	6:  "Login_DatabaseError",
-	7:  "Login_BrokenClientData",
-	10: "Rescue_DatabaseError",
-	11: "Rescue_CannotRescue",
-	12: "Rescue_InvalidAuth",
-	20: "ChannelCreate_DatabaseError",
-	30: "ChannelList_DatabaseError",
+	2:  "InvalidPayload",
+	10: "Login_InvalidAuth",
+	11: "Login_UserNotFound",
+	12: "Login_UserAlreadyExists",
+	13: "Login_OutdatedVersion",
+	14: "Login_DatabaseError",
+	15: "Login_BrokenClientData",
+	20: "Rescue_DatabaseError",
+	21: "Rescue_CannotRescue",
+	22: "Rescue_InvalidAuth",
+	30: "ChannelCreate_DatabaseError",
+	40: "ChannelList_DatabaseError",
 }
 var Error_Type_value = map[string]int32{
 	"Unknown":                     0,
 	"Timeout":                     1,
-	"Login_InvalidAuth":           2,
-	"Login_UserNotFound":          3,
-	"Login_UserAlreadyExists":     4,
-	"Login_OutdatedVersion":       5,
-	"Login_DatabaseError":         6,
-	"Login_BrokenClientData":      7,
-	"Rescue_DatabaseError":        10,
-	"Rescue_CannotRescue":         11,
-	"Rescue_InvalidAuth":          12,
-	"ChannelCreate_DatabaseError": 20,
-	"ChannelList_DatabaseError":   30,
+	"InvalidPayload":              2,
+	"Login_InvalidAuth":           10,
+	"Login_UserNotFound":          11,
+	"Login_UserAlreadyExists":     12,
+	"Login_OutdatedVersion":       13,
+	"Login_DatabaseError":         14,
+	"Login_BrokenClientData":      15,
+	"Rescue_DatabaseError":        20,
+	"Rescue_CannotRescue":         21,
+	"Rescue_InvalidAuth":          22,
+	"ChannelCreate_DatabaseError": 30,
+	"ChannelList_DatabaseError":   40,
 }
 
 func (x Error_Type) Enum() *Error_Type {
@@ -654,10 +657,12 @@ func (m *Model_Rescue) GetValidDate() int64 {
 type Model_Channel struct {
 	Id          UUID   `protobuf:"varint,1,req,name=id,casttype=UUID" json:"id"`
 	Name        string `protobuf:"bytes,2,req,name=name" json:"name"`
-	Description string `protobuf:"bytes,3,opt,name=description" json:"description"`
-	Style       string `protobuf:"bytes,4,req,name=style" json:"style"`
-	Established UUID   `protobuf:"varint,5,req,name=established,casttype=UUID" json:"established"`
-	Options     []byte `protobuf:"bytes,6,req,name=options" json:"options"`
+	Locale      string `protobuf:"bytes,3,req,name=locale" json:"locale"`
+	Category    uint32 `protobuf:"varint,4,req,name=category" json:"category"`
+	Description string `protobuf:"bytes,5,opt,name=description" json:"description"`
+	Style       string `protobuf:"bytes,6,req,name=style" json:"style"`
+	Established UUID   `protobuf:"varint,7,req,name=established,casttype=UUID" json:"established"`
+	Options     []byte `protobuf:"bytes,8,req,name=options" json:"options"`
 }
 
 func (m *Model_Channel) Reset()         { *m = Model_Channel{} }
@@ -676,6 +681,20 @@ func (m *Model_Channel) GetName() string {
 		return m.Name
 	}
 	return ""
+}
+
+func (m *Model_Channel) GetLocale() string {
+	if m != nil {
+		return m.Locale
+	}
+	return ""
+}
+
+func (m *Model_Channel) GetCategory() uint32 {
+	if m != nil {
+		return m.Category
+	}
+	return 0
 }
 
 func (m *Model_Channel) GetDescription() string {
@@ -1261,9 +1280,11 @@ func (m *RescueRequest) GetWalltime() uint64 {
 
 type ChannelCreateRequest struct {
 	Name        string                 `protobuf:"bytes,1,req,name=name" json:"name"`
-	Description string                 `protobuf:"bytes,2,opt,name=description" json:"description"`
-	Style       string                 `protobuf:"bytes,3,opt,name=style" json:"style"`
-	Options     *Model_Channel_Options `protobuf:"bytes,4,opt,name=options" json:"options,omitempty"`
+	Locale      string                 `protobuf:"bytes,2,req,name=locale" json:"locale"`
+	Category    uint32                 `protobuf:"varint,3,req,name=category" json:"category"`
+	Description string                 `protobuf:"bytes,4,opt,name=description" json:"description"`
+	Style       string                 `protobuf:"bytes,5,opt,name=style" json:"style"`
+	Options     *Model_Channel_Options `protobuf:"bytes,6,opt,name=options" json:"options,omitempty"`
 }
 
 func (m *ChannelCreateRequest) Reset()         { *m = ChannelCreateRequest{} }
@@ -1275,6 +1296,20 @@ func (m *ChannelCreateRequest) GetName() string {
 		return m.Name
 	}
 	return ""
+}
+
+func (m *ChannelCreateRequest) GetLocale() string {
+	if m != nil {
+		return m.Locale
+	}
+	return ""
+}
+
+func (m *ChannelCreateRequest) GetCategory() uint32 {
+	if m != nil {
+		return m.Category
+	}
+	return 0
 }
 
 func (m *ChannelCreateRequest) GetDescription() string {
@@ -1299,19 +1334,35 @@ func (m *ChannelCreateRequest) GetOptions() *Model_Channel_Options {
 }
 
 type ChannelListRequest struct {
-	Category ChannelListRequest_Category `protobuf:"varint,1,opt,name=category,enum=ChannerProto.ChannelListRequest_Category" json:"category"`
-	Limit    int32                       `protobuf:"varint,2,opt,name=limit" json:"limit"`
+	Query    ChannelListRequest_QueryType `protobuf:"varint,1,req,name=query,enum=ChannerProto.ChannelListRequest_QueryType" json:"query"`
+	Locale   string                       `protobuf:"bytes,2,opt,name=locale" json:"locale"`
+	Category uint32                       `protobuf:"varint,3,opt,name=category" json:"category"`
+	Limit    int32                        `protobuf:"varint,4,opt,name=limit" json:"limit"`
 }
 
 func (m *ChannelListRequest) Reset()         { *m = ChannelListRequest{} }
 func (m *ChannelListRequest) String() string { return proto.CompactTextString(m) }
 func (*ChannelListRequest) ProtoMessage()    {}
 
-func (m *ChannelListRequest) GetCategory() ChannelListRequest_Category {
+func (m *ChannelListRequest) GetQuery() ChannelListRequest_QueryType {
+	if m != nil {
+		return m.Query
+	}
+	return ChannelListRequest_None
+}
+
+func (m *ChannelListRequest) GetLocale() string {
+	if m != nil {
+		return m.Locale
+	}
+	return ""
+}
+
+func (m *ChannelListRequest) GetCategory() uint32 {
 	if m != nil {
 		return m.Category
 	}
-	return ChannelListRequest_None
+	return 0
 }
 
 func (m *ChannelListRequest) GetLimit() int32 {
@@ -1756,7 +1807,7 @@ func init() {
 	proto.RegisterEnum("ChannerProto.Model_Channel_IdentityLevel", Model_Channel_IdentityLevel_name, Model_Channel_IdentityLevel_value)
 	proto.RegisterEnum("ChannerProto.Model_Channel_TopicDisplayStyle", Model_Channel_TopicDisplayStyle_name, Model_Channel_TopicDisplayStyle_value)
 	proto.RegisterEnum("ChannerProto.Model_Reaction_Type", Model_Reaction_Type_name, Model_Reaction_Type_value)
-	proto.RegisterEnum("ChannerProto.ChannelListRequest_Category", ChannelListRequest_Category_name, ChannelListRequest_Category_value)
+	proto.RegisterEnum("ChannerProto.ChannelListRequest_QueryType", ChannelListRequest_QueryType_name, ChannelListRequest_QueryType_value)
 	proto.RegisterEnum("ChannerProto.Error_Type", Error_Type_name, Error_Type_value)
 	proto.RegisterEnum("ChannerProto.Payload_Type", Payload_Type_name, Payload_Type_value)
 }
@@ -2026,17 +2077,24 @@ func (m *Model_Channel) MarshalTo(data []byte) (int, error) {
 	i += copy(data[i:], m.Name)
 	data[i] = 0x1a
 	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Locale)))
+	i += copy(data[i:], m.Locale)
+	data[i] = 0x20
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Category))
+	data[i] = 0x2a
+	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Description)))
 	i += copy(data[i:], m.Description)
-	data[i] = 0x22
+	data[i] = 0x32
 	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Style)))
 	i += copy(data[i:], m.Style)
-	data[i] = 0x28
+	data[i] = 0x38
 	i++
 	i = encodeVarintChanner(data, i, uint64(m.Established))
 	if m.Options != nil {
-		data[i] = 0x32
+		data[i] = 0x42
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(m.Options)))
 		i += copy(data[i:], m.Options)
@@ -2584,14 +2642,21 @@ func (m *ChannelCreateRequest) MarshalTo(data []byte) (int, error) {
 	i += copy(data[i:], m.Name)
 	data[i] = 0x12
 	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Locale)))
+	i += copy(data[i:], m.Locale)
+	data[i] = 0x18
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Category))
+	data[i] = 0x22
+	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Description)))
 	i += copy(data[i:], m.Description)
-	data[i] = 0x1a
+	data[i] = 0x2a
 	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Style)))
 	i += copy(data[i:], m.Style)
 	if m.Options != nil {
-		data[i] = 0x22
+		data[i] = 0x32
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.Options.Size()))
 		n8, err := m.Options.MarshalTo(data[i:])
@@ -2620,8 +2685,15 @@ func (m *ChannelListRequest) MarshalTo(data []byte) (int, error) {
 	_ = l
 	data[i] = 0x8
 	i++
+	i = encodeVarintChanner(data, i, uint64(m.Query))
+	data[i] = 0x12
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Locale)))
+	i += copy(data[i:], m.Locale)
+	data[i] = 0x18
+	i++
 	i = encodeVarintChanner(data, i, uint64(m.Category))
-	data[i] = 0x10
+	data[i] = 0x20
 	i++
 	i = encodeVarintChanner(data, i, uint64(m.Limit))
 	return i, nil
@@ -3308,6 +3380,9 @@ func (m *Model_Channel) Size() (n int) {
 	n += 1 + sovChanner(uint64(m.Id))
 	l = len(m.Name)
 	n += 1 + l + sovChanner(uint64(l))
+	l = len(m.Locale)
+	n += 1 + l + sovChanner(uint64(l))
+	n += 1 + sovChanner(uint64(m.Category))
 	l = len(m.Description)
 	n += 1 + l + sovChanner(uint64(l))
 	l = len(m.Style)
@@ -3520,6 +3595,9 @@ func (m *ChannelCreateRequest) Size() (n int) {
 	_ = l
 	l = len(m.Name)
 	n += 1 + l + sovChanner(uint64(l))
+	l = len(m.Locale)
+	n += 1 + l + sovChanner(uint64(l))
+	n += 1 + sovChanner(uint64(m.Category))
 	l = len(m.Description)
 	n += 1 + l + sovChanner(uint64(l))
 	l = len(m.Style)
@@ -3534,6 +3612,9 @@ func (m *ChannelCreateRequest) Size() (n int) {
 func (m *ChannelListRequest) Size() (n int) {
 	var l int
 	_ = l
+	n += 1 + sovChanner(uint64(m.Query))
+	l = len(m.Locale)
+	n += 1 + l + sovChanner(uint64(l))
 	n += 1 + sovChanner(uint64(m.Category))
 	n += 1 + sovChanner(uint64(m.Limit))
 	return n
@@ -4780,6 +4861,56 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 			hasFields[0] |= uint64(0x00000002)
 		case 3:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Locale", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Locale = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000004)
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Category", wireType)
+			}
+			m.Category = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Category |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000008)
+		case 5:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
 			}
 			var stringLen uint64
@@ -4807,7 +4938,7 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 			}
 			m.Description = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Style", wireType)
 			}
@@ -4836,8 +4967,8 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 			}
 			m.Style = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-			hasFields[0] |= uint64(0x00000004)
-		case 5:
+			hasFields[0] |= uint64(0x00000010)
+		case 7:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Established", wireType)
 			}
@@ -4856,8 +4987,8 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 					break
 				}
 			}
-			hasFields[0] |= uint64(0x00000008)
-		case 6:
+			hasFields[0] |= uint64(0x00000020)
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Options", wireType)
 			}
@@ -4885,7 +5016,7 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 			}
 			m.Options = append([]byte{}, data[iNdEx:postIndex]...)
 			iNdEx = postIndex
-			hasFields[0] |= uint64(0x00000010)
+			hasFields[0] |= uint64(0x00000040)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -4908,12 +5039,18 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("name")
 	}
 	if hasFields[0]&uint64(0x00000004) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("style")
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("locale")
 	}
 	if hasFields[0]&uint64(0x00000008) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("established")
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("category")
 	}
 	if hasFields[0]&uint64(0x00000010) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("style")
+	}
+	if hasFields[0]&uint64(0x00000020) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("established")
+	}
+	if hasFields[0]&uint64(0x00000040) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("options")
 	}
 
@@ -7274,6 +7411,56 @@ func (m *ChannelCreateRequest) Unmarshal(data []byte) error {
 			hasFields[0] |= uint64(0x00000001)
 		case 2:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Locale", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Locale = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000002)
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Category", wireType)
+			}
+			m.Category = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Category |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000004)
+		case 4:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
 			}
 			var stringLen uint64
@@ -7301,7 +7488,7 @@ func (m *ChannelCreateRequest) Unmarshal(data []byte) error {
 			}
 			m.Description = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Style", wireType)
 			}
@@ -7330,7 +7517,7 @@ func (m *ChannelCreateRequest) Unmarshal(data []byte) error {
 			}
 			m.Style = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Options", wireType)
 			}
@@ -7381,6 +7568,12 @@ func (m *ChannelCreateRequest) Unmarshal(data []byte) error {
 	if hasFields[0]&uint64(0x00000001) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("name")
 	}
+	if hasFields[0]&uint64(0x00000002) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("locale")
+	}
+	if hasFields[0]&uint64(0x00000004) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("category")
+	}
 
 	if iNdEx > l {
 		return io.ErrUnexpectedEOF
@@ -7388,6 +7581,7 @@ func (m *ChannelCreateRequest) Unmarshal(data []byte) error {
 	return nil
 }
 func (m *ChannelListRequest) Unmarshal(data []byte) error {
+	var hasFields [1]uint64
 	l := len(data)
 	iNdEx := 0
 	for iNdEx < l {
@@ -7418,6 +7612,55 @@ func (m *ChannelListRequest) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Query", wireType)
+			}
+			m.Query = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Query |= (ChannelListRequest_QueryType(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000001)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Locale", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Locale = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Category", wireType)
 			}
 			m.Category = 0
@@ -7430,12 +7673,12 @@ func (m *ChannelListRequest) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Category |= (ChannelListRequest_Category(b) & 0x7F) << shift
+				m.Category |= (uint32(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 2:
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Limit", wireType)
 			}
@@ -7468,6 +7711,9 @@ func (m *ChannelListRequest) Unmarshal(data []byte) error {
 			}
 			iNdEx += skippy
 		}
+	}
+	if hasFields[0]&uint64(0x00000001) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("query")
 	}
 
 	if iNdEx > l {

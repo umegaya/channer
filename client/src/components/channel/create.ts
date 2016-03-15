@@ -1,6 +1,7 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, PropConditions, PropCollection} from "../../uikit"
+import {m, Util, PropConditions, PropCollection, 
+    ArrayModelCollection, categories} from "../../uikit"
 import {TopComponent} from "../top"
 import {MenuElementComponent} from "../menu"
 import {Config} from "../../config"
@@ -8,6 +9,7 @@ import {Handler, Builder} from "../../proto"
 import {ProtoError} from "../../watcher"
 import {RadioComponent} from "../parts/radio"
 import {TextFieldComponent} from "../parts/textfield"
+import {PulldownComponent} from "../parts/pulldown"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 var Button = window.channer.parts.Button;
@@ -52,6 +54,10 @@ var cond: PropConditions = {
             init: texts.DEFAULT_DESCRIPTION, 
             fallback: "",
         },
+        category: {
+            init: categories.source[0],
+            fallback: "1",
+        },
         style: {
             init: texts.DEFAULT_STYLE_URL, 
             fallback: "",
@@ -89,8 +95,11 @@ export class ChannelCreateController implements UI.Controller {
             options.identity = vals["idlevel"];
             options.topic_post_limit = parseInt(vals["postlimit"], 10);
             options.topic_display_style = vals["display"];
-            conn.channel_create(vals["name"], vals["desc"], vals["style"], options)
-            .then((r: ChannerProto.ChannelCreateResponse) => {
+            //TODO: should locale be choosable?
+            conn.channel_create(
+                vals["name"], vals["category"], null, 
+                vals["desc"], vals["style"], options
+            ).then((r: ChannerProto.ChannelCreateResponse) => {
                 console.log("new channel create:" + r.channel.id);
                 this.component.input.clear(); //cleanup input data
                 Util.route("/channel/" + r.channel.id);
@@ -154,18 +163,30 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
                 value: props["name"],
                 onchange: ctrl.onchange,
             }),
+            m.component(PulldownComponent, categories, null, {
+                label: _L("Category"),
+                required: true,
+                value: props["category"],
+                onchange: ctrl.onchange,
+            }),
+        ]));
+        buttons.push(sendbutton(ctrl));
+        buttons.push(nextbutton(ctrl, _L("Add Description")));
+        break;
+    case 2:
+        elements.push(m(".form", [
             m.component(TextFieldComponent, {
                 label: texts.DEFAULT_DESCRIPTION,
                 multiline: true,
-                rows: 3,
+                rows: 7,
                 value: props["desc"],
                 onchange: ctrl.onchange,
-            })
+            }),
         ]));
-        buttons.push(sendbutton(ctrl));
+        buttons.push(backbutton(ctrl));
         buttons.push(nextbutton(ctrl, _L("Detail")));
-        break;
-    case 2:
+        break;    
+    case 3:
         //idlevel radiobox
         var idlevel = props["idlevel"];
         var idlevel_block = [m(".title", _L("identity level"))];
@@ -203,12 +224,12 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
         }
         elements.push(m(".form", [
             m(".block.id-level", idlevel_block),
-            m(".block.display-style", disp_block)
+            m(".block.display-style", disp_block),
         ]));
         buttons.push(backbutton(ctrl));
         buttons.push(nextbutton(ctrl, _L("Next")));
         break;
-    case 3:
+    case 4:
         //anon signature
         elements.push(m(".form", [
             m.component(TextFieldComponent, {
@@ -222,11 +243,6 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
                 type: 'number',
                 onchange: ctrl.onchange,
             }),
-            m.component(TextFieldComponent, {
-                label: texts.DEFAULT_STYLE_URL,
-                value: props["style"],
-                onchange: ctrl.onchange,
-            })
         ]));
         buttons.push(backbutton(ctrl));
         buttons.push(sendbutton(ctrl));

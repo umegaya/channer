@@ -127,5 +127,14 @@
     },
     "Next": {
         "ja": "次へ"
+    },
+    "Add Description": {
+        "ja": "説明を追加"
+    },
+    "Category": {
+        "ja": "カテゴリー"
+    },
+    "Priority Locale": {
+        "ja": "優先する言語"
     }
 }

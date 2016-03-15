@@ -76,10 +76,12 @@ message Model {
 		}
 		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string name = 2;
-		optional string description = 3;
-		required string style = 4;
-		required uint64 established = 5 [(gogoproto.casttype) = "UUID"];	//account id which create this channel TODO: forum creation limit per account.
-		required bytes options = 6;
+		required string locale = 3;
+		required uint32 category = 4;
+		optional string description = 5;
+		required string style = 6;
+		required uint64 established = 7 [(gogoproto.casttype) = "UUID"];	//account id which create this channel TODO: forum creation limit per account.
+		required bytes options = 8;
 	}
 
 	message Device {
@@ -188,19 +190,23 @@ message RescueRequest {
 
 message ChannelCreateRequest {
 	required string name = 1;
-	optional string description = 2;
-	optional string style = 3;
-	optional Model.Channel.Options options = 4;
+	required string locale = 2;
+	required uint32 category = 3;
+	optional string description = 4;
+	optional string style = 5;
+	optional Model.Channel.Options options = 6;
 }
 
 message ChannelListRequest {
-	enum Category {
+	enum QueryType {
 		None = 0;
 		New = 1;
 		Popular = 2;
 	}
-	optional Category category = 1;
-	optional int32 limit = 2;
+	required QueryType query = 1;
+	optional string locale = 2;
+	optional uint32 category = 3;
+	optional int32 limit = 4;
 
 }
 
@@ -256,20 +262,22 @@ message Error {
 	enum Type {
 		Unknown = 0;
 		Timeout = 1;
-		Login_InvalidAuth = 2;
-		Login_UserNotFound = 3;
-		Login_UserAlreadyExists = 4;
-		Login_OutdatedVersion = 5;
-		Login_DatabaseError = 6;
-		Login_BrokenClientData = 7;
+		InvalidPayload = 2;
 
-		Rescue_DatabaseError = 10;
-		Rescue_CannotRescue = 11;
-		Rescue_InvalidAuth = 12;
+		Login_InvalidAuth = 10;
+		Login_UserNotFound = 11;
+		Login_UserAlreadyExists = 12;
+		Login_OutdatedVersion = 13;
+		Login_DatabaseError = 14;
+		Login_BrokenClientData = 15;
 
-		ChannelCreate_DatabaseError = 20;
+		Rescue_DatabaseError = 20;
+		Rescue_CannotRescue = 21;
+		Rescue_InvalidAuth = 22;
 
-		ChannelList_DatabaseError = 30;
+		ChannelCreate_DatabaseError = 30;
+
+		ChannelList_DatabaseError = 40;
 	}
 	required Type type = 1;
 	optional string explanation = 2;

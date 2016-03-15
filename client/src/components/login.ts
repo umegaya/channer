@@ -73,7 +73,7 @@ class LoginController implements UI.Controller {
                 replace_history: true,
             });
 		}, (e: ProtoError) => {
-			console.log("login error:" + e.message);
+			console.log("login error:" + e.message + "|" + m.route());
 			if (e.payload.type == ChannerProto.Error.Type.Login_OutdatedVersion) {
 				console.log("reload app for updating client:" + window.channer.config.client_version);
 				Util.restart_app();

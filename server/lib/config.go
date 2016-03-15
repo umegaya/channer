@@ -24,6 +24,7 @@ type Config struct {
 	EpocMillis          uint64      `json:"epoc_millis"`
 	ExternalInterface   string      `json:"external_interface"`
 	EpocNode            bool
+	DataPath			string      `json:"data_path"`
 }
 
 //check_and_fill check configuration, if configuration seems not set, 

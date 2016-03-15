@@ -38,15 +38,15 @@ function ChannelInfoView(
             m(".idlevel.idlevel-" + options.identity, idlevel_text[options.identity])
         ),
     ]));
-    return m(".block", {
+    return m(".block", <UI.Attributes>{
         id: "channel-" + model.id,
         href: "/channel/" + model.id,
         onclick: m.withAttr("href", Util.route),
     }, elems);
 }
-class _ChannelList extends ListComponent {
+class ChannelList extends ListComponent {
     constructor() {
         super(ChannelInfoView);
     }
 }
-export var ChannelListComponent: _ChannelList = new _ChannelList();
+export var ChannelListComponent: ChannelList = new ChannelList();

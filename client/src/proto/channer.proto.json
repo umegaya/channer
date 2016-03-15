@@ -227,22 +227,34 @@
                                     "id": 2
                                 },
                                 {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "locale",
+                                    "id": 3
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint32",
+                                    "name": "category",
+                                    "id": 4
+                                },
+                                {
                                     "rule": "optional",
                                     "type": "string",
                                     "name": "description",
-                                    "id": 3
+                                    "id": 5
                                 },
                                 {
                                     "rule": "required",
                                     "type": "string",
                                     "name": "style",
-                                    "id": 4
+                                    "id": 6
                                 },
                                 {
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "established",
-                                    "id": 5,
+                                    "id": 7,
                                     "options": {
                                         "(gogoproto.casttype)": "UUID"
                                     }
@@ -251,7 +263,7 @@
                                     "rule": "required",
                                     "type": "bytes",
                                     "name": "options",
-                                    "id": 6
+                                    "id": 8
                                 }
                             ],
                             "messages": [
@@ -821,22 +833,34 @@
                             "id": 1
                         },
                         {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "locale",
+                            "id": 2
+                        },
+                        {
+                            "rule": "required",
+                            "type": "uint32",
+                            "name": "category",
+                            "id": 3
+                        },
+                        {
                             "rule": "optional",
                             "type": "string",
                             "name": "description",
-                            "id": 2
+                            "id": 4
                         },
                         {
                             "rule": "optional",
                             "type": "string",
                             "name": "style",
-                            "id": 3
+                            "id": 5
                         },
                         {
                             "rule": "optional",
                             "type": "Model.Channel.Options",
                             "name": "options",
-                            "id": 4
+                            "id": 6
                         }
                     ]
                 },
@@ -844,21 +868,33 @@
                     "name": "ChannelListRequest",
                     "fields": [
                         {
-                            "rule": "optional",
-                            "type": "Category",
-                            "name": "category",
+                            "rule": "required",
+                            "type": "QueryType",
+                            "name": "query",
                             "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "locale",
+                            "id": 2
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "uint32",
+                            "name": "category",
+                            "id": 3
                         },
                         {
                             "rule": "optional",
                             "type": "int32",
                             "name": "limit",
-                            "id": 2
+                            "id": 4
                         }
                     ],
                     "enums": [
                         {
-                            "name": "Category",
+                            "name": "QueryType",
                             "values": [
                                 {
                                     "name": "None",
@@ -1033,48 +1069,52 @@
                                     "id": 1
                                 },
                                 {
-                                    "name": "Login_InvalidAuth",
+                                    "name": "InvalidPayload",
                                     "id": 2
                                 },
                                 {
-                                    "name": "Login_UserNotFound",
-                                    "id": 3
-                                },
-                                {
-                                    "name": "Login_UserAlreadyExists",
-                                    "id": 4
-                                },
-                                {
-                                    "name": "Login_OutdatedVersion",
-                                    "id": 5
-                                },
-                                {
-                                    "name": "Login_DatabaseError",
-                                    "id": 6
-                                },
-                                {
-                                    "name": "Login_BrokenClientData",
-                                    "id": 7
-                                },
-                                {
-                                    "name": "Rescue_DatabaseError",
+                                    "name": "Login_InvalidAuth",
                                     "id": 10
                                 },
                                 {
-                                    "name": "Rescue_CannotRescue",
+                                    "name": "Login_UserNotFound",
                                     "id": 11
                                 },
                                 {
-                                    "name": "Rescue_InvalidAuth",
+                                    "name": "Login_UserAlreadyExists",
                                     "id": 12
                                 },
                                 {
-                                    "name": "ChannelCreate_DatabaseError",
+                                    "name": "Login_OutdatedVersion",
+                                    "id": 13
+                                },
+                                {
+                                    "name": "Login_DatabaseError",
+                                    "id": 14
+                                },
+                                {
+                                    "name": "Login_BrokenClientData",
+                                    "id": 15
+                                },
+                                {
+                                    "name": "Rescue_DatabaseError",
                                     "id": 20
                                 },
                                 {
-                                    "name": "ChannelList_DatabaseError",
+                                    "name": "Rescue_CannotRescue",
+                                    "id": 21
+                                },
+                                {
+                                    "name": "Rescue_InvalidAuth",
+                                    "id": 22
+                                },
+                                {
+                                    "name": "ChannelCreate_DatabaseError",
                                     "id": 30
+                                },
+                                {
+                                    "name": "ChannelList_DatabaseError",
+                                    "id": 40
                                 }
                             ]
                         }

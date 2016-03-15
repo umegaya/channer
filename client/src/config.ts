@@ -38,6 +38,8 @@ export class UserSettingsValues {
 	last_url: string;
     last_page_url: string;
 	mail: string;
+    search_category: string;
+    search_locale: string;
 	private secure_random = (): string => {
 		var array = new Uint8Array(16);
 		window.crypto.getRandomValues(array);
@@ -85,6 +87,8 @@ export class UserSettings implements Persistable {
 			this.values.last_url = loaded.last_url;
 			this.values.last_page_url = loaded.last_page_url;
 			this.values.mail = loaded.mail;
+			this.values.search_category = loaded.search_category;
+			this.values.search_locale = loaded.search_locale;
 		}
 	}
 	write = (): string => {

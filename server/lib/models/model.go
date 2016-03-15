@@ -39,7 +39,7 @@ type Dbif interface {
 
 var dbm Database
 
-func Init(db_addr, certs, host_addr string) error {
+func Init(db_addr, certs, host_addr, data_path string) error {
 	schema := "http"
 	if len(certs) > 0 {
 		schema = "https"
@@ -73,6 +73,11 @@ func Init(db_addr, certs, host_addr string) error {
     	return err
     }
     log.Printf("model initialized")
+    //import data
+    if err := Import(data_path); err != nil {
+    	log.Printf("Import data: %v", err)    	
+    	return err
+    }
     return nil
 }
 
@@ -95,7 +100,13 @@ func StoreColumns(dbif Dbif, record interface {}, columns []string) (int64, erro
 	}, record)
 }
 
-func (dbm *Database) Stmt(stmt string) string {
+func (dbm *Database) Stmt(stmt string, args ...interface{}) string {
+	if len(args) > 0 {
+		_args := []interface{} { dbm.Name }
+		_args = append(_args, args...)
+		log.Printf("sql: %v", fmt.Sprintf(stmt, _args...))
+		return fmt.Sprintf(stmt, _args...)
+	}
 	return fmt.Sprintf(stmt, dbm.Name)
 }
 

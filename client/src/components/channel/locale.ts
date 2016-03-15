@@ -10,7 +10,7 @@ var _L = window.channer.l10n.translate;
 export class LocaleCollection implements ModelCollection {
     locales: Array<{key:string, value:any}>;
     constructor() {
-        this.locales = window.channer.l10n.localeSettings();
+        this.locales = [];
     }
     map = (fn: (m: {key:string, value:any}) => void): Array<any> => {
         return this.locales.map(fn);

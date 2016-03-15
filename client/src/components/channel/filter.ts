@@ -1,28 +1,52 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, Template} from "../../uikit"
-import {TopComponent} from "../top"
+import {m, Util, Template, ModelCollection, categories, locales} from "../../uikit"
 import {MenuElementComponent} from "../menu"
-import {LocaleListComponent, LocaleCollection} from "./locale"
+import {PulldownComponent} from "../parts/pulldown"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 
 class ChannelFilterController implements UI.Controller {
 	component: ChannelFilter;
-    select_locale: UI.Property<boolean>;
-    select_category: UI.Property<boolean>;
+    locale: UI.Property<string>;
+    category: UI.Property<string>;
 
 	constructor(component: ChannelFilter) {
 		this.component = component;
-        this.select_locale = m.prop(false);
-        this.select_category = m.prop(false);
+        this.locale = m.prop(this.current_locale());
+        this.category = m.prop(window.channer.settings.values.search_category || "");
 	}
-    onlocale = (locale: string) => {
-        
+    current_locale = (): string => {
+        return window.channer.l10n.localeNameFromCode(
+            window.channer.settings.values.search_locale
+        ) || "";
     }
-    oncategory = (category: string) => {
-        
+    onchange_locale = (locale: {key: string, value: string}) => {
+        window.channer.settings.values.search_locale = locale.key;
+        window.channer.settings.save();
+        this.locale(this.current_locale());
     }
+    onchange_category = (category: string) => {
+        window.channer.settings.values.search_category = category;
+        window.channer.settings.save();
+    }
+}
+function ChannelFilterView(ctrl: ChannelFilterController) : UI.Element {
+    return m(".filter", [
+        m.component(PulldownComponent, categories, null, {
+            label: _L("Category"),
+            value: ctrl.category,
+            onchange: ctrl.onchange_category,
+        }),
+        m.component(PulldownComponent, locales, null, {
+            label: _L("Priority Locale"),
+            value: ctrl.locale,
+            onchange: ctrl.onchange_locale,
+            infoview: (c: ModelCollection, model: {key: string, value: string}): UI.Element => {
+                return model.value;
+            }
+        }),        
+    ]);
 }
 class ChannelFilter extends MenuElementComponent {
     constructor() {
@@ -32,7 +56,7 @@ class ChannelFilter extends MenuElementComponent {
         return new ChannelFilterController(this);
     }
     menuview = (ctrl: ChannelFilterController): UI.Element => {
-    	return m(".filter");
+    	return ChannelFilterView(ctrl);
     }
     iconview = (): UI.Element => {
         return this.format_iconview("img.search_channel", _L("filter channel"));

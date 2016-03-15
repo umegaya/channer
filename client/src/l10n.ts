@@ -96,7 +96,7 @@ class L10n {
         });
         return df.promise;
     }
-    localeSettings = (): Array<{key:string, value:any}> => {
+    private ensureInitSetting() {
         if (!this.settings) {
             this.settings = [];
             var data = L10n.supportedLanguages[this.language] || L10n.supportedLanguages["en"];
@@ -111,8 +111,20 @@ class L10n {
                 var key: string = keys[i];
                 this.settings.push({key: key, value: data[key]});
             }
-        }
+        }        
+    }
+    localeSettings = (): Array<{key:string, value:string}> => {
+        this.ensureInitSetting();
         return this.settings;
+    }
+    localeNameFromCode = (code: string): string => {
+        this.ensureInitSetting();
+        for (var k in this.settings) {
+            if (this.settings[k].key == code) {
+                return this.settings[k].value;
+            }
+        }
+        return null;
     }
 }
 window.channer.l10n = new L10n(navigator.globalization, JSON.parse(require("./l10n/data.json")));

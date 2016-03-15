@@ -57,10 +57,14 @@ export class Handler {
     }
 	private send = (p: ChannerProto.Payload, e?: ChannerProto.Error.Type, no_redraw?:boolean): Q.Promise<Model> => {
 		var df : Q.Deferred<Model> = Q.defer<Model>();
+		if (!no_redraw) {
+			df.promise.done(this.redraw, this.redraw);
+		}
 		if (e) {
 			//return error with same manner when error caused by server
-			setTimeout(function () {
-				df.reject(new ProtoError({ type: e }));
+			setTimeout(() => {
+                this.last_error = new ProtoError({ type: e }, errorMessages[e]);
+				df.reject(this.last_error);
 			}, 1);
 			return df.promise;
 		}
@@ -71,6 +75,13 @@ export class Handler {
         }
         catch (e) {
             console.error("socket send error:" + e.message);
+			setTimeout(() => {
+                this.last_error = new ProtoError(
+                    { type: ChannerProto.Error.Type.InvalidPayload }, 
+                    errorMessages[ChannerProto.Error.Type.InvalidPayload]);
+				df.reject(this.last_error);
+			}, 1);
+			return df.promise;
         }
         this.querying = true;
         try {
@@ -90,9 +101,6 @@ export class Handler {
         catch (e) {
             console.error("subscribe_response error: " + e.message);
         }
-		if (!no_redraw) {
-			df.promise.done(this.redraw, this.redraw);
-		}
 		return df.promise;
 	}
 	private ontimer = (nowms: number) => {
@@ -100,12 +108,12 @@ export class Handler {
             this.redraw();
         }
 		else if ((nowms - this.last_ping) > window.channer.config.ping_interval_ms) {
-			/*this.ping(nowms).then((m: ChannerProto.PingResponse) => {
+			this.ping(nowms).then((m: ChannerProto.PingResponse) => {
 				this.latency = (Timer.now() - m.walltime);
 				//console.log("ping latency:" + this.latency);
 			}, (e: ProtoError) => {
 				console.log("ping error:" + e.message);
-			});*/
+			});
 			this.last_ping = nowms;
 		}
 		if ((nowms - this.last_auth) > window.channer.config.auth_interval_ms) {
@@ -249,29 +257,37 @@ export class Handler {
 		p.rescue_request = req;
 		return this.send(p);
 	}
-    channel_create = (name: string, desc?: string, style?: string, 
+    channel_create = (name: string, category: string, locale?: string, 
+        desc?: string, style?: string, 
         options?: ChannerProto.Model.Channel.Options): Q.Promise<Model> => {
         var req = new Builder.ChannelCreateRequest();
         req.name = name;
         req.description = desc;
         req.style = style;
         req.options = options;
+        req.category = window.channer.category.to_id(category);
+        req.locale = locale || window.channer.l10n.language;
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.ChannelCreateRequest;
         p.channel_create_request = req;
         return this.send(p);
     }
-    channel_list = (category?: string, limit?: number): Q.Promise<Model> => {
+    channel_list = (query: string, locale?: string, 
+        category?: number, limit?: number): Q.Promise<Model> => {
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.ChannelListRequest;
         var req = new Builder.ChannelListRequest();
         var map : {
-            [k:string]:ChannerProto.ChannelListRequest.Category
+            [k:string]:ChannerProto.ChannelListRequest.QueryType
         } = {
-            "latest": ChannerProto.ChannelListRequest.Category.New,
-            "popular": ChannerProto.ChannelListRequest.Category.Popular,
+            "latest": ChannerProto.ChannelListRequest.QueryType.New,
+            "popular": ChannerProto.ChannelListRequest.QueryType.Popular,
         }
-        req.category = map[category];
+        req.query = map[query];
+        req.locale = locale || window.channer.settings.values.search_locale;
+        req.category = category || window.channer.category.to_id(
+            window.channer.settings.values.search_category
+        );
         req.limit = limit || null;
         p.channel_list_request = req;
         return this.send(p);

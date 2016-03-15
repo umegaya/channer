@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"strings"
+
 	proto "../../proto"
 )
 
@@ -10,7 +13,10 @@ type Channel struct {
 }
 
 func InitChannel() {
-	create_table(Channel{}, "channels", "Id").AddIndex("established", "INDEX", []string{"Established"})
+	t := create_table(Channel{}, "channels", "Id")
+	t.AddIndex("established", "INDEX", []string{"Established"})
+	t.AddIndex("category", "INDEX", []string{"Category"})
+	t.AddIndex("locale", "INDEX", []string{"Locale"})
 }
 
 const CHANNEL_FETCH_LIMIT = 10
@@ -33,6 +39,8 @@ func NewChannel(dbif Dbif, a *Account, req *proto.ChannelCreateRequest) (*Channe
 			Name: req.Name, 
 			Description: req.Description,
 			Style: req.Style,
+			Locale: req.Locale,
+			Category: req.Category,
 			Established: a.Id,
 			Options: bytes,
 		},
@@ -53,8 +61,19 @@ func ListChannel(dbif Dbif, req *proto.ChannelListRequest) ([]*proto.Model_Chann
 	} else {
 		limit = CHANNEL_FETCH_LIMIT
 	}
-	//TODO: respect category parameter of req.
-	chs, err := dbif.Select(Channel{}, dbm.Stmt("select * from %s.channels order by id desc limit $1"), limit)
+	tmp := make([]string, 0)
+	cond := ""
+	if req.Category > 0 {
+		tmp = append(tmp, fmt.Sprintf("category = %d", req.Category))
+	}
+	if len(req.Locale) > 0 {
+		tmp = append(tmp, fmt.Sprintf("locale = '%s'", req.Locale))
+	}
+	if len(tmp) > 0 {
+		cond = "where " + strings.Join(tmp, " AND ")
+	}
+	//TODO: how to handle "popular" query type?
+	chs, err := dbif.Select(Channel{}, dbm.Stmt("select * from %s.channels %s order by id desc limit $1", cond), limit)
 	if err != nil {
 		return nil, err
 	}

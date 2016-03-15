@@ -4,6 +4,7 @@ import ChannerProto = Proto2TypeScript.ChannerProto;
 export var errorMessages : { [x: number]: string } = []
 
 errorMessages[ChannerProto.Error.Type.Timeout] = "request timeout";
+errorMessages[ChannerProto.Error.Type.InvalidPayload] = "invalid payload sent";
 
 errorMessages[ChannerProto.Error.Type.Login_InvalidAuth] = "Login: authentification failure";
 errorMessages[ChannerProto.Error.Type.Login_UserNotFound] = "Login: user not found";

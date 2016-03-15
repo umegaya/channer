@@ -152,7 +152,9 @@ func (sv *FrontServer) init() {
 	}
 	packets.Init(&a);
 	//initialize models
-	if err := models.Init(config.DBHost, config.DBCertPath, config.NodeIpv4Address); err != nil {
+	if err := models.Init(
+			config.DBHost, config.DBCertPath, 
+			config.NodeIpv4Address, config.DataPath); err != nil {
 		log.Fatal(err)
 	}
 	sv.assets = &a	

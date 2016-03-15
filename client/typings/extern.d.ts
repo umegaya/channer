@@ -35,12 +35,18 @@ interface ChannerModules {
 	storage: any;
 	patch: any;
 	mobile: boolean;
+    category: {
+        data: Array<any>;
+        to_id: (cat: string) => number;
+        from_id: (id: number) => string;
+    };
     router: () => void;
     l10n: { 
         translate(text: string, ...args:Array<any>): string; 
         translateDate(date: Date): any;
         setuplang(): any;
         localeSettings(): any;
+        localeNameFromCode(code: string): string;
         language: string;
     };
     jsloader_promise: any;

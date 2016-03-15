@@ -15,12 +15,11 @@ export interface ProtoErrorModel {
 }
 export class ProtoError extends Error {
 	payload: ProtoErrorModel;
+    message: string;
 	constructor(m: ProtoErrorModel, message?: string) {
-        if (!message && m) {
-            message = m.type.toString();
-        }
-		super(message);
+        super(message);
 		this.payload = m;
+        this.message = message;
 	}
 }
 class ProtoMap {
