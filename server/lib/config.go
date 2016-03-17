@@ -25,6 +25,7 @@ type Config struct {
 	ExternalInterface   string      `json:"external_interface"`
 	EpocNode            bool
 	DataPath			string      `json:"data_path"`
+	InsertFixture		bool		`json:"insert_fixture"`
 }
 
 //check_and_fill check configuration, if configuration seems not set, 

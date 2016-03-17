@@ -154,7 +154,8 @@ func (sv *FrontServer) init() {
 	//initialize models
 	if err := models.Init(
 			config.DBHost, config.DBCertPath, 
-			config.NodeIpv4Address, config.DataPath); err != nil {
+			config.NodeIpv4Address, config.DataPath, 
+			config.InsertFixture); err != nil {
 		log.Fatal(err)
 	}
 	sv.assets = &a	

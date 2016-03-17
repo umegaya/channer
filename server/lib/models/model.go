@@ -15,6 +15,7 @@ type Database struct {
 	gorp.DbMap
 	Name string
 	node *Node
+	InsertFixture bool
 }
 type Txn struct {
 	*gorp.Transaction
@@ -39,7 +40,7 @@ type Dbif interface {
 
 var dbm Database
 
-func Init(db_addr, certs, host_addr, data_path string) error {
+func Init(db_addr, certs, host_addr, data_path string, insert_fixture bool) error {
 	schema := "http"
 	if len(certs) > 0 {
 		schema = "https"
@@ -49,7 +50,10 @@ func Init(db_addr, certs, host_addr, data_path string) error {
 		return err
 	}
 	//setup database
-	dbm = Database{gorp.DbMap{Db: db, Dialect: gorp.NewCockroachDialect()}, "channer", nil}
+	dbm = Database{
+		gorp.DbMap{Db: db, Dialect: gorp.NewCockroachDialect()}, 
+		"channer", nil, insert_fixture,
+	}
 	//add model 
 	InitNode()
 	InitAccount()

@@ -4,5 +4,6 @@
 	"assets_config_url": "http://localhost:9999/assets/config.json",
 	"database_cert": "",
 	"disable_origin_check": true,
-	"external_interface": "lo0"
+	"external_interface": "lo0",
+	"insert_fixture": true
 }

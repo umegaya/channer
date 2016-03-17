@@ -343,6 +343,7 @@ export class ListComponent implements UI.Component {
         base.item = base.item || ((model: any) => { 
             return this.elemview(models, model, elem_options); 
         });
+        base.maxPreloadPages = base.maxPreloadPages || 1;
         base.pageData = base.pageData || models.fetch;
         return base;
     }

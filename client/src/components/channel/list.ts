@@ -19,7 +19,7 @@ function ChannelInfoView(
     var copied = model.options.slice();
     var options = Builder.Model.Channel.Options.decode(copied);
     var elems: Array<UI.Element> = [];
-    elems.push(m(".title-h2.name", model.name));
+    elems.push(m(".title-h2.name", model.name + "/" + model.locale + "," + model.category));
     elems.push(m(".desc", model.description || _L("no description")));
     elems.push(m(".attributes", [
         m(".attr", [

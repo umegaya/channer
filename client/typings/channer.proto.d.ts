@@ -198,9 +198,9 @@ declare module Proto2TypeScript.ChannerProto {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Account extends ProtoBufModel {
-		id: number;
-		getId() : number;
-		setId(id : number): void;
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
 		user: string;
 		getUser() : string;
 		setUser(user : string): void;
@@ -258,9 +258,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		id: ByteBuffer;
 		getId() : ByteBuffer;
 		setId(id : ByteBuffer): void;
-		account: string;
-		getAccount() : string;
-		setAccount(account : string): void;
+		account: Long;
+		getAccount() : Long;
+		setAccount(account : Long): void;
 		valid_date: number;
 		getValidDate() : number;
 		setValidDate(validDate : number): void;
@@ -280,9 +280,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Channel extends ProtoBufModel {
-		id: number;
-		getId() : number;
-		setId(id : number): void;
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
 		name: string;
 		getName() : string;
 		setName(name : string): void;
@@ -402,9 +402,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Node extends ProtoBufModel {
-		id: number;
-		getId() : number;
-		setId(id : number): void;
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
 		address: string;
 		getAddress() : string;
 		setAddress(address : string): void;
@@ -427,15 +427,15 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Persona extends ProtoBufModel {
-		id: number;
-		getId() : number;
-		setId(id : number): void;
-		channel: number;
-		getChannel() : number;
-		setChannel(channel : number): void;
-		account: number;
-		getAccount() : number;
-		setAccount(account : number): void;
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
+		channel: Long;
+		getChannel() : Long;
+		setChannel(channel : Long): void;
+		account: Long;
+		getAccount() : Long;
+		setAccount(account : Long): void;
 		name: string;
 		getName() : string;
 		setName(name : string): void;
@@ -455,15 +455,15 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Post extends ProtoBufModel {
-		id: number;
-		getId() : number;
-		setId(id : number): void;
-		topic: number;
-		getTopic() : number;
-		setTopic(topic : number): void;
-		persona: number;
-		getPersona() : number;
-		setPersona(persona : number): void;
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
+		topic: Long;
+		getTopic() : Long;
+		setTopic(topic : Long): void;
+		persona: Long;
+		getPersona() : Long;
+		setPersona(persona : Long): void;
 		attr: number;
 		getAttr() : number;
 		setAttr(attr : number): void;
@@ -486,12 +486,15 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Topic extends ProtoBufModel {
-		id: number;
-		getId() : number;
-		setId(id : number): void;
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
 		name: string;
 		getName() : string;
 		setName(name : string): void;
+		upvote: number;
+		getUpvote() : number;
+		setUpvote(upvote : number): void;
 		
 	}
 	
@@ -508,18 +511,18 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Reaction extends ProtoBufModel {
-		id: number;
-		getId() : number;
-		setId(id : number): void;
-		post: number;
-		getPost() : number;
-		setPost(post : number): void;
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
+		post: Long;
+		getPost() : Long;
+		setPost(post : Long): void;
 		type: Reaction.Type;
 		getType() : Reaction.Type;
 		setType(type : Reaction.Type): void;
-		persona: number;
-		getPersona() : number;
-		setPersona(persona : number): void;
+		persona: Long;
+		getPersona() : Long;
+		setPersona(persona : Long): void;
 		text: string;
 		getText() : string;
 		setText(text : string): void;
@@ -550,15 +553,15 @@ declare module Proto2TypeScript.ChannerProto.Model.Reaction {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Service extends ProtoBufModel {
-		id: number;
-		getId() : number;
-		setId(id : number): void;
-		channel: number;
-		getChannel() : number;
-		setChannel(channel : number): void;
-		account: number;
-		getAccount() : number;
-		setAccount(account : number): void;
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
+		channel: Long;
+		getChannel() : Long;
+		setChannel(channel : Long): void;
+		account: Long;
+		getAccount() : Long;
+		setAccount(account : Long): void;
 		
 	}
 	
@@ -587,9 +590,9 @@ declare module Proto2TypeScript.ChannerProto {
 		mail?: string;
 		getMail() : string;
 		setMail(mail : string): void;
-		id?: string;
-		getId() : string;
-		setId(id : string): void;
+		id?: Long;
+		getId() : Long;
+		setId(id : Long): void;
 		sign?: string;
 		getSign() : string;
 		setSign(sign : string): void;
@@ -621,9 +624,9 @@ declare module Proto2TypeScript.ChannerProto {
 declare module Proto2TypeScript.ChannerProto {
 
 	export interface PostRequest extends ProtoBufModel {
-		topic_id: number;
-		getTopicId() : number;
-		setTopicId(topicId : number): void;
+		topic_id: Long;
+		getTopicId() : Long;
+		setTopicId(topicId : Long): void;
 		walltime: number;
 		getWalltime() : number;
 		setWalltime(walltime : number): void;
@@ -671,9 +674,9 @@ declare module Proto2TypeScript.ChannerProto {
 declare module Proto2TypeScript.ChannerProto {
 
 	export interface ReadRequest extends ProtoBufModel {
-		topic_id: number;
-		getTopicId() : number;
-		setTopicId(topicId : number): void;
+		topic_id: Long;
+		getTopicId() : Long;
+		setTopicId(topicId : Long): void;
 		read_post_ts: HLC;
 		getReadPostTs() : HLC;
 		setReadPostTs(readPostTs : HLC): void;
@@ -693,9 +696,9 @@ declare module Proto2TypeScript.ChannerProto {
 declare module Proto2TypeScript.ChannerProto {
 
 	export interface EnterTopicRequest extends ProtoBufModel {
-		topic_id: number;
-		getTopicId() : number;
-		setTopicId(topicId : number): void;
+		topic_id: Long;
+		getTopicId() : Long;
+		setTopicId(topicId : Long): void;
 		
 	}
 	
@@ -712,9 +715,9 @@ declare module Proto2TypeScript.ChannerProto {
 declare module Proto2TypeScript.ChannerProto {
 
 	export interface ExitTopicRequest extends ProtoBufModel {
-		topic_id: number;
-		getTopicId() : number;
-		setTopicId(topicId : number): void;
+		topic_id: Long;
+		getTopicId() : Long;
+		setTopicId(topicId : Long): void;
 		
 	}
 	
@@ -750,9 +753,9 @@ declare module Proto2TypeScript.ChannerProto {
 declare module Proto2TypeScript.ChannerProto {
 
 	export interface RescueRequest extends ProtoBufModel {
-		account: string;
-		getAccount() : string;
-		setAccount(account : string): void;
+		account: Long;
+		getAccount() : Long;
+		setAccount(account : Long): void;
 		sign: string;
 		getSign() : string;
 		setSign(sign : string): void;
@@ -821,6 +824,9 @@ declare module Proto2TypeScript.ChannerProto {
 		limit?: number;
 		getLimit() : number;
 		setLimit(limit : number): void;
+		offset_id?: Long;
+		getOffsetId() : Long;
+		setOffsetId(offsetId : Long): void;
 		
 	}
 	
@@ -847,9 +853,9 @@ declare module Proto2TypeScript.ChannerProto.ChannelListRequest {
 declare module Proto2TypeScript.ChannerProto {
 
 	export interface LoginResponse extends ProtoBufModel {
-		id: string;
-		getId() : string;
-		setId(id : string): void;
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
 		secret: string;
 		getSecret() : string;
 		setSecret(secret : string): void;

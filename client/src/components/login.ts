@@ -62,7 +62,7 @@ class LoginController implements UI.Controller {
 			console.log("login success!:" + r.secret + "|" + r.id);
 			window.channer.settings.values.secret = r.secret;
 			window.channer.settings.values.mail = r.mail || mail;
-			window.channer.settings.values.account_id = r.id;
+			window.channer.settings.values.account_id = r.id.toString();
 			window.channer.settings.values.user = r.user || user;
 			if (r.pass) {
 				window.channer.settings.values.pass = r.pass;

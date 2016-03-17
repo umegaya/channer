@@ -9,8 +9,10 @@ import Q = require('q');
 import ChannerProto = Proto2TypeScript.ChannerProto;
 
 var ProtoBuf = window.channer.ProtoBuf;
+//TODO: recover original value more respectively
+var proto_def = (<string>require('channer.proto.json')).replace(/Long/g, "fixed64");
 export var Builder : Proto2TypeScript.ChannerProtoBuilder 
-	= window.channer.ProtoBuf.loadJson(require('channer.proto.json')).build("ChannerProto");
+	= window.channer.ProtoBuf.loadJson(proto_def).build("ChannerProto");
 
 export class Handler {
 	watcher: ProtoWatcher;
@@ -164,8 +166,8 @@ export class Handler {
 		this.deactivate_limit_ms = 0;
 		this.timer.remove(this.deactivate_timer);
 	}
-	private signature = (user: string, secret: string, walltime: number): string => {
-		return (new window.channer.hash.SHA256()).b64(walltime + user + secret);
+	private signature = (user: Long, secret: string, walltime: number): string => {
+		return (new window.channer.hash.SHA256()).b64(walltime + user.toString() + secret);
 	}
     reconnect_duration = (): number => {
         return this.socket.reconnect_duration();
@@ -272,7 +274,7 @@ export class Handler {
         p.channel_create_request = req;
         return this.send(p);
     }
-    channel_list = (query: string, locale?: string, 
+    channel_list = (query: string, offset_id: Long, locale?: string, 
         category?: number, limit?: number): Q.Promise<Model> => {
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.ChannelListRequest;
@@ -289,10 +291,11 @@ export class Handler {
             window.channer.settings.values.search_category
         );
         req.limit = limit || null;
+        req.offset_id = offset_id || null;
         p.channel_list_request = req;
         return this.send(p);
     }
-	post = (topic_id: number, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
+	post = (topic_id: Long, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
 		var post = new Builder.Post();
 		post.text = text;
 		if (options) {

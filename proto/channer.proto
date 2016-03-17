@@ -39,7 +39,7 @@ message Model {
 			Banned = 1;
 			Admin = 2;
 		}
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string user = 2;
 		required Type type = 3;
 		required string secret = 4;
@@ -51,7 +51,7 @@ message Model {
 
 	message Rescue {
 		required bytes id = 1;
-		required string account = 2;
+		required fixed64 account = 2 [(gogoproto.casttype) = "UUID"];
 		required int64 valid_date = 3;
 	}
 
@@ -74,7 +74,7 @@ message Model {
 			optional uint32 topic_post_limit = 3;				//how many post can be posted to same topic?
 			optional string anonymous_name = 4;					//how anonymous to be shown its name? eg. 名無しさん.
 		}
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string name = 2;
 		required string locale = 3;
 		required uint32 category = 4;
@@ -93,29 +93,30 @@ message Model {
 	}
 
 	message Node {
-		required uint32 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string address = 2;
 		required uint64 seed = 3;
 	}
 
 	message Persona {
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required uint64 channel = 2 [(gogoproto.casttype) = "UUID"];
-		required uint64 account = 3 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 channel = 2 [(gogoproto.casttype) = "UUID"];
+		required fixed64 account = 3 [(gogoproto.casttype) = "UUID"];
 		required string name = 4;
 	}
 
 	message Post {
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"]; 
-		required uint64 topic = 2 [(gogoproto.casttype) = "UUID"];//parent topic id
-		required uint64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who post it.
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"]; 
+		required fixed64 topic = 2 [(gogoproto.casttype) = "UUID"];//parent topic id
+		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who post it.
 		required uint64 attr = 4;//attr flag (banned or something)
 		required string text = 5;//posted text
 	}
 
 	message Topic {
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string name = 2;
+		required uint32 upvote = 3;
 	}
 
 	message Reaction {
@@ -125,17 +126,17 @@ message Model {
 			Other = 2;
 			Admin = 3;
 		}
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required uint64 post = 2 [(gogoproto.casttype) = "UUID"]; //parent post id
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 post = 2 [(gogoproto.casttype) = "UUID"]; //parent post id
 		required Type type = 3;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
-		required uint64 persona = 4 [(gogoproto.casttype) = "UUID"];//persona who react it.
+		required fixed64 persona = 4 [(gogoproto.casttype) = "UUID"];//persona who react it.
 		required string text = 5;//0: empty string, 1: emoji definition. 2: misc data (maybe JSON)
 	}
 
 	message Service {
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required uint64 channel = 2 [(gogoproto.casttype) = "UUID"];
-		required uint64 account = 3 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 channel = 2 [(gogoproto.casttype) = "UUID"];
+		required fixed64 account = 3 [(gogoproto.casttype) = "UUID"];
 	}
 }
 
@@ -145,7 +146,7 @@ message LoginRequest {
 	required string user = 2;
 	required string version = 3;
 	optional string mail = 4;
-	optional string id = 5 [(gogoproto.nullable) = true]; //actually uint64 integer. but js isnt good at handle this.
+	optional fixed64 id = 5 [(gogoproto.nullable) = true, (gogoproto.casttype) = "UUID"]; //actually uint64 integer. but js isnt good at handle this.
 	optional string sign = 6 [(gogoproto.nullable) = true]; //walltime + username + password + salt with sha256 
 	optional string pass = 7 [(gogoproto.nullable) = true]; //only first time (before this client receive unique salt from server)
 	optional string device_id = 8 [(gogoproto.nullable) = true]; //if sent from mobile device, it should be specified
@@ -154,7 +155,7 @@ message LoginRequest {
 }
 
 message PostRequest {
-	required uint64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
+	required fixed64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
 	required uint64 walltime = 2;
 	required Post post = 3;
 }
@@ -166,16 +167,16 @@ message FetchRequest {
 }
 
 message ReadRequest {
-	required uint64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
+	required fixed64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
 	required HLC read_post_ts = 2;
 }
 
 message EnterTopicRequest {
-	required uint64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
+	required fixed64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
 }
 
 message ExitTopicRequest {
-	required uint64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
+	required fixed64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
 }
 
 message PingRequest {
@@ -183,7 +184,7 @@ message PingRequest {
 }
 
 message RescueRequest {
-	required string account = 1;
+	required fixed64 account = 1 [(gogoproto.casttype) = "UUID"];
 	required string sign = 2;
 	required uint64 walltime = 3;
 }
@@ -207,14 +208,14 @@ message ChannelListRequest {
 	optional string locale = 2;
 	optional uint32 category = 3;
 	optional int32 limit = 4;
-
+	optional fixed64 offset_id = 5 [(gogoproto.nullable) = true];
 }
 
 
 
 //response
 message LoginResponse {
-	required string id = 1;  //actually uint64 integer. but js isnt good at handle this.
+	required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 	required string secret = 2;
 	optional string pass = 3 [(gogoproto.nullable) = true];
 	optional string mail = 4 [(gogoproto.nullable) = true];

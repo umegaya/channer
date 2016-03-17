@@ -22,7 +22,7 @@ func InitAccount() {
 	create_table(Account{}, "accounts", "Id")
 }
 
-func NewAccount(dbif Dbif, id *string, typ proto.Model_Account_Type, user string, mail string) (*Account, bool, error) {
+func NewAccount(dbif Dbif, id *proto.UUID, typ proto.Model_Account_Type, user string, mail string) (*Account, bool, error) {
 	a := &Account{}
 	created := false
 	if id == nil {
@@ -37,11 +37,7 @@ func NewAccount(dbif Dbif, id *string, typ proto.Model_Account_Type, user string
 		log.Printf("a = %v", a)
 		created = true
 	} else {
-		tmp, err := strconv.ParseUint(*id, ACCOUNT_ID_BASE, 64)
-		if err != nil {
-			return nil, false, err
-		}
-		a.Id = proto.UUID(tmp)
+		a.Id = *id
 	}
 	if err := dbif.SelectOne(a, dbm.Stmt("select * from %s.accounts where id=$1"), a.Id); err != nil {
 		return nil, false, err
@@ -49,14 +45,10 @@ func NewAccount(dbif Dbif, id *string, typ proto.Model_Account_Type, user string
 	return a, created, nil
 }
 
-func FindAccount(dbif Dbif, id string) (*Account, error) {
-	tmp, err := strconv.ParseUint(id, ACCOUNT_ID_BASE, 64)
-	if err != nil {
-		return nil, err
-	}
+func FindAccount(dbif Dbif, id proto.UUID) (*Account, error) {
 	a := &Account{
 		proto.Model_Account {
-			Id: proto.UUID(tmp),
+			Id: id,
 		},
 	}
 	if err := dbif.SelectOne(a, dbm.Stmt("select * from %s.accounts where id=$1"), a.Id); err != nil {
@@ -88,22 +80,22 @@ func calc_sha256(source string) string {
 }
 
 //compute_sign is calculate signature of login request.
-func compute_sign(id, secret string, walltime uint64) string {
-	src := strconv.FormatUint(walltime, 10) + id + secret
+func compute_sign(id uint64, secret string, walltime uint64) string {
+	src := strconv.FormatUint(walltime, 10) + strconv.FormatUint(id, 10) + secret
 	return calc_sha256(src)
 }
 
 //compute_user_secret calculates secret for users
-func compute_user_secret(id, pass string, walltime uint64) string {
-	return calc_sha256(strconv.FormatUint(walltime, 10) + id + pass + SECRET)
+func compute_user_secret(id uint64, pass string, walltime uint64) string {
+	return calc_sha256(strconv.FormatUint(walltime, 10) + strconv.FormatUint(id, 10) + pass + SECRET)
 }
 
 func (a *Account) ComputeSecret(pass string, walltime uint64) string {
-	return compute_user_secret(a.StringId(), pass, walltime)
+	return compute_user_secret(uint64(a.Id), pass, walltime)
 }
 
 func (a *Account) ComputeSign(walltime uint64) string {
-	return compute_sign(a.StringId(), a.Secret, walltime)
+	return compute_sign(uint64(a.Id), a.Secret, walltime)
 }
 
 func (a *Account) VerifySign(sign string, walltime uint64) bool {
@@ -111,7 +103,7 @@ func (a *Account) VerifySign(sign string, walltime uint64) bool {
 	if sign == computed {
 		return true
 	}
-	log.Printf("invalid sign %v:%v:%v:%v:%v", sign, computed, a.StringId(), a.Secret, walltime)
+	log.Printf("invalid sign %v:%v:%v:%v:%v", sign, computed, a.Id, a.Secret, walltime)
 	return false
 }
 

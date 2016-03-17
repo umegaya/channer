@@ -2,6 +2,8 @@
 
 import {m, Util, Template, ModelCollection, categories, locales} from "../../uikit"
 import {MenuElementComponent} from "../menu"
+import {BaseComponent} from "../../uikit"
+import {TopComponent} from "../top"
 import {PulldownComponent} from "../parts/pulldown"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
@@ -10,9 +12,11 @@ class ChannelFilterController implements UI.Controller {
 	component: ChannelFilter;
     locale: UI.Property<string>;
     category: UI.Property<string>;
+    dirty: boolean;
 
 	constructor(component: ChannelFilter) {
 		this.component = component;
+        this.dirty = false;
         this.locale = m.prop(this.current_locale());
         this.category = m.prop(window.channer.settings.values.search_category || "");
 	}
@@ -25,10 +29,17 @@ class ChannelFilterController implements UI.Controller {
         window.channer.settings.values.search_locale = locale.key;
         window.channer.settings.save();
         this.locale(this.current_locale());
+        this.dirty = true;
     }
     onchange_category = (category: string) => {
         window.channer.settings.values.search_category = category;
         window.channer.settings.save();
+        this.dirty = true;
+    }
+    onunload = () => {
+        if (this.dirty) {
+            (<TopComponent>(<BaseComponent>window.channer.components.Top).content).onunload();
+        }
     }
 }
 function ChannelFilterView(ctrl: ChannelFilterController) : UI.Element {

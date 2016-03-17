@@ -22,12 +22,11 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 			SendError(from, msgid, proto.Error_Rescue_CannotRescue)
 			return
 		}
-		tmp := a.StringId()
 		req.User = a.User
 		req.Mail = a.Mail
-		req.Id = &tmp
+		req.Id = &a.Id
 		req.Pass = &a.Pass 
-		log.Printf("account %v rescue is enabled %v, force override secret", a.StringId(), *rescue)
+		log.Printf("account %v rescue is enabled %v, force override secret", a.Id, *rescue)
 	}
 	walltime := req.Walltime
 	//update account database
@@ -70,11 +69,10 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	//set device information
 	device_type := req.DeviceType
 	device_id := req.DeviceId
-	idstr := a.StringId()
 	if device_id == nil {
 		//TODO: get unique identifier of browser and use it as device_id.
 		//(especially, if user uses mobile browser, how we identify it as same mobile device)
-		tmp_device_id := "browser:" + idstr
+		tmp_device_id := "browser:" + a.StringId()
 		tmp_device_type := "browser"
 		device_id = &tmp_device_id
 		device_type = &tmp_device_type
@@ -85,7 +83,7 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	}
 	//compute response
 	resp := &proto.LoginResponse{
-		Id: idstr,
+		Id: a.Id,
 		Secret: a.Secret,
 	}
 	if rescue != nil {
@@ -94,7 +92,7 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		resp.User = &req.User
 	}
 	//send post notification to all member in this Topic
-	log.Printf("secret:%v, id:%v", a.Secret, idstr)
+	log.Printf("secret:%v, id:%v", a.Secret, a.Id)
 	from.SetAccount(a)
 	from.Send(&proto.Payload {
 		Type: proto.Payload_LoginResponse,

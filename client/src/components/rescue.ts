@@ -38,13 +38,13 @@ function RescueView(ctrl: RescueController) : UI.Element {
     ];
 	var remain_nano = ctrl.remain_time();
 	if (remain_nano > 0) {
-		var hours = Math.floor((remain_nano / (1000000000 * 60 * 60)) * 10) / 10;
+		var hours = Math.floor(((remain_nano / 1000000000 * 60 * 60) * 10) / 10);
 		elems.push(m("div", {class: "div-text remain"}, 
             _L("url valid during $1 hours.", hours)));
 	}
 	elems.push([
 		m("textarea", {class: "textarea-readonly"}, ctrl.url()),
-		m("button", {
+		m("button", <UI.Attributes>{
 			onclick: ctrl.onsend,
 			class: "button-send", 
 		}, _L("Send")),

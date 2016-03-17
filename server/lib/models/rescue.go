@@ -18,7 +18,7 @@ func InitRescue() {
 	create_table(Rescue{}, "rescues", "Id").AddIndex("account", "INDEX", []string{"Account"})
 }
 
-func NewRescue(dbif Dbif, account string) (*Rescue, error) {
+func NewRescue(dbif Dbif, account proto.UUID) (*Rescue, error) {
 	res := &Rescue {
 		proto.Model_Rescue {
 			Id: make([]byte, 16),
