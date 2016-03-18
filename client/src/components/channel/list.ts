@@ -1,6 +1,7 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Template, Util, ListComponent, ModelCollection} from "../../uikit"
+import {m, Template, Util} from "../../uikit"
+import {ListComponent, ModelCollection} from "../parts/scroll"
 import {Handler, Builder} from "../../proto"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;

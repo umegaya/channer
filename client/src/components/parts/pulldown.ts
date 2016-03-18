@@ -1,5 +1,6 @@
 /// <reference path="../../../typings/extern.d.ts"/>
-import {m, ListComponent, ModelCollection} from "../../uikit"
+import {m} from "../../uikit"
+import {ListComponent, ModelCollection} from "./scroll"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var TextField = window.channer.parts.TextField;
 

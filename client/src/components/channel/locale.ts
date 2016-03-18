@@ -1,6 +1,7 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, Template, ListComponent, ModelCollection} from "../../uikit"
+import {m, Util, Template} from "../../uikit"
+import {ListComponent, ModelCollection} from "../parts/scroll"
 import {Handler, Builder} from "../../proto"
 import {MenuElementComponent} from "../menu"
 import {TopComponent} from "../top"
@@ -33,7 +34,7 @@ export class LocaleListComponent extends ListComponent {
             c: ModelCollection, 
             model: {key:string, value:any}
         ): UI.Element => {
-            return m(".block", { "data-value": model.key }, model.value);    
+            return m(".block", <UI.Attributes>{ "data-value": model.key }, model.value);    
         });
     }
 }

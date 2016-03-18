@@ -8,7 +8,6 @@ import Q = require('q');
 export var m : _mithril.MithrilStatic = window.channer.m;
 var _L = window.channer.l10n.translate;
 var _LD = window.channer.l10n.translateDate;
-var Scroll = window.channer.parts.Scroll;
 
 interface PropCondition {
     init: any;
@@ -257,102 +256,8 @@ export class Template {
     static datebylong(long: any, duration?:boolean) {
         return Template.date(Util.long2date(<Long>long), duration);
     }
-    static header(): UI.Element {
-        var elements : Array<UI.Element> = [];
-        var c : Handler = window.channer.conn;
-        var rd = c.reconnect_duration();
-        var err = c.last_error;
-        var msgs: UI.Element;
-        var attrs : any = {
-            class: "container full-length",
-        };
-        if (rd && rd > 0) {
-            //TODO: tap to reconnection
-            var tmp: Array<UI.Element> = [
-                m("div", {class: "msg wait-reconnect"},
-                    _L("reconnect within $1 second", rd)),
-            ];
-            if (c.reconnect_enabled()) {
-                tmp.push(m("div", {class: "connect"}, _L("do it now")));
-                attrs.onclick = () => { c.reconnect_now(); };
-            }
-            msgs = tmp;
-        }
-        else if (c.connected()) {
-            if (c.querying) {
-                //TODO: replace to cool CSS anim
-                msgs = m("div", {class: "msg"}, _L("sending request now"));
-            }
-            else if (err && err.message) {
-                msgs = [
-                    m("div", {class: "msg"}, err.message), 
-                    m("div", {class: "x"}, _L("dismiss"))
-                ];
-                attrs.onclick = () => { c.last_error = null; };
-            }
-            else {
-                msgs = m("div", {class: "msg"});
-            }
-            attrs.class = "container";
-            return m("div", {class: "header"}, 
-                m("div", {class: "stats"}, [
-                    m("div", attrs, msgs), 
-                    m("div", {class: "latency"}, c.latency + "ms")
-                ])
-            );
-        }
-        else if (c.connecting() || rd <= 0) {
-            msgs = m("div", {class: "msg"}, _L("reconnecting"));
-        }
-        return m("div", {class: "header"}, 
-            m("div", {class: "stats"}, m("div", attrs, msgs)));
-    }
 }
 
-export interface ModelCollection {
-    fetch(page: number): () => Array<any>;
-    refresh(): void;
-}
-export class ArrayModelCollection implements ModelCollection {
-    source: Array<any>;
-    constructor(source: Array<any>) {
-        this.source = source;
-    }
-    fetch = (page: number): () => Array<any> => {
-        if (page <= 1) {
-            return () => {
-                return this.source;
-            }
-        }
-        return () => { return []; }
-    }
-    refresh = () => {}
-}
-export class ListComponent implements UI.Component {
-	elemview: (c: ModelCollection, model: any, options?: any) => UI.Element;
-	constructor(view: (c: ModelCollection, model: any, options?: any) => UI.Element) {
-        this.elemview = view;
-	}
-    controller = (): any => {
-        return null;
-    }
-    mkoption = (models: ModelCollection, options?: any, elem_options?: any): UI.Attributes => {
-        var base = options || {}
-        base.name = base.name || "";
-        base.class = base.class || (base.name + " listview");
-        base.item = base.item || ((model: any) => { 
-            return this.elemview(models, model, elem_options); 
-        });
-        base.maxPreloadPages = base.maxPreloadPages || 1;
-        base.pageData = base.pageData || models.fetch;
-        return base;
-    }
-    view = (ctrl: any, models: ModelCollection, options?: any, elem_options?: any): UI.Element => {
-        return m(".scroll-container", 
-            m.component(Scroll, this.mkoption(models, options, elem_options))
-        );
-    }
-}
 export class BaseComponent implements UI.Component {
     static transit = window.channer.mtransit({
         anim: (last: Element, next: Element, dir: string, 
@@ -406,6 +311,3 @@ export interface PageFactory {
 export function Pagify(pf: PageFactory): BaseComponent {
     return new BaseComponent(new pf());
 }
-
-export var categories = new ArrayModelCollection(window.channer.category.data);
-export var locales = new ArrayModelCollection(window.channer.l10n.localeSettings());

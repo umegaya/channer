@@ -1,6 +1,7 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, Pagify, PageComponent, ModelCollection} from "../uikit"
+import {m, Util, Pagify, PageComponent} from "../uikit"
+import {ModelCollection} from "./parts/scroll"
 import {MenuElementComponent} from "./menu"
 import {Config} from "../config"
 import {Handler} from "../proto"
@@ -37,13 +38,6 @@ class ProtoModelChunk<T extends ProtoModel> {
     push = (coll: ProtoModelCollection<T>, model: T) => {
         this.list.push(model);
         coll.update_range(this, model);
-        var id = model.id;
-        if (this.start_id == null || this.start_id.lessThan(id)) { /* this.start_id < id */
-            this.start_id = id; 
-        }
-        if (this.end_id == null || this.end_id.greaterThan(id)) { /* this.end_id > id */
-            this.end_id = id;
-        }
     }
     pushList = (coll: ProtoModelCollection<T>, models: Array<T>) => {
         models.forEach((v: T) => {
