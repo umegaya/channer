@@ -3,7 +3,7 @@
 import {m, Util, Template} from "../../uikit"
 import {ModelCollection, categories, locales} from "../parts/scroll"
 import {MenuElementComponent} from "../menu"
-import {BaseComponent} from "../../uikit"
+import {BaseComponent} from "../base"
 import {TopComponent} from "../top"
 import {PulldownComponent} from "../parts/pulldown"
 import ChannerProto = Proto2TypeScript.ChannerProto;

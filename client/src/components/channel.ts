@@ -1,6 +1,7 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Pagify, PageComponent} from "../uikit"
+import {m} from "../uikit"
+import {Pagify, PageComponent} from "./base"
 import {ListComponent} from "./parts/scroll"
 import {MenuElementComponent, TransitMenuElementComponent} from "./menu"
 import {Config} from "../config"
@@ -32,7 +33,7 @@ export class ChannelController implements UI.Controller {
 	}
     
 	tab = (name: string) => {
-		return m("a", {
+		return m("a", <UI.Attributes>{
 			class: "Channel-tab" + (this.selected == name ? "_selected" : ""), 
 			onclick: function () { this.onchange(name) },
 		}, name);

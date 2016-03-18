@@ -1,6 +1,7 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Pagify, PageComponent} from "../uikit"
+import {m} from "../uikit"
+import {Pagify, PageComponent} from "./base"
 import {Config} from "../config"
 
 export class TopicController implements UI.Controller {

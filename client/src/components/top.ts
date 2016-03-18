@@ -1,6 +1,7 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, Pagify, PageComponent} from "../uikit"
+import {m, Util} from "../uikit"
+import {Pagify, PageComponent} from "./base"
 import {ModelCollection} from "./parts/scroll"
 import {MenuElementComponent} from "./menu"
 import {Config} from "../config"

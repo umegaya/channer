@@ -1,6 +1,7 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, Pagify, PageComponent} from "../uikit"
+import {m, Util} from "../uikit"
+import {Pagify, PageComponent} from "./base"
 import {Config} from "../config"
 import {ProtoError} from "../watcher"
 import ChannerProto = Proto2TypeScript.ChannerProto;

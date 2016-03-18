@@ -1,6 +1,7 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, Pagify, PageComponent, BaseComponent} from "../uikit"
+import {m, Util} from "../uikit"
+import {Pagify, PageComponent, BaseComponent} from "./base"
 import {HeaderComponent} from "./parts/header"
 import {Config} from "../config"
 import {ProtoError} from "../watcher"
