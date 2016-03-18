@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Template, Util} from "../../uikit"
+import {m, Util} from "../../uikit"
 import {ListComponent, ModelCollection} from "../parts/scroll"
 import {Handler, Builder} from "../../proto"
 import ChannerProto = Proto2TypeScript.ChannerProto;
@@ -25,7 +25,7 @@ function ChannelInfoView(
     elems.push(m(".attributes", [
         m(".attr", [
             m("img.clock"),
-            Template.datebyuuid(model.id, true)
+            Util.datebyuuid(model.id, true)
         ]),
         m(".attr", [
             m("img.user"),

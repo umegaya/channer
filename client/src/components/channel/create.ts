@@ -1,6 +1,7 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, PropConditions, PropCollection} from "../../uikit"
+import {m, Util} from "../../uikit"
+import {PropConditions, PropCollection} from "../../input/prop"
 import {ArrayModelCollection, categories} from "../parts/scroll"
 import {TopComponent} from "../top"
 import {MenuElementComponent} from "../menu"

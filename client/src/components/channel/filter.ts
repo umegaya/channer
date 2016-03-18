@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, Template} from "../../uikit"
+import {m, Util} from "../../uikit"
 import {ModelCollection, categories, locales} from "../parts/scroll"
 import {MenuElementComponent} from "../menu"
 import {BaseComponent} from "../base"

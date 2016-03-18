@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, Template} from "../../uikit"
+import {m, Util} from "../../uikit"
 import {Config} from "../../config"
 import {Handler, Builder} from "../../proto"
 import {ProtoError} from "../../watcher"
