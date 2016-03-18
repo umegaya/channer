@@ -2,7 +2,7 @@
 
 import {m, Util} from "../uikit"
 import {Pagify, PageComponent} from "./base"
-import {ModelCollection} from "./parts/scroll"
+import {ModelCollection, ProtoModelCollection, ProtoModelChunk} from "./parts/scroll"
 import {MenuElementComponent} from "./menu"
 import {Config} from "../config"
 import {Handler} from "../proto"
@@ -10,8 +10,7 @@ import {ChannelCreateComponent} from "./channel/create"
 import {ChannelListComponent} from "./channel/list"
 import {ChannelFilterComponent} from "./channel/filter"
 import ChannerProto = Proto2TypeScript.ChannerProto;
-import ProtoBufModel = Proto2TypeScript.ProtoBufModel;
-var Long = window.channer.ProtoBuf.Long;
+import Q = require('q');
 var _L = window.channer.l10n.translate;
 var Tabs = window.channer.parts.Tabs;
 
@@ -24,72 +23,7 @@ const TABS = [{
     id: "popular",
 }];
 
-interface ProtoModel extends ProtoBufModel {
-    id: Long;
-}
-class ProtoModelChunk<T extends ProtoModel> {
-    list: Array<T>;
-    initialized: boolean;
-    start_id: Long;
-    end_id: Long;
-    
-    constructor() {
-        this.list = [];
-    }
-    push = (coll: ProtoModelCollection<T>, model: T) => {
-        this.list.push(model);
-        coll.update_range(this, model);
-    }
-    pushList = (coll: ProtoModelCollection<T>, models: Array<T>) => {
-        models.forEach((v: T) => {
-            this.push(coll, v);
-        });
-        this.initialized = true;
-    }
-}
-class ProtoModelCollection<T extends ProtoModel> implements ModelCollection {
-    key: string;
-    chunks: Array<ProtoModelChunk<T>>;
-    constructor() {
-        //TODO: load from local store.
-        this.chunks = [];
-        //var conn : Handler = window.channer.conn;
-        //TODO: handling notification from server.
-		//conn.watcher.subscribe(ChannerProto.Payload.Type.PostNotify, this.onpostnotify);
-    }
-    refresh = () => {
-        this.chunks = [];
-        this.initkey();
-    }
-    offset_for = (page: number): Long => {
-        if (page < 2) {
-            return null;
-        }
-        else if (!this.chunks[page - 2]) {
-            throw new Error("invalid state: chunk not exist for " + (page - 1));
-        }
-        else {
-            var c = this.chunks[page - 2];
-            if (c.end_id) {
-                return c.end_id;
-            }
-            else {
-                return Long.UZERO;
-            }
-        }
-    }
-    initkey = () => {
-        throw new Error("override this");
-    }    
-    fetch = (page: number): () => Array<any> => {
-        throw new Error("override this");
-    }
-    update_range = (coll: ProtoModelChunk<T>, model: T) => {
-        throw new Error("override this");        
-    }
-}
 class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.Channel> {
-    static FETCH_LIMIT = 20;
     query: string;
     constructor(query: string) {
         super();
@@ -104,43 +38,14 @@ class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.Channel>
             + window.channer.settings.values.search_locale + ","
             + window.channer.settings.values.search_category;
     }
-    //TODO: refactor: move entire logic to base class. only actual fetch call overridden. (conn.channel_list)
-    fetch = (page: number): () => Array<any> => {
-        //console.log("fetch " + this.key + " for " + page);
-        var conn : Handler = window.channer.conn;
-        var chunk : ProtoModelChunk<ChannerProto.Model.Channel> = this.chunks[page - 1];
-        var extra_chunk : ProtoModelChunk<ChannerProto.Model.Channel>;
-        if (!chunk || !chunk.initialized) {
-            //console.error("client offset for " + this.key + "/" + page + " " +this.offset_for(page));
-            var offset = this.offset_for(page), limit = ChannelCollection.FETCH_LIMIT;
-            if (!offset) {
-                limit *= 2; 
-                extra_chunk = new ProtoModelChunk<ChannerProto.Model.Channel>();
-                this.chunks[page] = extra_chunk;
-            }
-            else if (offset.equals(Long.UZERO)) {
-                //previous query initialize chunk for this page also.
-                return () => {
-                    return chunk.list;
-                }
-            }
-            chunk = new ProtoModelChunk<ChannerProto.Model.Channel>();
-            this.chunks[page - 1] = chunk;
-            conn.channel_list(this.query, offset, null, null, limit)
-            .then((r: ChannerProto.ChannelListResponse) => {
-                if (offset) {
-                    chunk.pushList(this, r.list);
-                }
-                else {
-                    chunk.pushList(this, r.list.slice(0, ChannelCollection.FETCH_LIMIT));
-                    extra_chunk.pushList(this, r.list.slice(
-                        ChannelCollection.FETCH_LIMIT, ChannelCollection.FETCH_LIMIT * 2));
-                }
-            });
-        }
-        return () => {
-            return chunk.list;
-        }
+    fetch_request = (offset: Long, limit: number): Q.Promise<Array<ChannerProto.Model.Channel>> => {
+        var df: Q.Deferred<Array<ChannerProto.Model.Channel>> = Q.defer<Array<ChannerProto.Model.Channel>>();
+        var conn: Handler = window.channer.conn;
+        conn.channel_list(this.query, offset, null, null, limit)
+        .then((r: ChannerProto.ChannelListResponse) => {
+            df.resolve(r.list);
+        })
+        return df.promise;
     }
     update_range = (
         chunk: ProtoModelChunk<ChannerProto.Model.Channel>, 
