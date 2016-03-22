@@ -5,5 +5,5 @@
 	"database_cert": "",
 	"disable_origin_check": true,
 	"external_interface": "lo0",
-	"insert_fixture": true
+	"insert_fixture": false
 }

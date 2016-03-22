@@ -86,9 +86,9 @@ func ListChannel(dbif Dbif, req *proto.ChannelListRequest) ([]*proto.Model_Chann
 	if len(tmp) > 0 {
 		cond = "where " + strings.Join(tmp, " AND ")
 	}
-	log.Printf("offset %v", req.OffsetId)
+	log.Printf("offset %v limit %v", req.OffsetId, limit)
 	//TODO: how to handle "popular" query type?
-	chs, err := dbif.Select(Channel{}, dbm.Stmt("select * from %s.channels %s order by %s limit $1", cond, order_by), limit)
+	chs, err := dbif.Select(Channel{}, dbm.Stmt(`select * from %s.channels %s order by %s limit %d`, cond, order_by, limit))
 	if err != nil {
 		return nil, err
 	}
@@ -132,6 +132,14 @@ func InsertChannelFixture(dbif Dbif) error {
 	dstyles := []proto.Model_Channel_TopicDisplayStyle {
 		proto.Model_Channel_Tail,
 		proto.Model_Channel_Tree,
+	}
+	var count uint64;
+	if err := dbif.SelectOne(&count, dbm.Stmt("select count(*) from %s.nodes")); err != nil {
+		return err
+	}
+	if count > 0 {
+		log.Printf("fixture already inserted: %v", count)
+		return nil
 	}
 	for i := 0; i < 10000; i++ {
 		options := proto.Model_Channel_Options {

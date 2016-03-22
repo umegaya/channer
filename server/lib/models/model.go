@@ -7,7 +7,9 @@ import (
 
 	proto "../../proto"
 
-	_ "github.com/cockroachdb/cockroach/sql/driver"
+	//_ "github.com/cockroachdb/cockroach/sql/driver"
+	_ "github.com/cockroachdb/pq"
+	//"github.com/go-gorp/gorp"
 	"github.com/umegaya/gorp"
 )
 
@@ -41,11 +43,14 @@ type Dbif interface {
 var dbm Database
 
 func Init(db_addr, certs, host_addr, data_path string, insert_fixture bool) error {
-	schema := "http"
+	url := fmt.Sprintf("postgresql://root@%s:26257?sslmode=disable", db_addr)
 	if len(certs) > 0 {
-		schema = "https"
+		url = fmt.Sprintf("postgresql://root@%s:26257?sslmode=verify-full&sslcert=%s&sslrootcert=%s&sslkey=%s", db_addr, 
+			fmt.Sprint("%s/ca.crt", certs), 
+			fmt.Sprintf("%s/root.client.crt", certs), 
+			fmt.Sprintf("%s/ca.key", certs))
 	}
-	db, err := sql.Open("cockroach", fmt.Sprintf("%s://root@%s:26257?certs=%s", schema, db_addr, certs))
+	db, err := sql.Open("postgres", url)
 	if err != nil {
 		return err
 	}
@@ -70,18 +75,28 @@ func Init(db_addr, certs, host_addr, data_path string, insert_fixture bool) erro
     	log.Printf("CreateTablesIfNotExists: %v", err)
     	return err
     }
+    log.Printf("create databases")
+    if _, err := dbm.Exec("set database = channer;"); err != nil {
+    	log.Printf("exec set database: %v", err)
+    	return err;
+    }
+    if err := dbm.CreateIndex(); err != nil {
+    	log.Printf("CreateIndex: %v", err)
+    	return err    	
+    }
+    log.Printf("create indexes")
     //initialize node object
     dbm.node, _, err = NewNode(&dbm, host_addr)
     if err != nil {
     	log.Printf("NewNode: %v", err)
     	return err
     }
-    log.Printf("model initialized")
     //import data
     if err := Import(data_path); err != nil {
     	log.Printf("Import data: %v", err)    	
     	return err
     }
+    log.Printf("model initialized")
     return nil
 }
 
