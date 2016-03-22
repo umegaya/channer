@@ -136,5 +136,14 @@
     },
     "Priority Locale": {
         "ja": "優先する言語"
+    },
+    "Locale": {
+        "ja": "地域"
+    },
+    "All": {
+        "ja": "すべて"
+    },
+    "Language" : {
+        "ja": "言語"
     }
 }

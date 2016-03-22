@@ -76,12 +76,16 @@ class TopController implements UI.Controller {
     component: TopComponent;
     static factory: Array<(s: TopComponent) => UI.Element> = [
         (s: TopComponent) => {
-            return m.component(ChannelListComponent, s.models.latest, {
+            return m.component(ChannelListComponent, {
+                key: s.models.latest.key,
+                models: s.models.latest,
                 name: "latest",
             });
         },
         (s: TopComponent) => {
-            return m.component(ChannelListComponent, s.models.popular, {
+            return m.component(ChannelListComponent, {
+                key: s.models.popular.key,
+                models: s.models.popular, 
                 name: "popular",
             });
         },

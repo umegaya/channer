@@ -287,6 +287,9 @@ export class Handler {
         }
         req.query = map[query];
         req.locale = locale || window.channer.settings.values.search_locale;
+        if (req.locale == "all") {
+            req.locale = "";
+        }
         req.category = category || window.channer.category.to_id(
             window.channer.settings.values.search_category
         );

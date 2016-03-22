@@ -134,7 +134,7 @@ func InsertChannelFixture(dbif Dbif) error {
 		proto.Model_Channel_Tree,
 	}
 	var count uint64;
-	if err := dbif.SelectOne(&count, dbm.Stmt("select count(*) from %s.nodes")); err != nil {
+	if err := dbif.SelectOne(&count, dbm.Stmt("select count(*) from %s.channels")); err != nil {
 		return err
 	}
 	if count > 0 {

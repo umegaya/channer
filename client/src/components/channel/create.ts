@@ -2,7 +2,7 @@
 
 import {m, Util} from "../../uikit"
 import {PropConditions, PropCollection} from "../../input/prop"
-import {ArrayModelCollection, categories} from "../parts/scroll"
+import {ArrayModelCollection, categories, locales} from "../parts/scroll"
 import {TopComponent} from "../top"
 import {MenuElementComponent} from "../menu"
 import {Config} from "../../config"
@@ -10,7 +10,7 @@ import {Handler, Builder} from "../../proto"
 import {ProtoError} from "../../watcher"
 import {RadioComponent} from "../parts/radio"
 import {TextFieldComponent} from "../parts/textfield"
-import {PulldownComponent} from "../parts/pulldown"
+import {PulldownComponent, LocalePulldownOptions} from "../parts/pulldown"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 var Button = window.channer.parts.Button;
@@ -45,6 +45,10 @@ var cond: PropConditions = {
         name: {
             init: texts.DEFAULT_NAME, 
         },
+        category: {
+            init: categories.source[0],
+            fallback: "1",
+        },
     },
     optional: {
         anon: {
@@ -55,9 +59,9 @@ var cond: PropConditions = {
             init: texts.DEFAULT_DESCRIPTION, 
             fallback: "",
         },
-        category: {
-            init: categories.source[0],
-            fallback: "1",
+        locale: {
+            init: window.channer.l10n.language,
+            fallback: window.channer.l10n.language,
         },
         style: {
             init: texts.DEFAULT_STYLE_URL, 
@@ -96,9 +100,8 @@ export class ChannelCreateController implements UI.Controller {
             options.identity = vals["idlevel"];
             options.topic_post_limit = parseInt(vals["postlimit"], 10);
             options.topic_display_style = vals["display"];
-            //TODO: should locale be choosable?
             conn.channel_create(
-                vals["name"], vals["category"], null, 
+                vals["name"], vals["category"], vals["locale"], 
                 vals["desc"], vals["style"], options
             ).then((r: ChannerProto.ChannelCreateResponse) => {
                 console.log("new channel create:" + r.channel.id);
@@ -164,10 +167,11 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
                 value: props["name"],
                 onchange: ctrl.onchange,
             }),
-            m.component(PulldownComponent, categories, null, {
+            m.component(PulldownComponent, {
                 label: _L("Category"),
                 required: true,
                 value: props["category"],
+                models: categories,
                 onchange: ctrl.onchange,
             }),
         ]));
@@ -238,12 +242,11 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
                 value: props["anon"],
                 onchange: ctrl.onchange,
             }),
-            m.component(TextFieldComponent, {
-                label: texts.DEFAULT_POST_LIMIT,
-                value: props["postlimit"],
-                type: 'number',
+            m.component(PulldownComponent, new LocalePulldownOptions({
+                label: _L("Language"),
+                value: props["locale"],
                 onchange: ctrl.onchange,
-            }),
+            })),
         ]));
         buttons.push(backbutton(ctrl));
         buttons.push(sendbutton(ctrl));

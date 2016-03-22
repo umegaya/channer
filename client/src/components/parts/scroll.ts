@@ -3,6 +3,7 @@ import {m} from "../../uikit"
 import ProtoBufModel = Proto2TypeScript.ProtoBufModel;
 var Scroll = window.channer.parts.Scroll;
 var Long = window.channer.ProtoBuf.Long;
+var _L = window.channer.l10n.translate;
 
 export interface ModelCollection {
     fetch(page: number): () => Array<any>;
@@ -123,31 +124,48 @@ export class ProtoModelCollection<T extends ProtoModel> implements ModelCollecti
         throw new Error("override this");        
     }
 }
+export class ListOptions {
+    name: string;
+    class: string;
+    item: (model: any) => UI.Element;
+    maxPreloadPages: number;
+    pageData: (page: number) => (() => any);
+    models: ModelCollection;
+    elemopts: any;
+}
 export class ListComponent implements UI.Component {
 	elemview: (c: ModelCollection, model: any, options?: any) => UI.Element;
 	constructor(view: (c: ModelCollection, model: any, options?: any) => UI.Element) {
         this.elemview = view;
 	}
-    controller = (): any => {
-        return null;
+    controller = (options: ListOptions): any => {
+        return options;
     }
-    mkoption = (models: ModelCollection, options?: any, elem_options?: any): UI.Attributes => {
-        var base = options || {}
+    mkoption = (options: ListOptions): UI.Attributes => {
+        var base : ListOptions = options;
         base.name = base.name || "";
         base.class = base.class || (base.name + " listview");
         base.item = base.item || ((model: any) => { 
-            return this.elemview(models, model, elem_options); 
+            return this.elemview(options.models, model, options.elemopts); 
         });
         base.maxPreloadPages = base.maxPreloadPages || 1;
-        base.pageData = base.pageData || models.fetch;
+        base.pageData = base.pageData || options.models.fetch;
         return base;
     }
-    view = (ctrl: any, models: ModelCollection, options?: any, elem_options?: any): UI.Element => {
+    view = (options: ListOptions): UI.Element => {
         return m(".scroll-container", 
-            m.component(Scroll, this.mkoption(models, options, elem_options))
+            m.component(Scroll, this.mkoption(options))
         );
     }
 }
 
 export var categories = new ArrayModelCollection(window.channer.category.data);
-export var locales = new ArrayModelCollection(window.channer.l10n.localeSettings());
+var data_with_wc = window.channer.category.data.concat();
+data_with_wc.splice(0, 0, _L("All"))
+export var categories_wc = new ArrayModelCollection(data_with_wc);
+
+var locales_data = window.channer.l10n.localeSettings();
+export var locales = new ArrayModelCollection(locales_data);
+var locales_with_wc = locales_data.concat();
+locales_with_wc.splice(0, 0, {key: "all", value: _L("All")})
+export var locales_wc = new ArrayModelCollection(locales_with_wc);

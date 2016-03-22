@@ -3,6 +3,7 @@ package models
 import (
 	"log"
 	"fmt"
+	"strings"
 	"database/sql"
 
 	proto "../../proto"
@@ -70,6 +71,7 @@ func Init(db_addr, certs, host_addr, data_path string, insert_fixture bool) erro
 	InitTopic()
 	InitReaction()
 	InitPost()
+	log.Printf("initialize db")
 	//create table according to model definition. TODO: how to do migration with roach?
     if err := dbm.CreateTablesIfNotExists(); err != nil {
     	log.Printf("CreateTablesIfNotExists: %v", err)
@@ -81,8 +83,12 @@ func Init(db_addr, certs, host_addr, data_path string, insert_fixture bool) erro
     	return err;
     }
     if err := dbm.CreateIndex(); err != nil {
-    	log.Printf("CreateIndex: %v", err)
-    	return err    	
+    	if strings.Contains(err.Error(), "duplicate index name") {
+    		log.Printf("index already created: ignore error %v", err)
+    	} else {
+	    	log.Printf("CreateIndex: %v", err)
+    		return err    	
+    	}
     }
     log.Printf("create indexes")
     //initialize node object

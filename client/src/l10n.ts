@@ -119,6 +119,9 @@ class L10n {
     }
     localeNameFromCode = (code: string): string => {
         this.ensureInitSetting();
+        if (code == "all") {
+            return this.translate("All");
+        }
         for (var k in this.settings) {
             if (this.settings[k].key == code) {
                 return this.settings[k].value;
