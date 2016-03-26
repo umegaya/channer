@@ -34,7 +34,7 @@ message Model {
 			User = 1;
 			Bot = 2;
 		}
-		enum Status {
+		enum Status {	//flags.
 			None = 0;
 			Banned = 1;
 			Admin = 2;
@@ -45,7 +45,6 @@ message Model {
 		required string secret = 4;
 		required string pass = 5;
 		required string mail = 6;
-		//when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
 		required uint32 status = 7;
 	}
 
@@ -80,8 +79,9 @@ message Model {
 		required uint32 category = 4;
 		optional string description = 5;
 		required string style = 6;
-		required uint64 established = 7 [(gogoproto.casttype) = "UUID"];	//account id which create this channel TODO: forum creation limit per account.
-		required bytes options = 8;
+		required fixed64 established = 7 [(gogoproto.casttype) = "UUID"];	//account id which create this channel TODO: forum creation limit per account.
+		required uint64 star = 9;
+		required bytes options = 10;
 	}
 
 	message Device {
@@ -110,26 +110,30 @@ message Model {
 		required fixed64 topic = 2 [(gogoproto.casttype) = "UUID"];//parent topic id
 		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who post it.
 		required uint64 attr = 4;//attr flag (banned or something)
-		required string text = 5;//posted text
+		required uint32 upvote = 5;
+		required string text = 7;//posted text
 	}
 
 	message Topic {
 		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string name = 2;
 		required uint32 upvote = 3;
+		required uint32 downvote = 4;
 	}
 
 	message Reaction {
 		enum Type {
 			Unknown = 0;
-			Star = 1;
-			Other = 2;
-			Admin = 3;
+			Post_Star = 1;
+			Post_Other = 2;
+			Topic_Star = 3;
+			Channel_Start = 4;
+			Admin = 5;
 		}
 		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required fixed64 post = 2 [(gogoproto.casttype) = "UUID"]; //parent post id
-		required Type type = 3;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
-		required fixed64 persona = 4 [(gogoproto.casttype) = "UUID"];//persona who react it.
+		required fixed64 target = 2 [(gogoproto.casttype) = "UUID"]; //parent post id
+		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who react it.
+		required Type type = 4;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
 		required string text = 5;//0: empty string, 1: emoji definition. 2: misc data (maybe JSON)
 	}
 

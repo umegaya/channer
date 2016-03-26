@@ -6,9 +6,9 @@ import {ModelCollection, ProtoModelCollection, ProtoModelChunk} from "./parts/sc
 import {MenuElementComponent} from "./menu"
 import {Config} from "../config"
 import {Handler} from "../proto"
-import {ChannelCreateComponent} from "./channel/create"
-import {ChannelListComponent} from "./channel/list"
-import {ChannelFilterComponent} from "./channel/filter"
+import {ChannelCreateComponent} from "./menus/create"
+import {ChannelFilterComponent} from "./menus/filter"
+import {ChannelListComponent, TopicListComponent} from "./parts/list"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 import Q = require('q');
 var _L = window.channer.l10n.translate;
@@ -24,17 +24,57 @@ const TABS = [{
 }];
 
 class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.Channel> {
-    query: string;
-    constructor(query: string) {
+    constructor() {
         super();
-        //TODO: load from local store.
-        this.query = query;
-        //var conn : Handler = window.channer.conn;
-        //TODO: handling notification from server.
-		//conn.watcher.subscribe(ChannerProto.Payload.Type.PostNotify, this.onpostnotify);
     }
     initkey = () => {
-        this.key = this.query + "/" 
+        this.key = "channels/" 
+            + window.channer.settings.values.sort_by + "/"
+            + window.channer.settings.values.search_locale + ","
+            + window.channer.settings.values.search_category;
+    }
+    fetch_request = (offset: Long, limit: number): Q.Promise<Array<ChannerProto.Model.Channel>> => {
+        var df: Q.Deferred<Array<ChannerProto.Model.Channel>> = Q.defer<Array<ChannerProto.Model.Channel>>();
+        var conn: Handler = window.channer.conn;
+        var sort_by: string = window.channer.settings.values.sort_by;
+        conn.channel_list(sort_by, offset, null, null, limit)
+        .then((r: ChannerProto.ChannelListResponse) => {
+            df.resolve(r.list);
+        })
+        return df.promise;
+    }
+    update_range = (
+        chunk: ProtoModelChunk<ChannerProto.Model.Channel>, 
+        model: ChannerProto.Model.Channel) => {
+        var sort_by: string = window.channer.settings.values.sort_by;
+        if (sort_by == "top") {
+            var star = model.star;
+            if (chunk.end_id == null || chunk.end_id.lessThan(star)) { /* this.start_id < id */
+                chunk.end_id = new Long(star); 
+            }
+            if (chunk.start_id == null || chunk.start_id.greaterThan(star)) { /* this.end_id > id */
+                chunk.start_id = new Long(star);
+            }
+        }
+        else {
+            var id = model.id;
+            if (chunk.start_id == null || chunk.start_id.lessThan(id)) { /* this.start_id < id */
+                chunk.start_id = id; 
+            }
+            if (chunk.end_id == null || chunk.end_id.greaterThan(id)) { /* this.end_id > id */
+                chunk.end_id = id;
+            }
+        }
+    }
+}
+
+class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Topic> {
+    constructor(query: string) {
+        super();
+    }
+    initkey = () => {
+        this.key = window.channer.settings.values.sort_by + ","
+            + window.channer.settings.values.sort_duration + "/" 
             + window.channer.settings.values.search_locale + ","
             + window.channer.settings.values.search_category;
     }
@@ -50,17 +90,18 @@ class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.Channel>
     update_range = (
         chunk: ProtoModelChunk<ChannerProto.Model.Channel>, 
         model: ChannerProto.Model.Channel) => {
-        var id = model.id;
         if (this.query == "popular") {
             //TODO: replace id to suitable "range key".
-            if (chunk.end_id == null || chunk.end_id.lessThan(id)) { /* this.start_id < id */
-                chunk.end_id = id; 
+            var vote = model.upvote;
+            if (chunk.end_id == null || chunk.end_id.lessThan(vote)) { /* this.start_id < id */
+                chunk.end_id = new Long(vote); 
             }
-            if (chunk.start_id == null || chunk.start_id.greaterThan(id)) { /* this.end_id > id */
-                chunk.start_id = id;
-            }            
+            if (chunk.start_id == null || chunk.start_id.greaterThan(vote)) { /* this.end_id > id */
+                chunk.start_id = new Long(vote);
+            }
         }
         else {
+            var id = model.id;
             if (chunk.start_id == null || chunk.start_id.lessThan(id)) { /* this.start_id < id */
                 chunk.start_id = id; 
             }
@@ -70,6 +111,7 @@ class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.Channel>
         }
     }
 }
+
 class TopController implements UI.Controller {
     active: UI.Property<number>;
     start: string;
@@ -121,8 +163,8 @@ function TopView(ctrl: TopController) : UI.Element {
 }
 export class TopComponent extends PageComponent {
     models: {
-        latest: ChannelCollection;
-        popular: ChannelCollection;
+        channels: ChannelCollection;
+        topics: ChannelCollection;
     };
     constructor() {
         super();

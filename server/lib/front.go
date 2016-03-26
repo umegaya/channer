@@ -11,6 +11,8 @@ import (
 	"./assets"
 	"./models"
 
+	"../yue"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -151,6 +153,14 @@ func (sv *FrontServer) init() {
 		log.Fatal(err)
 	}
 	packets.Init(&a);
+	//initialize actor system
+	if err := yue.Init(yue.Config {
+		DatabaseAddress: config.DBHost,
+		CertPath: config.DBCertPath,
+		HostAddress: config.NodeIpv4Address,
+	}); err != nil {
+		log.Fatal(err)
+	}
 	//initialize models
 	if err := models.Init(
 			config.DBHost, config.DBCertPath, 

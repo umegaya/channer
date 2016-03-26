@@ -205,23 +205,29 @@ func (x *Model_Channel_TopicDisplayStyle) UnmarshalJSON(data []byte) error {
 type Model_Reaction_Type int32
 
 const (
-	Model_Reaction_Unknown Model_Reaction_Type = 0
-	Model_Reaction_Star    Model_Reaction_Type = 1
-	Model_Reaction_Other   Model_Reaction_Type = 2
-	Model_Reaction_Admin   Model_Reaction_Type = 3
+	Model_Reaction_Unknown       Model_Reaction_Type = 0
+	Model_Reaction_Post_Star     Model_Reaction_Type = 1
+	Model_Reaction_Post_Other    Model_Reaction_Type = 2
+	Model_Reaction_Topic_Star    Model_Reaction_Type = 3
+	Model_Reaction_Channel_Start Model_Reaction_Type = 4
+	Model_Reaction_Admin         Model_Reaction_Type = 5
 )
 
 var Model_Reaction_Type_name = map[int32]string{
 	0: "Unknown",
-	1: "Star",
-	2: "Other",
-	3: "Admin",
+	1: "Post_Star",
+	2: "Post_Other",
+	3: "Topic_Star",
+	4: "Channel_Start",
+	5: "Admin",
 }
 var Model_Reaction_Type_value = map[string]int32{
-	"Unknown": 0,
-	"Star":    1,
-	"Other":   2,
-	"Admin":   3,
+	"Unknown":       0,
+	"Post_Star":     1,
+	"Post_Other":    2,
+	"Topic_Star":    3,
+	"Channel_Start": 4,
+	"Admin":         5,
 }
 
 func (x Model_Reaction_Type) Enum() *Model_Reaction_Type {
@@ -566,8 +572,7 @@ type Model_Account struct {
 	Secret string             `protobuf:"bytes,4,req,name=secret" json:"secret"`
 	Pass   string             `protobuf:"bytes,5,req,name=pass" json:"pass"`
 	Mail   string             `protobuf:"bytes,6,req,name=mail" json:"mail"`
-	// when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
-	Status uint32 `protobuf:"varint,7,req,name=status" json:"status"`
+	Status uint32             `protobuf:"varint,7,req,name=status" json:"status"`
 }
 
 func (m *Model_Account) Reset()         { *m = Model_Account{} }
@@ -661,8 +666,9 @@ type Model_Channel struct {
 	Category    uint32 `protobuf:"varint,4,req,name=category" json:"category"`
 	Description string `protobuf:"bytes,5,opt,name=description" json:"description"`
 	Style       string `protobuf:"bytes,6,req,name=style" json:"style"`
-	Established UUID   `protobuf:"varint,7,req,name=established,casttype=UUID" json:"established"`
-	Options     []byte `protobuf:"bytes,8,req,name=options" json:"options"`
+	Established UUID   `protobuf:"fixed64,7,req,name=established,casttype=UUID" json:"established"`
+	Star        uint64 `protobuf:"varint,9,req,name=star" json:"star"`
+	Options     []byte `protobuf:"bytes,10,req,name=options" json:"options"`
 }
 
 func (m *Model_Channel) Reset()         { *m = Model_Channel{} }
@@ -714,6 +720,13 @@ func (m *Model_Channel) GetStyle() string {
 func (m *Model_Channel) GetEstablished() UUID {
 	if m != nil {
 		return m.Established
+	}
+	return 0
+}
+
+func (m *Model_Channel) GetStar() uint64 {
+	if m != nil {
+		return m.Star
 	}
 	return 0
 }
@@ -886,7 +899,8 @@ type Model_Post struct {
 	Topic   UUID   `protobuf:"fixed64,2,req,name=topic,casttype=UUID" json:"topic"`
 	Persona UUID   `protobuf:"fixed64,3,req,name=persona,casttype=UUID" json:"persona"`
 	Attr    uint64 `protobuf:"varint,4,req,name=attr" json:"attr"`
-	Text    string `protobuf:"bytes,5,req,name=text" json:"text"`
+	Upvote  uint32 `protobuf:"varint,5,req,name=upvote" json:"upvote"`
+	Text    string `protobuf:"bytes,7,req,name=text" json:"text"`
 }
 
 func (m *Model_Post) Reset()         { *m = Model_Post{} }
@@ -921,6 +935,13 @@ func (m *Model_Post) GetAttr() uint64 {
 	return 0
 }
 
+func (m *Model_Post) GetUpvote() uint32 {
+	if m != nil {
+		return m.Upvote
+	}
+	return 0
+}
+
 func (m *Model_Post) GetText() string {
 	if m != nil {
 		return m.Text
@@ -929,9 +950,10 @@ func (m *Model_Post) GetText() string {
 }
 
 type Model_Topic struct {
-	Id     UUID   `protobuf:"fixed64,1,req,name=id,casttype=UUID" json:"id"`
-	Name   string `protobuf:"bytes,2,req,name=name" json:"name"`
-	Upvote uint32 `protobuf:"varint,3,req,name=upvote" json:"upvote"`
+	Id       UUID   `protobuf:"fixed64,1,req,name=id,casttype=UUID" json:"id"`
+	Name     string `protobuf:"bytes,2,req,name=name" json:"name"`
+	Upvote   uint32 `protobuf:"varint,3,req,name=upvote" json:"upvote"`
+	Downvote uint32 `protobuf:"varint,4,req,name=downvote" json:"downvote"`
 }
 
 func (m *Model_Topic) Reset()         { *m = Model_Topic{} }
@@ -959,11 +981,18 @@ func (m *Model_Topic) GetUpvote() uint32 {
 	return 0
 }
 
+func (m *Model_Topic) GetDownvote() uint32 {
+	if m != nil {
+		return m.Downvote
+	}
+	return 0
+}
+
 type Model_Reaction struct {
 	Id      UUID                `protobuf:"fixed64,1,req,name=id,casttype=UUID" json:"id"`
-	Post    UUID                `protobuf:"fixed64,2,req,name=post,casttype=UUID" json:"post"`
-	Type    Model_Reaction_Type `protobuf:"varint,3,req,name=type,enum=ChannerProto.Model_Reaction_Type" json:"type"`
-	Persona UUID                `protobuf:"fixed64,4,req,name=persona,casttype=UUID" json:"persona"`
+	Target  UUID                `protobuf:"fixed64,2,req,name=target,casttype=UUID" json:"target"`
+	Persona UUID                `protobuf:"fixed64,3,req,name=persona,casttype=UUID" json:"persona"`
+	Type    Model_Reaction_Type `protobuf:"varint,4,req,name=type,enum=ChannerProto.Model_Reaction_Type" json:"type"`
 	Text    string              `protobuf:"bytes,5,req,name=text" json:"text"`
 }
 
@@ -978,9 +1007,16 @@ func (m *Model_Reaction) GetId() UUID {
 	return 0
 }
 
-func (m *Model_Reaction) GetPost() UUID {
+func (m *Model_Reaction) GetTarget() UUID {
 	if m != nil {
-		return m.Post
+		return m.Target
+	}
+	return 0
+}
+
+func (m *Model_Reaction) GetPersona() UUID {
+	if m != nil {
+		return m.Persona
 	}
 	return 0
 }
@@ -990,13 +1026,6 @@ func (m *Model_Reaction) GetType() Model_Reaction_Type {
 		return m.Type
 	}
 	return Model_Reaction_Unknown
-}
-
-func (m *Model_Reaction) GetPersona() UUID {
-	if m != nil {
-		return m.Persona
-	}
-	return 0
 }
 
 func (m *Model_Reaction) GetText() string {
@@ -2105,11 +2134,14 @@ func (m *Model_Channel) MarshalTo(data []byte) (int, error) {
 	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Style)))
 	i += copy(data[i:], m.Style)
-	data[i] = 0x38
+	data[i] = 0x39
 	i++
-	i = encodeVarintChanner(data, i, uint64(m.Established))
+	i = encodeFixed64Channer(data, i, uint64(m.Established))
+	data[i] = 0x48
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Star))
 	if m.Options != nil {
-		data[i] = 0x42
+		data[i] = 0x52
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(m.Options)))
 		i += copy(data[i:], m.Options)
@@ -2270,7 +2302,10 @@ func (m *Model_Post) MarshalTo(data []byte) (int, error) {
 	data[i] = 0x20
 	i++
 	i = encodeVarintChanner(data, i, uint64(m.Attr))
-	data[i] = 0x2a
+	data[i] = 0x28
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Upvote))
+	data[i] = 0x3a
 	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Text)))
 	i += copy(data[i:], m.Text)
@@ -2302,6 +2337,9 @@ func (m *Model_Topic) MarshalTo(data []byte) (int, error) {
 	data[i] = 0x18
 	i++
 	i = encodeVarintChanner(data, i, uint64(m.Upvote))
+	data[i] = 0x20
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Downvote))
 	return i, nil
 }
 
@@ -2325,13 +2363,13 @@ func (m *Model_Reaction) MarshalTo(data []byte) (int, error) {
 	i = encodeFixed64Channer(data, i, uint64(m.Id))
 	data[i] = 0x11
 	i++
-	i = encodeFixed64Channer(data, i, uint64(m.Post))
-	data[i] = 0x18
-	i++
-	i = encodeVarintChanner(data, i, uint64(m.Type))
-	data[i] = 0x21
+	i = encodeFixed64Channer(data, i, uint64(m.Target))
+	data[i] = 0x19
 	i++
 	i = encodeFixed64Channer(data, i, uint64(m.Persona))
+	data[i] = 0x20
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Type))
 	data[i] = 0x2a
 	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Text)))
@@ -3406,7 +3444,8 @@ func (m *Model_Channel) Size() (n int) {
 	n += 1 + l + sovChanner(uint64(l))
 	l = len(m.Style)
 	n += 1 + l + sovChanner(uint64(l))
-	n += 1 + sovChanner(uint64(m.Established))
+	n += 9
+	n += 1 + sovChanner(uint64(m.Star))
 	if m.Options != nil {
 		l = len(m.Options)
 		n += 1 + l + sovChanner(uint64(l))
@@ -3467,6 +3506,7 @@ func (m *Model_Post) Size() (n int) {
 	n += 9
 	n += 9
 	n += 1 + sovChanner(uint64(m.Attr))
+	n += 1 + sovChanner(uint64(m.Upvote))
 	l = len(m.Text)
 	n += 1 + l + sovChanner(uint64(l))
 	return n
@@ -3479,6 +3519,7 @@ func (m *Model_Topic) Size() (n int) {
 	l = len(m.Name)
 	n += 1 + l + sovChanner(uint64(l))
 	n += 1 + sovChanner(uint64(m.Upvote))
+	n += 1 + sovChanner(uint64(m.Downvote))
 	return n
 }
 
@@ -3487,8 +3528,8 @@ func (m *Model_Reaction) Size() (n int) {
 	_ = l
 	n += 9
 	n += 9
-	n += 1 + sovChanner(uint64(m.Type))
 	n += 9
+	n += 1 + sovChanner(uint64(m.Type))
 	l = len(m.Text)
 	n += 1 + l + sovChanner(uint64(l))
 	return n
@@ -4973,10 +5014,28 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 			iNdEx = postIndex
 			hasFields[0] |= uint64(0x00000010)
 		case 7:
-			if wireType != 0 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Established", wireType)
 			}
 			m.Established = 0
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += 8
+			m.Established = UUID(data[iNdEx-8])
+			m.Established |= UUID(data[iNdEx-7]) << 8
+			m.Established |= UUID(data[iNdEx-6]) << 16
+			m.Established |= UUID(data[iNdEx-5]) << 24
+			m.Established |= UUID(data[iNdEx-4]) << 32
+			m.Established |= UUID(data[iNdEx-3]) << 40
+			m.Established |= UUID(data[iNdEx-2]) << 48
+			m.Established |= UUID(data[iNdEx-1]) << 56
+			hasFields[0] |= uint64(0x00000020)
+		case 9:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Star", wireType)
+			}
+			m.Star = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowChanner
@@ -4986,13 +5045,13 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Established |= (UUID(b) & 0x7F) << shift
+				m.Star |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			hasFields[0] |= uint64(0x00000020)
-		case 8:
+			hasFields[0] |= uint64(0x00000040)
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Options", wireType)
 			}
@@ -5020,7 +5079,7 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 			}
 			m.Options = append([]byte{}, data[iNdEx:postIndex]...)
 			iNdEx = postIndex
-			hasFields[0] |= uint64(0x00000040)
+			hasFields[0] |= uint64(0x00000080)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -5055,6 +5114,9 @@ func (m *Model_Channel) Unmarshal(data []byte) error {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("established")
 	}
 	if hasFields[0]&uint64(0x00000040) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("star")
+	}
+	if hasFields[0]&uint64(0x00000080) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("options")
 	}
 
@@ -5775,6 +5837,26 @@ func (m *Model_Post) Unmarshal(data []byte) error {
 			}
 			hasFields[0] |= uint64(0x00000008)
 		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Upvote", wireType)
+			}
+			m.Upvote = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Upvote |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000010)
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Text", wireType)
 			}
@@ -5803,7 +5885,7 @@ func (m *Model_Post) Unmarshal(data []byte) error {
 			}
 			m.Text = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-			hasFields[0] |= uint64(0x00000010)
+			hasFields[0] |= uint64(0x00000020)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -5832,6 +5914,9 @@ func (m *Model_Post) Unmarshal(data []byte) error {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("attr")
 	}
 	if hasFields[0]&uint64(0x00000010) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("upvote")
+	}
+	if hasFields[0]&uint64(0x00000020) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("text")
 	}
 
@@ -5938,6 +6023,26 @@ func (m *Model_Topic) Unmarshal(data []byte) error {
 				}
 			}
 			hasFields[0] |= uint64(0x00000004)
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Downvote", wireType)
+			}
+			m.Downvote = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Downvote |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000008)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -5961,6 +6066,9 @@ func (m *Model_Topic) Unmarshal(data []byte) error {
 	}
 	if hasFields[0]&uint64(0x00000004) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("upvote")
+	}
+	if hasFields[0]&uint64(0x00000008) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("downvote")
 	}
 
 	if iNdEx > l {
@@ -6018,23 +6126,41 @@ func (m *Model_Reaction) Unmarshal(data []byte) error {
 			hasFields[0] |= uint64(0x00000001)
 		case 2:
 			if wireType != 1 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Post", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Target", wireType)
 			}
-			m.Post = 0
+			m.Target = 0
 			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
 			iNdEx += 8
-			m.Post = UUID(data[iNdEx-8])
-			m.Post |= UUID(data[iNdEx-7]) << 8
-			m.Post |= UUID(data[iNdEx-6]) << 16
-			m.Post |= UUID(data[iNdEx-5]) << 24
-			m.Post |= UUID(data[iNdEx-4]) << 32
-			m.Post |= UUID(data[iNdEx-3]) << 40
-			m.Post |= UUID(data[iNdEx-2]) << 48
-			m.Post |= UUID(data[iNdEx-1]) << 56
+			m.Target = UUID(data[iNdEx-8])
+			m.Target |= UUID(data[iNdEx-7]) << 8
+			m.Target |= UUID(data[iNdEx-6]) << 16
+			m.Target |= UUID(data[iNdEx-5]) << 24
+			m.Target |= UUID(data[iNdEx-4]) << 32
+			m.Target |= UUID(data[iNdEx-3]) << 40
+			m.Target |= UUID(data[iNdEx-2]) << 48
+			m.Target |= UUID(data[iNdEx-1]) << 56
 			hasFields[0] |= uint64(0x00000002)
 		case 3:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Persona", wireType)
+			}
+			m.Persona = 0
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += 8
+			m.Persona = UUID(data[iNdEx-8])
+			m.Persona |= UUID(data[iNdEx-7]) << 8
+			m.Persona |= UUID(data[iNdEx-6]) << 16
+			m.Persona |= UUID(data[iNdEx-5]) << 24
+			m.Persona |= UUID(data[iNdEx-4]) << 32
+			m.Persona |= UUID(data[iNdEx-3]) << 40
+			m.Persona |= UUID(data[iNdEx-2]) << 48
+			m.Persona |= UUID(data[iNdEx-1]) << 56
+			hasFields[0] |= uint64(0x00000004)
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
@@ -6053,24 +6179,6 @@ func (m *Model_Reaction) Unmarshal(data []byte) error {
 					break
 				}
 			}
-			hasFields[0] |= uint64(0x00000004)
-		case 4:
-			if wireType != 1 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Persona", wireType)
-			}
-			m.Persona = 0
-			if (iNdEx + 8) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += 8
-			m.Persona = UUID(data[iNdEx-8])
-			m.Persona |= UUID(data[iNdEx-7]) << 8
-			m.Persona |= UUID(data[iNdEx-6]) << 16
-			m.Persona |= UUID(data[iNdEx-5]) << 24
-			m.Persona |= UUID(data[iNdEx-4]) << 32
-			m.Persona |= UUID(data[iNdEx-3]) << 40
-			m.Persona |= UUID(data[iNdEx-2]) << 48
-			m.Persona |= UUID(data[iNdEx-1]) << 56
 			hasFields[0] |= uint64(0x00000008)
 		case 5:
 			if wireType != 2 {
@@ -6121,13 +6229,13 @@ func (m *Model_Reaction) Unmarshal(data []byte) error {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("id")
 	}
 	if hasFields[0]&uint64(0x00000002) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("post")
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("target")
 	}
 	if hasFields[0]&uint64(0x00000004) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("type")
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("persona")
 	}
 	if hasFields[0]&uint64(0x00000008) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("persona")
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("type")
 	}
 	if hasFields[0]&uint64(0x00000010) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("text")

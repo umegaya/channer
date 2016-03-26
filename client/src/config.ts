@@ -40,6 +40,8 @@ export class UserSettingsValues {
 	mail: string;
     search_category: string;
     search_locale: string;
+    sort_by: string;
+    sort_duration: number;
 	private secure_random = (): string => {
 		var array = new Uint8Array(16);
 		window.crypto.getRandomValues(array);
@@ -89,6 +91,8 @@ export class UserSettings implements Persistable {
 			this.values.mail = loaded.mail;
 			this.values.search_category = loaded.search_category;
 			this.values.search_locale = loaded.search_locale;
+			this.values.sort_by = loaded.sort_by;
+			this.values.sort_duration = loaded.sort_duration;
 		}
 	}
 	write = (): string => {

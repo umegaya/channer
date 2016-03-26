@@ -1,3 +1,7 @@
 package ChannerProto
 
-type UUID uint64
+import (
+	"../yue"
+)
+
+type UUID yue.UUID

@@ -19,6 +19,7 @@ func InitChannel() {
 	t.AddIndex("established", "INDEX", []string{"Established"})
 	t.AddIndex("category", "INDEX", []string{"Category"})
 	t.AddIndex("locale", "INDEX", []string{"Locale"})
+	t.AddIndex("star", "INDEX", []string{"Star"})
 }
 
 const CHANNEL_FETCH_LIMIT = 50
@@ -43,6 +44,7 @@ func NewChannel(dbif Dbif, a *Account, req *proto.ChannelCreateRequest) (*Channe
 			Style: req.Style,
 			Locale: req.Locale,
 			Category: req.Category,
+			Star: 0,
 			Established: a.Id,
 			Options: bytes,
 		},
@@ -72,9 +74,9 @@ func ListChannel(dbif Dbif, req *proto.ChannelListRequest) ([]*proto.Model_Chann
 			tmp = append(tmp, fmt.Sprintf("id < %v", *req.OffsetId))
 		}
 	} else if req.Query == proto.ChannelListRequest_Popular {
-		order_by = "id asc"
+		order_by = "start desc"
 		if req.OffsetId != nil {
-			tmp = append(tmp, fmt.Sprintf("id > %v", *req.OffsetId))
+			tmp = append(tmp, fmt.Sprintf("star < %v", *req.OffsetId))
 		}
 	}
 	if req.Category > 0 {
@@ -158,6 +160,7 @@ func InsertChannelFixture(dbif Dbif) error {
 				Name: fmt.Sprintf("debug channel %d", (i + 1)), 
 				Description: fmt.Sprintf("this is description %d", (i + 1)),
 				Style: "",
+				Star: uint64(rand.Int63n(1000000)),
 				Locale:locales[rand.Int31n(int32(len(locales)))],
 				Category: uint32(rand.Int31n(int32(len(categories)))),
 				Established: proto.UUID(rand.Int63()),

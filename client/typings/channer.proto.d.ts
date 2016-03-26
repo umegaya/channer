@@ -298,9 +298,12 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		style: string;
 		getStyle() : string;
 		setStyle(style : string): void;
-		established: number;
-		getEstablished() : number;
-		setEstablished(established : number): void;
+		established: Long;
+		getEstablished() : Long;
+		setEstablished(established : Long): void;
+		star: number;
+		getStar() : number;
+		setStar(star : number): void;
 		options: ByteBuffer;
 		getOptions() : ByteBuffer;
 		setOptions(options : ByteBuffer): void;
@@ -467,6 +470,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		attr: number;
 		getAttr() : number;
 		setAttr(attr : number): void;
+		upvote: number;
+		getUpvote() : number;
+		setUpvote(upvote : number): void;
 		text: string;
 		getText() : string;
 		setText(text : string): void;
@@ -495,6 +501,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		upvote: number;
 		getUpvote() : number;
 		setUpvote(upvote : number): void;
+		downvote: number;
+		getDownvote() : number;
+		setDownvote(downvote : number): void;
 		
 	}
 	
@@ -514,15 +523,15 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		id: Long;
 		getId() : Long;
 		setId(id : Long): void;
-		post: Long;
-		getPost() : Long;
-		setPost(post : Long): void;
-		type: Reaction.Type;
-		getType() : Reaction.Type;
-		setType(type : Reaction.Type): void;
+		target: Long;
+		getTarget() : Long;
+		setTarget(target : Long): void;
 		persona: Long;
 		getPersona() : Long;
 		setPersona(persona : Long): void;
+		type: Reaction.Type;
+		getType() : Reaction.Type;
+		setType(type : Reaction.Type): void;
 		text: string;
 		getText() : string;
 		setText(text : string): void;
@@ -543,9 +552,11 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model.Reaction {
 	export const enum Type {
 		Unknown = 0,
-		Star = 1,
-		Other = 2,
-		Admin = 3,
+		Post_Star = 1,
+		Post_Other = 2,
+		Topic_Star = 3,
+		Channel_Start = 4,
+		Admin = 5,
 		
 	}
 }

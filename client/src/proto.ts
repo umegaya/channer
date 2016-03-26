@@ -298,6 +298,30 @@ export class Handler {
         p.channel_list_request = req;
         return this.send(p);
     }
+    topic_list = (query: string, duration: number, offset_id: Long, locale?: string, 
+        category?: number, limit?: number): Q.Promise<Model> => {
+        var p = new Builder.Payload();
+        p.type = ChannerProto.Payload.Type.ChannelListRequest;
+        var req = new Builder.ChannelListRequest();
+        var map : {
+            [k:string]:ChannerProto.ChannelListRequest.QueryType
+        } = {
+            "latest": ChannerProto.ChannelListRequest.QueryType.New,
+            "popular": ChannerProto.ChannelListRequest.QueryType.Popular,
+        }
+        req.query = map[query];
+        req.locale = locale || window.channer.settings.values.search_locale;
+        if (req.locale == "all") {
+            req.locale = "";
+        }
+        req.category = category || window.channer.category.to_id(
+            window.channer.settings.values.search_category
+        );
+        req.limit = limit || null;
+        req.offset_id = offset_id || null;
+        p.channel_list_request = req;
+        return this.send(p);            
+    }
 	post = (topic_id: Long, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
 		var post = new Builder.Post();
 		post.text = text;

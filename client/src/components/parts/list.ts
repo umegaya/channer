@@ -51,3 +51,17 @@ class ChannelList extends ListComponent {
     }
 }
 export var ChannelListComponent: ChannelList = new ChannelList();
+
+
+function TopicInfoView(
+    c: ModelCollection, 
+    model: ChannerProto.Model.Topic
+): UI.Element {
+    return m(".block", "topic!!");
+}
+class TopicList extends ListComponent {
+    constructor() {
+        super(TopicInfoView);
+    }
+}
+export var TopicListComponent: ChannelList = new ChannelList();

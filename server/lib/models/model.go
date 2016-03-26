@@ -7,6 +7,7 @@ import (
 	"database/sql"
 
 	proto "../../proto"
+	"../../yue"
 
 	//_ "github.com/cockroachdb/cockroach/sql/driver"
 	_ "github.com/cockroachdb/pq"
@@ -61,7 +62,6 @@ func Init(db_addr, certs, host_addr, data_path string, insert_fixture bool) erro
 		"channer", nil, insert_fixture,
 	}
 	//add model 
-	InitNode()
 	InitAccount()
 	InitRescue()
 	InitDevice()
@@ -91,12 +91,6 @@ func Init(db_addr, certs, host_addr, data_path string, insert_fixture bool) erro
     	}
     }
     log.Printf("create indexes")
-    //initialize node object
-    dbm.node, _, err = NewNode(&dbm, host_addr)
-    if err != nil {
-    	log.Printf("NewNode: %v", err)
-    	return err
-    }
     //import data
     if err := Import(data_path); err != nil {
     	log.Printf("Import data: %v", err)    	
@@ -139,7 +133,7 @@ func (dbm *Database) UUID() proto.UUID {
 	//var uuid UUID
 	//err := DBM().Db.QueryRow("select experimental_unique_int()").Scan(&uuid)
 	//return uuid, err
-	return dbm.node.NewUUID()
+	return proto.UUID(yue.NewId())
 }
 
 func (dbm *Database) Txn(fn func (Dbif) error) error {
