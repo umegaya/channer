@@ -9,7 +9,7 @@ import (
 
 //ExecuterFactory represents object can create Executer object
 type ExecuterFactory interface {
-	Create(...interface{}) (Executer, error)
+	Create(uint64, ...interface{}) (Executer, error)
 	Destroy(Executer)
 }
 
@@ -54,6 +54,7 @@ func newprocess(owner *actor, conf *SpawnConfig) (*Process, error) {
 }
 
 //Call pass RPC argument to executer, restart if panic level error happen
+//TODO: should we need the single thread mode? for example, prepare queue and every call() processed by single goroutine.
 func (p *Process) call(method string, args ...interface{}) (r interface{}, err error, rs bool) {
 	defer func() {
         if err := recover(); err != nil {
@@ -86,7 +87,7 @@ func (p *Process) control(stop bool) (err error) {
 		p.Executer = nil
 	}
 	if !stop {
-		p.Executer, err = p.conf.Factory.Create(p.conf.args...)
+		p.Executer, err = p.conf.Factory.Create(uint64(p.Id), p.conf.args...)
 	}
 	return
 }

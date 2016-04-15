@@ -18,7 +18,6 @@ import (
 type Database struct {
 	gorp.DbMap
 	Name string
-	node *Node
 	InsertFixture bool
 }
 type Txn struct {
@@ -59,7 +58,7 @@ func Init(db_addr, certs, host_addr, data_path string, insert_fixture bool) erro
 	//setup database
 	dbm = Database{
 		gorp.DbMap{Db: db, Dialect: gorp.NewCockroachDialect()}, 
-		"channer", nil, insert_fixture,
+		"channer", insert_fixture,
 	}
 	//add model 
 	InitAccount()

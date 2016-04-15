@@ -2,8 +2,8 @@ package yue
 
 import (
 	"log"
+	"fmt"
 	"net"
-	"net/url"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -22,6 +22,7 @@ type server struct {
 	leave chan *conn
 	seed int32
 	extset map[string]func(codec.Handle)
+	config Config
 	mutex sync.RWMutex
 }
 
@@ -38,7 +39,7 @@ func newserver() *server {
 }
 
 //run runs server event loop
-func (sv *server) listen(network, addr string) {
+func (sv *server) listen(cfg Config) {
 	go sv.process()
 	var (
 		c net.Conn
@@ -46,7 +47,8 @@ func (sv *server) listen(network, addr string) {
 		err error
 		l net.Listener
 	)
-	l, err = net.Listen(network, addr)
+	sv.config = cfg
+	l, err = net.Listen(cfg.MeshServerNetwork, fmt.Sprintf(":%u", cfg.MeshServerPort))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -118,7 +120,6 @@ func (sv *server) msgid() proto.MsgId {
 func (sv *server) find(pid proto.ProcessId) (*conn, error){
 	var (
 		addr string
-		u *url.URL
 		err error
 		ok bool
 		conn *conn
@@ -133,18 +134,13 @@ func (sv *server) find(pid proto.ProcessId) (*conn, error){
 	if err != nil {
 		return nil, err
 	}
-	u, err = url.Parse(addr)
-	if err != nil {
-		return nil, err
-	}
-	c, err = net.Dial(u.Scheme, u.Host)
+	c, err = net.Dial(sv.config.MeshServerNetwork, fmt.Sprintf("%s:%u", addr, sv.config.MeshServerPort))
 	if err != nil {
 		return nil, err
 	}
 	conn, err = newconn(c, connConfig{
 		nodeId: nid,
-		//TODO: parse scheme and use handle.
-		//scheme declared like 
+		codec: sv.config.MeshServerCodec,
 	})
 	if err != nil {
 		c.Close()
@@ -207,3 +203,20 @@ func (sv *server) Exit(c *conn) {
 	sv.leave <- c
 }
 
+//create encoder for specified codec. implements connProcessor interface
+func (sv *server) NewDecoder(codec string, c net.Conn) Decoder {
+	decf, ok := sv.config.Decoders[codec]
+	if !ok {
+		log.Panicf("No such decoder %s", codec)
+	}
+	return decf.NewDecoder(c)
+}
+
+//create decoder for specified codec. implements connProcessor interface
+func (sv *server) NewEncoder(codec string, c net.Conn) Encoder {
+	encf, ok := sv.config.Encoders[codec]
+	if !ok {
+		log.Panicf("No such decoder %s", codec)
+	}
+	return encf.NewEncoder(c)
+}

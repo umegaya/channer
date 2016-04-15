@@ -1,6 +1,7 @@
 package yue
 
 import (
+	"log"
 	"fmt"
 	"net"
 
@@ -12,11 +13,53 @@ import (
 //configuration of actor system
 type Config struct {
 	Listeners []net.Listener
+	MeshServerPort int
+	MeshServerNetwork string
+	MeshServerCodec string
 	DatabaseAddress string
 	CertPath string
 	HostAddress string
 	DefaultApiVersion string
+	Decoders map[string]DecoderFactory
+	Encoders map[string]EncoderFactory
 }
+
+//fill missing config
+func (c Config) fill() {
+	if c.MeshServerPort <= 0 {
+		c.MeshServerPort = 8008
+	}
+	if c.MeshServerNetwork == "" {
+		c.MeshServerNetwork = "tcp"
+	}
+	if c.MeshServerCodec == "" {
+		c.MeshServerCodec = "msgpack"
+	}
+	if c.DatabaseAddress == "" {
+		log.Panicf("must specify DatabaseAddress")
+	}
+	if c.HostAddress == "" {
+		log.Panicf("must specify HostAddress")
+	}
+	b := NewBuiltinCodecFactory(nil)
+	codec := c.MeshServerCodec
+	if c.Decoders == nil {
+		c.Decoders = map[string]DecoderFactory {
+			codec: b,
+		}
+	} else if _, ok := c.Decoders[codec]; !ok {
+		c.Decoders[codec] = b
+	}
+	if c.Encoders == nil {
+		c.Encoders = map[string]EncoderFactory {
+			codec: b,
+		}
+	} else if _, ok := c.Encoders[codec]; !ok {
+		c.Encoders[codec] = b
+	}
+}
+
+
 
 type UUID proto.UUID
 
@@ -59,6 +102,7 @@ func pmgr() *processmgr {
 
 //API
 func Init(c Config) error {
+	c.fill()
 	if err := _database.init(c); err != nil {
 		return err
 	}
@@ -72,7 +116,7 @@ func Init(c Config) error {
 	}
 	//start main listener. TODO: be configurable
 	go _actormgr.start()
-	go _server.listen("tcp", ":8008")
+	go _server.listen(c)
 	return nil
 }
 

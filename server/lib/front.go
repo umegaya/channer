@@ -10,6 +10,7 @@ import (
 	"./packets"
 	"./assets"
 	"./models"
+	"./actors"
 
 	"../yue"
 
@@ -142,6 +143,27 @@ func (sv *FrontServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     defer sv.eject(c)
     go c.writer(sv)
     c.reader(sv)
+}
+
+func (sv *FrontServer) initActors() error {
+	config := sv.config
+	//initialize actor system
+	if err := yue.Init(yue.Config {
+		DatabaseAddress: config.DBHost,
+		CertPath: config.DBCertPath,
+		HostAddress: config.NodeIpv4Address,
+	}); err != nil {
+		return err
+	}
+	yue.Register("/hello", yue.ActorConfig {
+		SpawnConfig: yue.SpawnConfig {
+			Factory: yue.InmemoryExecuterFactory {
+				Constructor: actors.NewHelloActor,
+			},
+		},
+		Size: 1,
+	}, "channer")
+	return nil
 }
 
 //init initialize related modules 

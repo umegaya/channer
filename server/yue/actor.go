@@ -17,6 +17,7 @@ type InmemoryFactory struct {
 
 //errors 
 var ActorNotFound error = fmt.Errorf("actor not found")
+var ActorNoSuchMethod error = fmt.Errorf("actor no such method")
 var ActorAlreadyHasProcess error = fmt.Errorf("actor already has process")
 var ActorProcessAlreadyRemoved error = fmt.Errorf("actor process already removed")
 
