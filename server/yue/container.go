@@ -39,20 +39,20 @@ func (cp containerExecuter) Call(method string, args ...interface{}) (interface 
 			}
 			return nil, err
 		}
-		cp.conn = newlocalconn(c, connConfig{
+		cp.conn = newconn(c, connConfig{
 			codec: cp.codec,
 		})
-		cp.conn.run(&cp)
+		cp.conn.Run(&cp)
 	}
-	return cp.conn.request(&rpcContext{}, sv().msgid(), cp.pid, method, args)
+	return cp.conn.Request(&rpcContext{}, sv().NewMsgId(), cp.pid, method, args)
 }
 //process request. implements connExecuteror interface
-func (cp *containerExecuter) ProcessRequest(pl *payload, c *conn) {
+func (cp *containerExecuter) ProcessRequest(r *request, c peer) {
 	log.Printf("container actor never dispatch request")
 }
 
 //process notify. implements connExecuteror interface
-func (cp *containerExecuter) ProcessNotify(pl *payload, c *conn) {
+func (cp *containerExecuter) ProcessNotify(n *notify) {
 	log.Printf("container actor never dispatch notify")
 }
 
@@ -66,12 +66,16 @@ func (cp *containerExecuter) NewEncoder(codec string, c net.Conn) Encoder {
 	return sv().NewEncoder(codec, c)
 }
 
+func (cp *containerExecuter) NewMsgId() proto.MsgId {
+	return sv().NewMsgId()
+}
+
 	
 //connection closed. implements connExecuteror interface
-func (cp *containerExecuter) Exit(c *conn) {
+func (cp *containerExecuter) Exit(c peer) {
 	log.Printf("container actor shutdown")
-	conn := c.conn
-	c.conn = nil 
+	conn := cp.conn
+	cp.conn = nil 
 	conn.Close()
 }
 

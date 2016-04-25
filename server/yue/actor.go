@@ -1,7 +1,6 @@
 package yue
 
 import (
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -15,12 +14,6 @@ type InmemoryFactory struct {
 	Constructor func (args ...interface {}) (interface {}, error)
 }
 
-//errors 
-var ActorNotFound error = fmt.Errorf("actor not found")
-var ActorNoSuchMethod error = fmt.Errorf("actor no such method")
-var ActorAlreadyHasProcess error = fmt.Errorf("actor already has process")
-var ActorProcessAlreadyRemoved error = fmt.Errorf("actor process already removed")
-
 //represents common (internal) actor object
 //yue's actor is, like orleans of MS, virtual one. actual message processing is delegate to Process.
 type actor struct {
@@ -30,25 +23,45 @@ type actor struct {
 	limit int 
 }
 
-func newactor(id string, conf ActorConfig) *actor {
+func newactor(id string, conf *ActorConfig) *actor {
 	return &actor {
 		id: id,
-		processes: make([]proto.ProcessId, conf.Size),
+		processes: make([]proto.ProcessId, 0),
 		index: 0,
 		limit: conf.Size,
 	}
 }
 
 func (a *actor) call(ctx *rpcContext, method string, args ...interface {}) (interface {}, error) {
+RETRY:
 	r, err := sv().call(ctx, a.balance(), method, args...)
 	if err != nil {
 		/*
 		呼び出し側のエラー処理
-		TODO: もし、applicationレベルではないエラーが発生した場合、障害の可能性が高いためシステムレベルでの対応が必要になる.
+		TODO: もし、applicationレベルではないエラー(!ActorRuntimeError)が発生した場合、障害の可能性が高いためシステムレベルでの対応が必要になる.
+		現在把握されているエラーは次の通り
+		ActorProcessGone: 呼び出し先のノードに指定されたprocessがいなかったので処理できなかった。
+		NodeConnectionTimeout: pidがいるはずのノードに接続できない。
 
-		### stateless actorの場合 (SpawnOption.Size == 1)
-		txかけてロードし直して、そのノードへの失敗をマークし、他のprocessにリクエストを投げる。
-		何回か失敗したらtxかけてロードし直して、そのprocessid自体を消す
+		### stateless actorの場合 (SpawnOption.Size > 1)
+		ActorProcessGone: 指定されたidのプロセスが存在していない
+		以下のケースが考えられる
+			- ノードが死亡して別の同じIPのノードが立ち上がった(もしprocessがpanicで再起動中だけなのであれば、リトライを呼び出された側で繰り返した後タイムアウトになるはず)
+		対策
+			- そのprocessidは消してしまった方がいい。transactionをかけて、databaseのactor情報を更新する。
+			- 仮にこのノードがnetwork partitionの障害の影響下にあり、さらにminorityだった場合は、databaseへの書き込みがエラーになる
+			  - その場合はpanicしたほうがいいかもしれない。これに接続していたclientは別のノードに接続しに行くことになる
+			- databaseへの書き込みがretry中に別のノードがprocessを増やすことも考えられることに注意。とはいえ、一度消えたprocess idが再利用されることはないので、間違えて新しく追加されたやつを消さないようにする.
+		NodeConnectionTimeout: 指定されたidのプロセスが存在するノードへの接続が成功しなかった
+		以下のケースが考えられる
+			- 現在ターゲットのノードが落ちている。もしくはネットワーク分断が発生している。
+		対策
+			- 状況は極めてわからない。processIdを消すことはない。
+		
+		共通の対策
+		statelessなので、actor情報をdatabaseからロードし直して、リスト内の他の利用可能そうなprocessにリクエストを投げる。
+		全processで失敗したら、もしまだprocessのサイズに余裕があるのであれば自ノードで作成、そうでなければpanicしてもいいかも。
+		(ActorProcessGoneのエラーの場合には、そのprocessIdをリストから除外しておく。)
 
 		### statefull actorの場合 (otherwise)
 		master lease的なものが必要。5secに一回とか、現在のactorのオーナーのノードがtimestampを更新する
@@ -58,17 +71,35 @@ func (a *actor) call(ctx *rpcContext, method string, args ...interface {}) (inte
 
 		呼び出された側のエラー処理はProcess.Callの中で行われる
 		*/
-		if err == ActorNotFound {
+		if err.Is(ActorProcessGone) {
+			//TODO: how we process the case of conf.Size == 1 (statefull actor)?
+			pid := err.GoneProcessId()
 			if conf, ok := amgr().findConfig(a.id); ok {
-				if conf.Size == 1 {
-
-				} else {
-
+				factory := &idemfactory{ conf: conf }
+				if err := db().txn(func (dbh dbh) error {
+					//this code block may be executed repeatedly.
+					if err := a.load(dbh); err != nil {
+						return newerr(ActorRuntimeError, err.Error())
+					} else {
+						a.removeProcess(pid)
+						//if no process become available, create new one.
+						if len(a.processes) <= 0 {
+							if err := a.addProcess(factory); err != nil {
+								return err
+							}
+						}
+					}
+					return a.update(dbh)
+				}); err != nil {
+					factory.Destroy()
+					return nil, err
 				}
+				goto RETRY
 			}
-		}
+		} //TODO: process connection timeout. 
+		return nil, error(err)
 	}
-	return r, err
+	return r, nil
 }
 
 func (a *actor) balance() proto.ProcessId {
@@ -80,29 +111,69 @@ func (a *actor) balance() proto.ProcessId {
 	return a.processes[idx]
 }
 
-func (a *actor) addProcess(conf *ActorConfig) (*Process, error) {
+//addProcess create process here, and add it to processes. 
+//TODO: if this node already has so many processes, should we choose another node and delegate creation?
+func (a *actor) addProcess(f *idemfactory) error {
 	if a.limit <= len(a.processes) {
-		return nil, ActorAlreadyHasProcess
+		return newerr(ActorAlreadyHasProcess, a.limit, a.processes)
 	}
-	p, err := pmgr().spawn(a, &(conf.SpawnConfig))
+	p, err := f.Create(a)
+	if err != nil {
+		return err
+	}
+	for _, pid := range a.processes {
+		if pid == p.Id {
+			return nil
+		}
+	}
 	a.processes = append(a.processes, p.Id)
-	return p, err
+	return nil
 }
 
-func (a *actor) removeProcess(p *Process) error {
-	for idx, pid := range a.processes {
-		if pid == p.Id {
+func (a *actor) removeProcess(pid proto.ProcessId) error {
+	for idx, pp := range a.processes {
+		if pid == pp {
 			if idx > 0 {
 				a.processes = append(a.processes[0:idx], a.processes[idx+2:]...)
 			} else {
 				a.processes = a.processes[1:]
 			}
-			pmgr().kill(p)
+			pmgr().kill(pid)
 			return nil
 		}
 	}
-	return ActorProcessAlreadyRemoved
+	return nil
 }
+
+func (a *actor) update(dbh dbh) error {
+	pa, err := a.proto()
+	if err == nil {
+		_, err = store(dbh, pa, []string { "Processes" })
+	}
+	return err
+}
+
+func (a *actor) insert(dbh dbh) error {
+	pa, err := a.proto()
+	if err == nil {
+		return dbh.Insert(pa)
+	}
+	return err
+}
+
+//loadActor loads actor which has given id.
+func (a *actor) load(dbh dbh) *ActorError {
+	pa := proto.Actor{}
+	if err := dbh.SelectOne(&pa, "select * from yue.actors where id = $1", a.id); err != nil {
+		//TODO: return ActorNotFound when it actually not found.
+		return newerr(ActorNotFound, a.id)
+	}
+	if err := a.from(&pa); err != nil {
+		return newerr(ActorRuntimeError, err.Error())
+	}
+	return nil
+}
+
 
 func (a *actor) from(p *proto.Actor) error {
 	pl := proto.ProcessList{}
@@ -136,6 +207,29 @@ func (a *actor) proto() (*proto.Actor, error) {
 	}, nil
 }
 
+
+
+//idempotent process creator
+type idemfactory struct {
+	conf *ActorConfig
+	proc *Process
+}
+
+//create creates process with idempotency. 
+func (f *idemfactory) Create(owner *actor) (*Process, error) {
+	if f.proc != nil {
+		f.proc.owner = owner
+		return f.proc, nil
+	}
+	return pmgr().spawn(owner, &(f.conf.SpawnConfig))
+}
+
+func (f *idemfactory) Destroy() {
+	if f.proc != nil {
+		pmgr().kill(f.proc.Id)
+		f.proc = nil
+	}
+}
 
 
 //SpawnOption represent options for spawn
@@ -177,24 +271,20 @@ func (am *actormgr) start() {
 			log.Printf("tick %v", t)
 			//TODO: reload each actor's state
 		case p := <- am.restartq:
-			go func () {
-				if err := p.start(); err != nil {
-					am.unloadProcess(p)
-				}
-			}()
+			go p.boot()
 		}
 	}
 }
 
 //loadActor loads actor which has given id.
-func (am *actormgr) loadActor(act *actor, dbh dbh) error {
+func (am *actormgr) loadActor(act *actor, dbh dbh) *ActorError {
 	a := proto.Actor{}
 	if err := dbh.SelectOne(&a, "select * from yue.actors where id = $1", act.id); err != nil {
 		//TODO: return ActorNotFound when it actually not found.
-		return ActorNotFound
+		return newerr(ActorNotFound, act.id)
 	}
 	if err := act.from(&a); err != nil {
-		return err
+		return newerr(ActorRuntimeError, err.Error())
 	}
 	return nil
 }
@@ -225,7 +315,7 @@ func (am *actormgr) registerActor(a *actor) {
 	am.actors[a.id] = a
 }
 
-//findActorObject finds actor from its cache
+//findActor finds actor from its cache
 func (am *actormgr) findActor(id string) (*actor, bool) {
 	defer am.amtx.RUnlock()
 	am.amtx.RLock()
@@ -233,45 +323,49 @@ func (am *actormgr) findActor(id string) (*actor, bool) {
 	return a, ok
 }
 
-
 //ensureLoaded ensure actor which has given id and option *opts* loaded.
 func (am *actormgr) ensureLoaded(id string) (*actor, error) {
+	log.Printf("ensureLoaded %v", id)
 	if a, ok := am.findActor(id); ok {
+	log.Printf("ensureLoaded already %v", id)
 		return a, nil
 	}
-	a := &actor{
-		id: id,
+	conf, ok := am.findConfig(id)
+	if !ok || conf == nil {
+		return nil, newerr(ActorNotFound, id)
 	}
+	factory := &idemfactory{ conf: conf }
+	a := newactor(id, conf)
 	if err := db().txn(func (dbh dbh) error {
-		conf, ok := am.findConfig(a.id)
-		if !ok || conf == nil {
-			return ActorNotFound
-		}
-		err := am.loadActor(a, dbh);
-		if err == ActorNotFound {
-			//aがない場合、追加でactorを作成する。
-			if _, err := a.addProcess(conf); err != nil {
-				return err
-			} else {
-				dbh.Insert(a.proto())
-			}
-		} else if err != nil {
-			//その他のシステムエラー:一旦エラーを返す
-			return err
-		} else if conf.Size != 1 {
-			if conf.Throttle <= 0 {
-				a.id = id
-				//aがある場合でthrottleが<=0の場合、追加でactorを作成する
-				if _, err := a.addProcess(conf); err != nil {
+		//this code block be executed repeatedly.
+		if err := a.load(dbh); err != nil {
+			log.Printf("loadActor err: %v", err)
+			if err.Is(ActorNotFound) {
+				//aがない場合、追加でactorを作成する.
+				if err := a.addProcess(factory); err != nil {
+					return err
+				} else if err := a.insert(dbh); err != nil {
 					return err
 				}
-				if _, err := dbh.Update(a.proto()); err != nil {
+			} else {
+				//その他のシステムエラー:一旦エラーを返す
+				return err
+			}
+		} else if conf.Size != 1 {
+			if conf.Throttle <= 0 {
+				//aがある場合でthrottleが<=0の場合、追加でactorを作成する 
+				if err := a.addProcess(factory); err != nil {
+					return err
+				} else if err := a.update(dbh); err != nil {
 					return err
 				}
 			} //else aがある場合でthrottleが>0の場合、そのまま。どこかのactorがthrottle以上のリクエストを受けたらactorをさらに作成する
 		} //else 1つのactorしか許されていない。そのままaを返す
+		log.Printf("tx success")
 		return nil
 	}); err != nil {
+		//TODO: エラーでなおかつ追加用のプロセスが作られてしまっていた場合、プロセスを削除する.
+		factory.Destroy()
 		return nil, err
 	}
 	am.registerActor(a)
@@ -281,7 +375,7 @@ func (am *actormgr) ensureLoaded(id string) (*actor, error) {
 func (am *actormgr) unloadProcess(p *Process) error {
 	a := p.owner
 	return db().txn(func (dbh dbh) error {
-		if err := a.removeProcess(p); err != nil {
+		if err := a.removeProcess(p.Id); err != nil {
 			return err
 		}
 		if _, err := dbh.Update(a.proto()); err != nil {

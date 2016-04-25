@@ -35,13 +35,17 @@ func newdatabase() *database {
 	return &database{gorp.DbMap{Db: nil, Dialect: gorp.NewCockroachDialect()}, nil}
 } 
 
-func (dbm *database) init(c Config) error {
-	url := fmt.Sprintf("postgresql://root@%s:26257?sslmode=disable", c.DatabaseAddress)
+func (dbm *database) init(c *Config) error {
+	url := fmt.Sprintf("postgresql://root@%s:26257?sslmode=disable&connect_timeout=%d", 
+		c.DatabaseAddress, c.MeshServerConnTimeoutSec)
 	if len(c.CertPath) > 0 {
-		url = fmt.Sprintf("postgresql://root@%s:26257?sslmode=verify-full&sslcert=%s&sslrootcert=%s&sslkey=%s", c.DatabaseAddress, 
+		url = fmt.Sprintf(
+			"postgresql://root@%s:26257?sslmode=verify-full&sslcert=%s&sslrootcert=%s&sslkey=%s&connect_timeout=%d", 
+			c.DatabaseAddress, 
 			fmt.Sprint("%s/ca.crt", c.CertPath), 
 			fmt.Sprintf("%s/root.client.crt", c.CertPath), 
-			fmt.Sprintf("%s/ca.key", c.CertPath))
+			fmt.Sprintf("%s/ca.key", c.CertPath),
+			c.MeshServerConnTimeoutSec)
 	}
 	db, err := sql.Open("postgres", url)
 	if err != nil {
@@ -59,7 +63,7 @@ func (dbm *database) init(c Config) error {
     log.Printf("create actor tables")
     if _, err := dbm.Exec("set database = yue;"); err != nil {
     	log.Printf("exec set database: %v", err)
-    	return err;
+    	return err
     }
     if err := dbm.CreateIndex(); err != nil {
     	if strings.Contains(err.Error(), "duplicate index name") {
@@ -76,7 +80,7 @@ func (dbm *database) init(c Config) error {
     	log.Printf("NewNode: %v", err)
     	return err
     }
-    log.Printf("end bootstrap actor system")
+    log.Printf("end bootstrap actor storage")
     return nil
 }
 

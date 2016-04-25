@@ -30,13 +30,14 @@ func newdockerctrl() *dockerctrl {
 	}
 }
 
-func (dc *dockerctrl) init(c Config) error {
-	path := c.CertPath
+func (dc *dockerctrl) init(c *Config) error {
+	path := c.DockerCertPath
+	log.Printf("DockerCertPath:%s", c.DockerCertPath)
 	options := tlsconfig.Options{
 		CAFile:             filepath.Join(path, "ca.pem"),
 		CertFile:           filepath.Join(path, "cert.pem"),
 		KeyFile:            filepath.Join(path, "key.pem"),
-		InsecureSkipVerify: len(c.CertPath) == 0,
+		InsecureSkipVerify: len(path) == 0,
 	}
 	tlsc, err := tlsconfig.Client(options)
 	if err != nil {

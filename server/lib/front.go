@@ -148,7 +148,7 @@ func (sv *FrontServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (sv *FrontServer) initActors() error {
 	config := sv.config
 	//initialize actor system
-	if err := yue.Init(yue.Config {
+	if err := yue.Init(&yue.Config {
 		DatabaseAddress: config.DBHost,
 		CertPath: config.DBCertPath,
 		HostAddress: config.NodeIpv4Address,
@@ -163,6 +163,19 @@ func (sv *FrontServer) initActors() error {
 		},
 		Size: 1,
 	}, "channer")
+	go func() {
+		r, err := yue.Call("/hello", "Hello", "actor-caller")
+		if err != nil {
+			log.Fatalf("err should not happen: %v", err)
+		}
+		if s, ok := r.(string); ok {
+			if s != "hello, actor-caller! from channer" {
+				log.Fatalf("unexpected response: %v", s)
+			}
+		} else {
+			log.Fatalf("response type does not match expected %v", r)
+		}
+	}()
 	return nil
 }
 
@@ -176,11 +189,7 @@ func (sv *FrontServer) init() {
 	}
 	packets.Init(&a);
 	//initialize actor system
-	if err := yue.Init(yue.Config {
-		DatabaseAddress: config.DBHost,
-		CertPath: config.DBCertPath,
-		HostAddress: config.NodeIpv4Address,
-	}); err != nil {
+	if err := sv.initActors(); err != nil {
 		log.Fatal(err)
 	}
 	//initialize models

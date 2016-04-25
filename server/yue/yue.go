@@ -1,6 +1,7 @@
 package yue
 
 import (
+	"os"
 	"log"
 	"fmt"
 	"net"
@@ -16,16 +17,18 @@ type Config struct {
 	MeshServerPort int
 	MeshServerNetwork string
 	MeshServerCodec string
+	MeshServerConnTimeoutSec int
+	MeshServerPingInterval int
 	DatabaseAddress string
 	CertPath string
+	DockerCertPath string
 	HostAddress string
 	DefaultApiVersion string
-	Decoders map[string]DecoderFactory
-	Encoders map[string]EncoderFactory
+	Codecs map[string]CodecFactory
 }
 
 //fill missing config
-func (c Config) fill() {
+func (c *Config) fill() {
 	if c.MeshServerPort <= 0 {
 		c.MeshServerPort = 8008
 	}
@@ -35,27 +38,39 @@ func (c Config) fill() {
 	if c.MeshServerCodec == "" {
 		c.MeshServerCodec = "msgpack"
 	}
+	if c.MeshServerConnTimeoutSec <= 0 {
+		c.MeshServerConnTimeoutSec = 5
+	}
+	if c.MeshServerPingInterval <= 0 {
+		//c.MeshServerPingInterval = 5
+	}
 	if c.DatabaseAddress == "" {
 		log.Panicf("must specify DatabaseAddress")
 	}
 	if c.HostAddress == "" {
 		log.Panicf("must specify HostAddress")
 	}
-	b := NewBuiltinCodecFactory(nil)
-	codec := c.MeshServerCodec
-	if c.Decoders == nil {
-		c.Decoders = map[string]DecoderFactory {
-			codec: b,
-		}
-	} else if _, ok := c.Decoders[codec]; !ok {
-		c.Decoders[codec] = b
+	if c.DockerCertPath == "" {
+		c.DockerCertPath = os.Getenv("DOCKER_CERT_PATH")
 	}
-	if c.Encoders == nil {
-		c.Encoders = map[string]EncoderFactory {
-			codec: b,
+	m := NewMsgpackCodecFactory(nil)
+	j := NewJsonCodecFactory(nil)
+	if c.Codecs == nil {
+		c.Codecs = map[string]CodecFactory {
+			"msgpack": m,
+			"json": j,
 		}
-	} else if _, ok := c.Encoders[codec]; !ok {
-		c.Encoders[codec] = b
+	} else {
+		if _, ok := c.Codecs["json"]; !ok {
+			c.Codecs["json"] = j
+		}
+		if _, ok := c.Codecs["msgpack"]; !ok {
+			c.Codecs["msgpack"] = m
+		}
+	}
+	codec := c.MeshServerCodec
+	if _, ok := c.Codecs[codec]; !ok {
+		log.Panicf("codec not exists: %v", codec)
 	}
 }
 
@@ -101,19 +116,22 @@ func pmgr() *processmgr {
 
 
 //API
-func Init(c Config) error {
+func Init(c *Config) error {
 	c.fill()
 	if err := _database.init(c); err != nil {
 		return err
 	}
+	log.Printf("init database")
 	if err := _dockerctrl.init(c); err != nil {
 		return err
 	}
+	log.Printf("init docker")
 	if len(c.Listeners) > 0 {
 		//TODO: implement generic frontend for actor RPC call
 		//so that client can interact with actors transparently.
 		return fmt.Errorf("generic actor server is not implemented... yet!")
 	}
+	log.Printf("start server")
 	//start main listener. TODO: be configurable
 	go _actormgr.start()
 	go _server.listen(c)

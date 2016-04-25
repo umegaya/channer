@@ -2,6 +2,8 @@ package yue
 
 import (
 	"log"
+
+	proto "./proto"
 )
 
 //
@@ -9,6 +11,7 @@ import (
 //
 //Executer interface implemented by go. it lived in same process as which runs yue
 type inmemoryExecuter struct {
+	pid proto.ProcessId
 	instance InmemoryExecuterEntry
 }
 
@@ -18,7 +21,7 @@ func (im inmemoryExecuter) Call(method string, args ...interface{}) (interface {
 	if m, ok := im.instance[method]; ok {
 		return m(args...)
 	}
-	return nil, ActorNoSuchMethod
+	return nil, newerr(ActorNoSuchMethod, im.pid, method)
 }
 
 //
@@ -34,6 +37,7 @@ func (im InmemoryExecuterFactory) Create(pid uint64, args ...interface{}) (Execu
 		return nil, err
 	}
 	return &inmemoryExecuter {
+		pid: proto.ProcessId(pid),
 		instance: p,
 	}, nil
 }

@@ -2,6 +2,7 @@ package yue
 
 import (
 	"log"
+	"time"
 	"sync"
 
 	proto "./proto"
@@ -35,9 +36,11 @@ type ProcessId proto.ProcessId
 //represents process (worker of each actor)
 type Process struct {
 	Id proto.ProcessId
-	Executer Executer
+	sem sync.RWMutex
+	Executer Executer //all executer methods called concurrenctly from multiple goroutine.
 	conf *SpawnConfig
 	owner *actor
+	die bool
 }
 
 //create new process instance
@@ -45,11 +48,10 @@ func newprocess(owner *actor, conf *SpawnConfig) (*Process, error) {
 	p := &Process {
 		Id: proto.ProcessId(NewId()),
 		conf: conf,
+		sem: sync.RWMutex{},
 		owner: owner,
 	}
-	if err := p.start(); err != nil {
-		return nil, err
-	}
+	go p.boot()
 	return p, nil
 }
 
@@ -57,6 +59,7 @@ func newprocess(owner *actor, conf *SpawnConfig) (*Process, error) {
 //TODO: should we need the single thread mode? for example, prepare queue and every call() processed by single goroutine.
 func (p *Process) call(method string, args ...interface{}) (r interface{}, err error, rs bool) {
 	defer func() {
+		p.sem.RUnlock()
         if err := recover(); err != nil {
             log.Println("call executer panics:", err)
             amgr().restartq <- p
@@ -64,10 +67,17 @@ func (p *Process) call(method string, args ...interface{}) (r interface{}, err e
             rs = true
         }
     }()
-	if p.Executer == nil {
-		rs = true
-		return
-	}
+    p.sem.RLock()
+    if p.die {
+    	//すでに死んでいる場合はもう復旧しないのでそういうエラーを返す.
+		rs = false
+    	err = newerr(ActorProcessGone, p.Id)
+    	return
+    }
+    if p.Executer == nil {
+    	rs = true //再起動中のはず.
+    	return
+    }
     r, err = p.Executer.Call(method, args...)
     rs = false
     return
@@ -81,8 +91,12 @@ func (p *Process) control(stop bool) (err error) {
             p.Executer = nil
             err = e.(error)
         }
+		//死亡したことをマークしておく.(仮にdestroyに失敗していても)
+        p.die = stop
+	    p.sem.Unlock()
     }()
-	if p.Executer != nil {
+    p.sem.Lock()
+    if p.Executer != nil {
 		p.conf.Factory.Destroy(p.Executer)
 		p.Executer = nil
 	}
@@ -102,6 +116,25 @@ func (p *Process) stop() error {
 	return p.control(true)
 }
 
+//boot process. repeatedly call start() while Executer is null.
+func (p *Process) boot() {
+	failure := 0
+	for {
+    	if p.Executer != nil {
+    		break
+    	} else if failure >= 10 {
+    		log.Printf("too many failure %v", p.Id)
+    		pmgr().kill(p.Id)
+    		break
+    	} else if err := p.start(); err != nil {
+			log.Printf("start fails by %v", err)
+			time.Sleep(100 * time.Millisecond)
+			failure++
+		} else {
+			break
+		}
+	}
+}
 
 
 //processmgr represents processes which runs in this node
@@ -117,30 +150,46 @@ func newprocessmgr() *processmgr {
 	}
 }
 
+//sweep kill process which is remain idling in configured duration.
+//assumed running by goroutine.
+func (pm *processmgr) sweep(c *Config) {
+	//TODO: check idle duration and kill.
+	//but cost is not so low when process id provided by container.
+}
+
 //spawn creates process by using given factory
 func (pm *processmgr) spawn(owner *actor, conf *SpawnConfig) (*Process, error) {
     p, err := newprocess(owner, conf)
     if err != nil {
+    	log.Printf("spawn: %v", err)
     	return nil, err
     }
 	defer pm.pmtx.Unlock()
 	pm.pmtx.Lock()
 	pm.processes[p.Id] = p
+	log.Printf("spawn: %v", p.Id)
 	return p, nil
 }
 
 //kill destroy process by using given factory.
-func (pm *processmgr) kill(p *Process) {
-    p.stop() //ignore error
-	defer pm.pmtx.Unlock()
+func (pm *processmgr) kill(pid proto.ProcessId, opts ...interface{}) {
 	pm.pmtx.Lock()
-	delete(pm.processes, p.Id)
+	p, ok := pm.processes[pid]
+	if ok {
+		delete(pm.processes, pid)
+	}
+	pm.pmtx.Unlock()
+	if p != nil {
+	    p.stop() //ignore error
+	}
+	log.Printf("kill: %v", pid)
 }
 
 //find finds process from pid
 func (pm *processmgr) find(pid proto.ProcessId) (*Process, bool) {
 	defer pm.pmtx.RUnlock()
 	pm.pmtx.RLock()
+	log.Printf("find: %v", pid)
 	p, ok := pm.processes[pid]
 	return p, ok
 }

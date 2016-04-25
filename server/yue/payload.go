@@ -1,6 +1,8 @@
 package yue
 
 import (
+	"fmt"
+
 	proto "./proto"
 )
 
@@ -9,9 +11,9 @@ import (
 // payload
 //
 const (
-	REQUEST = iota	//kind, msgid, pid, args
+	REQUEST = iota	//kind, msgid, pid, method, args
 	RESPONSE		//kind, msgid, err, args
-	NOTIFY 			//kind, pid, args
+	NOTIFY 			//kind, pid, method, args
 
 	TXN = 0x4
 )
@@ -35,103 +37,106 @@ const (
 	NOTIFY_ARGS = 3
 )
 
-type payload []interface{}
-
-func (pl payload) kind() uint8 {
-	return pl[KIND].(uint8) & 0x3
+type payload struct {
+	kind uint8
+	data interface{}
 }
 
-func (pl payload) msgid() proto.MsgId {
-	switch (pl.kind()) {
+func (pl *payload) request() *request {
+	return pl.data.(*request)
+}
+func (pl *payload) notify() *notify {
+	return pl.data.(*notify)
+}
+func (pl *payload) response() *response {
+	return pl.data.(*response)
+}
+
+func (pl *payload) String() string {
+	switch (pl.kind) {
 	case REQUEST:
-		return pl[REQUEST_MSGID].(proto.MsgId)
+		return fmt.Sprintf("q[%s]", pl.request().String())
 	case RESPONSE:
-		return pl[RESPONSE_MSGID].(proto.MsgId)
-	default:
-		return 0
-	}
-}
-
-func (pl payload) pid() proto.ProcessId {
-	switch (pl.kind()) {
-	case REQUEST:
-		return pl[REQUEST_PID].(proto.ProcessId)
+		return fmt.Sprintf("r[%s]", pl.response().String())
 	case NOTIFY:
-		return pl[NOTIFY_PID].(proto.ProcessId)
+		return fmt.Sprintf("n[%s]", pl.notify().String())
 	default:
-		return 0
+		return fmt.Sprintf("?[%v]", pl.data)
 	}
 }
 
-func (pl payload) method() string {
-	switch (pl.kind()) {
-	case REQUEST:
-		return pl[REQUEST_METHOD].(string)
-	case NOTIFY:
-		return pl[NOTIFY_METHOD].(string)
-	default:
-		return ""
-	}	
+type request struct {
+	msgid proto.MsgId
+	pid proto.ProcessId
+	method string
+	args []interface{}
+	//following datas are not serialized.
+	ctx *rpcContext
+	receiver chan *response
 }
 
-func (pl payload) error() error {
-	switch (pl.kind()) {
-	case RESPONSE:
-		return pl[RESPONSE_ERROR].(error)
-	default:
-		return nil
+func (req *request) String() string {
+	return fmt.Sprintf("%v,%v,%v,%v", req.msgid, req.pid, req.method, req.args)
+}
+
+type notify struct {
+	pid proto.ProcessId
+	method string
+	args []interface{}	
+}
+
+func (n *notify) String() string {
+	return fmt.Sprintf("%v,%v,%v", n.pid, n.method, n.args)
+}
+
+type response struct {
+	msgid proto.MsgId
+	error *ActorError
+	args interface{}
+}
+
+func (res *response) String() string {
+	var e string
+	if res.error != nil {
+		e = res.error.Error()
+	} else {
+		e = "nil(error)"
+	}
+	return fmt.Sprintf("%v,%v,%v", res.msgid, e, res.args)
+}
+
+func buildRequest(ctx *rpcContext, msgid proto.MsgId, pid proto.ProcessId, method string, args []interface {}, ch chan *response) *payload {
+	return &payload {
+		kind: REQUEST,
+		data: &request {
+			msgid: msgid, 
+			pid: pid, 
+			method: method, 
+			args: args,
+			ctx: ctx,
+			receiver: ch,
+		},
 	}
 }
 
-func (pl payload) args() []interface{} {
-	switch (pl.kind()) {
-	case REQUEST:
-		return pl[REQUEST_ARGS].([]interface{})
-	case RESPONSE:
-		return pl[RESPONSE_ARGS].([]interface{})
-	case NOTIFY:
-		return pl[NOTIFY_ARGS].([]interface{})
-	default:
-		return nil
+func buildResponse(msgid proto.MsgId, err *ActorError, args interface {}) *payload {
+	return &payload {
+		kind: RESPONSE,
+		data: &response {
+			msgid: msgid, 
+			args: args,
+			error: err,
+		},
 	}
-}
-
-func (pl payload) ctx() *rpcContext {
-	switch (pl.kind()) {
-	case REQUEST:
-		return pl[REQUEST_CTX].(*rpcContext)
-	default:
-		return nil
-	}	
-}
-
-func (pl payload) receiver() chan *payload {
-	switch (pl.kind()) {
-	case REQUEST:
-		return pl[REQUEST_RECEIVER].(chan *payload)
-	default:
-		return nil
-	}	
-}
-
-func (pl payload) requestParams() []interface{} {
-	return (([]interface{})(pl))[KIND:REQUEST_ARGS]
-}
-
-func buildRequest(ctx *rpcContext, msgid proto.MsgId, pid proto.ProcessId, method string, args []interface {}, ch chan *payload) *payload {
-	r := make([]interface{}, 7)
-	p := payload(append(r, REQUEST, msgid, pid, method, args, ctx, ch))
-	return &p
-}
-
-func buildResponse(msgid proto.MsgId, err error, args []interface {}) *payload {
-	r := make([]interface{}, 4)
-	p := payload(append(r, RESPONSE, msgid, err, args))
-	return &p
 }
 
 func buildNotify(pid proto.ProcessId, method string, args []interface {}) *payload {
-	r := make([]interface{}, 4)
-	p := payload(append(r, NOTIFY, pid, method, args))
-	return &p
+	return &payload {
+		kind: NOTIFY,
+		data: &notify {
+			pid: pid,
+			method: method, 
+			args: args,
+		},
+	}
 }

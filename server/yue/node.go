@@ -97,7 +97,7 @@ func AddrByNodeId(node_id proto.NodeId) (string, error) {
 
 func NodeIdByAddr(addr string) (proto.NodeId, error) {
 	var node_id proto.NodeId
-	if err := db().SelectOne(&node_id, "select address from yue.nodes where id = $1", addr); err != nil {
+	if err := db().SelectOne(&node_id, "select id from yue.nodes where address = $1", addr); err != nil {
 		return 0, err
 	}
 	return node_id, nil
