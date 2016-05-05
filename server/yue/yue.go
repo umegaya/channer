@@ -145,19 +145,26 @@ func Register(id string, conf ActorConfig, args ...interface{}) {
 }
 
 //send speocified RPC to given id's actor. should call in some goroutine
-func Call(id, method string, args ...interface{}) (interface{}, error) {
-	return GCall(context.Background(), id, method, args...)
+//last argument of args is treated as parameter which receive return value
+func Call(id, method string, args ...interface{}) error {
+	return RawCall(context.Background(), id, method, 1, args...)
 }
 
-//same as Call but can receive go's context.
-func GCall(ctx context.Context, id, method string, args ...interface{}) (interface{}, error) {
+//call RPC with number of return value. used for receiving multiple or no return value
+func CallMR(id, method string, n_rv int, args ...interface{}) error {
+	return RawCall(context.Background(), id, method, n_rv, args...)
+}
+
+//same as CallMR but can receive go's context.
+func RawCall(ctx context.Context, id, method string, n_rv int, args ...interface{}) error {
 	//ensure actor which is corresponding to id, is loaded.
 	a, err := _actormgr.ensureLoaded(id)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	return a.call(&rpcContext {
 		gctx: ctx,
+		n_rv: n_rv,
 	}, method, args...)
 }
 

@@ -24,21 +24,8 @@ type Txn struct {
 	*gorp.Transaction
 }
 type Dbif interface {
-	Delete(list ...interface{}) (int64, error)
-	Exec(query string, args ...interface{}) (sql.Result, error)
-	Get(i interface{}, keys ...interface{}) (interface{}, error)
-	Insert(list ...interface{}) error
-	Prepare(query string) (*sql.Stmt, error)
-	Select(i interface{}, query string, args ...interface{}) ([]interface{}, error)
-	SelectFloat(query string, args ...interface{}) (float64, error)
-	SelectInt(query string, args ...interface{}) (int64, error)
-	SelectNullFloat(query string, args ...interface{}) (sql.NullFloat64, error)
-	SelectNullInt(query string, args ...interface{}) (sql.NullInt64, error)
-	SelectNullStr(query string, args ...interface{}) (sql.NullString, error)
-	SelectOne(holder interface{}, query string, args ...interface{}) error
-	SelectStr(query string, args ...interface{}) (string, error)
-	Update(list ...interface{}) (int64, error)
-	UpdateColumns(filter gorp.ColumnFilter, list ...interface{}) (int64, error)	
+	gorp.SqlExecutor
+	UpdateColumns(filter gorp.ColumnFilter, list ...interface{}) (int64, error)
 }
 
 var dbm Database
@@ -103,8 +90,8 @@ func DBM() *Database {
 	return &dbm
 }
 
-func create_table(tmpl interface {}, name string, pkey_column string) *gorp.TableMap {
-	return dbm.AddTableWithNameAndSchema(tmpl, dbm.Name, name).SetKeys(false, pkey_column)
+func create_table(tmpl interface {}, name string, pkey_column ...string) *gorp.TableMap {
+	return dbm.AddTableWithNameAndSchema(tmpl, dbm.Name, name).SetKeys(false, pkey_column...)
 }
 
 func StoreColumns(dbif Dbif, record interface {}, columns []string) (int64, error) {
@@ -140,7 +127,7 @@ func (dbm *Database) Txn(fn func (Dbif) error) error {
 	if err != nil {
 		return err
 	}
-	txn := Txn { tx }
+	txn := &Txn{ tx }
 	if err := fn(txn); err != nil {
 		tx.Rollback()
 		return err

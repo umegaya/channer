@@ -44,7 +44,12 @@ func (cp containerExecuter) Call(method string, args ...interface{}) (interface 
 		})
 		cp.conn.Run(&cp)
 	}
-	return cp.conn.Request(&rpcContext{}, sv().NewMsgId(), cp.pid, method, args)
+	var r interface{}
+	if err := cp.conn.Request(&rpcContext{}, sv().NewMsgId(), cp.pid, method, append(args, r)); err != nil {
+		return nil, err
+	} else {
+		return r, nil
+	}
 }
 //process request. implements connExecuteror interface
 func (cp *containerExecuter) ProcessRequest(r *request, c peer) {

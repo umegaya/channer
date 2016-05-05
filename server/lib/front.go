@@ -164,16 +164,11 @@ func (sv *FrontServer) initActors() error {
 		Size: 1,
 	}, "channer")
 	go func() {
-		r, err := yue.Call("/hello", "Hello", "actor-caller")
-		if err != nil {
-			log.Fatalf("err should not happen: %v", err)
-		}
-		if s, ok := r.(string); ok {
-			if s != "hello, actor-caller! from channer" {
-				log.Fatalf("unexpected response: %v", s)
-			}
-		} else {
-			log.Fatalf("response type does not match expected %v", r)
+		var r string
+		if err := yue.Call("/hello", "Hello", "actor-caller", &r); err != nil {
+			log.Fatalf("err should not happen: %v %v", err)
+		} else if r != "hello, actor-caller! from channer" {
+			log.Fatalf("unexpected response: %v", r)
 		}
 	}()
 	return nil

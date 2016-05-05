@@ -105,6 +105,16 @@ message Model {
 		required string name = 4;
 	}
 
+	message Reactions {
+		message Entry {
+			required fixed64 id = 1;
+			required fixed64 count = 2;
+		}
+		required fixed64 upvote = 1;
+		required fixed64 downvote = 2;
+		repeated Entry entries = 3;
+	}
+
 	message Post {
 		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"]; 
 		required fixed64 topic = 2 [(gogoproto.casttype) = "UUID"];//parent topic id
@@ -112,29 +122,28 @@ message Model {
 		required uint64 attr = 4;//attr flag (banned or something)
 		required uint32 upvote = 5;
 		required string text = 7;//posted text
+		required bytes reactions = 8; //packed Reactions message
 	}
 
 	message Topic {
 		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required string name = 2;
-		required uint32 upvote = 3;
-		required uint32 downvote = 4;
+		required fixed64 channel = 2 [(gogoproto.casttype) = "UUID"];
+		required string name = 3;
+		required bytes reactions = 4; //packed Reactions message
 	}
 
 	message Reaction {
 		enum Type {
 			Unknown = 0;
-			Post_Star = 1;
-			Post_Other = 2;
-			Topic_Star = 3;
-			Channel_Start = 4;
-			Admin = 5;
+			Post = 1;
+			Topic = 2;
+			Post_Vote = 11;
+			Topic_Vote = 12;
 		}
-		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required fixed64 target = 2 [(gogoproto.casttype) = "UUID"]; //parent post id
-		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who react it.
-		required Type type = 4;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
-		required string text = 5;//0: empty string, 1: emoji definition. 2: misc data (maybe JSON)
+		required fixed64 target = 1 [(gogoproto.casttype) = "UUID"]; //parent post id
+		required fixed64 persona = 2 [(gogoproto.casttype) = "UUID"];//persona who react it.
+		required Type type = 3;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
+		required fixed64 param = 4;//+1,-1 for vote reaction. emoji_id for other reaction
 	}
 
 	message Service {
@@ -215,6 +224,22 @@ message ChannelListRequest {
 	optional fixed64 offset_id = 5 [(gogoproto.nullable) = true];
 }
 
+message TopicListRequest {
+	enum QueryType {
+		None = 0;
+		Hour = 1;
+		Day = 2;
+		Week = 3;
+		Month = 4;
+		Year = 5;
+		AllTime = 6;
+		Latest = 10;
+	}
+	required QueryType query = 1;
+	optional string locale = 2;
+	optional int32 limit = 3;
+	optional fixed64 offset_id = 4 [(gogoproto.nullable) = true];
+}
 
 
 //response

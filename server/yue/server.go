@@ -127,10 +127,10 @@ func (sv *server) listen(cfg *Config) {
 }
 
 //Call do rpc to specified process
-func (sv *server) call(ctx *rpcContext, pid proto.ProcessId, method string, args ...interface {}) (interface {}, *ActorError) {
+func (sv *server) call(ctx *rpcContext, pid proto.ProcessId, method string, args ...interface {}) *ActorError {
 	p, err := sv.find(ctx, pid)
 	if err != nil {
-		return nil, newerr(ActorRuntimeError, err.Error())
+		return newerr(ActorRuntimeError, err.Error())
 	}
 	return p.Request(ctx, sv.NewMsgId(), pid, method, args)
 }

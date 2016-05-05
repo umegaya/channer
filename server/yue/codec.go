@@ -4,11 +4,30 @@ import (
 	"log"
 	"net"
 //	"fmt"
+	"reflect"
 	"bufio"
 	"encoding/json"
 
+	proto "./proto"
+
 	"github.com/umegaya/msgpack"
 )
+
+//register return type for each request, msgid basis.
+var retvals map[proto.MsgId]interface{} = make(map[proto.MsgId]interface{})
+var dummy interface{}
+func registerRetval(msgid proto.MsgId, ret interface{}) {
+	retvals[msgid] = ret
+}
+func getRetval(msgid proto.MsgId) interface{} {
+	r, ok := retvals[msgid]
+	if ok {
+		delete(retvals, msgid)
+		return r 
+	} else {
+		return &dummy
+	}
+}
 
 //basic primitive decode/encode msgpack
 //payload, request, notify, response
@@ -80,7 +99,11 @@ func (res *response) encode(enc *msgpack.Encoder) error {
 }
 
 func (res *response) decode(dec *msgpack.Decoder) error {
-	return dec.Decode(&res.msgid, &res.error, &res.args)
+	if err := dec.Decode(&res.msgid); err != nil {
+		return err
+	}
+	res.args = getRetval(res.msgid)
+	return dec.Decode(&res.error, res.args)
 }
 
 //notify
@@ -156,6 +179,14 @@ type MsgpackCodecFactory struct {
 }
 
 func NewMsgpackCodecFactory(cfg func (interface{})) *MsgpackCodecFactory {
+	msgpack.Register(reflect.TypeOf(reflect.Value{}), 
+		func (e *msgpack.Encoder, v reflect.Value) error {
+			return e.EncodeValue(v.Interface().(reflect.Value))
+		}, 
+		func (d *msgpack.Decoder, v reflect.Value) error { //who wants to do this?
+			vv := v.Interface().(reflect.Value) 
+			return d.DecodeValue(vv)
+		})
 	return &MsgpackCodecFactory {
 		cfg: cfg,
 	}

@@ -96,13 +96,11 @@ type response struct {
 }
 
 func (res *response) String() string {
-	var e string
 	if res.error != nil {
-		e = res.error.Error()
+		return fmt.Sprintf("%v,%v,%v", res.msgid, res.error.Error(), res.args)
 	} else {
-		e = "nil(error)"
+		return fmt.Sprintf("%v,nil(error),%v", res.msgid, res.args)
 	}
-	return fmt.Sprintf("%v,%v,%v", res.msgid, e, res.args)
 }
 
 func buildRequest(ctx *rpcContext, msgid proto.MsgId, pid proto.ProcessId, method string, args []interface {}, ch chan *response) *payload {

@@ -10,6 +10,6 @@ type Reaction struct {
 }
 
 func InitReaction() {
-	create_table(Reaction{}, "reactions", "Id")
+	create_table(Reaction{}, "reactions", "Target", "Persona")
 }
 

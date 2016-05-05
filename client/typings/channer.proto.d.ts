@@ -58,6 +58,7 @@ declare module Proto2TypeScript {
 		RescueRequest: ChannerProto.RescueRequestBuilder;
 		ChannelCreateRequest: ChannerProto.ChannelCreateRequestBuilder;
 		ChannelListRequest: ChannerProto.ChannelListRequestBuilder;
+		TopicListRequest: ChannerProto.TopicListRequestBuilder;
 		LoginResponse: ChannerProto.LoginResponseBuilder;
 		PostResponse: ChannerProto.PostResponseBuilder;
 		FetchResponse: ChannerProto.FetchResponseBuilder;
@@ -187,6 +188,7 @@ declare module Proto2TypeScript.ChannerProto {
 		Device: Model.DeviceBuilder;
 		Node: Model.NodeBuilder;
 		Persona: Model.PersonaBuilder;
+		Reactions: Model.ReactionsBuilder;
 		Post: Model.PostBuilder;
 		Topic: Model.TopicBuilder;
 		Reaction: Model.ReactionBuilder;
@@ -457,6 +459,54 @@ declare module Proto2TypeScript.ChannerProto.Model {
 
 declare module Proto2TypeScript.ChannerProto.Model {
 
+	export interface Reactions extends ProtoBufModel {
+		upvote: Long;
+		getUpvote() : Long;
+		setUpvote(upvote : Long): void;
+		downvote: Long;
+		getDownvote() : Long;
+		setDownvote(downvote : Long): void;
+		entries: Reactions.Entry[];
+		getEntries() : Reactions.Entry[];
+		setEntries(entries : Reactions.Entry[]): void;
+		
+	}
+	
+	export interface ReactionsBuilder {
+		new(): Reactions;
+		decode(buffer: ArrayBuffer) : Reactions;
+		//decode(buffer: NodeBuffer) : Reactions;
+		//decode(buffer: ByteArrayBuffer) : Reactions;
+		decode64(buffer: string) : Reactions;
+		Entry: Reactions.EntryBuilder;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.Model.Reactions {
+
+	export interface Entry extends ProtoBufModel {
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
+		count: Long;
+		getCount() : Long;
+		setCount(count : Long): void;
+		
+	}
+	
+	export interface EntryBuilder {
+		new(): Entry;
+		decode(buffer: ArrayBuffer) : Entry;
+		//decode(buffer: NodeBuffer) : Entry;
+		//decode(buffer: ByteArrayBuffer) : Entry;
+		decode64(buffer: string) : Entry;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.Model {
+
 	export interface Post extends ProtoBufModel {
 		id: Long;
 		getId() : Long;
@@ -476,6 +526,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		text: string;
 		getText() : string;
 		setText(text : string): void;
+		reactions: ByteBuffer;
+		getReactions() : ByteBuffer;
+		setReactions(reactions : ByteBuffer): void;
 		
 	}
 	
@@ -495,15 +548,15 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		id: Long;
 		getId() : Long;
 		setId(id : Long): void;
+		channel: Long;
+		getChannel() : Long;
+		setChannel(channel : Long): void;
 		name: string;
 		getName() : string;
 		setName(name : string): void;
-		upvote: number;
-		getUpvote() : number;
-		setUpvote(upvote : number): void;
-		downvote: number;
-		getDownvote() : number;
-		setDownvote(downvote : number): void;
+		reactions: ByteBuffer;
+		getReactions() : ByteBuffer;
+		setReactions(reactions : ByteBuffer): void;
 		
 	}
 	
@@ -520,9 +573,6 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Reaction extends ProtoBufModel {
-		id: Long;
-		getId() : Long;
-		setId(id : Long): void;
 		target: Long;
 		getTarget() : Long;
 		setTarget(target : Long): void;
@@ -532,9 +582,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		type: Reaction.Type;
 		getType() : Reaction.Type;
 		setType(type : Reaction.Type): void;
-		text: string;
-		getText() : string;
-		setText(text : string): void;
+		param: Long;
+		getParam() : Long;
+		setParam(param : Long): void;
 		
 	}
 	
@@ -552,11 +602,10 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model.Reaction {
 	export const enum Type {
 		Unknown = 0,
-		Post_Star = 1,
-		Post_Other = 2,
-		Topic_Star = 3,
-		Channel_Start = 4,
-		Admin = 5,
+		Post = 1,
+		Topic = 2,
+		Post_Vote = 11,
+		Topic_Vote = 12,
 		
 	}
 }
@@ -857,6 +906,49 @@ declare module Proto2TypeScript.ChannerProto.ChannelListRequest {
 		None = 0,
 		New = 1,
 		Popular = 2,
+		
+	}
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
+	export interface TopicListRequest extends ProtoBufModel {
+		query: TopicListRequest.QueryType;
+		getQuery() : TopicListRequest.QueryType;
+		setQuery(query : TopicListRequest.QueryType): void;
+		locale?: string;
+		getLocale() : string;
+		setLocale(locale : string): void;
+		limit?: number;
+		getLimit() : number;
+		setLimit(limit : number): void;
+		offset_id?: Long;
+		getOffsetId() : Long;
+		setOffsetId(offsetId : Long): void;
+		
+	}
+	
+	export interface TopicListRequestBuilder {
+		new(): TopicListRequest;
+		decode(buffer: ArrayBuffer) : TopicListRequest;
+		//decode(buffer: NodeBuffer) : TopicListRequest;
+		//decode(buffer: ByteArrayBuffer) : TopicListRequest;
+		decode64(buffer: string) : TopicListRequest;
+		QueryType: TopicListRequest.QueryType;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.TopicListRequest {
+	export const enum QueryType {
+		None = 0,
+		Hour = 1,
+		Day = 2,
+		Week = 3,
+		Month = 4,
+		Year = 5,
+		AllTime = 6,
+		Latest = 10,
 		
 	}
 }

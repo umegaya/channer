@@ -3,6 +3,7 @@ package yue
 import (
 	"io"
 	"log"
+	"fmt"
 	"net"
 	"sync"
 	"time"
@@ -13,12 +14,17 @@ import (
 	"golang.org/x/net/context"
 )
 
+const (
+	SYSTEM_REQUEST = iota
+)
+
 //
 // rpcContext
 //
 type rpcContext struct {
 	peer_id uint32 //node_id + peer connection id (aka serial) 
 	deadline time.Time //absolute time to deadline
+	n_rv int //number of return value
 	txn interface {} //for txn call. all database operation is done in this txn.
 	gctx context.Context //go cancel/timeout context. for compatibility to common go rpc implementation
 }
@@ -55,7 +61,7 @@ type peer interface {
 	Addr() net.Addr
 	Close()
 	Run(p peerProcessor)
-	Request(ctx *rpcContext, msgid proto.MsgId, pid proto.ProcessId, method string, args []interface{}) (interface {}, *ActorError)
+	Request(ctx *rpcContext, msgid proto.MsgId, pid proto.ProcessId, method string, args []interface{}) *ActorError
 	Notify(pid proto.ProcessId, method string, args []interface{})
 	Reply(msgid proto.MsgId, args interface{})
 	Raise(msgid proto.MsgId, err *ActorError)
@@ -110,20 +116,47 @@ func (c *conn) Run(p peerProcessor) {
     c.reader(p)
 }
 
+func divideArgs(n_rv int, args []interface{}) ([]interface{}, interface{}, error) {
+	if n_rv == 0 {
+		return args, nil, nil
+	} else if n_rv == 1 {
+		if len(args) > 1 {
+			return args[0:len(args) - 1], args[len(args) - 1], nil
+		} else if len(args) == 1 {
+			return nil, args[0], nil
+		} else {
+			return nil, nil, fmt.Errorf("not enough return value: need %v but %v", n_rv, len(args))
+		}
+	} else if len(args) > n_rv {
+		recv := make([]interface{}, 0, n_rv)
+		recv = append(recv, args[len(args) - n_rv:]...)
+		return args[0:len(args) - n_rv], &recv, nil
+	} else if len(args) == n_rv {
+		return nil, &args, nil
+	} else {
+		return nil, nil, fmt.Errorf("not enough return value: need %v but %v", n_rv, len(args))
+	}
+}
+
 //do rpc. should call in goroutine
 func (c *conn) Request(ctx *rpcContext, 
-	msgid proto.MsgId, pid proto.ProcessId, method string, args []interface{}) (interface {}, *ActorError) {
+	msgid proto.MsgId, pid proto.ProcessId, method string, args []interface{}) *ActorError {
 	ch := c.newch()
-	c.send <- buildRequest(ctx, msgid, pid, method, args, ch)
+	a, r, err := divideArgs(ctx.n_rv, args)
+	if err != nil {
+		return newerr(ActorRuntimeError, err)
+	}
+	registerRetval(msgid, r)
+	c.send <- buildRequest(ctx, msgid, pid, method, a, ch)
 	select {
 	case resp := <- ch:
 		c.pushch(ch)
 		if resp.error != nil {
-			return nil, resp.error
+			return resp.error
 		}
-		return resp.args, nil
+		return nil
 	case <- ctx.gctx.Done():
-		return nil, newerr(ActorGoCtxError, ctx.gctx.Err())
+		return newerr(ActorGoCtxError, ctx.gctx.Err())
 	}
 }
 
@@ -294,11 +327,9 @@ func (c *conn) processSystemRequest(req *request) {
 func (c *conn) systemRequest(p peerProcessor, method string) error {
 	switch(method) {
 	case "ping":
-		r, err := c.Request(&rpcContext {}, p.NewMsgId(), 0, method, []interface{}{time.Now().UnixNano()})
-		if err != nil {
+		if err := c.Request(&rpcContext { n_rv: 1 }, p.NewMsgId(), SYSTEM_REQUEST, method, 
+			[]interface{}{time.Now().UnixNano(), &c.stats.latencyNS}); err != nil {
 			return err
-		} else {
-			c.stats.latencyNS = r.(int64)
 		}
 	}
 	return nil

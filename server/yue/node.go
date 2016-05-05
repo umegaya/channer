@@ -65,8 +65,11 @@ const precision = uint64(10 * time.Microsecond)
 const nodeIDBits = 15
 
 func (n *Node) newUUID() uint64 {
+	return n.GenUUID(time.Now())
+}
 
-	id := uint64(time.Now().UnixNano()-uniqueIDEpoch) / precision
+func (n *Node) GenUUID(t time.Time) uint64 {
+	id := uint64(t.UnixNano()-uniqueIDEpoch) / precision
 
 	n.mutex.Lock()
 	if id <= n.Seed {
@@ -76,7 +79,7 @@ func (n *Node) newUUID() uint64 {
 	n.mutex.Unlock()
 	
 	id = (id << nodeIDBits) | uint64(n.Id)
-	return id
+	return id	
 }
 
 func (n *Node) proto() proto.Node {
@@ -102,3 +105,9 @@ func NodeIdByAddr(addr string) (proto.NodeId, error) {
 	}
 	return node_id, nil
 }
+
+func UUIDAt(t time.Time) proto.UUID {
+	id := uint64(t.UnixNano() - uniqueIDEpoch) / precision
+	return proto.UUID(id << nodeIDBits)
+}
+

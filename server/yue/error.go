@@ -16,6 +16,7 @@ const (
 	ActorTimeout
 	ActorGoCtxError
 	ActorInvalidPayload
+	ActorInvalidProcess
 )
 
 
@@ -28,6 +29,7 @@ var errorStrings []string = []string{
 	"actor: call timeout: %v",
 	"actor: go context error: %v",
 	"invalid payload type: %v",
+	"invalid process: %v",
 }
 
 type ActorError struct {

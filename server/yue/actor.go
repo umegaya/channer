@@ -32,10 +32,9 @@ func newactor(id string, conf *ActorConfig) *actor {
 	}
 }
 
-func (a *actor) call(ctx *rpcContext, method string, args ...interface {}) (interface {}, error) {
+func (a *actor) call(ctx *rpcContext, method string, args ...interface {}) error {
 RETRY:
-	r, err := sv().call(ctx, a.balance(), method, args...)
-	if err != nil {
+	if err := sv().call(ctx, a.balance(), method, args...); err != nil {
 		/*
 		呼び出し側のエラー処理
 		TODO: もし、applicationレベルではないエラー(!ActorRuntimeError)が発生した場合、障害の可能性が高いためシステムレベルでの対応が必要になる.
@@ -92,14 +91,14 @@ RETRY:
 					return a.update(dbh)
 				}); err != nil {
 					factory.Destroy()
-					return nil, err
+					return err
 				}
 				goto RETRY
 			}
 		} //TODO: process connection timeout. 
-		return nil, error(err)
+		return error(err)
 	}
-	return r, nil
+	return nil
 }
 
 func (a *actor) balance() proto.ProcessId {
