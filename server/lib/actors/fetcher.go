@@ -3,9 +3,10 @@ package actors
 import (
 	"time"
 
-	"../models"
-	"../../yue"
-	proto "../../proto"
+	"github.com/umegaya/channer/server/lib/models"
+	proto "github.com/umegaya/channer/server/proto"
+
+	"github.com/umegaya/yue"
 )
 
 func topicFetcher(start, end time.Time, locale string) ([]HotEntry, error) {

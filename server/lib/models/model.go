@@ -6,13 +6,11 @@ import (
 	"strings"
 	"database/sql"
 
-	proto "../../proto"
-	"../../yue"
+	proto "github.com/umegaya/channer/server/proto"
 
-	//_ "github.com/cockroachdb/cockroach/sql/driver"
 	_ "github.com/cockroachdb/pq"
-	//"github.com/go-gorp/gorp"
 	"github.com/umegaya/gorp"
+	"github.com/umegaya/yue"
 )
 
 type Database struct {

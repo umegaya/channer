@@ -1,7 +1,7 @@
 package packets
 
 import (
-	proto "../../proto"
+	proto "github.com/umegaya/channer/server/proto"
 )
 
 func ProcessPost(from Source, msgid uint32, post *proto.PostRequest, t Transport) {

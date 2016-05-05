@@ -6,7 +6,7 @@ import (
 	"time"
 	"flag"
 
-	"./utils"
+	"github.com/umegaya/channer/server/lib/utils"
 )
 
 //Config represents common configuration of channer servers

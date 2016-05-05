@@ -8,8 +8,8 @@ import (
 	"sync"
 	"math/rand"
 
-	"../yue"
-	proto "../../proto"
+	"github.com/umegaya/yue"
+	proto "github.com/umegaya/channer/server/proto"
 )
 
 const (

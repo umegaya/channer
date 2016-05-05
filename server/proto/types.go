@@ -1,7 +1,7 @@
 package ChannerProto
 
 import (
-	"../yue"
+	"github.com/umegaya/yue"
 )
 
 type UUID yue.UUID

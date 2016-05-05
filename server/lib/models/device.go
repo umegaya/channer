@@ -4,7 +4,7 @@ import (
 	//"log"
 	"time"
 
-	proto "../../proto"
+	proto "github.com/umegaya/channer/server/proto"
 )
 
 //Account represents one user account

@@ -3,8 +3,8 @@ package packets
 import (
 	"log"
 	
-	proto "../../proto"
-	"../models"
+	proto "github.com/umegaya/channer/server/proto"
+	"github.com/umegaya/channer/server/lib/models"
 )
 
 func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transport) {

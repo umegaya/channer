@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"strings"
 
-	proto "../../proto"
+	proto "github.com/umegaya/channer/server/proto"
 )
 
 //Account represents one user account

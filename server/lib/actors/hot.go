@@ -6,7 +6,7 @@ import (
 	"sort"
 	"sync/atomic"
 
-	proto "../../proto"
+	proto "github.com/umegaya/channer/server/proto"
 )
 
 const (

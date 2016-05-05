@@ -6,14 +6,13 @@ import (
 	"log"
 	"time"
 
-	proto "../proto"
-	"./packets"
-	"./assets"
-	"./models"
-	"./actors"
+	proto "github.com/umegaya/channer/server/proto"
+	"github.com/umegaya/channer/server/lib/packets"
+	"github.com/umegaya/channer/server/lib/assets"
+	"github.com/umegaya/channer/server/lib/models"
+	"github.com/umegaya/channer/server/lib/actors"
 
-	"../yue"
-
+	"github.com/umegaya/yue"
 	"github.com/gorilla/websocket"
 )
 

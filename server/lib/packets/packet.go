@@ -4,9 +4,9 @@ import (
 	"log"
 	"fmt"
 
-	"../assets"
-	"../models"
-	proto "../../proto"
+	"github.com/umegaya/channer/server/lib/assets"
+	"github.com/umegaya/channer/server/lib/models"
+	proto "github.com/umegaya/channer/server/proto"
 )
 
 //Source is interface which is required packet source information 

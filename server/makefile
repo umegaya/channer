@@ -26,3 +26,7 @@ db:
 
 browsedb:
 	@docker exec -ti channerdb /cockroach/cockroach sql --url=postgresql://root@`cat dbhost`:26257/channer?sslmode=disable
+
+lock:
+	@glock save github.com/umegaya/channer/server
+	

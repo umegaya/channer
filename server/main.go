@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"./lib"
+	"github.com/umegaya/channer/server/lib"
 )
 
 func main() {

@@ -8,7 +8,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 
-	proto "../../proto"
+	proto "github.com/umegaya/channer/server/proto"
 )
 
 //Account represents one user account
