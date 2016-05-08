@@ -29,4 +29,6 @@ browsedb:
 
 lock:
 	@glock save github.com/umegaya/channer/server
-	
+
+test:
+	@go test ./...

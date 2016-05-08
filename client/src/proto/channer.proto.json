@@ -592,7 +592,7 @@
                                 {
                                     "rule": "required",
                                     "type": "Long",
-                                    "name": "target",
+                                    "name": "id",
                                     "id": 1,
                                     "options": {
                                         "(gogoproto.casttype)": "UUID"
@@ -601,8 +601,17 @@
                                 {
                                     "rule": "required",
                                     "type": "Long",
-                                    "name": "persona",
+                                    "name": "target",
                                     "id": 2,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "Long",
+                                    "name": "persona",
+                                    "id": 3,
                                     "options": {
                                         "(gogoproto.casttype)": "UUID"
                                     }
@@ -611,13 +620,13 @@
                                     "rule": "required",
                                     "type": "Type",
                                     "name": "type",
-                                    "id": 3
+                                    "id": 4
                                 },
                                 {
                                     "rule": "required",
                                     "type": "Long",
                                     "name": "param",
-                                    "id": 4
+                                    "id": 5
                                 }
                             ],
                             "enums": [

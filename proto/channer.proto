@@ -140,10 +140,11 @@ message Model {
 			Post_Vote = 11;
 			Topic_Vote = 12;
 		}
-		required fixed64 target = 1 [(gogoproto.casttype) = "UUID"]; //parent post id
-		required fixed64 persona = 2 [(gogoproto.casttype) = "UUID"];//persona who react it.
-		required Type type = 3;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
-		required fixed64 param = 4;//+1,-1 for vote reaction. emoji_id for other reaction
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"]; //unique id
+		required fixed64 target = 2 [(gogoproto.casttype) = "UUID"]; //target object id
+		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who react target.
+		required Type type = 4;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
+		required fixed64 param = 5;//+1,-1 for vote reaction. emoji_id for other reaction
 	}
 
 	message Service {

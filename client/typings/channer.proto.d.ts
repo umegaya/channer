@@ -573,6 +573,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Reaction extends ProtoBufModel {
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
 		target: Long;
 		getTarget() : Long;
 		setTarget(target : Long): void;

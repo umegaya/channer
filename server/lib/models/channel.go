@@ -74,10 +74,7 @@ func ListChannel(dbif Dbif, req *proto.ChannelListRequest) ([]*proto.Model_Chann
 			tmp = append(tmp, fmt.Sprintf("id < %v", *req.OffsetId))
 		}
 	} else if req.Query == proto.ChannelListRequest_Popular {
-		order_by = "start desc"
-		if req.OffsetId != nil {
-			tmp = append(tmp, fmt.Sprintf("star < %v", *req.OffsetId))
-		}
+		return nil, fmt.Errorf("popular channel list has not implemented yet")
 	}
 	if req.Category > 0 {
 		tmp = append(tmp, fmt.Sprintf("category = %d", req.Category))
