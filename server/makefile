@@ -17,8 +17,7 @@ stopdb:
 restart: stop run
 
 protoc: 
-	@protoc --gogofaster_out=./yue/proto -I ./yue/proto -I `echo $$GOPATH`/src -I `echo $$GOPATH`/src/github.com/gogo/protobuf/protobuf ./yue/proto/*.proto
-	@protoc --gogofaster_out=./proto -I ../proto -I ./yue/proto -I `echo $$GOPATH`/src -I `echo $$GOPATH`/src/github.com/gogo/protobuf/protobuf ../proto/*.proto
+	@protoc --gogofaster_out=./proto -I ../proto -I `echo $$GOPATH`/src -I `echo $$GOPATH`/src/github.com/gogo/protobuf/protobuf ../proto/*.proto
 
 db: 
 	docker inspect channerdb 2>&1 > /dev/null || docker run --name channerdb -d --net=host -p 26257 cockroachdb/cockroach shell -c "./cockroach start --insecure --verbosity=1"

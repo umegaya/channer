@@ -80,7 +80,7 @@ message Model {
 		optional string description = 5;
 		required string style = 6;
 		required fixed64 established = 7 [(gogoproto.casttype) = "UUID"];	//account id which create this channel TODO: forum creation limit per account.
-		required uint64 star = 9;
+		required uint64 watcher = 9;
 		required bytes options = 10;
 	}
 
@@ -110,8 +110,6 @@ message Model {
 			required fixed64 id = 1;
 			required fixed64 count = 2;
 		}
-		required fixed64 upvote = 1;
-		required fixed64 downvote = 2;
 		repeated Entry entries = 3;
 	}
 
@@ -120,7 +118,8 @@ message Model {
 		required fixed64 topic = 2 [(gogoproto.casttype) = "UUID"];//parent topic id
 		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who post it.
 		required uint64 attr = 4;//attr flag (banned or something)
-		required uint32 upvote = 5;
+		required fixed32 point = 5;
+		required fixed32 vote = 6;
 		required string text = 7;//posted text
 		required bytes reactions = 8; //packed Reactions message
 	}
@@ -129,7 +128,9 @@ message Model {
 		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required fixed64 channel = 2 [(gogoproto.casttype) = "UUID"];
 		required string name = 3;
-		required bytes reactions = 4; //packed Reactions message
+		required fixed32 point = 4;
+		required fixed32 vote = 5;
+		required fixed32 comment = 6;
 	}
 
 	message Reaction {
@@ -137,8 +138,10 @@ message Model {
 			Unknown = 0;
 			Post = 1;
 			Topic = 2;
+			Channel = 3;
 			Post_Vote = 11;
 			Topic_Vote = 12;
+			Channel_Watch = 13;
 		}
 		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"]; //unique id
 		required fixed64 target = 2 [(gogoproto.casttype) = "UUID"]; //target object id
@@ -226,15 +229,21 @@ message ChannelListRequest {
 }
 
 message TopicListRequest {
+	enum BucketType {
+		Invalid = 0;
+		Rising = 1;
+		Hot = 2;
+		Flame = 3;
+	}
 	enum QueryType {
 		None = 0;
 		Hour = 1;
 		Day = 2;
 		Week = 3;
-		Month = 4;
-		Year = 5;
-		AllTime = 6;
-		Latest = 10;
+		AllTime = 4;
+
+		QueryCacheEnd = 4; //AllTime
+		End = 4;
 	}
 	required QueryType query = 1;
 	optional string locale = 2;

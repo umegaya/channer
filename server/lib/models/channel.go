@@ -44,7 +44,7 @@ func NewChannel(dbif Dbif, a *Account, req *proto.ChannelCreateRequest) (*Channe
 			Style: req.Style,
 			Locale: req.Locale,
 			Category: req.Category,
-			Star: 0,
+			Watcher: 0, //TODO: add creator as watcher
 			Established: a.Id,
 			Options: bytes,
 		},
@@ -157,7 +157,7 @@ func InsertChannelFixture(dbif Dbif) error {
 				Name: fmt.Sprintf("debug channel %d", (i + 1)), 
 				Description: fmt.Sprintf("this is description %d", (i + 1)),
 				Style: "",
-				Star: uint64(rand.Int63n(1000000)),
+				Watcher: uint64(rand.Int63n(1000000)),
 				Locale:locales[rand.Int31n(int32(len(locales)))],
 				Category: uint32(rand.Int31n(int32(len(categories)))),
 				Established: proto.UUID(rand.Int63()),
