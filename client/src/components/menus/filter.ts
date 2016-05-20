@@ -149,7 +149,7 @@ export class TopicFilter extends MenuElementComponent {
     	return TopicFilterView(ctrl);
     }
     iconview = (): UI.Element => {
-        return this.format_iconview("img.search_channel", _L("filter topic"));
+        return this.format_iconview("img.search_topic", _L("filter topic"));
     }
     name = (): string => {
         return "topic filter";

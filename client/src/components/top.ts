@@ -17,9 +17,11 @@ var Tabs = window.channer.parts.Tabs;
 
 const TABS = [{
     label: _L("channel"),
+    after: m("img.channel"),
     id: "channel",
 }, {
     label: _L("topic"),
+    after: m("img.topic"),
     id: "topic",
 }];
 
@@ -75,7 +77,6 @@ export class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.C
         }
         else {
             chunk.update_range(model.id);
-            console.log("update_range: " + model.id.toString() + " => " + chunk.end_id);
         }
     }
 }
@@ -154,8 +155,10 @@ function TopView(ctrl: TopController) : UI.Element {
     return m(".top", [ 
         ctrl.content(),
         m.component(Tabs, {
+            menu: true,
             buttons: TABS,
             autofit: true,
+            hideIndicator: true,
             selectedTab: ctrl.active(),
             activeSelected: true,
             getState: (state: { index: number }) => {
@@ -206,6 +209,7 @@ export class TopComponent extends PageComponent {
         return [
             ChannelFilterComponent,
             ChannelCreateComponent,
+            TopicFilterComponent,
         ];
     }
     onunload = () => {

@@ -52,11 +52,10 @@ export class ProtoModelChunk<T extends ProtoModel> {
         this.initialized = true;
     }
     update_range = (score: number|Long) => {
-        console.log("update_range: " + typeof(score) + "|" + score.toString());
-        if (this.start_id == null || this.start_id.lessThan(score)) { /* this.start_id < id */
+        if (this.start_id == null || this.start_id.lessThan(score)) { /* this.start_id < score */
             this.start_id = typeof(score) == "number" ? new Long(score) : score;
         }
-        if (this.end_id == null || this.end_id.greaterThan(score)) { /* this.end_id > id */
+        if (this.end_id == null || this.end_id.greaterThan(score)) { /* this.end_id > score */
             this.end_id = typeof(score) == "number" ? new Long(score) : score;
         }
     }
