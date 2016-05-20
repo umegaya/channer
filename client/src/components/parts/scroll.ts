@@ -6,13 +6,17 @@ var Long = window.channer.ProtoBuf.Long;
 var _L = window.channer.l10n.translate;
 
 export interface ModelCollection {
+    key: string;
     fetch(page: number): () => Array<any>;
     refresh(): void;
+    initkey(): void;
 }
 export class ArrayModelCollection implements ModelCollection {
     source: Array<any>;
-    constructor(source: Array<any>) {
+    key: string;
+    constructor(source: Array<any>, key: string) {
         this.source = source;
+        this.key = key;
     }
     fetch = (page: number): () => Array<any> => {
         if (page <= 1) {
@@ -23,8 +27,9 @@ export class ArrayModelCollection implements ModelCollection {
         return () => { return []; }
     }
     refresh = () => {}
+    initkey = () => {}
 }
-interface ProtoModel extends ProtoBufModel {
+export interface ProtoModel extends ProtoBufModel {
     id: Long;
 }
 export class ProtoModelChunk<T extends ProtoModel> {
@@ -45,6 +50,15 @@ export class ProtoModelChunk<T extends ProtoModel> {
             this.push(coll, v);
         });
         this.initialized = true;
+    }
+    update_range = (score: number|Long) => {
+        console.log("update_range: " + typeof(score) + "|" + score.toString());
+        if (this.start_id == null || this.start_id.lessThan(score)) { /* this.start_id < id */
+            this.start_id = typeof(score) == "number" ? new Long(score) : score;
+        }
+        if (this.end_id == null || this.end_id.greaterThan(score)) { /* this.end_id > id */
+            this.end_id = typeof(score) == "number" ? new Long(score) : score;
+        }
     }
 }
 export class ProtoModelCollection<T extends ProtoModel> implements ModelCollection {
@@ -159,13 +173,21 @@ export class ListComponent implements UI.Component {
     }
 }
 
-export var categories = new ArrayModelCollection(window.channer.category.data);
+export var categories = new ArrayModelCollection(window.channer.category.data, "categories");
 var data_with_wc = window.channer.category.data.concat();
 data_with_wc.splice(0, 0, _L("All"))
-export var categories_wc = new ArrayModelCollection(data_with_wc);
+export var categories_wc = new ArrayModelCollection(data_with_wc, "categories_wc");
 
 var locales_data = window.channer.l10n.localeSettings();
-export var locales = new ArrayModelCollection(locales_data);
+export var locales = new ArrayModelCollection(locales_data, "locales_data");
 var locales_with_wc = locales_data.concat();
 locales_with_wc.splice(0, 0, {key: "all", value: _L("All")})
-export var locales_wc = new ArrayModelCollection(locales_with_wc);
+export var locales_wc = new ArrayModelCollection(locales_with_wc, "locales_with_wc");
+
+export var topic_categories = new ArrayModelCollection([
+    "rising", "hot", "flame",  
+], "topic_categories");
+
+export var topic_durations = new ArrayModelCollection([
+    "hour", "day", "week", "alltime",  
+], "topic_durations");

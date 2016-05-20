@@ -2,133 +2,136 @@
 
 import {m, Util} from "../uikit"
 import {Pagify, PageComponent} from "./base"
+import {PropCollectionFactory, PropConditions, PropCollection} from "../input/prop"
 import {ModelCollection, ProtoModelCollection, ProtoModelChunk} from "./parts/scroll"
 import {MenuElementComponent} from "./menu"
 import {Config} from "../config"
 import {Handler} from "../proto"
 import {ChannelCreateComponent} from "./menus/create"
-import {ChannelFilterComponent} from "./menus/filter"
+import {ChannelFilterComponent, TopicFilterComponent} from "./menus/filter"
 import {ChannelListComponent, TopicListComponent} from "./parts/list"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 import Q = require('q');
 var _L = window.channer.l10n.translate;
 var Tabs = window.channer.parts.Tabs;
 
-
 const TABS = [{
-    label: _L("latest"),
-    id: "latest",
+    label: _L("channel"),
+    id: "channel",
 }, {
-    label: _L("popular"),
-    id: "popular",
+    label: _L("topic"),
+    id: "topic",
 }];
 
-class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.Channel> {
-    constructor() {
+PropCollectionFactory.setup("top-models", {
+    required: {
+        channel_sort_by : {
+            init : "latest",
+        },
+        channel_category : {
+            init : "",  
+        },
+        topic_sort_by: {
+            init : "rising",  
+        },
+        topic_sort_duration: {
+            init : "day",
+        },
+    },
+    optional: {},
+});
+
+export class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.Channel> {
+    props: PropCollection;
+    constructor(props: PropCollection) {
         super();
+        this.props = props;
     }
     initkey = () => {
         this.key = "channels/" 
-            + window.channer.settings.values.sort_by + "/"
-            + window.channer.settings.values.search_locale + ","
-            + window.channer.settings.values.search_category;
+            + this.props.val("channel_sort_by") + "/"
+            + this.props.val("channel_category") + "/"
+            + window.channer.settings.values.search_locale;
     }
     fetch_request = (offset: Long, limit: number): Q.Promise<Array<ChannerProto.Model.Channel>> => {
         var df: Q.Deferred<Array<ChannerProto.Model.Channel>> = Q.defer<Array<ChannerProto.Model.Channel>>();
         var conn: Handler = window.channer.conn;
-        var sort_by: string = window.channer.settings.values.sort_by;
-        conn.channel_list(sort_by, offset, null, null, limit)
+        var sort_by: string = this.props.val("channel_sort_by");
+        var category: number = window.channer.category.to_id(
+            this.props.val("channel_category")
+        )
+        conn.channel_list(sort_by, offset, null, category, limit)
         .then((r: ChannerProto.ChannelListResponse) => {
             df.resolve(r.list);
-        })
+        });
         return df.promise;
     }
     update_range = (
         chunk: ProtoModelChunk<ChannerProto.Model.Channel>, 
         model: ChannerProto.Model.Channel) => {
-        var sort_by: string = window.channer.settings.values.sort_by;
+        var sort_by: string = this.props.val("channel_sort_by");
         if (sort_by == "top") {
-            var star = model.star;
-            if (chunk.end_id == null || chunk.end_id.lessThan(star)) { /* this.start_id < id */
-                chunk.end_id = new Long(star); 
-            }
-            if (chunk.start_id == null || chunk.start_id.greaterThan(star)) { /* this.end_id > id */
-                chunk.start_id = new Long(star);
-            }
+            chunk.update_range(model.watcher);
         }
         else {
-            var id = model.id;
-            if (chunk.start_id == null || chunk.start_id.lessThan(id)) { /* this.start_id < id */
-                chunk.start_id = id; 
-            }
-            if (chunk.end_id == null || chunk.end_id.greaterThan(id)) { /* this.end_id > id */
-                chunk.end_id = id;
-            }
+            chunk.update_range(model.id);
+            console.log("update_range: " + model.id.toString() + " => " + chunk.end_id);
         }
     }
 }
 
-class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Topic> {
-    constructor(query: string) {
+export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Topic> {
+    props: PropCollection;
+    constructor(props: PropCollection) {
         super();
+        this.props = props;
     }
     initkey = () => {
-        this.key = window.channer.settings.values.sort_by + ","
-            + window.channer.settings.values.sort_duration + "/" 
-            + window.channer.settings.values.search_locale + ","
-            + window.channer.settings.values.search_category;
+        this.key = "topics/" + this.props.val("topic_sort_by") + "/"
+            + this.props.val("topic_sort_duration") + "/" 
+            + window.channer.settings.values.search_locale;
     }
-    fetch_request = (offset: Long, limit: number): Q.Promise<Array<ChannerProto.Model.Channel>> => {
-        var df: Q.Deferred<Array<ChannerProto.Model.Channel>> = Q.defer<Array<ChannerProto.Model.Channel>>();
+    fetch_request = (offset: Long, limit: number): Q.Promise<Array<ChannerProto.Model.Topic>> => {
+        var df: Q.Deferred<Array<ChannerProto.Model.Topic>> = Q.defer<Array<ChannerProto.Model.Topic>>();
         var conn: Handler = window.channer.conn;
-        conn.channel_list(this.query, offset, null, null, limit)
-        .then((r: ChannerProto.ChannelListResponse) => {
+        var bucket: string = this.props.val("topic_sort_by");
+        var query: string = this.props.val("topic_sort_duration");
+        conn.topic_list(bucket, query, offset, null, limit)
+        .then((r: ChannerProto.TopicListResponse) => {
             df.resolve(r.list);
         })
         return df.promise;
     }
     update_range = (
-        chunk: ProtoModelChunk<ChannerProto.Model.Channel>, 
-        model: ChannerProto.Model.Channel) => {
-        if (this.query == "popular") {
-            //TODO: replace id to suitable "range key".
-            var vote = model.upvote;
-            if (chunk.end_id == null || chunk.end_id.lessThan(vote)) { /* this.start_id < id */
-                chunk.end_id = new Long(vote); 
-            }
-            if (chunk.start_id == null || chunk.start_id.greaterThan(vote)) { /* this.end_id > id */
-                chunk.start_id = new Long(vote);
-            }
+        chunk: ProtoModelChunk<ChannerProto.Model.Topic>, 
+        model: ChannerProto.Model.Topic) => {
+        var bucket: string = this.props.val("topic_sort_by");
+        if (bucket == "hot" || bucket == "rising") {
+            chunk.update_range(model.point);
         }
-        else {
-            var id = model.id;
-            if (chunk.start_id == null || chunk.start_id.lessThan(id)) { /* this.start_id < id */
-                chunk.start_id = id; 
-            }
-            if (chunk.end_id == null || chunk.end_id.greaterThan(id)) { /* this.end_id > id */
-                chunk.end_id = id;
-            }
+        else if (bucket == "flame") {
+            chunk.update_range(model.vote);
         }
     }
 }
 
-class TopController implements UI.Controller {
+export class TopController implements UI.Controller {
     active: UI.Property<number>;
     start: string;
     component: TopComponent;
     static factory: Array<(s: TopComponent) => UI.Element> = [
         (s: TopComponent) => {
             return m.component(ChannelListComponent, {
-                key: s.models.latest.key,
-                models: s.models.latest,
-                name: "latest",
+                key: s.models.channels.key,
+                models: s.models.channels,
+                name: "channels",
             });
         },
         (s: TopComponent) => {
-            return m.component(ChannelListComponent, {
-                key: s.models.popular.key,
-                models: s.models.popular, 
-                name: "popular",
+            return m.component(TopicListComponent, {
+                key: s.models.topics.key,
+                models: s.models.topics, 
+                name: "topics",
             });
         },
     ];
@@ -149,6 +152,7 @@ class TopController implements UI.Controller {
 }
 function TopView(ctrl: TopController) : UI.Element {
     return m(".top", [ 
+        ctrl.content(),
         m.component(Tabs, {
             buttons: TABS,
             autofit: true,
@@ -158,26 +162,41 @@ function TopView(ctrl: TopController) : UI.Element {
                 ctrl.active(state.index);
             }
         }),
-        ctrl.content()
     ]);
 }
-export class TopComponent extends PageComponent {
-    models: {
-        channels: ChannelCollection;
-        topics: ChannelCollection;
-    };
+export class TopModelCollections {
+    initialized: boolean;
+    props: PropCollection;
+    channels: ChannelCollection;
+    topics: TopicCollection;
     constructor() {
-        super();
-        this.models = {
-            latest: new ChannelCollection("latest"),
-            popular: new ChannelCollection("popular"),
+        this.initialized = false;
+    }
+    iter = (fn: (coll: ModelCollection) => void) => {
+        fn(this.channels);
+        fn(this.topics);       
+    }
+    initialize = (): void => {
+        if (!this.initialized) {
+            this.props = PropCollectionFactory.ref("top-models"); 
+            this.channels = new ChannelCollection(this.props);
+            this.topics = new TopicCollection(this.props);
+            this.iter(coll => { coll.initkey(); });
+            this.initialized = true;
         }
     }
+    refresh = (): void => {
+        this.iter(coll => { coll.refresh(); });
+    }
+}
+export class TopComponent extends PageComponent {
+    models: TopModelCollections;
+    constructor() {
+        super();
+        this.models = new TopModelCollections();
+    }
     controller = (): TopController => {
-        if (!this.models.latest.key) {
-            this.models.latest.initkey();
-            this.models.popular.initkey();
-        }
+        this.models.initialize();
         return new TopController(this);
     }
     view = (ctrl: TopController): UI.Element => {
@@ -190,10 +209,10 @@ export class TopComponent extends PageComponent {
         ];
     }
     onunload = () => {
-        this.models.latest.refresh();
-        this.models.popular.refresh();
+        this.models.refresh();
     }
 }
 window.channer.components.Top = Pagify(TopComponent);
 window.channer.components.ChannelCreate = ChannelCreateComponent;
 window.channer.components.ChannelFilter = ChannelFilterComponent;
+window.channer.components.TopicFilter = TopicFilterComponent;

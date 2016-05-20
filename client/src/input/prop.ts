@@ -3,7 +3,7 @@
 import {m, Util} from "../uikit"
 import {Storage, StorageIO, Persistable} from "../storage"
 
-interface PropCondition {
+export interface PropCondition {
     init: any;
     fallback?: any;
     check?: any;
@@ -52,6 +52,17 @@ export class PropCollection implements Persistable {
                 m.endComputation();             
             });
         }
+    }
+    val = (k: string): any => {
+        var p : UI.Property<any> = this.props[k];
+        if (!p) { return null; }
+        return p();
+    }
+    update = (k: string, v: any) => {
+        var p : UI.Property<any> = this.props[k];
+        if (!p) { return; }
+        p(v);
+        this.save();
     }
     clear = () => {
         this.init(true);
@@ -155,3 +166,24 @@ export class PropCollection implements Persistable {
         return cond.check != val;
     }
 };
+
+export class PropCollectionFactory {
+    static map: {
+        [k:string]:PropCollection;
+    } = {};
+    static config: {
+        [k:string]:PropConditions;
+    } = {};
+    static setup = (name: string, cond: PropConditions) => {
+        PropCollectionFactory.config[name] = cond;
+    }
+    static ref = (name: string): PropCollection => {
+        var p: PropCollection = PropCollectionFactory.map[name];
+        if (!p) {
+            var cond: PropConditions = PropCollectionFactory.config[name];
+            p = new PropCollection(name, cond);
+            PropCollectionFactory.map[name] = p; 
+        }
+        return p;
+    }
+}

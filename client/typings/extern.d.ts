@@ -63,6 +63,7 @@ interface ChannerModules {
         //menu
         ChannelCreate: UI.Component;
         ChannelFilter: UI.Component;
+        TopicFilter: UI.Component;
 	}
     parts: {
         Scroll: UI.Component;

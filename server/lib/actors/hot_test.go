@@ -160,54 +160,6 @@ func estimateResults(btyp proto.TopicListRequest_BucketType, typ proto.TopicList
 
 }
 
-/*
-func CheckResult(t *testing.T, entries []HotEntry, ids []proto.UUID, start, end uint64, blen []int, endIdx int) {
-	summeryCount := 0
-	if endIdx >= len(blen) {
-		summeryCount = len(estimates)
-	} else {
-		summeryCount = 0
-		for i := 0; i <= endIdx; i++ {
-			if i > 0 {
-				summeryCount = summeryCount * blen[i]
-			} else {
-				summeryCount = blen[0]
-			}
-		}
-	}
-	est := NewHotBucket(int(ENTRY_PER_FETCH * summeryCount))
-	summeryStart := len(estimates) - summeryCount
-	if summeryStart < 0 {
-		summeryStart = 0
-	}
-	for _, r := range estimates[summeryStart:] {
-		est.addResults(r)
-	}
-	est.sort()
-	estEntries, err := est.rangeOf(ids, start, end + 1)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	//log.Printf("check: %v %v %v\n%v\n%v", len(estimates), summeryCount, endIdx, entries, estEntries)
-	for i := start; i < (start + end); i++ {
-		e := entries[i]
-		e2 := estEntries[i]
-		if e.id != e2.id || e.score != e2.score {
-			if e.id != e2.id && (i + 1) < uint64(len(estEntries)) {
-				e3 := estEntries[i + 1]
-				if e.score == e3.score && e.id == e3.id {
-					//log.Printf("id differ because use of unstable sort %v %v", e, e3)
-					i++ //next index also same score, so skip check.
-					continue
-				}
-				t.Fatal("result does not match estimated", e, "vs", e2, e3)
-			}
-			t.Fatal("result does not match estimated", e, "vs", e2)
-		}
-	}
-}
-*/
-
 func NewTestHotActor(locale string, spanSec uint32, blen []int) (*HotActor, error) {
 	return NewHotActorWithDetail(locale, spanSec, blen, true, testInmemFetcher, testInmemPersister);
 }
@@ -275,13 +227,6 @@ log.Printf("current clock: %v", clock)
 				}
 			}
 		}
-		/*} else if typ == proto.TopicListRequest_Hour {
-			CheckResult(t, entries, nil, uint64(start), uint64(end), blen, 0)
-		} else if typ == proto.TopicListRequest_Day {
-			CheckResult(t, entries, nil, uint64(start), uint64(end), blen, 1)
-		} else if typ == proto.TopicListRequest_AllTime {
-			CheckResult(t, entries, nil, uint64(start), uint64(end), blen, 2)
-		}*/
 		time.Sleep(10 * time.Millisecond)
 	}
 }

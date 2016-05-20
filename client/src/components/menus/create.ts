@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
 import {m, Util} from "../../uikit"
-import {PropConditions, PropCollection} from "../../input/prop"
+import {PropCollectionFactory, PropConditions, PropCollection} from "../../input/prop"
 import {ArrayModelCollection, categories, locales} from "../parts/scroll"
 import {TopComponent} from "../top"
 import {MenuElementComponent} from "../menu"
@@ -40,7 +40,7 @@ var texts = {
     DEFAULT_POST_LIMIT: _L("max posts for topic"),
 }
 
-var cond: PropConditions = {
+PropCollectionFactory.setup("channel-create", {
     required: {
         name: {
             init: texts.DEFAULT_NAME, 
@@ -80,7 +80,7 @@ var cond: PropConditions = {
             check: ChannerProto.Model.Channel.TopicDisplayStyle.Invalid,
         },
     }
-}
+});
 
 export class ChannelCreateController implements UI.Controller {
 	component: ChannelCreate;
@@ -255,7 +255,7 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
     elements.push(m(".buttons", buttons));
     return m(".create", elements);
 }
-class ChannelCreate extends MenuElementComponent {
+export class ChannelCreate extends MenuElementComponent {
     input: PropCollection;
 
 	constructor() {
@@ -263,7 +263,7 @@ class ChannelCreate extends MenuElementComponent {
 	}
     controller = (): ChannelCreateController => {
         if (!this.input) {
-            this.input = new PropCollection("channel-create", cond);
+            this.input = PropCollectionFactory.ref("channel-create");
         }
         return new ChannelCreateController(this);
     }

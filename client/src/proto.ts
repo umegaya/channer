@@ -287,39 +287,44 @@ export class Handler {
         }
         req.query = map[query];
         req.locale = locale || window.channer.settings.values.search_locale;
-        if (req.locale == "all") {
+        if (!req.locale || req.locale == "all") {
             req.locale = "";
         }
-        req.category = category || window.channer.category.to_id(
-            window.channer.settings.values.search_category
-        );
+        req.category = category;
         req.limit = limit || null;
         req.offset_id = offset_id || null;
         p.channel_list_request = req;
         return this.send(p);
     }
-    topic_list = (query: string, duration: number, offset_id: Long, locale?: string, 
-        category?: number, limit?: number): Q.Promise<Model> => {
+    topic_list = (bucket: string, query: string, offset_id?: Long, locale?: string, 
+		limit?: number): Q.Promise<Model> => {
         var p = new Builder.Payload();
-        p.type = ChannerProto.Payload.Type.ChannelListRequest;
-        var req = new Builder.ChannelListRequest();
-        var map : {
-            [k:string]:ChannerProto.ChannelListRequest.QueryType
+        p.type = ChannerProto.Payload.Type.TopicListRequest;
+        var req = new Builder.TopicListRequest();
+        var qmap : {
+            [k:string]:ChannerProto.TopicListRequest.QueryType
         } = {
-            "latest": ChannerProto.ChannelListRequest.QueryType.New,
-            "popular": ChannerProto.ChannelListRequest.QueryType.Popular,
+            "hour": ChannerProto.TopicListRequest.QueryType.Hour,
+            "day": ChannerProto.TopicListRequest.QueryType.Day,
+            "week": ChannerProto.TopicListRequest.QueryType.Week,
+            "alltime": ChannerProto.TopicListRequest.QueryType.AllTime,
         }
-        req.query = map[query];
+		var bmap : {
+			[k:string]:ChannerProto.TopicListRequest.BucketType
+        } = {
+            "hot": ChannerProto.TopicListRequest.BucketType.Hot,
+            "flame": ChannerProto.TopicListRequest.BucketType.Flame,
+            "rising": ChannerProto.TopicListRequest.BucketType.Rising,
+        }
+		req.query = qmap[query];
+		req.bucket = bmap[bucket];
         req.locale = locale || window.channer.settings.values.search_locale;
         if (req.locale == "all") {
             req.locale = "";
         }
-        req.category = category || window.channer.category.to_id(
-            window.channer.settings.values.search_category
-        );
         req.limit = limit || null;
         req.offset_id = offset_id || null;
-        p.channel_list_request = req;
+        p.topic_list_request = req;
         return this.send(p);            
     }
 	post = (topic_id: Long, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {

@@ -81,7 +81,7 @@ class L10n {
             fmt = this.dict[text][this.language];
         } 
         else if (this.language != "en") {
-            console.log("warning: entry not exists for:" + text + "|" + this.dict[text]);
+            console.log("l10n: warning: entry not exists for:" + text + "|" + this.dict[text]);
         }
         return fmt.replace(/\$([0-9]+)/, (sub: string, ...captures: any[]):string => {
             return args[parseInt(captures[0], 10) - 1];

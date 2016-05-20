@@ -23,7 +23,7 @@ function infoview(c: ModelCollection, model: any) {
     return <string>model;
 }
 
-class PulldownListComponent extends ListComponent {
+export class PulldownListComponent extends ListComponent {
     constructor() {
         super((c: ModelCollection, model: any, options: PulldownListOptions): UI.Element => {
             return m(".block", <UI.Attributes>{

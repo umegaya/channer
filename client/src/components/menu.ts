@@ -11,7 +11,7 @@ var _L = window.channer.l10n.translate;
 var BUTTON_CLOSE_COLOR = "#2780f8";
 var BUTTON_OPEN_COLOR = "#ed6c63";
 
-class MenuController implements UI.Controller {
+export class MenuController implements UI.Controller {
     enabled: UI.Property<boolean>;
     initialized: boolean;
     rotate: UI.Property<number>;
@@ -65,7 +65,7 @@ class MenuController implements UI.Controller {
         }, m.e("img.plus", {rotate: this.rotate}))
     }
 }
-class Route {
+export class Route {
     [k:string]: UI.Component;
 }
 export class MenuComponent extends PageComponent {

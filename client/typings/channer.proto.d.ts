@@ -69,6 +69,7 @@ declare module Proto2TypeScript {
 		RescueResponse: ChannerProto.RescueResponseBuilder;
 		ChannelCreateResponse: ChannerProto.ChannelCreateResponseBuilder;
 		ChannelListResponse: ChannerProto.ChannelListResponseBuilder;
+		TopicListResponse: ChannerProto.TopicListResponseBuilder;
 		Error: ChannerProto.ErrorBuilder;
 		Payload: ChannerProto.PayloadBuilder;
 		
@@ -303,9 +304,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		established: Long;
 		getEstablished() : Long;
 		setEstablished(established : Long): void;
-		star: number;
-		getStar() : number;
-		setStar(star : number): void;
+		watcher: number;
+		getWatcher() : number;
+		setWatcher(watcher : number): void;
 		options: ByteBuffer;
 		getOptions() : ByteBuffer;
 		setOptions(options : ByteBuffer): void;
@@ -460,12 +461,6 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model {
 
 	export interface Reactions extends ProtoBufModel {
-		upvote: Long;
-		getUpvote() : Long;
-		setUpvote(upvote : Long): void;
-		downvote: Long;
-		getDownvote() : Long;
-		setDownvote(downvote : Long): void;
 		entries: Reactions.Entry[];
 		getEntries() : Reactions.Entry[];
 		setEntries(entries : Reactions.Entry[]): void;
@@ -520,9 +515,12 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		attr: number;
 		getAttr() : number;
 		setAttr(attr : number): void;
-		upvote: number;
-		getUpvote() : number;
-		setUpvote(upvote : number): void;
+		point: number;
+		getPoint() : number;
+		setPoint(point : number): void;
+		vote: number;
+		getVote() : number;
+		setVote(vote : number): void;
 		text: string;
 		getText() : string;
 		setText(text : string): void;
@@ -554,9 +552,15 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		name: string;
 		getName() : string;
 		setName(name : string): void;
-		reactions: ByteBuffer;
-		getReactions() : ByteBuffer;
-		setReactions(reactions : ByteBuffer): void;
+		point: number;
+		getPoint() : number;
+		setPoint(point : number): void;
+		vote: number;
+		getVote() : number;
+		setVote(vote : number): void;
+		comment: number;
+		getComment() : number;
+		setComment(comment : number): void;
 		
 	}
 	
@@ -607,8 +611,10 @@ declare module Proto2TypeScript.ChannerProto.Model.Reaction {
 		Unknown = 0,
 		Post = 1,
 		Topic = 2,
+		Channel = 3,
 		Post_Vote = 11,
 		Topic_Vote = 12,
+		Channel_Watch = 13,
 		
 	}
 }
@@ -919,6 +925,9 @@ declare module Proto2TypeScript.ChannerProto {
 		query: TopicListRequest.QueryType;
 		getQuery() : TopicListRequest.QueryType;
 		setQuery(query : TopicListRequest.QueryType): void;
+		bucket?: TopicListRequest.BucketType;
+		getBucket() : TopicListRequest.BucketType;
+		setBucket(bucket : TopicListRequest.BucketType): void;
 		locale?: string;
 		getLocale() : string;
 		setLocale(locale : string): void;
@@ -937,9 +946,20 @@ declare module Proto2TypeScript.ChannerProto {
 		//decode(buffer: NodeBuffer) : TopicListRequest;
 		//decode(buffer: ByteArrayBuffer) : TopicListRequest;
 		decode64(buffer: string) : TopicListRequest;
+		BucketType: TopicListRequest.BucketType;
 		QueryType: TopicListRequest.QueryType;
 		
 	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.TopicListRequest {
+	export const enum BucketType {
+		Invalid = 0,
+		Rising = 1,
+		Hot = 2,
+		Flame = 3,
+		
+	}
 }
 
 declare module Proto2TypeScript.ChannerProto.TopicListRequest {
@@ -948,10 +968,9 @@ declare module Proto2TypeScript.ChannerProto.TopicListRequest {
 		Hour = 1,
 		Day = 2,
 		Week = 3,
-		Month = 4,
-		Year = 5,
-		AllTime = 6,
-		Latest = 10,
+		AllTime = 4,
+		QueryCacheEnd = 4,
+		End = 4,
 		
 	}
 }
@@ -1154,6 +1173,25 @@ declare module Proto2TypeScript.ChannerProto {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface TopicListResponse extends ProtoBufModel {
+		list: Model.Topic[];
+		getList() : Model.Topic[];
+		setList(list : Model.Topic[]): void;
+		
+	}
+	
+	export interface TopicListResponseBuilder {
+		new(): TopicListResponse;
+		decode(buffer: ArrayBuffer) : TopicListResponse;
+		//decode(buffer: NodeBuffer) : TopicListResponse;
+		//decode(buffer: ByteArrayBuffer) : TopicListResponse;
+		decode64(buffer: string) : TopicListResponse;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface Error extends ProtoBufModel {
 		type: Error.Type;
 		getType() : Error.Type;
@@ -1234,6 +1272,9 @@ declare module Proto2TypeScript.ChannerProto {
 		channel_list_request?: ChannelListRequest;
 		getChannelListRequest() : ChannelListRequest;
 		setChannelListRequest(channelListRequest : ChannelListRequest): void;
+		topic_list_request?: TopicListRequest;
+		getTopicListRequest() : TopicListRequest;
+		setTopicListRequest(topicListRequest : TopicListRequest): void;
 		error?: Error;
 		getError() : Error;
 		setError(error : Error): void;
@@ -1267,6 +1308,9 @@ declare module Proto2TypeScript.ChannerProto {
 		channel_list_response?: ChannelListResponse;
 		getChannelListResponse() : ChannelListResponse;
 		setChannelListResponse(channelListResponse : ChannelListResponse): void;
+		topic_list_response?: TopicListResponse;
+		getTopicListResponse() : TopicListResponse;
+		setTopicListResponse(topicListResponse : TopicListResponse): void;
 		post_notify?: Post;
 		getPostNotify() : Post;
 		setPostNotify(postNotify : Post): void;
@@ -1297,6 +1341,7 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		RescueRequest = 8,
 		ChannelCreateRequest = 9,
 		ChannelListRequest = 10,
+		TopicListRequest = 11,
 		LoginResponse = 31,
 		PostResponse = 32,
 		FetchResponse = 33,
@@ -1307,6 +1352,7 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		RescueResponse = 38,
 		ChannelCreateResponse = 39,
 		ChannelListResponse = 40,
+		TopicListResponse = 41,
 		PostNotify = 61,
 		Error = 101,
 		

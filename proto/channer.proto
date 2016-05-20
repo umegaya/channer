@@ -246,9 +246,10 @@ message TopicListRequest {
 		End = 4;
 	}
 	required QueryType query = 1;
-	optional string locale = 2;
-	optional int32 limit = 3;
-	optional fixed64 offset_id = 4 [(gogoproto.nullable) = true];
+	optional BucketType bucket = 2;
+	optional string locale = 3;
+	optional int32 limit = 4;
+	optional fixed64 offset_id = 5 [(gogoproto.nullable) = true];
 }
 
 
@@ -295,6 +296,9 @@ message ChannelListResponse {
 	repeated Model.Channel list = 1;
 }
 
+message TopicListResponse {
+	repeated Model.Topic list = 1;
+}
 
 
 //response error
@@ -336,9 +340,9 @@ message Payload {
 	enum Type { 
 		Unknown = 0;
 		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7; 
-		RescueRequest = 8; ChannelCreateRequest = 9; ChannelListRequest = 10;
+		RescueRequest = 8; ChannelCreateRequest = 9; ChannelListRequest = 10; TopicListRequest = 11;
 		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37; 
-		RescueResponse = 38; ChannelCreateResponse = 39; ChannelListResponse = 40;
+		RescueResponse = 38; ChannelCreateResponse = 39; ChannelListResponse = 40; TopicListResponse = 41;
 		PostNotify = 61;
 		Error = 101;
 	}
@@ -354,6 +358,7 @@ message Payload {
 	optional RescueRequest rescue_request = 10;
 	optional ChannelCreateRequest channel_create_request = 11;
 	optional ChannelListRequest channel_list_request = 12;
+	optional TopicListRequest topic_list_request  = 13;
 
 	optional Error error = 30;
 
@@ -367,6 +372,7 @@ message Payload {
 	optional RescueResponse rescue_response = 38;
 	optional ChannelCreateResponse channel_create_response = 39;
 	optional ChannelListResponse channel_list_response = 40;
+	optional TopicListResponse topic_list_response = 41;
 
 	optional Post post_notify = 61;
 }

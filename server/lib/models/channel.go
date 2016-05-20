@@ -19,7 +19,7 @@ func InitChannel() {
 	t.AddIndex("established", "INDEX", []string{"Established"})
 	t.AddIndex("category", "INDEX", []string{"Category"})
 	t.AddIndex("locale", "INDEX", []string{"Locale"})
-	t.AddIndex("star", "INDEX", []string{"Star"})
+	t.AddIndex("watcher", "INDEX", []string{"Watcher"})
 }
 
 const CHANNEL_FETCH_LIMIT = 50

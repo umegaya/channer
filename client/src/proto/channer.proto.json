@@ -265,7 +265,7 @@
                                 {
                                     "rule": "required",
                                     "type": "uint64",
-                                    "name": "star",
+                                    "name": "watcher",
                                     "id": 9
                                 },
                                 {
@@ -457,18 +457,6 @@
                             "name": "Reactions",
                             "fields": [
                                 {
-                                    "rule": "required",
-                                    "type": "Long",
-                                    "name": "upvote",
-                                    "id": 1
-                                },
-                                {
-                                    "rule": "required",
-                                    "type": "Long",
-                                    "name": "downvote",
-                                    "id": 2
-                                },
-                                {
                                     "rule": "repeated",
                                     "type": "Entry",
                                     "name": "entries",
@@ -533,9 +521,15 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint32",
-                                    "name": "upvote",
+                                    "type": "fixed32",
+                                    "name": "point",
                                     "id": 5
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "fixed32",
+                                    "name": "vote",
+                                    "id": 6
                                 },
                                 {
                                     "rule": "required",
@@ -580,9 +574,21 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "bytes",
-                                    "name": "reactions",
+                                    "type": "fixed32",
+                                    "name": "point",
                                     "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "fixed32",
+                                    "name": "vote",
+                                    "id": 5
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "fixed32",
+                                    "name": "comment",
+                                    "id": 6
                                 }
                             ]
                         },
@@ -646,12 +652,20 @@
                                             "id": 2
                                         },
                                         {
+                                            "name": "Channel",
+                                            "id": 3
+                                        },
+                                        {
                                             "name": "Post_Vote",
                                             "id": 11
                                         },
                                         {
                                             "name": "Topic_Vote",
                                             "id": 12
+                                        },
+                                        {
+                                            "name": "Channel_Watch",
+                                            "id": 13
                                         }
                                     ]
                                 }
@@ -1018,27 +1032,54 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "BucketType",
+                            "name": "bucket",
+                            "id": 2
+                        },
+                        {
+                            "rule": "optional",
                             "type": "string",
                             "name": "locale",
-                            "id": 2
+                            "id": 3
                         },
                         {
                             "rule": "optional",
                             "type": "int32",
                             "name": "limit",
-                            "id": 3
+                            "id": 4
                         },
                         {
                             "rule": "optional",
                             "type": "Long",
                             "name": "offset_id",
-                            "id": 4,
+                            "id": 5,
                             "options": {
                                 "(gogoproto.nullable)": true
                             }
                         }
                     ],
                     "enums": [
+                        {
+                            "name": "BucketType",
+                            "values": [
+                                {
+                                    "name": "Invalid",
+                                    "id": 0
+                                },
+                                {
+                                    "name": "Rising",
+                                    "id": 1
+                                },
+                                {
+                                    "name": "Hot",
+                                    "id": 2
+                                },
+                                {
+                                    "name": "Flame",
+                                    "id": 3
+                                }
+                            ]
+                        },
                         {
                             "name": "QueryType",
                             "values": [
@@ -1059,20 +1100,16 @@
                                     "id": 3
                                 },
                                 {
-                                    "name": "Month",
+                                    "name": "AllTime",
                                     "id": 4
                                 },
                                 {
-                                    "name": "Year",
-                                    "id": 5
+                                    "name": "QueryCacheEnd",
+                                    "id": 4
                                 },
                                 {
-                                    "name": "AllTime",
-                                    "id": 6
-                                },
-                                {
-                                    "name": "Latest",
-                                    "id": 10
+                                    "name": "End",
+                                    "id": 4
                                 }
                             ]
                         }
@@ -1204,6 +1241,17 @@
                         {
                             "rule": "repeated",
                             "type": "Model.Channel",
+                            "name": "list",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "TopicListResponse",
+                    "fields": [
+                        {
+                            "rule": "repeated",
+                            "type": "Model.Topic",
                             "name": "list",
                             "id": 1
                         }
@@ -1366,6 +1414,12 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "TopicListRequest",
+                            "name": "topic_list_request",
+                            "id": 13
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Error",
                             "name": "error",
                             "id": 30
@@ -1432,6 +1486,12 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "TopicListResponse",
+                            "name": "topic_list_response",
+                            "id": 41
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Post",
                             "name": "post_notify",
                             "id": 61
@@ -1486,6 +1546,10 @@
                                     "id": 10
                                 },
                                 {
+                                    "name": "TopicListRequest",
+                                    "id": 11
+                                },
+                                {
                                     "name": "LoginResponse",
                                     "id": 31
                                 },
@@ -1524,6 +1588,10 @@
                                 {
                                     "name": "ChannelListResponse",
                                     "id": 40
+                                },
+                                {
+                                    "name": "TopicListResponse",
+                                    "id": 41
                                 },
                                 {
                                     "name": "PostNotify",
