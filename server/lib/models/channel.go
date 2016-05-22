@@ -2,6 +2,7 @@ package models
 
 import (
 	"log"
+	"bytes"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -99,6 +100,22 @@ func ListChannel(dbif Dbif, req *proto.ChannelListRequest) ([]*proto.Model_Chann
 	return ret, nil
 }
 
+//takes about 90sec
+func bytesEncode(v []byte) string {
+	result := make([]byte, 3 + 4*len(v))
+	result[0] = 'b'
+	result[1] = '\''
+	start := 2
+	for i := 0; i < len(v); i++ {
+		b := v[i]
+		result[start + 4 * i] = '\\'
+		result[start + 4 * i + 1] = 'x'
+		result[start + 4 * i + 2] = "0123456789abcdef"[b >> 4]
+		result[start + 4 * i + 3] = "0123456789abcdef"[b & 0xf]
+	}
+	result[start + 4 * len(v)] = '\''
+	return string(result)
+}
 func InsertChannelFixture(dbif Dbif) error {
 	locales := []string {"en", "ja", "ko", "zh_Hant", "zh_Hans"}
 	categories := []string {
@@ -137,9 +154,41 @@ func InsertChannelFixture(dbif Dbif) error {
 		return err
 	}
 	if count > 0 {
-		log.Printf("fixture already inserted: %v", count)
+		log.Printf("channel fixture already inserted: %v", count)
 		return nil
 	}
+	for i := 0; i < 10; i++ {
+		var buffer bytes.Buffer
+	    buffer.WriteString(dbm.Stmt("insert into %s.channels values"))
+		sep := ""
+		for j := 0; j < 1000; j++ {
+			options := proto.Model_Channel_Options {
+				Identity: idlvs[rand.Int31n(int32(len(idlvs)))],
+				TopicDisplayStyle: dstyles[rand.Int31n(int32(len(dstyles)))],
+				AnonymousName: "anon",
+				TopicPostLimit: 1000,
+			}
+			bs, err := options.Marshal()
+			if err != nil {
+				return err
+			}
+			buffer.WriteString(fmt.Sprintf("%s(%v,'%s','%s',%v,'%s','%s',%v,%v,%s)", 
+				sep, dbm.UUID(), 
+				fmt.Sprintf("debug channel %d-%d", (i + 1), (j + 1)), 
+				locales[rand.Int31n(int32(len(locales)))],
+				uint32(rand.Int31n(int32(len(categories)))),
+				fmt.Sprintf("this is description %d-%d", (i + 1), (j + 1)),
+				"", dbm.UUID(), uint64(rand.Int63n(1000000)), bytesEncode(bs)))
+			if len(sep) <= 0 {
+				sep = ","
+			}
+		}
+		buffer.WriteString(";")
+		if _, err := dbif.Exec(buffer.String()); err != nil {
+			return err
+		}
+	}
+	/*
 	for i := 0; i < 10000; i++ {
 		options := proto.Model_Channel_Options {
 			Identity: idlvs[rand.Int31n(int32(len(idlvs)))],
@@ -167,6 +216,6 @@ func InsertChannelFixture(dbif Dbif) error {
 		if err := dbif.Insert(ch); err != nil {
 			return err
 		}
-	}
+	}	*/
 	return nil
 }

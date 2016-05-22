@@ -128,7 +128,7 @@ message Model {
 		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required fixed64 channel = 2 [(gogoproto.casttype) = "UUID"];
 		required string name = 3;
-		required fixed32 point = 4;
+		required sfixed32 point = 4;
 		required fixed32 vote = 5;
 		required fixed32 comment = 6;
 	}
@@ -147,7 +147,7 @@ message Model {
 		required fixed64 target = 2 [(gogoproto.casttype) = "UUID"]; //target object id
 		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who react target.
 		required Type type = 4;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
-		required fixed64 param = 5;//+1,-1 for vote reaction. emoji_id for other reaction
+		required sfixed64 param = 5;//+1,-1 for vote reaction. emoji_id for other reaction
 	}
 
 	message Service {
@@ -241,9 +241,6 @@ message TopicListRequest {
 		Day = 2;
 		Week = 3;
 		AllTime = 4;
-
-		QueryCacheEnd = 4; //AllTime
-		End = 4;
 	}
 	required QueryType query = 1;
 	optional BucketType bucket = 2;

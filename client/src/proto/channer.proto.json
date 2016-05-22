@@ -574,7 +574,7 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "fixed32",
+                                    "type": "sfixed32",
                                     "name": "point",
                                     "id": 4
                                 },
@@ -1101,14 +1101,6 @@
                                 },
                                 {
                                     "name": "AllTime",
-                                    "id": 4
-                                },
-                                {
-                                    "name": "QueryCacheEnd",
-                                    "id": 4
-                                },
-                                {
-                                    "name": "End",
                                     "id": 4
                                 }
                             ]

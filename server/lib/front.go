@@ -194,6 +194,7 @@ func (sv *FrontServer) init() {
 		log.Fatal(err)
 	}
 	sv.assets = &a	
+	//Initialize builtin actor setting
 }
 
 //Run sets up websocket handler, starts listen on configured address

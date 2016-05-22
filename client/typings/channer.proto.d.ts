@@ -969,8 +969,6 @@ declare module Proto2TypeScript.ChannerProto.TopicListRequest {
 		Day = 2,
 		Week = 3,
 		AllTime = 4,
-		QueryCacheEnd = 4,
-		End = 4,
 		
 	}
 }
