@@ -5,3 +5,8 @@ import (
 )
 
 type UUID yue.UUID
+type Err Error
+
+func (e *Err) Error() string {
+	return e.Explanation
+}

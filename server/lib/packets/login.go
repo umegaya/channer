@@ -12,14 +12,14 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	version := req.Version
 	if AssetsConfig().App.ClientVersion != version {
 		log.Printf("login user:%v client outdated %v:%v", user, AssetsConfig().App.ClientVersion, version)
-		SendError(from, msgid, proto.Error_Login_OutdatedVersion)
+		SendError(from, msgid, &proto.Err{ Type: proto.Error_Login_OutdatedVersion })
 		return
 	}
 	rescue := req.Rescue
 	if rescue != nil {
 		a, err := models.FindRescueAccount(*rescue)
 		if err != nil {
-			SendError(from, msgid, proto.Error_Rescue_CannotRescue)
+			SendError(from, msgid, &proto.Err{ Type: proto.Error_Rescue_CannotRescue })
 			return
 		}
 		req.User = a.User
@@ -33,13 +33,13 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 	a, created, err := models.NewAccount(models.DBM(), req.Id, proto.Model_Account_User, user, req.Mail)
 	if err != nil {
 		log.Printf("login create account database error: %v", err)
-		SendError(from, msgid, proto.Error_Login_DatabaseError)
+		SendError(from, msgid, &proto.Err{ Type: proto.Error_Login_DatabaseError })
 		return
 	}
 	if pass := req.Pass; pass != nil {
 		if !created {
 			if *pass != a.Pass {
-				SendError(from, msgid, proto.Error_Login_UserAlreadyExists)
+				SendError(from, msgid, &proto.Err{ Type: proto.Error_Login_UserAlreadyExists })
 				return
 			}
 		}
@@ -49,18 +49,18 @@ func ProcessLogin(from Source, msgid uint32, req *proto.LoginRequest, t Transpor
 		log.Printf("login database %v %v", a.User, a.Secret);
 		if _, err := a.Save(models.DBM(), []string{ "Secret", "Pass" }); err != nil {
 			log.Printf("login update account database error: %v", err)
-			SendError(from, msgid, proto.Error_Login_DatabaseError)
+			SendError(from, msgid, &proto.Err{ Type: proto.Error_Login_DatabaseError })
 			return
 		}
 	} else {
 		if created {
-			SendError(from, msgid, proto.Error_Login_UserNotFound)
+			SendError(from, msgid, &proto.Err{ Type: proto.Error_Login_UserNotFound })
 			return
 		}
 		sign := req.Sign;
 		log.Printf("sign:%v", *sign);
 		if sign == nil || !a.VerifySign(*sign, walltime) {
-			SendError(from, msgid, proto.Error_Login_InvalidAuth)
+			SendError(from, msgid, &proto.Err{ Type: proto.Error_Login_InvalidAuth })
 			return
 		}
 		//TODO: with some duration, update hash

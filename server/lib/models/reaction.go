@@ -24,13 +24,11 @@ type TopicInfo struct {
 }
 
 func InsertReactionFixture(dbif Dbif) error {
-	var count uint64;
-	if err := dbif.SelectOne(&count, dbm.Stmt("select count(*) from %s.reactions")); err != nil {
+	if results, err := dbif.Select(Reaction{}, dbm.Stmt("select * from %s.reactions limit 1")); err != nil || len(results) > 0 {
+		if err == nil {
+			log.Printf("reaction fixture already inserted")
+		}
 		return err
-	}
-	if count > 0 {
-		log.Printf("reaction fixture already inserted: %v", count)
-		return nil
 	}
 	results, err := dbif.Select(TopicInfo{}, dbm.Stmt(`select id,point,vote from %s.topics`))
 	if err != nil {

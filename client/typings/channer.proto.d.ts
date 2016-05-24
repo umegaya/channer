@@ -58,6 +58,7 @@ declare module Proto2TypeScript {
 		RescueRequest: ChannerProto.RescueRequestBuilder;
 		ChannelCreateRequest: ChannerProto.ChannelCreateRequestBuilder;
 		ChannelListRequest: ChannerProto.ChannelListRequestBuilder;
+		TopicCreateRequest: ChannerProto.TopicCreateRequestBuilder;
 		TopicListRequest: ChannerProto.TopicListRequestBuilder;
 		LoginResponse: ChannerProto.LoginResponseBuilder;
 		PostResponse: ChannerProto.PostResponseBuilder;
@@ -69,6 +70,7 @@ declare module Proto2TypeScript {
 		RescueResponse: ChannerProto.RescueResponseBuilder;
 		ChannelCreateResponse: ChannerProto.ChannelCreateResponseBuilder;
 		ChannelListResponse: ChannerProto.ChannelListResponseBuilder;
+		TopicCreateResponse: ChannerProto.TopicCreateResponseBuilder;
 		TopicListResponse: ChannerProto.TopicListResponseBuilder;
 		Error: ChannerProto.ErrorBuilder;
 		Payload: ChannerProto.PayloadBuilder;
@@ -549,9 +551,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		channel: Long;
 		getChannel() : Long;
 		setChannel(channel : Long): void;
-		name: string;
-		getName() : string;
-		setName(name : string): void;
+		persona: Long;
+		getPersona() : Long;
+		setPersona(persona : Long): void;
 		point: number;
 		getPoint() : number;
 		setPoint(point : number): void;
@@ -561,6 +563,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		comment: number;
 		getComment() : number;
 		setComment(comment : number): void;
+		body: ByteBuffer;
+		getBody() : ByteBuffer;
+		setBody(body : ByteBuffer): void;
 		
 	}
 	
@@ -570,6 +575,32 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		//decode(buffer: NodeBuffer) : Topic;
 		//decode(buffer: ByteArrayBuffer) : Topic;
 		decode64(buffer: string) : Topic;
+		Body: Topic.BodyBuilder;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.Model.Topic {
+
+	export interface Body extends ProtoBufModel {
+		title: string;
+		getTitle() : string;
+		setTitle(title : string): void;
+		content: string;
+		getContent() : string;
+		setContent(content : string): void;
+		channel_name: string;
+		getChannelName() : string;
+		setChannelName(channelName : string): void;
+		
+	}
+	
+	export interface BodyBuilder {
+		new(): Body;
+		decode(buffer: ArrayBuffer) : Body;
+		//decode(buffer: NodeBuffer) : Body;
+		//decode(buffer: ByteArrayBuffer) : Body;
+		decode64(buffer: string) : Body;
 		
 	}	
 }
@@ -921,6 +952,31 @@ declare module Proto2TypeScript.ChannerProto.ChannelListRequest {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface TopicCreateRequest extends ProtoBufModel {
+		channel: Long;
+		getChannel() : Long;
+		setChannel(channel : Long): void;
+		name: string;
+		getName() : string;
+		setName(name : string): void;
+		content: string;
+		getContent() : string;
+		setContent(content : string): void;
+		
+	}
+	
+	export interface TopicCreateRequestBuilder {
+		new(): TopicCreateRequest;
+		decode(buffer: ArrayBuffer) : TopicCreateRequest;
+		//decode(buffer: NodeBuffer) : TopicCreateRequest;
+		//decode(buffer: ByteArrayBuffer) : TopicCreateRequest;
+		decode64(buffer: string) : TopicCreateRequest;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface TopicListRequest extends ProtoBufModel {
 		query: TopicListRequest.QueryType;
 		getQuery() : TopicListRequest.QueryType;
@@ -1171,6 +1227,25 @@ declare module Proto2TypeScript.ChannerProto {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface TopicCreateResponse extends ProtoBufModel {
+		created: Model.Topic;
+		getCreated() : Model.Topic;
+		setCreated(created : Model.Topic): void;
+		
+	}
+	
+	export interface TopicCreateResponseBuilder {
+		new(): TopicCreateResponse;
+		decode(buffer: ArrayBuffer) : TopicCreateResponse;
+		//decode(buffer: NodeBuffer) : TopicCreateResponse;
+		//decode(buffer: ByteArrayBuffer) : TopicCreateResponse;
+		decode64(buffer: string) : TopicCreateResponse;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface TopicListResponse extends ProtoBufModel {
 		list: Model.Topic[];
 		getList() : Model.Topic[];
@@ -1216,6 +1291,7 @@ declare module Proto2TypeScript.ChannerProto.Error {
 		Unknown = 0,
 		Timeout = 1,
 		InvalidPayload = 2,
+		RuntimeError = 3,
 		Login_InvalidAuth = 10,
 		Login_UserNotFound = 11,
 		Login_UserAlreadyExists = 12,
@@ -1227,6 +1303,9 @@ declare module Proto2TypeScript.ChannerProto.Error {
 		Rescue_InvalidAuth = 22,
 		ChannelCreate_DatabaseError = 30,
 		ChannelList_DatabaseError = 40,
+		TopicCreate_DatabaseError = 50,
+		TopicCreate_NoPersonaError = 51,
+		TopicList_DatabaseError = 60,
 		
 	}
 }
@@ -1270,6 +1349,9 @@ declare module Proto2TypeScript.ChannerProto {
 		channel_list_request?: ChannelListRequest;
 		getChannelListRequest() : ChannelListRequest;
 		setChannelListRequest(channelListRequest : ChannelListRequest): void;
+		topic_create_request?: TopicCreateRequest;
+		getTopicCreateRequest() : TopicCreateRequest;
+		setTopicCreateRequest(topicCreateRequest : TopicCreateRequest): void;
 		topic_list_request?: TopicListRequest;
 		getTopicListRequest() : TopicListRequest;
 		setTopicListRequest(topicListRequest : TopicListRequest): void;
@@ -1306,6 +1388,9 @@ declare module Proto2TypeScript.ChannerProto {
 		channel_list_response?: ChannelListResponse;
 		getChannelListResponse() : ChannelListResponse;
 		setChannelListResponse(channelListResponse : ChannelListResponse): void;
+		topic_create_response?: TopicCreateResponse;
+		getTopicCreateResponse() : TopicCreateResponse;
+		setTopicCreateResponse(topicCreateResponse : TopicCreateResponse): void;
 		topic_list_response?: TopicListResponse;
 		getTopicListResponse() : TopicListResponse;
 		setTopicListResponse(topicListResponse : TopicListResponse): void;
@@ -1339,7 +1424,8 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		RescueRequest = 8,
 		ChannelCreateRequest = 9,
 		ChannelListRequest = 10,
-		TopicListRequest = 11,
+		TopicCreateRequest = 11,
+		TopicListRequest = 12,
 		LoginResponse = 31,
 		PostResponse = 32,
 		FetchResponse = 33,
@@ -1350,7 +1436,8 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		RescueResponse = 38,
 		ChannelCreateResponse = 39,
 		ChannelListResponse = 40,
-		TopicListResponse = 41,
+		TopicCreateResponse = 41,
+		TopicListResponse = 42,
 		PostNotify = 61,
 		Error = 101,
 		

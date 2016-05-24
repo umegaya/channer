@@ -578,10 +578,9 @@ func (a *HotActor) Update(id proto.UUID, parent proto.UUID, score uint32, vote u
 	return nil
 }
 
-func NewHotActorWithDetail(locale string, spanSec uint32, lengths []int, noAutoUpdate bool, 
+func NewHotActorWithDetail(locale string, updateSpan time.Duration, lengths []int, noAutoUpdate bool, 
 	fetcher func (ftype int, start, end time.Time, locale string) ([]FetchResult, error), 
 	persist func (at time.Time, s *hotbucketStore) error) (*HotActor, error) {
-	span := time.Duration(spanSec) * time.Second
 	bs := NewHotBucketStore(lengths)
 	durations := []time.Duration {
 		7 * 24 * time.Hour,		//week
@@ -589,7 +588,7 @@ func NewHotActorWithDetail(locale string, spanSec uint32, lengths []int, noAutoU
 	}
 	queryCacheSize := len(durations)
 	a := &HotActor {
-		tick: time.NewTicker(span),
+		tick: time.NewTicker(updateSpan),
 		locale: locale,
 		fetcher: fetcher,
 		persist: persist,
@@ -616,8 +615,8 @@ func NewHotActorWithDetail(locale string, spanSec uint32, lengths []int, noAutoU
 	return a, nil
 }
 
-func NewHotActor(locale string, spanSec uint32) (*HotActor, error) {
-	unitPerHour := int((1 * time.Hour) / time.Duration(spanSec))
+func NewHotActor(locale string, updateSpan time.Duration) (*HotActor, error) {
+	unitPerHour := int((1 * time.Hour) / updateSpan)
 	lengths := []int{ unitPerHour, 24 } //units, hours, days, weeks, months
-	return NewHotActorWithDetail(locale, spanSec, lengths, false, topicFetcher, topicPersister)
+	return NewHotActorWithDetail(locale, updateSpan, lengths, false, topicFetcher, topicPersister)
 }

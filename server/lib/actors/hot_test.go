@@ -160,8 +160,8 @@ func estimateResults(btyp proto.TopicListRequest_BucketType, typ proto.TopicList
 
 }
 
-func NewTestHotActor(locale string, spanSec uint32, blen []int) (*HotActor, error) {
-	return NewHotActorWithDetail(locale, spanSec, blen, true, testInmemFetcher, testInmemPersister);
+func NewTestHotActor(locale string, updateSpan time.Duration, blen []int) (*HotActor, error) {
+	return NewHotActorWithDetail(locale, updateSpan, blen, true, testInmemFetcher, testInmemPersister);
 }
 
 func TestHotActor(t *testing.T) {
@@ -179,7 +179,7 @@ log.Printf("current clock: %v", clock)
 	}
 	blen := []int{2, 24}
 	// set 4th argument to true for calling update manually.
-	a, _ := NewTestHotActor("jp", 1, blen);
+	a, _ := NewTestHotActor("jp", 1 * time.Second, blen);
 	for i := 0; i < ITER_COUNT; i++ {
 		addClock()
 		a.update(getClock())

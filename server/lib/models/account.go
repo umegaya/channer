@@ -14,6 +14,7 @@ import (
 //Account represents one user account
 type Account struct {
 	proto.Model_Account
+	pmap map[proto.UUID]*Persona `db:"-"`
 }
 
 const ACCOUNT_ID_BASE = 36
@@ -42,6 +43,7 @@ func NewAccount(dbif Dbif, id *proto.UUID, typ proto.Model_Account_Type, user st
 	if err := dbif.SelectOne(a, dbm.Stmt("select * from %s.accounts where id=$1"), a.Id); err != nil {
 		return nil, false, err
 	}
+	a.pmap = make(map[proto.UUID]*Persona)
 	return a, created, nil
 }
 
@@ -49,7 +51,7 @@ func FindAccount(dbif Dbif, id proto.UUID) (*Account, error) {
 	a := &Account{
 		proto.Model_Account {
 			Id: id,
-		},
+		}, make(map[proto.UUID]*Persona),
 	}
 	if err := dbif.SelectOne(a, dbm.Stmt("select * from %s.accounts where id=$1"), a.Id); err != nil {
 		return nil, err
@@ -67,6 +69,19 @@ func (a *Account) Proto() proto.Model_Account {
 
 func (a *Account) StringId() string {
 	return strconv.FormatUint(uint64(a.Id), ACCOUNT_ID_BASE)
+}
+
+func (a *Account) Persona(dbif Dbif, channel proto.UUID) (*Persona, error) {
+	if p, ok := a.pmap[channel]; ok {
+		return p, nil
+	} else {
+		p, err := FindPersona(dbif, a.Id, channel)
+		if err != nil {
+			return nil, err
+		}
+		a.pmap[channel] = p
+		return p, nil
+	}
 }
 
 

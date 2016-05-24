@@ -266,13 +266,13 @@
                                     "rule": "required",
                                     "type": "uint64",
                                     "name": "watcher",
-                                    "id": 9
+                                    "id": 8
                                 },
                                 {
                                     "rule": "required",
                                     "type": "bytes",
                                     "name": "options",
-                                    "id": 10
+                                    "id": 9
                                 }
                             ],
                             "messages": [
@@ -568,9 +568,12 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "string",
-                                    "name": "name",
-                                    "id": 3
+                                    "type": "Long",
+                                    "name": "persona",
+                                    "id": 3,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -589,6 +592,37 @@
                                     "type": "fixed32",
                                     "name": "comment",
                                     "id": 6
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "bytes",
+                                    "name": "body",
+                                    "id": 7
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "name": "Body",
+                                    "fields": [
+                                        {
+                                            "rule": "required",
+                                            "type": "string",
+                                            "name": "title",
+                                            "id": 1
+                                        },
+                                        {
+                                            "rule": "required",
+                                            "type": "string",
+                                            "name": "content",
+                                            "id": 2
+                                        },
+                                        {
+                                            "rule": "required",
+                                            "type": "string",
+                                            "name": "channel_name",
+                                            "id": 3
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -1022,6 +1056,32 @@
                     ]
                 },
                 {
+                    "name": "TopicCreateRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "Long",
+                            "name": "channel",
+                            "id": 1,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
+                        },
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "name",
+                            "id": 2
+                        },
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "content",
+                            "id": 3
+                        }
+                    ]
+                },
+                {
                     "name": "TopicListRequest",
                     "fields": [
                         {
@@ -1239,6 +1299,17 @@
                     ]
                 },
                 {
+                    "name": "TopicCreateResponse",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "Model.Topic",
+                            "name": "created",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
                     "name": "TopicListResponse",
                     "fields": [
                         {
@@ -1280,6 +1351,10 @@
                                 {
                                     "name": "InvalidPayload",
                                     "id": 2
+                                },
+                                {
+                                    "name": "RuntimeError",
+                                    "id": 3
                                 },
                                 {
                                     "name": "Login_InvalidAuth",
@@ -1324,6 +1399,18 @@
                                 {
                                     "name": "ChannelList_DatabaseError",
                                     "id": 40
+                                },
+                                {
+                                    "name": "TopicCreate_DatabaseError",
+                                    "id": 50
+                                },
+                                {
+                                    "name": "TopicCreate_NoPersonaError",
+                                    "id": 51
+                                },
+                                {
+                                    "name": "TopicList_DatabaseError",
+                                    "id": 60
                                 }
                             ]
                         }
@@ -1406,9 +1493,15 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "TopicCreateRequest",
+                            "name": "topic_create_request",
+                            "id": 13
+                        },
+                        {
+                            "rule": "optional",
                             "type": "TopicListRequest",
                             "name": "topic_list_request",
-                            "id": 13
+                            "id": 14
                         },
                         {
                             "rule": "optional",
@@ -1478,9 +1571,15 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "TopicCreateResponse",
+                            "name": "topic_create_response",
+                            "id": 41
+                        },
+                        {
+                            "rule": "optional",
                             "type": "TopicListResponse",
                             "name": "topic_list_response",
-                            "id": 41
+                            "id": 42
                         },
                         {
                             "rule": "optional",
@@ -1538,8 +1637,12 @@
                                     "id": 10
                                 },
                                 {
-                                    "name": "TopicListRequest",
+                                    "name": "TopicCreateRequest",
                                     "id": 11
+                                },
+                                {
+                                    "name": "TopicListRequest",
+                                    "id": 12
                                 },
                                 {
                                     "name": "LoginResponse",
@@ -1582,8 +1685,12 @@
                                     "id": 40
                                 },
                                 {
-                                    "name": "TopicListResponse",
+                                    "name": "TopicCreateResponse",
                                     "id": 41
+                                },
+                                {
+                                    "name": "TopicListResponse",
+                                    "id": 42
                                 },
                                 {
                                     "name": "PostNotify",

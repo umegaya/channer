@@ -195,6 +195,14 @@ func (sv *FrontServer) init() {
 	}
 	sv.assets = &a	
 	//Initialize builtin actor setting
+	yue.Register("/hot/:locale", yue.ActorConfig {
+		SpawnConfig: yue.SpawnConfig {
+			Factory: yue.InmemoryExecuterFactory {
+				Constructor: actors.NewHotActor,
+			},
+		},
+		Size: 1,
+	}, 60 * time.Second)
 }
 
 //Run sets up websocket handler, starts listen on configured address

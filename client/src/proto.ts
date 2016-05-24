@@ -308,6 +308,7 @@ export class Handler {
             "day": ChannerProto.TopicListRequest.QueryType.Day,
             "week": ChannerProto.TopicListRequest.QueryType.Week,
             "alltime": ChannerProto.TopicListRequest.QueryType.AllTime,
+			"hoge": 0,
         }
 		var bmap : {
 			[k:string]:ChannerProto.TopicListRequest.BucketType

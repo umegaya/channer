@@ -56,6 +56,18 @@ func NewChannel(dbif Dbif, a *Account, req *proto.ChannelCreateRequest) (*Channe
 	return ch, nil
 }
 
+func FindChannel(dbif Dbif, id proto.UUID) (*Channel, error) {
+	c := &Channel{
+		proto.Model_Channel {
+			Id: id,
+		},
+	}
+	if err := dbif.SelectOne(c, dbm.Stmt("select * from %s.channels where id=$1"), c.Id); err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
 func ListChannel(dbif Dbif, req *proto.ChannelListRequest) ([]*proto.Model_Channel, error) {
 	var limit int32
 	if req.Limit > 0 {
@@ -68,14 +80,15 @@ func ListChannel(dbif Dbif, req *proto.ChannelListRequest) ([]*proto.Model_Chann
 	}
 	tmp := make([]string, 0)
 	cond := ""
-	order_by := ""
+	order_by := "id desc"
 	if req.Query == proto.ChannelListRequest_New {
-		order_by = "id desc"
 		if req.OffsetId != nil {
 			tmp = append(tmp, fmt.Sprintf("id < %v", *req.OffsetId))
 		}
 	} else if req.Query == proto.ChannelListRequest_Popular {
-		return nil, fmt.Errorf("popular channel list has not implemented yet")
+		if req.OffsetId != nil {
+			tmp = append(tmp, fmt.Sprintf("watcher < %v", *req.OffsetId))
+		}
 	}
 	if req.Category > 0 {
 		tmp = append(tmp, fmt.Sprintf("category = %d", req.Category))
@@ -101,7 +114,7 @@ func ListChannel(dbif Dbif, req *proto.ChannelListRequest) ([]*proto.Model_Chann
 }
 
 //takes about 90sec
-func bytesEncode(v []byte) string {
+func bytesColumnEncode(v []byte) string {
 	result := make([]byte, 3 + 4*len(v))
 	result[0] = 'b'
 	result[1] = '\''
@@ -178,7 +191,7 @@ func InsertChannelFixture(dbif Dbif) error {
 				locales[rand.Int31n(int32(len(locales)))],
 				uint32(rand.Int31n(int32(len(categories)))),
 				fmt.Sprintf("this is description %d-%d", (i + 1), (j + 1)),
-				"", dbm.UUID(), uint64(rand.Int63n(1000000)), bytesEncode(bs)))
+				"", dbm.UUID(), uint64(rand.Int63n(1000000)), bytesColumnEncode(bs)))
 			if len(sep) <= 0 {
 				sep = ","
 			}
@@ -188,34 +201,5 @@ func InsertChannelFixture(dbif Dbif) error {
 			return err
 		}
 	}
-	/*
-	for i := 0; i < 10000; i++ {
-		options := proto.Model_Channel_Options {
-			Identity: idlvs[rand.Int31n(int32(len(idlvs)))],
-			TopicDisplayStyle: dstyles[rand.Int31n(int32(len(dstyles)))],
-			AnonymousName: "anon",
-			TopicPostLimit: 1000,
-		}
-		bytes, err := options.Marshal()
-		if err != nil {
-			return err
-		}
-		ch := &Channel {
-			proto.Model_Channel {
-				Id: dbm.UUID(),
-				Name: fmt.Sprintf("debug channel %d", (i + 1)), 
-				Description: fmt.Sprintf("this is description %d", (i + 1)),
-				Style: "",
-				Watcher: uint64(rand.Int63n(1000000)),
-				Locale:locales[rand.Int31n(int32(len(locales)))],
-				Category: uint32(rand.Int31n(int32(len(categories)))),
-				Established: proto.UUID(rand.Int63()),
-				Options: bytes,
-			},
-		}
-		if err := dbif.Insert(ch); err != nil {
-			return err
-		}
-	}	*/
 	return nil
 }
