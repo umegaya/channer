@@ -23,7 +23,7 @@ const (
 var node *yue.Node = &yue.Node {}
 
 var estimates []fetchCache = make([]fetchCache, 0)
-var parentMap map[proto.UUID]proto.UUID = make(map[proto.UUID]proto.UUID)
+//var parentMap map[proto.UUID]proto.UUID = make(map[proto.UUID]proto.UUID)
 var mutex sync.Mutex 
 var clock time.Time = time.Now()
 
@@ -44,12 +44,12 @@ func testInmemVoteFetcher() ([]FetchResult, error) {
 		for ;i < int(float64(1 - NEWLY_ADD_RATE) * ENTRY_PER_FETCH); i++ {
 			//add score to existing entry
 			sample := sampleEntries.results[rand.Int31n(int32(len(sampleEntries.results)))]
-			score := uint32(rand.Int31n(100) + 1)
+			score := int32(rand.Int31n(100) + 1)
 			entries[i] = FetchResult {
 				id: sample.id,
 				score: score,
 				parent: sample.parent,
-				vote: score + uint32(rand.Int31n(int32(score))),
+				vote: uint32(score + rand.Int31n(int32(score))),
 			}
 		}
 	}
@@ -57,14 +57,14 @@ func testInmemVoteFetcher() ([]FetchResult, error) {
 	genClock := getClock().Add(-1 * time.Second)
 	for ;i < ENTRY_PER_FETCH; i++ {
 		//add new entry
-		score := uint32(rand.Int31n(1000) + 1)
+		score := int32(rand.Int31n(1000) + 1)
 		entries[i] = FetchResult {
 			id: proto.UUID(node.GenUUID(genClock)),
 			score: score,
 			parent: proto.UUID(rand.Int31n(50) + 1),
-			vote: score + uint32(rand.Int31n(int32(score))),
+			vote: uint32(score + rand.Int31n(int32(score))),
 		}
-		parentMap[entries[i].id] = entries[i].parent
+		//parentMap[entries[i].id] = entries[i].parent
 	}
 	log.Printf("testInmemVoteFetcher: %v", entries)
 	estimates = append(estimates, fetchCache {
@@ -90,7 +90,7 @@ func testInmemVoteParentFetcher(start, end time.Time, flame bool) ([]FetchResult
 	}
 	ret := make([]FetchResult, len(tmp.total.entries))
 	for i, e := range tmp.total.entries {
-		ret[i] = FetchResult{ id: e.id, parent: parentMap[e.id], vote: e.vote, score: e.score }
+		ret[i] = FetchResult{ id: e.Id, parent: tmp.idParentMap[e.Id], vote: e.Vote, score: e.Score }
 	}
 	log.Printf("testInmemVoteParentFetcher: %v", ret)
 	return ret, nil
@@ -207,18 +207,18 @@ log.Printf("current clock: %v", clock)
 				if btyp == proto.TopicListRequest_Flame && !e.flamy() {
 					t.Fatal("flame query should always return flamy entry %v", e)
 				}
-				if e.id != e2.id || e.score != e2.score {
-					if e.id != e2.id {
+				if e.Id != e2.Id || e.Score != e2.Score {
+					if e.Id != e2.Id {
 						//we believe this is caused by unstableness of sort.Sort, but check next element for confirm.
 						if (i + 1) < int(len(estEntries)) {
 							e3 := estEntries[i + 1]
-							if e.score == e3.score && e.id == e3.id {
+							if e.Score == e3.Score && e.Id == e3.Id {
 								//log.Printf("id differ because use of unstable sort %v %v", e, e3)
 								i++ //next index also same score, so skip check.
 								continue
 							}
 							t.Fatal("result does not match estimated", e, "vs", e2, e3)
-						} else if e.score == e2.score {
+						} else if e.Score == e2.Score {
 							//last element happen to have same score, we believe this is caused by unstableness of sort.Sort
 							continue
 						}

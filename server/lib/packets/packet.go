@@ -4,6 +4,7 @@ import (
 	"log"
 	"fmt"
 
+	"github.com/umegaya/yue"
 	"github.com/umegaya/channer/server/lib/assets"
 	"github.com/umegaya/channer/server/lib/models"
 	proto "github.com/umegaya/channer/server/proto"
@@ -102,13 +103,31 @@ func (pkt *RecvPacket) Process(t Transport) {
 	}
 }
 
+func Actor2ProtoError(aerr *yue.ActorError) *proto.Err {
+	if aerr.Is(yue.ActorUnavailable) {
+		return &proto.Err {
+			Type: proto.Error_TemporaryUnavailable,
+		}
+	} else {
+		return &proto.Err {
+			Type: proto.Error_RuntimeError,
+			Explanation: aerr.Error(),			
+		}
+	}
+}
+
 //SendError sents error with specified reason
 func SendError(src Source, msgid uint32, err error) {
 	perr, ok := err.(*proto.Err)
 	if !ok {
-		perr = &proto.Err {
-			Type: proto.Error_RuntimeError,
-			Explanation: err.Error(),
+		aerr, ok2 := err.(*yue.ActorError)
+		if ok2 {
+			perr = Actor2ProtoError(aerr)
+		} else {
+			perr = &proto.Err {
+				Type: proto.Error_RuntimeError,
+				Explanation: err.Error(),
+			}
 		}
 	}
 	log.Printf("SendError:%v", err);

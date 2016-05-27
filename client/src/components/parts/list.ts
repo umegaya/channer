@@ -57,11 +57,31 @@ function TopicInfoView(
     c: ModelCollection, 
     model: ChannerProto.Model.Topic
 ): UI.Element {
-    return m(".block", "topic!!");
+    var copied = model.body.slice();
+    var body = Builder.Model.Topic.Body.decode(copied);
+    var elems: Array<UI.Element> = [];
+    elems.push(m(".title-h2.name", <UI.Attributes>{
+        href: "/topic/" + model.id,
+        onclick: m.withAttr("href", Util.route),
+    }, model.title + "/" + model.locale));
+    elems.push(m(".desc", model.content || _L("no content")));
+    elems.push(m(".info", [
+        m(".author", <UI.Attributes>{
+            href: "/user/" + model.persona,
+            onclick: m.withAttr("href", Util.route),
+        }, body.name), 
+        m(".channel", <UI.Attributes>{
+            href: "/channel/" + model.channel,
+            onclick: m.withAttr("href", Util.route),
+        }, body.channel_name),
+    ]));
+    return m(".block", <UI.Attributes>{
+        id: "topic-" + model.id,
+    }, elems);
 }
 class TopicList extends ListComponent {
     constructor() {
         super(TopicInfoView);
     }
 }
-export var TopicListComponent: ChannelList = new ChannelList();
+export var TopicListComponent: TopicList = new TopicList();

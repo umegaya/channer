@@ -5,6 +5,8 @@ export var errorMessages : { [x: number]: string } = []
 
 errorMessages[ChannerProto.Error.Type.Timeout] = "request timeout";
 errorMessages[ChannerProto.Error.Type.InvalidPayload] = "invalid payload sent";
+errorMessages[ChannerProto.Error.Type.RuntimeError] = "internal server error";
+errorMessages[ChannerProto.Error.Type.TemporaryUnavailable] = "service temporary unavailable";
 
 errorMessages[ChannerProto.Error.Type.Login_InvalidAuth] = "Login: authentification failure";
 errorMessages[ChannerProto.Error.Type.Login_UserNotFound] = "Login: user not found";

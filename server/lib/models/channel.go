@@ -129,8 +129,11 @@ func bytesColumnEncode(v []byte) string {
 	result[start + 4 * len(v)] = '\''
 	return string(result)
 }
+func Locales() []string {
+	return []string {"en", "ja", "ko", "zh_Hant", "zh_Hans"}	
+}
 func InsertChannelFixture(dbif Dbif) error {
-	locales := []string {"en", "ja", "ko", "zh_Hant", "zh_Hans"}
+	locales := Locales()
 	categories := []string {
 		"Share",
 	    "Ask",

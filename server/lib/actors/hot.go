@@ -1,7 +1,7 @@
 package actors
 
 import (
-	//"log"
+	"log"
 	"fmt"
 	"time"
 	"sort"
@@ -11,6 +11,7 @@ import (
 
 	proto "github.com/umegaya/channer/server/proto"
 	"github.com/umegaya/yue"
+	"github.com/umegaya/channer/server/lib/utils"
 	yuep "github.com/umegaya/yue/proto"
 )
 
@@ -42,7 +43,7 @@ const (
 type FetchResult struct {
 	id proto.UUID		//target id
 	parent proto.UUID	//target parent id. FetchResult will be group by parent
-	score uint32		//target score. higher score regard as "hot".
+	score int32			//target score. higher score regard as "hot".
 	vote uint32 		//number of vote (up + down)
 }
 
@@ -52,17 +53,20 @@ type FetchResult struct {
 //
 // HotEntry represents single hot object with its score and id
 type HotEntry struct {
-	id proto.UUID
-	score uint32
-	vote uint32
+	Id proto.UUID
+	Score int32
+	Vote uint32
 }
 
 func (e *HotEntry) within(start, end time.Time) bool {
-	return yue.UUIDBetween(yuep.UUID(e.id), start, end)
+	return yue.UUIDBetween(yuep.UUID(e.Id), start, end)
 }
 
 func (e *HotEntry) flamy() bool {
-	return math.Abs(float64(e.score / e.vote)) < 2 * FLAME_THRESHOLD
+	if e.Vote < FLAME_VOTE_THRESHOLD {
+		return false
+	}
+	return math.Abs(float64(e.Score / int32(e.Vote))) < 2 * FLAME_THRESHOLD
 }
 
 // hotlist represents a set of HotEntry in certain category 
@@ -91,13 +95,13 @@ func (l *hotlist) addEntries(entries []HotEntry) {
 }
 
 func (l *hotlist) addEntry(e HotEntry) {
-	i, ok := l.indexes[e.id]
+	i, ok := l.indexes[e.Id]
 	//log.Printf("addEntries: %v %v %v", e, i, len(l.entries))
 	if ok {
-		l.entries[i].score += e.score
-		l.entries[i].vote += e.vote
+		l.entries[i].Score += e.Score
+		l.entries[i].Vote += e.Vote
 	} else {
-		l.indexes[e.id] = len(l.entries)
+		l.indexes[e.Id] = len(l.entries)
 		l.entries = append(l.entries, e)
 	}
 }
@@ -121,13 +125,13 @@ func (l *hotlist) Len() int {
 	return len(l.entries)
 }
 func (l *hotlist) Swap(i, j int) {
-	idi, idj := l.entries[i].id, l.entries[j].id
+	idi, idj := l.entries[i].Id, l.entries[j].Id
 	l.entries[i], l.entries[j] = l.entries[j], l.entries[i]
 	l.indexes[idi], l.indexes[idj] = j, i
 }
 func (l *hotlist) Less(i, j int) bool {
 	// > for sorting decreasing order
-	return l.entries[i].score > l.entries[j].score
+	return l.entries[i].Score > l.entries[j].Score
 }
 
 
@@ -140,12 +144,14 @@ type hotbucket struct {
 	lastUpdate time.Time
 	total *hotlist
 	groups map[proto.UUID]*hotlist
+	idParentMap map[proto.UUID]proto.UUID
 }
 
 func NewHotBucket(size int) *hotbucket {
 	return &hotbucket {
 		total: NewHotList(size),
 		groups: make(map[proto.UUID]*hotlist),
+		idParentMap: make(map[proto.UUID]proto.UUID),
 	}
 }
 
@@ -162,23 +168,24 @@ func (b *hotbucket) addResults(res []FetchResult) *hotbucket {
 
 func (b *hotbucket) addResultsWithFilter(res []FetchResult, filter func (e *HotEntry) bool) *hotbucket {
 	for _, r := range res {
-		e := &HotEntry{ id: r.id, score: r.score, vote: r.vote }
+		e := &HotEntry{ Id: r.id, Score: r.score, Vote: r.vote }
 		if filter != nil && !filter(e) {
 			continue
 		}
-		b.addEntry(e)
+		b.addEntry(e, r.parent)
 	}
 	return b
 }
 
-func (b *hotbucket) addEntry(e *HotEntry) {
+func (b *hotbucket) addEntry(e *HotEntry, parent proto.UUID) {
 	b.total.addEntry(*e)
-	l, ok := b.groups[e.id]
+	b.idParentMap[e.Id] = parent
+	l, ok := b.groups[parent]
 	if !ok {
 		l = NewHotList(DEFAULT_HOTBUCKET_SIZE)
-		b.groups[e.id] = l
+		b.groups[parent] = l
 	}
-	l.addEntry(*e)	
+	l.addEntry(*e)
 }
 
 //filter filters hotentry with given filter function
@@ -186,7 +193,7 @@ func (b *hotbucket) filter(filt func (e *HotEntry) bool) *hotbucket {
 	br := NewHotBucketWithLastUpdate(len(b.total.entries), b.lastUpdate)
 	for _, e := range b.total.entries {
 		if filt(&e) {
-			br.addEntry(&e)
+			br.addEntry(&e, b.idParentMap[e.Id])
 		}
 	}
 	return br
@@ -196,12 +203,12 @@ func (b *hotbucket) filter(filt func (e *HotEntry) bool) *hotbucket {
 func (b *hotbucket) add(delta *hotbucket) *hotbucket {
 	if delta != nil {
 		b.total.addEntries(delta.total.entries)
-		for id, l := range delta.groups {
-			cl, ok := b.groups[id]
+		for parent, l := range delta.groups {
+			cl, ok := b.groups[parent]
 			if ok {
 				cl.addEntries(l.entries)
 			} else {
-				b.groups[id] = cl
+				b.groups[parent] = cl.dup()
 			}
 		}
 	}
@@ -223,7 +230,7 @@ func (b *hotbucket) truncate(size int) *hotbucket {
 	}
 	br := NewHotBucketWithLastUpdate(len(b.total.entries), b.lastUpdate)
 	for _, e := range b.total.entries[0:size] {
-		br.addEntry(&e)
+		br.addEntry(&e, b.idParentMap[e.Id])
 	}
 	br.lastUpdate = b.lastUpdate
 	return br
@@ -248,10 +255,14 @@ func (b *hotbucket) dup() *hotbucket {
 	br := &hotbucket {
 		groups: make(map[proto.UUID]*hotlist),
 		total: b.total.dup(),
+		idParentMap: make(map[proto.UUID]proto.UUID),
 		lastUpdate: b.lastUpdate,
 	}
 	for id, l := range b.groups {
 		br.groups[id] = l.dup()
+	}
+	for id, parent := range b.idParentMap {
+		br.idParentMap[id] = parent
 	}
 	return br
 }
@@ -302,6 +313,7 @@ func (bs *hotbucketStore) summeryBucketOf(btyp proto.TopicListRequest_BucketType
 	case proto.TopicListRequest_Rising:
 		bkts = bs.risings
 		if typ != proto.TopicListRequest_Hour && typ != proto.TopicListRequest_Day {
+			log.Printf("summeryBucketOf rnil 1")
 			return nil
 		}
 	case proto.TopicListRequest_Hot:
@@ -309,6 +321,7 @@ func (bs *hotbucketStore) summeryBucketOf(btyp proto.TopicListRequest_BucketType
 	case proto.TopicListRequest_Flame:
 		bkts = bs.flames
 	default:
+			log.Printf("summeryBucketOf rnil 2")
 		return nil
 	}
 
@@ -323,8 +336,10 @@ func (bs *hotbucketStore) summeryBucketOf(btyp proto.TopicListRequest_BucketType
 	case proto.TopicListRequest_AllTime:
 		idx = SUMMERY_ALLTIME_HOTBUCKET
 	default:
+			log.Printf("summeryBucketOf rnil 3")
 		return nil
 	}
+	log.Printf("bks: %v %v %v", idx, btyp, typ)
 	return bkts[idx - 1]
 }
 
@@ -355,7 +370,7 @@ func (bs *hotbucketStore) update(fetchAt time.Time, results []FetchResult) *hotb
 	rmlen := 0
 	cache := fetchCache{ fetchAt: fetchAt, results: results }
 	//first, add fetch results to caches
-	//log.Printf("len/cap = %v/%v", len(bs.caches), cap(bsr.caches))
+	log.Printf("len/cap = %v/%v", len(bs.caches), cap(bsr.caches))
 	bsr.caches = append(bsr.caches, cache)
 	clen := len(bs.caches)
 	if clen >= cap(bsr.caches) {
@@ -378,7 +393,7 @@ func (bs *hotbucketStore) update(fetchAt time.Time, results []FetchResult) *hotb
 		} else {
 			end = l			
 		}
-		//log.Printf("addResults: %v ~ %v", start, end)
+		log.Printf("addResults: %v ~ %v", start, end)
 		for _, c := range bsr.caches[start:end] {
 			//log.Printf("results: %v", results)
 			b.addResults(c.results)
@@ -386,7 +401,8 @@ func (bs *hotbucketStore) update(fetchAt time.Time, results []FetchResult) *hotb
 		start = end
 		//fetchAt is same as latest fetchCache's fetchAt
 		bsr.risings[i] = b.dup().sort().markUpdate(fetchAt)
-		//log.Printf("current: %v", bsr.summeries[i].total.entries)
+		log.Printf("risings: %v set", i)
+		//log.Printf("current: %v", bsr.risings[i].total.entries)
 	}
 
 	return bsr
@@ -402,7 +418,7 @@ type HotActor struct {
 	locale string   
 	lastQuery time.Time
 	lastQueryCacheUpdate time.Time
-	fetcher func (ftype int, start, end time.Time, locale string) ([]FetchResult, error) //for test. 
+	fetcher func (ftype int, start, end time.Time, locale string) ([]FetchResult, error)
 	persist func (at time.Time, s *hotbucketStore) error
 	store atomic.Value //stores *hotbucketStore
 	hotQueryCache []atomic.Value //stores *hotbucket
@@ -410,44 +426,61 @@ type HotActor struct {
 	queryDurations []time.Duration
 	queryCacheUpdated int32 //goat update checker
 	lock sync.RWMutex //for synchoronize actor method call
-	wg sync.WaitGroup
+	available bool
+	wg *utils.WaitGroup
 }
 
 func (a *HotActor) task() {
+	t := time.Now()
+	//do first update 
+	a.update(t)
+	a.updateQueryCache(t)
 	for {
 		select {
 		case t := <- a.tick.C:
 			a.update(t)
 			go a.updateQueryCache(t)
+			utils.DumpMemUsage()
 		}
 	}	
 }
 
-func (a *HotActor) updateQueryCache(t time.Time) {
+func (a *HotActor) updateQueryCache(t time.Time) error {
 	defer atomic.CompareAndSwapInt32(&a.queryCacheUpdated, 1, 0)
 	if !atomic.CompareAndSwapInt32(&a.queryCacheUpdated, 0, 1) {
-		return
+		return nil
 	}
 	if (t.Unix() - a.lastQueryCacheUpdate.Unix()) < GOAT_UPDATE_SPAN_SEC {
-		return
+		return nil
 	}
 	qcsize := len(a.queryDurations)
-	a.wg.Add(2 * qcsize) //hot and flame
+	a.wg = utils.NewWaitGroup(2 * qcsize) //hot and flame
 	to := a.lastQueryCacheUpdate
 	for i := 0; i < qcsize; i++ {
 		from := to.Add(-1 * a.queryDurations[i])
-		go a.updateQueryCacheTask(from, to, FETCH_FROM_CREATED, &a.hotQueryCache[i], &a.wg)
-		go a.updateQueryCacheTask(from, to, FETCH_FROM_CREATED_FLAME, &a.flameQueryCache[i], &a.wg)
+		go a.updateQueryCacheTask(from, to, FETCH_FROM_CREATED, &a.hotQueryCache[i], a.wg)
+		go a.updateQueryCacheTask(from, to, FETCH_FROM_CREATED_FLAME, &a.flameQueryCache[i], a.wg)
 	}
-	a.wg.Wait()
-	a.lastQueryCacheUpdate = t
+	if err := a.wg.Wait(); err != nil {
+		log.Printf("update fails with %v", err)
+		a.available = false
+		return err
+	} else {
+		log.Printf("update success")
+		a.available = true		
+		a.lastQueryCacheUpdate = t
+	}
+	return nil
 }
 
-func (a *HotActor) updateQueryCacheTask(from, to time.Time, fetchType int, ret *atomic.Value, wg *sync.WaitGroup) {
+func (a *HotActor) updateQueryCacheTask(from, to time.Time, fetchType int, ret *atomic.Value, wg *utils.WaitGroup) {
 	var (
 		results []FetchResult
 		err error
 	)
+	defer func () {
+		wg.Done(err)
+	}()
 	if results, err = a.fetcher(fetchType, from, to, a.locale); err != nil {
 		return
 	}
@@ -455,11 +488,10 @@ func (a *HotActor) updateQueryCacheTask(from, to time.Time, fetchType int, ret *
 	//week is necessary? 
 	next := NewHotBucket(DEFAULT_HOTBUCKET_SIZE).addResults(results).sort().truncate(ALLTIME_SUMMERY_LIMIT).markUpdate(to)
 	ret.Store(next)
-	wg.Done()
 }
 
 func (a *HotActor) mergeFetchResult(next *hotbucketStore, now time.Time) {
-	//log.Printf("mergeFetchResult1")
+	log.Printf("mergeFetchResult1")
 	/*
 		calculate hot and flame	by merging next.risings to a.queryCache
 	*/
@@ -514,7 +546,7 @@ func (a *HotActor) mergeFetchResult(next *hotbucketStore, now time.Time) {
 			return e.flamy()
 		}).sort().truncate(DEFAULT_HOTBUCKET_SIZE).markUpdate(now)
 	}
-	//log.Printf("mergeFetchResult3")
+	log.Printf("mergeFetchResult3")
 }
 
 func (a *HotActor) update(t time.Time) (err error) {
@@ -548,21 +580,32 @@ func (a *HotActor) restore() error {
 	return nil
 }
 
+func (a *HotActor) Available() bool {
+	return a.available
+}
+
 func (a *HotActor) Query(btyp proto.TopicListRequest_BucketType, typ proto.TopicListRequest_QueryType, 
 	ids []proto.UUID, start, count uint64) ([]HotEntry, error) {
 	defer a.lock.RUnlock()
 	a.lock.RLock()
+	if !a.available {
+		return nil, &proto.Err{ Type: proto.Error_TemporaryUnavailable }
+	}
 	s := a.store.Load().(*hotbucketStore).summeryBucketOf(btyp, typ)
 	if s == nil {
 		return nil, fmt.Errorf("invalid query type: %v %v", btyp, typ)
 	}
+	log.Printf("Query get range of %v %v %v %v %v", btyp, typ, ids, start, count)
 	return s.rangeOf(ids, start, count)
 }
 
 //for realtime updating
-func (a *HotActor) Update(id proto.UUID, parent proto.UUID, score uint32, vote uint32) error {
+func (a *HotActor) Update(id proto.UUID, parent proto.UUID, score int32, vote uint32) error {
 	defer a.lock.Unlock()
 	a.lock.Lock()
+	if !a.available {
+		return &proto.Err{ Type: proto.Error_TemporaryUnavailable }
+	}
 	added := []FetchResult{ FetchResult{id: id, parent: parent, score: score, vote: vote} }
 	//because summeries of current a.store never referred by update thread, update thread does not need to acquired a.lock
 	//Query/Update needs to exclude each other, and concurrent Query calls are possible.
@@ -596,6 +639,7 @@ func NewHotActorWithDetail(locale string, updateSpan time.Duration, lengths []in
 		flameQueryCache: make([]atomic.Value, queryCacheSize),
 		queryDurations: durations,
 		lock: sync.RWMutex{},
+		available: false,
 	}
 	if err := a.restore(); err != nil {
 		a.destroy()

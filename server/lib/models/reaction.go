@@ -4,6 +4,7 @@ import (
 	"log"
 	"fmt"
 	"bytes"
+	"math/rand"
 	proto "github.com/umegaya/channer/server/proto"
 )
 
@@ -13,24 +14,27 @@ type Reaction struct {
 }
 
 func InitReaction() {
-	create_table(Reaction{}, "reactions", "Target", "Persona")
+	t := create_table(Reaction{}, "reactions", "Id", "Persona")
+	t.AddIndex("created_locale", "INDEX", []string{"Created", "Locale"})
 }
 
 //create fixture
 type TopicInfo struct {
 	Id proto.UUID
+	Channel proto.UUID
 	Point int64
 	Vote uint64
 }
 
 func InsertReactionFixture(dbif Dbif) error {
+	locales := Locales()
 	if results, err := dbif.Select(Reaction{}, dbm.Stmt("select * from %s.reactions limit 1")); err != nil || len(results) > 0 {
 		if err == nil {
 			log.Printf("reaction fixture already inserted")
 		}
 		return err
 	}
-	results, err := dbif.Select(TopicInfo{}, dbm.Stmt(`select id,point,vote from %s.topics`))
+	results, err := dbif.Select(TopicInfo{}, dbm.Stmt(`select id,channel,point,vote from %s.topics`))
 	if err != nil {
 		return err
 	}
@@ -42,15 +46,17 @@ func InsertReactionFixture(dbif Dbif) error {
 	   	for _, a := range tmp {
 			v := a.(*TopicInfo)
 			for i := 0 ; i < int((int64(v.Vote) + v.Point) / 2); i++ {
-				buffer.WriteString(fmt.Sprintf("%s(%v,%v,%v,%v,%v)", 
-					sep, dbm.UUID(), v.Id, dbm.UUID(), int(proto.Model_Reaction_Topic_Vote), 1))
+				buffer.WriteString(fmt.Sprintf("%s(%v,%v,%v,'%s',%v,%v,%v)", 
+					sep, v.Id, dbm.UUID(), v.Channel, locales[rand.Int31n(int32(len(locales)))],
+					int(proto.Model_Reaction_Topic_Vote), 1, dbm.UUID()))
 				if len(sep) <= 0 {
 					sep = ","
 				}			
 			}
 			for i := 0 ; i < int((int64(v.Vote) - v.Point) / 2); i++ {
-				buffer.WriteString(fmt.Sprintf("%s(%v,%v,%v,%v,%v)", 
-					sep, dbm.UUID(), v.Id, dbm.UUID(), int(proto.Model_Reaction_Topic_Vote), -1))
+				buffer.WriteString(fmt.Sprintf("%s(%v,%v,%v,'%s',%v,%v,%v)", 
+					sep, v.Id, dbm.UUID(), v.Channel, locales[rand.Int31n(int32(len(locales)))], 
+					int(proto.Model_Reaction_Topic_Vote), -1, dbm.UUID()))
 				if len(sep) <= 0 {
 					sep = ","
 				}			
@@ -61,38 +67,5 @@ func InsertReactionFixture(dbif Dbif) error {
 			return err
 		}
 	}
-
-	/*for _, a := range results {
-		v := a.(*TopicInfo)
-		//u + d = v, u - d = p => u = (v + p) / 2, d = (v - p) / 2
-		for i := 0 ; i < int((int64(v.Vote) + v.Point) / 2); i++ {
-			r := &Reaction {
-				proto.Model_Reaction {
-					Id: dbm.UUID(),
-					Target: v.Id,
-					Persona: dbm.UUID(),
-					Type: proto.Model_Reaction_Topic_Vote,
-					Param: 1,
-				},
-			}
-			if err := dbif.Insert(r); err != nil {
-				return err
-			}
-		}
-		for i := 0 ; i < int((int64(v.Vote) - v.Point) / 2); i++ {
-			r := &Reaction {
-				proto.Model_Reaction {
-					Id: dbm.UUID(),
-					Target: v.Id,
-					Persona: dbm.UUID(),
-					Type: proto.Model_Reaction_Topic_Vote,
-					Param: -1,
-				},
-			}
-			if err := dbif.Insert(r); err != nil {
-				return err
-			}
-		}
-	}*/
 	return nil
 }

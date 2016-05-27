@@ -16,13 +16,9 @@ export class Util {
             }
 			window.channer.settings.values.last_url = dest;
             console.log("last_page_url check:" + 
-            
                 (dest.indexOf("/menu") < 0 && dest.indexOf("menu=on") < 0) + "|" + 
-                
                 (window.channer.settings.values.last_page_url != dest) + "|" + 
-
                 dest + "|" + 
-                
                 window.channer.settings.values.last_page_url);
             
             if ((dest.indexOf("/menu") < 0 && dest.indexOf("menu=on") < 0) &&

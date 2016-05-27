@@ -105,38 +105,42 @@ message Model {
 		required string name = 4;
 	}
 
-	message Reactions {
-		message Entry {
-			required fixed64 id = 1;
-			required fixed64 count = 2;
-		}
-		repeated Entry entries = 3;
-	}
-
 	message Post {
+		message Body {
+			message Reaction {
+				required fixed64 id = 1;
+				required fixed64 count = 2;
+			}
+			required string name = 1;
+			repeated Reaction reactions = 2;
+		}
 		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"]; 
 		required fixed64 topic = 2 [(gogoproto.casttype) = "UUID"];//parent topic id
 		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who post it.
-		required uint64 attr = 4;//attr flag (banned or something)
-		required fixed32 point = 5;
-		required fixed32 vote = 6;
-		required string text = 7;//posted text
-		required bytes reactions = 8; //packed Reactions message
+		required string locale = 4;
+		required uint64 attr = 5;//attr flag (banned or something)
+		required fixed32 point = 6;
+		required fixed32 vote = 7;
+		required string content = 8;//posted text TODO: parse it and store metadata to body
+		required bytes body = 9; //packed Body message
 	}
 
 	message Topic {
 		message Body {
-			required string title = 1;
-			required string content = 2; //text or url
 			required string channel_name = 3;
+			required string name = 4;
 		}
 		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required fixed64 channel = 2 [(gogoproto.casttype) = "UUID"];
 		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"]; //persona id 
-		required sfixed32 point = 4;
-		required fixed32 vote = 5;
-		required fixed32 comment = 6;
-		required bytes body = 7;
+		required string locale = 4;
+		required uint64 attr = 5;//attr flag (banned or something)
+		required sfixed32 point = 6;
+		required fixed32 vote = 7;
+		required fixed32 comment = 8;
+		required string title = 9;
+		required string content = 10; //text or url
+		required bytes body = 11; //packed Body message
 	}
 
 	message Reaction {
@@ -149,11 +153,13 @@ message Model {
 			Topic_Vote = 12;
 			Channel_Watch = 13;
 		}
-		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"]; //unique id
-		required fixed64 target = 2 [(gogoproto.casttype) = "UUID"]; //target object id
-		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who react target.
-		required Type type = 4;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
-		required sfixed64 param = 5;//+1,-1 for vote reaction. emoji_id for other reaction
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"]; //reaction target object id
+		required fixed64 persona = 2 [(gogoproto.casttype) = "UUID"];//persona who react target.
+		required fixed64 parent = 3 [(gogoproto.casttype) = "UUID"];//target object's parent id (topic => channel, post => topic, ...)
+		required string locale = 4;
+		required Type type = 5;
+		required sfixed64 param = 6;//+1,-1 for vote reaction. emoji_id for other reaction
+		required fixed64 created = 7 [(gogoproto.casttype) = "UUID"]; //uuid for creation date
 	}
 
 	message Service {
@@ -321,6 +327,7 @@ message Error {
 		Timeout = 1;
 		InvalidPayload = 2;
 		RuntimeError = 3;
+		TemporaryUnavailable = 4;
 
 		Login_InvalidAuth = 10;
 		Login_UserNotFound = 11;

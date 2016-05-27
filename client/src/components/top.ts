@@ -162,7 +162,9 @@ function TopView(ctrl: TopController) : UI.Element {
             selectedTab: ctrl.active(),
             activeSelected: true,
             getState: (state: { index: number }) => {
-                ctrl.active(state.index);
+                Util.route("/top/" + TABS[state.index].id, null, {
+                    replace_history: true,
+                });
             }
         }),
     ]);

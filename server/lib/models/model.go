@@ -7,6 +7,7 @@ import (
 	"database/sql"
 
 	proto "github.com/umegaya/channer/server/proto"
+	"github.com/umegaya/channer/server/lib/utils"
 
 	_ "github.com/cockroachdb/pq"
 	"github.com/umegaya/gorp"
@@ -81,6 +82,7 @@ func Init(db_addr, certs, host_addr, data_path string, insert_fixture bool) erro
     	return err
     }
     log.Printf("model initialized")
+	utils.DumpMemUsage()
     return nil
 }
 

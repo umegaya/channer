@@ -454,36 +454,6 @@
                             ]
                         },
                         {
-                            "name": "Reactions",
-                            "fields": [
-                                {
-                                    "rule": "repeated",
-                                    "type": "Entry",
-                                    "name": "entries",
-                                    "id": 3
-                                }
-                            ],
-                            "messages": [
-                                {
-                                    "name": "Entry",
-                                    "fields": [
-                                        {
-                                            "rule": "required",
-                                            "type": "Long",
-                                            "name": "id",
-                                            "id": 1
-                                        },
-                                        {
-                                            "rule": "required",
-                                            "type": "Long",
-                                            "name": "count",
-                                            "id": 2
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
                             "name": "Post",
                             "fields": [
                                 {
@@ -515,33 +485,77 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
-                                    "name": "attr",
+                                    "type": "string",
+                                    "name": "locale",
                                     "id": 4
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "fixed32",
-                                    "name": "point",
+                                    "type": "uint64",
+                                    "name": "attr",
                                     "id": 5
                                 },
                                 {
                                     "rule": "required",
                                     "type": "fixed32",
-                                    "name": "vote",
+                                    "name": "point",
                                     "id": 6
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "string",
-                                    "name": "text",
+                                    "type": "fixed32",
+                                    "name": "vote",
                                     "id": 7
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "bytes",
-                                    "name": "reactions",
+                                    "type": "string",
+                                    "name": "content",
                                     "id": 8
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "bytes",
+                                    "name": "body",
+                                    "id": 9
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "name": "Body",
+                                    "fields": [
+                                        {
+                                            "rule": "required",
+                                            "type": "string",
+                                            "name": "name",
+                                            "id": 1
+                                        },
+                                        {
+                                            "rule": "repeated",
+                                            "type": "Reaction",
+                                            "name": "reactions",
+                                            "id": 2
+                                        }
+                                    ],
+                                    "messages": [
+                                        {
+                                            "name": "Reaction",
+                                            "fields": [
+                                                {
+                                                    "rule": "required",
+                                                    "type": "Long",
+                                                    "name": "id",
+                                                    "id": 1
+                                                },
+                                                {
+                                                    "rule": "required",
+                                                    "type": "Long",
+                                                    "name": "count",
+                                                    "id": 2
+                                                }
+                                            ]
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -577,27 +591,51 @@
                                 },
                                 {
                                     "rule": "required",
+                                    "type": "string",
+                                    "name": "locale",
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "attr",
+                                    "id": 5
+                                },
+                                {
+                                    "rule": "required",
                                     "type": "sfixed32",
                                     "name": "point",
-                                    "id": 4
+                                    "id": 6
                                 },
                                 {
                                     "rule": "required",
                                     "type": "fixed32",
                                     "name": "vote",
-                                    "id": 5
+                                    "id": 7
                                 },
                                 {
                                     "rule": "required",
                                     "type": "fixed32",
                                     "name": "comment",
-                                    "id": 6
+                                    "id": 8
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "title",
+                                    "id": 9
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "content",
+                                    "id": 10
                                 },
                                 {
                                     "rule": "required",
                                     "type": "bytes",
                                     "name": "body",
-                                    "id": 7
+                                    "id": 11
                                 }
                             ],
                             "messages": [
@@ -607,20 +645,14 @@
                                         {
                                             "rule": "required",
                                             "type": "string",
-                                            "name": "title",
-                                            "id": 1
-                                        },
-                                        {
-                                            "rule": "required",
-                                            "type": "string",
-                                            "name": "content",
-                                            "id": 2
-                                        },
-                                        {
-                                            "rule": "required",
-                                            "type": "string",
                                             "name": "channel_name",
                                             "id": 3
+                                        },
+                                        {
+                                            "rule": "required",
+                                            "type": "string",
+                                            "name": "name",
+                                            "id": 4
                                         }
                                     ]
                                 }
@@ -641,7 +673,7 @@
                                 {
                                     "rule": "required",
                                     "type": "Long",
-                                    "name": "target",
+                                    "name": "persona",
                                     "id": 2,
                                     "options": {
                                         "(gogoproto.casttype)": "UUID"
@@ -650,7 +682,7 @@
                                 {
                                     "rule": "required",
                                     "type": "Long",
-                                    "name": "persona",
+                                    "name": "parent",
                                     "id": 3,
                                     "options": {
                                         "(gogoproto.casttype)": "UUID"
@@ -658,15 +690,30 @@
                                 },
                                 {
                                     "rule": "required",
+                                    "type": "string",
+                                    "name": "locale",
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
                                     "type": "Type",
                                     "name": "type",
-                                    "id": 4
+                                    "id": 5
                                 },
                                 {
                                     "rule": "required",
                                     "type": "Long",
                                     "name": "param",
-                                    "id": 5
+                                    "id": 6
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "Long",
+                                    "name": "created",
+                                    "id": 7,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 }
                             ],
                             "enums": [
@@ -1355,6 +1402,10 @@
                                 {
                                     "name": "RuntimeError",
                                     "id": 3
+                                },
+                                {
+                                    "name": "TemporaryUnavailable",
+                                    "id": 4
                                 },
                                 {
                                     "name": "Login_InvalidAuth",

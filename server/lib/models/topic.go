@@ -4,6 +4,7 @@ import (
 	"log"
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 	"math/rand"
 
@@ -17,7 +18,8 @@ type Topic struct {
 }
 
 func InitTopic() {
-	create_table(Topic{}, "topics", "Id")
+	t := create_table(Topic{}, "topics", "Id")
+	t.AddIndex("locale", "INDEX", []string{"Locale"})
 }
 
 const TOPIC_FETCH_LIMIT = 50
@@ -35,9 +37,8 @@ func NewTopic(dbif Dbif, a *Account, req *proto.TopicCreateRequest) (*Topic, err
 		return nil, &proto.Err{ Type: proto.Error_TopicCreate_DatabaseError }
 	}
 	body := proto.Model_Topic_Body {
-		Title: req.Name,
 		ChannelName: c.Name,
-		Content: req.Content,
+		Name: p.Name,
 	}
 	bs, err := body.Marshal()
 	if err != nil {
@@ -59,9 +60,9 @@ func NewTopic(dbif Dbif, a *Account, req *proto.TopicCreateRequest) (*Topic, err
 
 //return value of actor call
 type HotEntry struct {
-	id proto.UUID
-	score uint32
-	vote uint32
+	Id proto.UUID
+	Score uint32
+	Vote uint32
 }
 
 func ListTopic(dbif Dbif, req *proto.TopicListRequest) ([]*proto.Model_Topic, error) {
@@ -81,7 +82,7 @@ func ListTopic(dbif Dbif, req *proto.TopicListRequest) ([]*proto.Model_Topic, er
 	}
 	ids := make([]string, len(entries))
 	for i, ent := range entries {
-		ids[i] = string(ent.id)
+		ids[i] = strconv.FormatUint(uint64(ent.Id), 10)
 	}
 	tps, err := dbif.Select(Topic{}, dbm.Stmt(`select * from %s.topics where id in (%s)`, strings.Join(ids, ",")))
 	if err != nil {
@@ -104,6 +105,7 @@ type ChannelInfo struct {
 }
 
 func InsertTopicFixture(dbif Dbif) error {
+	locales := Locales()
 	var count uint64;
 	if err := dbif.SelectOne(&count, dbm.Stmt("select count(*) from %s.topics")); err != nil {
 		return err
@@ -122,11 +124,11 @@ func InsertTopicFixture(dbif Dbif) error {
 	    buffer.WriteString(dbm.Stmt("insert into %s.topics values"))
 		sep := ""
 		for j := 0; j < 1000; j++ {
+			user_id := dbm.UUID()
 			ci := ids[rand.Int31n(int32(len(ids)))].(*ChannelInfo)
 			body := proto.Model_Topic_Body {
-				Title: fmt.Sprintf("debug topic %d-%d", i + 1, j + 1),
 				ChannelName: ci.Name,
-				Content: "text text text text text text text text text text text text text text text text text text text text",
+				Name: fmt.Sprintf("user-%v", user_id),
 			}
 			bs, err := body.Marshal()
 			if err != nil {
@@ -134,9 +136,12 @@ func InsertTopicFixture(dbif Dbif) error {
 			}
 			id := ci.Id
 			uv, dv := rand.Int31n(25), rand.Int31n(25)
-			buffer.WriteString(fmt.Sprintf("%s(%v,%v,%v,%v,%v,%v,%s)", 
-				sep, dbm.UUID(), id, dbm.UUID(), 
-				uv - dv, uint32(uv + dv), uint32(rand.Int31n(100)), bytesColumnEncode(bs)))
+			buffer.WriteString(fmt.Sprintf("%s(%v,%v,%v,'%s',0,%v,%v,%v,'%s','%s',%s)", 
+				sep, dbm.UUID(), id, user_id, locales[rand.Int31n(int32(len(locales)))],
+				uv - dv, uint32(uv + dv), uint32(rand.Int31n(100)), 
+				fmt.Sprintf("debug topic %d-%d", i + 1, j + 1),
+				"text text text text text text text text text text text text text text text text text text text text",				
+				bytesColumnEncode(bs)))
 			if len(sep) <= 0 {
 				sep = ","
 			}

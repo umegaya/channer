@@ -191,7 +191,6 @@ declare module Proto2TypeScript.ChannerProto {
 		Device: Model.DeviceBuilder;
 		Node: Model.NodeBuilder;
 		Persona: Model.PersonaBuilder;
-		Reactions: Model.ReactionsBuilder;
 		Post: Model.PostBuilder;
 		Topic: Model.TopicBuilder;
 		Reaction: Model.ReactionBuilder;
@@ -462,48 +461,6 @@ declare module Proto2TypeScript.ChannerProto.Model {
 
 declare module Proto2TypeScript.ChannerProto.Model {
 
-	export interface Reactions extends ProtoBufModel {
-		entries: Reactions.Entry[];
-		getEntries() : Reactions.Entry[];
-		setEntries(entries : Reactions.Entry[]): void;
-		
-	}
-	
-	export interface ReactionsBuilder {
-		new(): Reactions;
-		decode(buffer: ArrayBuffer) : Reactions;
-		//decode(buffer: NodeBuffer) : Reactions;
-		//decode(buffer: ByteArrayBuffer) : Reactions;
-		decode64(buffer: string) : Reactions;
-		Entry: Reactions.EntryBuilder;
-		
-	}	
-}
-
-declare module Proto2TypeScript.ChannerProto.Model.Reactions {
-
-	export interface Entry extends ProtoBufModel {
-		id: Long;
-		getId() : Long;
-		setId(id : Long): void;
-		count: Long;
-		getCount() : Long;
-		setCount(count : Long): void;
-		
-	}
-	
-	export interface EntryBuilder {
-		new(): Entry;
-		decode(buffer: ArrayBuffer) : Entry;
-		//decode(buffer: NodeBuffer) : Entry;
-		//decode(buffer: ByteArrayBuffer) : Entry;
-		decode64(buffer: string) : Entry;
-		
-	}	
-}
-
-declare module Proto2TypeScript.ChannerProto.Model {
-
 	export interface Post extends ProtoBufModel {
 		id: Long;
 		getId() : Long;
@@ -514,6 +471,9 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		persona: Long;
 		getPersona() : Long;
 		setPersona(persona : Long): void;
+		locale: string;
+		getLocale() : string;
+		setLocale(locale : string): void;
 		attr: number;
 		getAttr() : number;
 		setAttr(attr : number): void;
@@ -523,12 +483,12 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		vote: number;
 		getVote() : number;
 		setVote(vote : number): void;
-		text: string;
-		getText() : string;
-		setText(text : string): void;
-		reactions: ByteBuffer;
-		getReactions() : ByteBuffer;
-		setReactions(reactions : ByteBuffer): void;
+		content: string;
+		getContent() : string;
+		setContent(content : string): void;
+		body: ByteBuffer;
+		getBody() : ByteBuffer;
+		setBody(body : ByteBuffer): void;
 		
 	}
 	
@@ -538,6 +498,52 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		//decode(buffer: NodeBuffer) : Post;
 		//decode(buffer: ByteArrayBuffer) : Post;
 		decode64(buffer: string) : Post;
+		Body: Post.BodyBuilder;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.Model.Post {
+
+	export interface Body extends ProtoBufModel {
+		name: string;
+		getName() : string;
+		setName(name : string): void;
+		reactions: Body.Reaction[];
+		getReactions() : Body.Reaction[];
+		setReactions(reactions : Body.Reaction[]): void;
+		
+	}
+	
+	export interface BodyBuilder {
+		new(): Body;
+		decode(buffer: ArrayBuffer) : Body;
+		//decode(buffer: NodeBuffer) : Body;
+		//decode(buffer: ByteArrayBuffer) : Body;
+		decode64(buffer: string) : Body;
+		Reaction: Body.ReactionBuilder;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.Model.Post.Body {
+
+	export interface Reaction extends ProtoBufModel {
+		id: Long;
+		getId() : Long;
+		setId(id : Long): void;
+		count: Long;
+		getCount() : Long;
+		setCount(count : Long): void;
+		
+	}
+	
+	export interface ReactionBuilder {
+		new(): Reaction;
+		decode(buffer: ArrayBuffer) : Reaction;
+		//decode(buffer: NodeBuffer) : Reaction;
+		//decode(buffer: ByteArrayBuffer) : Reaction;
+		decode64(buffer: string) : Reaction;
 		
 	}	
 }
@@ -554,6 +560,12 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		persona: Long;
 		getPersona() : Long;
 		setPersona(persona : Long): void;
+		locale: string;
+		getLocale() : string;
+		setLocale(locale : string): void;
+		attr: number;
+		getAttr() : number;
+		setAttr(attr : number): void;
 		point: number;
 		getPoint() : number;
 		setPoint(point : number): void;
@@ -563,6 +575,12 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		comment: number;
 		getComment() : number;
 		setComment(comment : number): void;
+		title: string;
+		getTitle() : string;
+		setTitle(title : string): void;
+		content: string;
+		getContent() : string;
+		setContent(content : string): void;
 		body: ByteBuffer;
 		getBody() : ByteBuffer;
 		setBody(body : ByteBuffer): void;
@@ -583,15 +601,12 @@ declare module Proto2TypeScript.ChannerProto.Model {
 declare module Proto2TypeScript.ChannerProto.Model.Topic {
 
 	export interface Body extends ProtoBufModel {
-		title: string;
-		getTitle() : string;
-		setTitle(title : string): void;
-		content: string;
-		getContent() : string;
-		setContent(content : string): void;
 		channel_name: string;
 		getChannelName() : string;
 		setChannelName(channelName : string): void;
+		name: string;
+		getName() : string;
+		setName(name : string): void;
 		
 	}
 	
@@ -611,18 +626,24 @@ declare module Proto2TypeScript.ChannerProto.Model {
 		id: Long;
 		getId() : Long;
 		setId(id : Long): void;
-		target: Long;
-		getTarget() : Long;
-		setTarget(target : Long): void;
 		persona: Long;
 		getPersona() : Long;
 		setPersona(persona : Long): void;
+		parent: Long;
+		getParent() : Long;
+		setParent(parent : Long): void;
+		locale: string;
+		getLocale() : string;
+		setLocale(locale : string): void;
 		type: Reaction.Type;
 		getType() : Reaction.Type;
 		setType(type : Reaction.Type): void;
 		param: Long;
 		getParam() : Long;
 		setParam(param : Long): void;
+		created: Long;
+		getCreated() : Long;
+		setCreated(created : Long): void;
 		
 	}
 	
@@ -1292,6 +1313,7 @@ declare module Proto2TypeScript.ChannerProto.Error {
 		Timeout = 1,
 		InvalidPayload = 2,
 		RuntimeError = 3,
+		TemporaryUnavailable = 4,
 		Login_InvalidAuth = 10,
 		Login_UserNotFound = 11,
 		Login_UserAlreadyExists = 12,
