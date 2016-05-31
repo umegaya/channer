@@ -162,12 +162,17 @@ export class TopController implements UI.Controller {
     active: UI.Property<number>;
     start: string;
     component: TopComponent;
+    static scrollProps: Array<UI.Property<number>> = [
+        m.prop(0),
+        m.prop(0),
+    ];
     static factory: Array<(s: TopComponent) => UI.Element> = [
         (s: TopComponent) => {
             return m.component(ChannelListComponent, {
                 key: s.models.channels.key,
                 models: s.models.channels,
                 name: "channels",
+                scrollProp: TopController.scrollProps[0],
             });
         },
         (s: TopComponent) => {
@@ -175,13 +180,14 @@ export class TopController implements UI.Controller {
                 key: s.models.topics.key,
                 models: s.models.topics, 
                 name: "topics",
+                scrollProp: TopController.scrollProps[1],
             });
         },
     ];
 	constructor(component: TopComponent) {
         this.active = m.prop(0);
         this.component = component;
-        this.start = m.route.param("tab") || "latest";
+        this.start = m.route.param("tab") || "latest";        
         TABS.map((tab, idx) => {
             if (tab.id == this.start) {
                 this.active(Number(idx));
@@ -204,6 +210,11 @@ function TopView(ctrl: TopController) : UI.Element {
             selectedTab: ctrl.active(),
             activeSelected: true,
             getState: (state: { index: number }) => {
+                TABS.map((tab, idx) => {
+                    if (idx != state.index) {
+                        TopController.scrollProps[idx](0);
+                    }
+                })
                 Util.route("/top/" + TABS[state.index].id, null, {
                     replace_history: true,
                 });
