@@ -60,20 +60,43 @@ function TopicInfoView(
     var copied = model.body.slice();
     var body = Builder.Model.Topic.Body.decode(copied);
     var elems: Array<UI.Element> = [];
-    elems.push(m(".title-h2.name", <UI.Attributes>{
+    elems.push(m(".attributes", [
+        m(".attr.score", [
+            m(".number", model.point * 1000), 
+            m(".text", "pt")
+        ]),
+        m(".attr.channel", [
+            m("img.channel"), 
+            m(".link", <UI.Attributes>{
+                href: "/channel/" + model.channel,
+                onclick: m.withAttr("href", Util.route),
+            }, body.channel_name)
+        ]),
+    ]));
+    elems.push(m(".title.name", <UI.Attributes>{
         href: "/topic/" + model.id,
         onclick: m.withAttr("href", Util.route),
-    }, model.title + "/" + model.point + "," + model.vote + "/" + model.locale));
-    elems.push(m(".desc", model.content || _L("no content")));
-    elems.push(m(".info", [
-        m(".author", <UI.Attributes>{
-            href: "/user/" + model.persona,
-            onclick: m.withAttr("href", Util.route),
-        }, body.name), 
-        m(".channel", <UI.Attributes>{
-            href: "/channel/" + model.channel,
-            onclick: m.withAttr("href", Util.route),
-        }, body.channel_name),
+    }, model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content));
+    elems.push(m(".attributes", [
+        m(".attr", [
+            m("img.clock"),
+            Util.datebyuuid(model.id, true)
+        ]), 
+        m(".attr.post", [
+            m("img.post"), 
+            model.comment
+        ]),
+        m(".attr.upvote", [
+            m("img.upvote"),
+            [
+                m(".number", Util.upvote_percent(model)),
+                m(".text", "%")
+            ]
+        ]),
+        m(".attr.user", [
+            m("img.user"),
+            body.name,            
+        ]),
     ]));
     return m(".block", <UI.Attributes>{
         id: "topic-" + model.id,

@@ -125,6 +125,9 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
         super();
         this.props = props;
     }
+    sort_by = (): string => {
+        return this.props.val("topic_sort_by");
+    }
     initkey = () => {
         this.key = "topics/" + this.props.val("topic_sort_by") + "/"
             + this.props.val("topic_sort_duration") + "/" 
@@ -254,6 +257,7 @@ export class TopComponent extends PageComponent {
         ];
     }
     onunload = () => {
+        console.log("top refreshed");
         this.models.refresh();
     }
 }

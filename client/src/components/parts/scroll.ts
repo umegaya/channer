@@ -24,7 +24,9 @@ export class ArrayModelCollection implements ModelCollection {
                 return this.source;
             }
         }
-        return () => { return []; }
+        return () => { 
+            return []; 
+        }
     }
     refresh = () => {}
     initkey = () => {}
@@ -148,16 +150,28 @@ export class ListOptions {
     item: (model: any) => UI.Element;
     maxPreloadPages: number;
     pageData: (page: number) => (() => any);
+    onScroll: (el: HTMLElement) => void;
     models: ModelCollection;
+    initialScroll: number;
     elemopts: any;
 }
 export class ListComponent implements UI.Component {
 	elemview: (c: ModelCollection, model: any, options?: any) => UI.Element;
+    lastScroll: number;
 	constructor(view: (c: ModelCollection, model: any, options?: any) => UI.Element) {
         this.elemview = view;
+        this.lastScroll = 0;
 	}
     controller = (options: ListOptions): any => {
         return options;
+    }
+    onscroll = (el: HTMLElement) => {
+        if (Math.abs(this.lastScroll - el.scrollTop) > 1000) {
+            //console.log("set lastscroll: too much change ignored" + el.scrollTop + "|" + this.lastScroll);
+            return;
+        }
+        //console.log("set lastscroll to " + el.scrollTop);
+        this.lastScroll = el.scrollTop;
     }
     mkoption = (options: ListOptions): UI.Attributes => {
         var base : ListOptions = options;
@@ -168,6 +182,10 @@ export class ListComponent implements UI.Component {
         });
         base.maxPreloadPages = base.maxPreloadPages || 1;
         base.pageData = base.pageData || options.models.fetch;
+        //following enables preserving scroll position. 
+        //but it needs to re-construct all element between top to current position.
+        base.initialScroll = this.lastScroll;
+        base.onScroll = this.onscroll;
         return base;
     }
     view = (options: ListOptions): UI.Element => {

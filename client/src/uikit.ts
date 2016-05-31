@@ -3,6 +3,7 @@
 export var m : _mithril.MithrilStatic = window.channer.m;
 var _L = window.channer.l10n.translate;
 var _LD = window.channer.l10n.translateDate;
+import ChannerProto = Proto2TypeScript.ChannerProto;
 
 export class Util {
 	static route(dest: string, params?: any, options?: {
@@ -92,5 +93,9 @@ export class Util {
     }
     static datebylong(long: any, duration?:boolean) {
         return Util.date(Util.long2date(<Long>long), duration);
+    }
+    static upvote_percent(model: ChannerProto.Model.Topic): number {
+        if (model.vote <= 0) { return 0; }
+        return 50 + (Math.ceil(500 * model.point / model.vote) / 10);
     }
 }
