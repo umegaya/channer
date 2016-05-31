@@ -63,7 +63,7 @@ function TopicInfoView(
     elems.push(m(".title-h2.name", <UI.Attributes>{
         href: "/topic/" + model.id,
         onclick: m.withAttr("href", Util.route),
-    }, model.title + "/" + model.locale));
+    }, model.title + "/" + model.point + "," + model.vote + "/" + model.locale));
     elems.push(m(".desc", model.content || _L("no content")));
     elems.push(m(".info", [
         m(".author", <UI.Attributes>{

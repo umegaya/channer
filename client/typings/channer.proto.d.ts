@@ -1011,6 +1011,9 @@ declare module Proto2TypeScript.ChannerProto {
 		limit?: number;
 		getLimit() : number;
 		setLimit(limit : number): void;
+		offset_score?: number;
+		getOffsetScore() : number;
+		setOffsetScore(offsetScore : number): void;
 		offset_id?: Long;
 		getOffsetId() : Long;
 		setOffsetId(offsetId : Long): void;

@@ -32,38 +32,43 @@ export class ArrayModelCollection implements ModelCollection {
 export interface ProtoModel extends ProtoBufModel {
     id: Long;
 }
-export class ProtoModelChunk<T extends ProtoModel> {
+export interface Boundary {
+    lessThan(c: Boundary): boolean;
+    greaterThan(c: Boundary): boolean;
+    isZero(): boolean;
+}
+export class ProtoModelChunk<T extends ProtoModel, B extends Boundary> {
     list: Array<T>;
     initialized: boolean;
-    start_id: Long;
-    end_id: Long;
+    start_id: B;
+    end_id: B;
     
     constructor() {
         this.list = [];
     }
-    push = (coll: ProtoModelCollection<T>, model: T) => {
+    push = (coll: ProtoModelCollection<T, B>, model: T) => {
         this.list.push(model);
         coll.update_range(this, model);
     }
-    pushList = (coll: ProtoModelCollection<T>, models: Array<T>) => {
+    pushList = (coll: ProtoModelCollection<T, B>, models: Array<T>) => {
         models.forEach((v: T) => {
             this.push(coll, v);
         });
         this.initialized = true;
     }
-    update_range = (score: number|Long) => {
-        if (this.start_id == null || this.start_id.lessThan(score)) { /* this.start_id < score */
-            this.start_id = typeof(score) == "number" ? new Long(score) : score;
+    update_range = (b: B) => {
+        if (this.start_id == null || this.start_id.lessThan(b)) { /* this.start_id < b */
+            this.start_id = b;
         }
-        if (this.end_id == null || this.end_id.greaterThan(score)) { /* this.end_id > score */
-            this.end_id = typeof(score) == "number" ? new Long(score) : score;
+        if (this.end_id == null || this.end_id.greaterThan(b)) { /* this.end_id > b */
+            this.end_id = b;
         }
     }
 }
-export class ProtoModelCollection<T extends ProtoModel> implements ModelCollection {
+export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> implements ModelCollection {
     static FETCH_LIMIT = 20;
     key: string;
-    chunks: Array<ProtoModelChunk<T>>;
+    chunks: Array<ProtoModelChunk<T, B>>;
     constructor() {
         //TODO: load from local store.
         this.chunks = [];
@@ -75,7 +80,7 @@ export class ProtoModelCollection<T extends ProtoModel> implements ModelCollecti
         this.chunks = [];
         this.initkey();
     }
-    offset_for = (page: number): Long => {
+    offset_for = (page: number): B => {
         if (page < 2) {
             return null;
         }
@@ -97,23 +102,23 @@ export class ProtoModelCollection<T extends ProtoModel> implements ModelCollecti
     }    
     fetch = (page: number): () => Array<any> => {
         //console.log("fetch " + this.key + " for " + page);
-        var chunk : ProtoModelChunk<T> = this.chunks[page - 1];
-        var extra_chunk : ProtoModelChunk<T>;
+        var chunk : ProtoModelChunk<T, B> = this.chunks[page - 1];
+        var extra_chunk : ProtoModelChunk<T, B>;
         if (!chunk || !chunk.initialized) {
             //console.error("client offset for " + this.key + "/" + page + " " +this.offset_for(page));
             var offset = this.offset_for(page), limit = ProtoModelCollection.FETCH_LIMIT;
             if (!offset) {
                 limit *= 2; 
-                extra_chunk = new ProtoModelChunk<T>();
+                extra_chunk = new ProtoModelChunk<T, B>();
                 this.chunks[page] = extra_chunk;
             }
-            else if (offset.equals(Long.UZERO)) {
+            else if (offset.isZero()) {
                 //previous query initialize chunk for this page also.
                 return () => {
                     return chunk.list;
                 }
             }
-            chunk = new ProtoModelChunk<T>();
+            chunk = new ProtoModelChunk<T, B>();
             this.chunks[page - 1] = chunk;
             this.fetch_request(offset, limit).then((list: Array<T>) => {
                 if (offset) {
@@ -130,10 +135,10 @@ export class ProtoModelCollection<T extends ProtoModel> implements ModelCollecti
             return chunk.list;
         }
     }
-    fetch_request = (offset: Long, limit: number): Q.Promise<Array<T>> => {
+    fetch_request = (offset: B, limit: number): Q.Promise<Array<T>> => {
         throw new Error("override this");
     }
-    update_range = (coll: ProtoModelChunk<T>, model: T) => {
+    update_range = (coll: ProtoModelChunk<T, B>, model: T) => {
         throw new Error("override this");        
     }
 }

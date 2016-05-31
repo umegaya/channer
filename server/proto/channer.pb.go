@@ -1729,11 +1729,12 @@ func (m *TopicCreateRequest) GetContent() string {
 }
 
 type TopicListRequest struct {
-	Query    TopicListRequest_QueryType  `protobuf:"varint,1,req,name=query,enum=ChannerProto.TopicListRequest_QueryType" json:"query"`
-	Bucket   TopicListRequest_BucketType `protobuf:"varint,2,opt,name=bucket,enum=ChannerProto.TopicListRequest_BucketType" json:"bucket"`
-	Locale   string                      `protobuf:"bytes,3,opt,name=locale" json:"locale"`
-	Limit    int32                       `protobuf:"varint,4,opt,name=limit" json:"limit"`
-	OffsetId *uint64                     `protobuf:"fixed64,5,opt,name=offset_id" json:"offset_id,omitempty"`
+	Query       TopicListRequest_QueryType  `protobuf:"varint,1,req,name=query,enum=ChannerProto.TopicListRequest_QueryType" json:"query"`
+	Bucket      TopicListRequest_BucketType `protobuf:"varint,2,opt,name=bucket,enum=ChannerProto.TopicListRequest_BucketType" json:"bucket"`
+	Locale      string                      `protobuf:"bytes,3,opt,name=locale" json:"locale"`
+	Limit       int32                       `protobuf:"varint,4,opt,name=limit" json:"limit"`
+	OffsetScore int32                       `protobuf:"varint,5,opt,name=offset_score" json:"offset_score"`
+	OffsetId    *UUID                       `protobuf:"fixed64,6,opt,name=offset_id,casttype=UUID" json:"offset_id,omitempty"`
 }
 
 func (m *TopicListRequest) Reset()         { *m = TopicListRequest{} }
@@ -1768,7 +1769,14 @@ func (m *TopicListRequest) GetLimit() int32 {
 	return 0
 }
 
-func (m *TopicListRequest) GetOffsetId() uint64 {
+func (m *TopicListRequest) GetOffsetScore() int32 {
+	if m != nil {
+		return m.OffsetScore
+	}
+	return 0
+}
+
+func (m *TopicListRequest) GetOffsetId() UUID {
 	if m != nil && m.OffsetId != nil {
 		return *m.OffsetId
 	}
@@ -3373,8 +3381,11 @@ func (m *TopicListRequest) MarshalTo(data []byte) (int, error) {
 	data[i] = 0x20
 	i++
 	i = encodeVarintChanner(data, i, uint64(m.Limit))
+	data[i] = 0x28
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.OffsetScore))
 	if m.OffsetId != nil {
-		data[i] = 0x29
+		data[i] = 0x31
 		i++
 		i = encodeFixed64Channer(data, i, uint64(*m.OffsetId))
 	}
@@ -4481,6 +4492,7 @@ func (m *TopicListRequest) Size() (n int) {
 	l = len(m.Locale)
 	n += 1 + l + sovChanner(uint64(l))
 	n += 1 + sovChanner(uint64(m.Limit))
+	n += 1 + sovChanner(uint64(m.OffsetScore))
 	if m.OffsetId != nil {
 		n += 9
 	}
@@ -9524,22 +9536,41 @@ func (m *TopicListRequest) Unmarshal(data []byte) error {
 				}
 			}
 		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OffsetScore", wireType)
+			}
+			m.OffsetScore = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.OffsetScore |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
 			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OffsetId", wireType)
 			}
-			var v uint64
+			var v UUID
 			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
 			iNdEx += 8
-			v = uint64(data[iNdEx-8])
-			v |= uint64(data[iNdEx-7]) << 8
-			v |= uint64(data[iNdEx-6]) << 16
-			v |= uint64(data[iNdEx-5]) << 24
-			v |= uint64(data[iNdEx-4]) << 32
-			v |= uint64(data[iNdEx-3]) << 40
-			v |= uint64(data[iNdEx-2]) << 48
-			v |= uint64(data[iNdEx-1]) << 56
+			v = UUID(data[iNdEx-8])
+			v |= UUID(data[iNdEx-7]) << 8
+			v |= UUID(data[iNdEx-6]) << 16
+			v |= UUID(data[iNdEx-5]) << 24
+			v |= UUID(data[iNdEx-4]) << 32
+			v |= UUID(data[iNdEx-3]) << 40
+			v |= UUID(data[iNdEx-2]) << 48
+			v |= UUID(data[iNdEx-1]) << 56
 			m.OffsetId = &v
 		default:
 			iNdEx = preIndex

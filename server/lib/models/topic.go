@@ -61,7 +61,7 @@ func NewTopic(dbif Dbif, a *Account, req *proto.TopicCreateRequest) (*Topic, err
 //return value of actor call
 type HotEntry struct {
 	Id proto.UUID
-	Score uint32
+	Score int32
 	Vote uint32
 }
 
@@ -75,10 +75,17 @@ func ListTopic(dbif Dbif, req *proto.TopicListRequest) ([]*proto.Model_Topic, er
 	} else {
 		limit = TOPIC_FETCH_LIMIT
 	}
-
+	locale := req.Locale
+	if len(locale) <= 0 {
+		locale = "all"
+	}
 	var entries []HotEntry
-	if err := yue.Call(fmt.Sprintf("/hot/%s", req.Locale), "Query", req.Bucket, req.Query, nil, req.OffsetId, limit, &entries); err != nil {
+	if err := yue.Call(fmt.Sprintf("/hot/%s", locale), "Query", 
+		req.Bucket, req.Query, nil, req.OffsetScore, req.OffsetId, limit, &entries); err != nil {
 		return nil, err
+	}
+	if len(entries) <= 0 {
+		return make([]*proto.Model_Topic, 0), nil
 	}
 	ids := make([]string, len(entries))
 	for i, ent := range entries {
@@ -91,6 +98,8 @@ func ListTopic(dbif Dbif, req *proto.TopicListRequest) ([]*proto.Model_Topic, er
 	ret := make([]*proto.Model_Topic, len(tps))
 	for i, tp := range tps {
 		tpp := tp.(*Topic).Model_Topic
+		tpp.Point = entries[i].Score
+		tpp.Vote = entries[i].Vote
 		ret[i] = &tpp
 	}
 	return ret, nil

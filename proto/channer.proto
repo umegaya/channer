@@ -264,7 +264,8 @@ message TopicListRequest {
 	optional BucketType bucket = 2;
 	optional string locale = 3;
 	optional int32 limit = 4;
-	optional fixed64 offset_id = 5 [(gogoproto.nullable) = true];
+	optional int32 offset_score = 5;
+	optional fixed64 offset_id = 6 [(gogoproto.casttype) = "UUID", (gogoproto.nullable) = true];
 }
 
 

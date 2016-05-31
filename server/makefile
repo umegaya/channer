@@ -19,8 +19,12 @@ restart: stop run
 protoc: 
 	@protoc --gogofaster_out=./proto -I ../proto -I `echo $$GOPATH`/src -I `echo $$GOPATH`/src/github.com/gogo/protobuf/protobuf ../proto/*.proto
 
+initdb: stopdb
+	-@docker rm -v channer_storage
+	@docker run --name=channer_storage -v /cockroach/cockroach-data busybox
+
 db: 
-	docker inspect channerdb 2>&1 > /dev/null || docker run --name channerdb -d --net=host -p 26257 cockroachdb/cockroach shell -c "./cockroach start --insecure --verbosity=1"
+	docker inspect channerdb 2>&1 > /dev/null || docker run --name channerdb -d --net=host -p 26257 --volumes-from channer_storage cockroachdb/cockroach shell -c "./cockroach start --insecure --verbosity=1"
 	docker-machine ip `docker-machine active` > dbhost
 
 browsedb:

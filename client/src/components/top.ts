@@ -3,7 +3,7 @@
 import {m, Util} from "../uikit"
 import {Pagify, PageComponent} from "./base"
 import {PropCollectionFactory, PropConditions, PropCollection} from "../input/prop"
-import {ModelCollection, ProtoModelCollection, ProtoModelChunk} from "./parts/scroll"
+import {ModelCollection, ProtoModelCollection, ProtoModelChunk, Boundary} from "./parts/scroll"
 import {MenuElementComponent} from "./menu"
 import {Config} from "../config"
 import {Handler} from "../proto"
@@ -13,6 +13,7 @@ import {ChannelListComponent, TopicListComponent} from "./parts/list"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 import Q = require('q');
 var _L = window.channer.l10n.translate;
+var Long = window.channer.ProtoBuf.Long;
 var Tabs = window.channer.parts.Tabs;
 
 const TABS = [{
@@ -43,7 +44,23 @@ PropCollectionFactory.setup("top-models", {
     optional: {},
 });
 
-export class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.Channel> {
+export class LongBoundary implements Boundary {
+    id: Long;
+    constructor(n: number|Long) {
+        this.id = (typeof(n) == "number" ? new Long(<number>n) : <Long>n);
+    }
+    isZero(): boolean {
+        return this.id.equals(Long.UZERO);
+    }
+    lessThan(b: LongBoundary): boolean {
+        return this.id.lessThan(b.id);
+    }
+    greaterThan(b: LongBoundary): boolean {
+        return this.id.greaterThan(b.id);
+    }
+}
+
+export class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.Channel, LongBoundary> {
     props: PropCollection;
     constructor(props: PropCollection) {
         super();
@@ -55,33 +72,54 @@ export class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.C
             + this.props.val("channel_category") + "/"
             + window.channer.settings.values.search_locale;
     }
-    fetch_request = (offset: Long, limit: number): Q.Promise<Array<ChannerProto.Model.Channel>> => {
+    fetch_request = (offset: LongBoundary, limit: number): Q.Promise<Array<ChannerProto.Model.Channel>> => {
         var df: Q.Deferred<Array<ChannerProto.Model.Channel>> = Q.defer<Array<ChannerProto.Model.Channel>>();
         var conn: Handler = window.channer.conn;
         var sort_by: string = this.props.val("channel_sort_by");
         var category: number = window.channer.category.to_id(
             this.props.val("channel_category")
         )
-        conn.channel_list(sort_by, offset, null, category, limit)
+        conn.channel_list(sort_by, offset && offset.id, null, category, limit)
         .then((r: ChannerProto.ChannelListResponse) => {
             df.resolve(r.list);
         });
         return df.promise;
     }
     update_range = (
-        chunk: ProtoModelChunk<ChannerProto.Model.Channel>, 
+        chunk: ProtoModelChunk<ChannerProto.Model.Channel, LongBoundary>, 
         model: ChannerProto.Model.Channel) => {
         var sort_by: string = this.props.val("channel_sort_by");
         if (sort_by == "top") {
-            chunk.update_range(model.watcher);
+            chunk.update_range(new LongBoundary(model.watcher));
         }
         else {
-            chunk.update_range(model.id);
+            chunk.update_range(new LongBoundary(model.id));
         }
     }
 }
 
-export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Topic> {
+export class ScoreBoundary implements Boundary {
+    id: Long;
+    score: number;
+    constructor(id: Long, score: number) {
+        this.id = id;
+        this.score = score;
+    }
+    isZero(): boolean {
+        return this.id.equals(Long.UZERO);
+    }
+    //score < b.score || this.id < b.id
+    lessThan(b: ScoreBoundary): boolean {
+        return this.score < b.score || this.id.lessThan(b.id);
+    }
+    //score > b.score || this.id > b.id
+    greaterThan(b: ScoreBoundary): boolean {
+        return this.score > b.score || this.id.greaterThan(b.id);
+    }
+}
+
+export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Topic, ScoreBoundary> {
+    static NULL_OFFSET = new ScoreBoundary(Long.UZERO, 0);
     props: PropCollection;
     constructor(props: PropCollection) {
         super();
@@ -92,26 +130,27 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
             + this.props.val("topic_sort_duration") + "/" 
             + window.channer.settings.values.search_locale;
     }
-    fetch_request = (offset: Long, limit: number): Q.Promise<Array<ChannerProto.Model.Topic>> => {
+    fetch_request = (offset: ScoreBoundary, limit: number): Q.Promise<Array<ChannerProto.Model.Topic>> => {
         var df: Q.Deferred<Array<ChannerProto.Model.Topic>> = Q.defer<Array<ChannerProto.Model.Topic>>();
         var conn: Handler = window.channer.conn;
         var bucket: string = this.props.val("topic_sort_by");
         var query: string = this.props.val("topic_sort_duration");
-        conn.topic_list(bucket, query, offset, null, limit)
+        offset = offset || TopicCollection.NULL_OFFSET;
+        conn.topic_list(bucket, query, offset.score, offset.id, null, limit)
         .then((r: ChannerProto.TopicListResponse) => {
             df.resolve(r.list);
         })
         return df.promise;
     }
     update_range = (
-        chunk: ProtoModelChunk<ChannerProto.Model.Topic>, 
+        chunk: ProtoModelChunk<ChannerProto.Model.Topic, ScoreBoundary>, 
         model: ChannerProto.Model.Topic) => {
         var bucket: string = this.props.val("topic_sort_by");
         if (bucket == "hot" || bucket == "rising") {
-            chunk.update_range(model.point);
+            chunk.update_range(new ScoreBoundary(model.id, model.point));
         }
         else if (bucket == "flame") {
-            chunk.update_range(model.vote);
+            chunk.update_range(new ScoreBoundary(model.id, model.vote));
         }
     }
 }

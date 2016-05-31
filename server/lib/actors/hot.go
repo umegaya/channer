@@ -25,15 +25,9 @@ const (
 
 const (
 	DEFAULT_HOTBUCKET_SIZE = 1024 * 10
+	PER_CHANNEL_HOTBUCKET_SIZE = 64
 	ALLTIME_SUMMERY_LIMIT = 10000
 	GOAT_UPDATE_SPAN_SEC = 60 * 60 * 12 //12h
-)
-
-const (
-	FETCH_FROM_INVALID = iota
-	FETCH_FROM_VOTES
-	FETCH_FROM_CREATED
-	FETCH_FROM_CREATED_FLAME
 )
 
 //
@@ -66,7 +60,25 @@ func (e *HotEntry) flamy() bool {
 	if e.Vote < FLAME_VOTE_THRESHOLD {
 		return false
 	}
-	return math.Abs(float64(e.Score / int32(e.Vote))) < 2 * FLAME_THRESHOLD
+	return math.Abs(float64(e.Score) / float64(e.Vote)) < 2 * FLAME_THRESHOLD
+}
+
+func (e *HotEntry) lessThanByScore(score int32, id proto.UUID) bool {
+	if e.Score < score {
+		return true
+	} else if e.Score > score {
+		return false
+	}
+	return e.Id < id
+}
+
+func (e *HotEntry) lessThanByVote(vote uint32, id proto.UUID) bool {
+	if e.Vote < vote {
+		return true
+	} else if e.Vote > vote {
+		return false
+	}
+	return e.Id < id
 }
 
 // hotlist represents a set of HotEntry in certain category 
@@ -112,9 +124,41 @@ func (l *hotlist) dup() *hotlist {
 	return d
 }
 
-func (l *hotlist) rangeOf(start, count uint64) []HotEntry {
-	last := start+count
-	elen := uint64(len(l.entries))
+func (l *hotlist) sort(btyp proto.TopicListRequest_BucketType) {
+	switch btyp {
+	case proto.TopicListRequest_Rising, proto.TopicListRequest_Hot:
+		sort.Sort(&ByScore{ l: l })
+	case proto.TopicListRequest_Flame:
+		sort.Sort(&ByVote{ l: l })
+	default:
+		panic(fmt.Sprintf("invalid bucket type %v", btyp))
+	}
+}
+
+func (l *hotlist) indexByScore(btyp proto.TopicListRequest_BucketType, val int32, id proto.UUID) int {
+	if id <= 0 {
+		return 0
+	}
+	f := func (n int) bool {
+		e := l.entries[n]
+		return e.lessThanByScore(val, id)
+	}
+	if btyp == proto.TopicListRequest_Flame {
+		f = func (n int) bool {
+			e := l.entries[n]
+			return e.lessThanByVote(uint32(val), id)
+		}
+	}
+	return sort.Search(len(l.entries), f)
+}
+
+func (l *hotlist) rangeOf(btyp proto.TopicListRequest_BucketType, startScore int32, startId proto.UUID, count uint32) []HotEntry {
+	start := l.indexByScore(btyp, startScore, startId)
+	if start < 0 {
+		return []HotEntry{}
+	}
+	last := uint32(start)+count
+	elen := uint32(len(l.entries))
 	if last > elen {
 		last = elen
 	}
@@ -129,11 +173,40 @@ func (l *hotlist) Swap(i, j int) {
 	l.entries[i], l.entries[j] = l.entries[j], l.entries[i]
 	l.indexes[idi], l.indexes[idj] = j, i
 }
-func (l *hotlist) Less(i, j int) bool {
+
+
+//by-score sorter
+type ByScore struct {
+	l *hotlist
+}
+func (by *ByScore) Len() int {
+	return by.l.Len()
+}
+func (by *ByScore) Swap(i, j int) {
+	by.l.Swap(i, j)
+}
+func (by *ByScore) Less(i, j int) bool {
 	// > for sorting decreasing order
-	return l.entries[i].Score > l.entries[j].Score
+	e := by.l.entries[i]
+	return by.l.entries[j].lessThanByScore(e.Score, e.Id)
 }
 
+
+//by vote sorter
+type ByVote struct {
+	l *hotlist
+}
+func (by *ByVote) Len() int {
+	return by.l.Len()
+}
+func (by *ByVote) Swap(i, j int) {
+	by.l.Swap(i, j)
+}
+func (by *ByVote) Less(i, j int) bool {
+	// > for sorting decreasing order
+	e := by.l.entries[i]
+	return by.l.entries[j].lessThanByVote(e.Vote, e.Id)
+}
 
 
 //
@@ -182,7 +255,7 @@ func (b *hotbucket) addEntry(e *HotEntry, parent proto.UUID) {
 	b.idParentMap[e.Id] = parent
 	l, ok := b.groups[parent]
 	if !ok {
-		l = NewHotList(DEFAULT_HOTBUCKET_SIZE)
+		l = NewHotList(PER_CHANNEL_HOTBUCKET_SIZE)
 		b.groups[parent] = l
 	}
 	l.addEntry(*e)
@@ -215,10 +288,10 @@ func (b *hotbucket) add(delta *hotbucket) *hotbucket {
 	return b
 }
 
-func (b *hotbucket) sort() *hotbucket {
-	sort.Sort(b.total)
+func (b *hotbucket) sort(btyp proto.TopicListRequest_BucketType) *hotbucket {
+	b.total.sort(btyp)
 	for _, l := range b.groups {
-		sort.Sort(l)
+		l.sort(btyp)
 	}
 	return b
 }
@@ -236,13 +309,14 @@ func (b *hotbucket) truncate(size int) *hotbucket {
 	return br
 }
 
-func (b *hotbucket) rangeOf(ids []proto.UUID, start, count uint64) ([]HotEntry, error) {
+func (b *hotbucket) rangeOf(ids []proto.UUID, btyp proto.TopicListRequest_BucketType, 
+	startScore int32, startId proto.UUID, count uint32) ([]HotEntry, error) {
 	if ids == nil || len(ids) <= 0 {
-		return b.total.rangeOf(start, count), nil
+		return b.total.rangeOf(btyp, startScore, startId, count), nil
 	} else if len(ids) == 1 {
 		l, ok := b.groups[ids[0]]
 		if ok {
-			return l.rangeOf(start, count), nil
+			return l.rangeOf(btyp, startScore, startId, count), nil
 		} else {
 			return nil, fmt.Errorf("no such id: %v", ids[0])
 		}
@@ -313,7 +387,6 @@ func (bs *hotbucketStore) summeryBucketOf(btyp proto.TopicListRequest_BucketType
 	case proto.TopicListRequest_Rising:
 		bkts = bs.risings
 		if typ != proto.TopicListRequest_Hour && typ != proto.TopicListRequest_Day {
-			log.Printf("summeryBucketOf rnil 1")
 			return nil
 		}
 	case proto.TopicListRequest_Hot:
@@ -321,7 +394,6 @@ func (bs *hotbucketStore) summeryBucketOf(btyp proto.TopicListRequest_BucketType
 	case proto.TopicListRequest_Flame:
 		bkts = bs.flames
 	default:
-			log.Printf("summeryBucketOf rnil 2")
 		return nil
 	}
 
@@ -336,7 +408,6 @@ func (bs *hotbucketStore) summeryBucketOf(btyp proto.TopicListRequest_BucketType
 	case proto.TopicListRequest_AllTime:
 		idx = SUMMERY_ALLTIME_HOTBUCKET
 	default:
-			log.Printf("summeryBucketOf rnil 3")
 		return nil
 	}
 	log.Printf("bks: %v %v %v", idx, btyp, typ)
@@ -400,7 +471,7 @@ func (bs *hotbucketStore) update(fetchAt time.Time, results []FetchResult) *hotb
 		}
 		start = end
 		//fetchAt is same as latest fetchCache's fetchAt
-		bsr.risings[i] = b.dup().sort().markUpdate(fetchAt)
+		bsr.risings[i] = b.dup().sort(proto.TopicListRequest_Rising).markUpdate(fetchAt)
 		log.Printf("risings: %v set", i)
 		//log.Printf("current: %v", bsr.risings[i].total.entries)
 	}
@@ -418,7 +489,7 @@ type HotActor struct {
 	locale string   
 	lastQuery time.Time
 	lastQueryCacheUpdate time.Time
-	fetcher func (ftype int, start, end time.Time, locale string) ([]FetchResult, error)
+	fetcher func (ftype proto.TopicListRequest_BucketType, start, end time.Time, locale string) ([]FetchResult, error)
 	persist func (at time.Time, s *hotbucketStore) error
 	store atomic.Value //stores *hotbucketStore
 	hotQueryCache []atomic.Value //stores *hotbucket
@@ -455,11 +526,15 @@ func (a *HotActor) updateQueryCache(t time.Time) error {
 	}
 	qcsize := len(a.queryDurations)
 	a.wg = utils.NewWaitGroup(2 * qcsize) //hot and flame
-	to := a.lastQueryCacheUpdate
+	var from time.Time
 	for i := 0; i < qcsize; i++ {
-		from := to.Add(-1 * a.queryDurations[i])
-		go a.updateQueryCacheTask(from, to, FETCH_FROM_CREATED, &a.hotQueryCache[i], a.wg)
-		go a.updateQueryCacheTask(from, to, FETCH_FROM_CREATED_FLAME, &a.flameQueryCache[i], a.wg)
+		if a.queryDurations[i] > 0 {
+			from = t.Add(-1 * a.queryDurations[i])
+		} else {
+			from = time.Time{}			
+		}
+		go a.updateQueryCacheTask(from, t, proto.TopicListRequest_Hot, &a.hotQueryCache[i], a.wg)
+		go a.updateQueryCacheTask(from, t, proto.TopicListRequest_Flame, &a.flameQueryCache[i], a.wg)
 	}
 	if err := a.wg.Wait(); err != nil {
 		log.Printf("update fails with %v", err)
@@ -473,7 +548,7 @@ func (a *HotActor) updateQueryCache(t time.Time) error {
 	return nil
 }
 
-func (a *HotActor) updateQueryCacheTask(from, to time.Time, fetchType int, ret *atomic.Value, wg *utils.WaitGroup) {
+func (a *HotActor) updateQueryCacheTask(from, to time.Time, btyp proto.TopicListRequest_BucketType, ret *atomic.Value, wg *utils.WaitGroup) {
 	var (
 		results []FetchResult
 		err error
@@ -481,17 +556,15 @@ func (a *HotActor) updateQueryCacheTask(from, to time.Time, fetchType int, ret *
 	defer func () {
 		wg.Done(err)
 	}()
-	if results, err = a.fetcher(fetchType, from, to, a.locale); err != nil {
+	if results, err = a.fetcher(btyp, from, to, a.locale); err != nil {
 		return
 	}
-	//merge new fetch results to current top 10000
-	//week is necessary? 
-	next := NewHotBucket(DEFAULT_HOTBUCKET_SIZE).addResults(results).sort().truncate(ALLTIME_SUMMERY_LIMIT).markUpdate(to)
+	//store new fetch results to current top 10000
+	next := NewHotBucket(DEFAULT_HOTBUCKET_SIZE).addResults(results).sort(btyp).truncate(ALLTIME_SUMMERY_LIMIT).markUpdate(to)
 	ret.Store(next)
 }
 
 func (a *HotActor) mergeFetchResult(next *hotbucketStore, now time.Time) {
-	log.Printf("mergeFetchResult1")
 	/*
 		calculate hot and flame	by merging next.risings to a.queryCache
 	*/
@@ -506,12 +579,12 @@ func (a *HotActor) mergeFetchResult(next *hotbucketStore, now time.Time) {
 			from = to.Add(-24 * time.Hour)
 		} 
 		next.hots[i] = next.risings[i].filter(func (e *HotEntry) bool {
-			//log.Printf("hots: %v %v %v %v %v", e, from, to, yue.DateByUUID(yuep.UUID(e.id)), e.within(from, to))
+			//log.Printf("hots: %v %v %v %v %v", e, from, to, yue.DateByUUID(yuep.UUID(e.Id)), e.within(from, to))
 			return e.within(from, to)
-		}).sort().truncate(DEFAULT_HOTBUCKET_SIZE).markUpdate(now)
+		}).sort(proto.TopicListRequest_Hot).truncate(DEFAULT_HOTBUCKET_SIZE).markUpdate(now)
 		next.flames[i] = next.risings[i].filter(func (e *HotEntry) bool {
 			return e.within(from, to) && e.flamy()
-		}).sort().truncate(DEFAULT_HOTBUCKET_SIZE).markUpdate(now)
+		}).sort(proto.TopicListRequest_Flame).truncate(DEFAULT_HOTBUCKET_SIZE).markUpdate(now)
 	}
 
 	//log.Printf("mergeFetchResult2")
@@ -540,13 +613,12 @@ func (a *HotActor) mergeFetchResult(next *hotbucketStore, now time.Time) {
 		}
 		//hots just reorder. set position of markUpdate prior to truncate is important because truncate create new instance,
 		//which means markupdate after truncate does not propagate to original data (a.***QueryCache)
-		next.hots[i] = next.hots[i].markUpdate(now).sort().truncate(DEFAULT_HOTBUCKET_SIZE)
+		next.hots[i] = next.hots[i].markUpdate(now).sort(proto.TopicListRequest_Hot).truncate(DEFAULT_HOTBUCKET_SIZE)
 		//flames will be filtered, because each of its element may be non flamy. (also be careful about position of markUpdate)
 		next.flames[i] = next.flames[i].markUpdate(now).filter(func (e *HotEntry) bool {
 			return e.flamy()
-		}).sort().truncate(DEFAULT_HOTBUCKET_SIZE).markUpdate(now)
+		}).sort(proto.TopicListRequest_Flame).truncate(DEFAULT_HOTBUCKET_SIZE).markUpdate(now)
 	}
-	log.Printf("mergeFetchResult3")
 }
 
 func (a *HotActor) update(t time.Time) (err error) {
@@ -556,7 +628,7 @@ func (a *HotActor) update(t time.Time) (err error) {
 		}
 	}()
 	var results []FetchResult
-	if results, err = a.fetcher(FETCH_FROM_VOTES, a.lastQuery, t, a.locale); err != nil {
+	if results, err = a.fetcher(proto.TopicListRequest_Rising, a.lastQuery, t, a.locale); err != nil {
 		return err
 	}
 	prev := a.store.Load().(*hotbucketStore)
@@ -585,7 +657,7 @@ func (a *HotActor) Available() bool {
 }
 
 func (a *HotActor) Query(btyp proto.TopicListRequest_BucketType, typ proto.TopicListRequest_QueryType, 
-	ids []proto.UUID, start, count uint64) ([]HotEntry, error) {
+	ids []proto.UUID, startScore int32, startId proto.UUID, count uint32) ([]HotEntry, error) {
 	defer a.lock.RUnlock()
 	a.lock.RLock()
 	if !a.available {
@@ -595,8 +667,7 @@ func (a *HotActor) Query(btyp proto.TopicListRequest_BucketType, typ proto.Topic
 	if s == nil {
 		return nil, fmt.Errorf("invalid query type: %v %v", btyp, typ)
 	}
-	log.Printf("Query get range of %v %v %v %v %v", btyp, typ, ids, start, count)
-	return s.rangeOf(ids, start, count)
+	return s.rangeOf(ids, btyp, startScore, startId, count)
 }
 
 //for realtime updating
@@ -622,12 +693,15 @@ func (a *HotActor) Update(id proto.UUID, parent proto.UUID, score int32, vote ui
 }
 
 func NewHotActorWithDetail(locale string, updateSpan time.Duration, lengths []int, noAutoUpdate bool, 
-	fetcher func (ftype int, start, end time.Time, locale string) ([]FetchResult, error), 
+	fetcher func (ftype proto.TopicListRequest_BucketType, start, end time.Time, locale string) ([]FetchResult, error), 
 	persist func (at time.Time, s *hotbucketStore) error) (*HotActor, error) {
 	bs := NewHotBucketStore(lengths)
 	durations := []time.Duration {
 		7 * 24 * time.Hour,		//week
 		0,						//alltime
+	}
+	if locale == "all" {
+		locale = ""
 	}
 	queryCacheSize := len(durations)
 	a := &HotActor {
@@ -647,7 +721,8 @@ func NewHotActorWithDetail(locale string, updateSpan time.Duration, lengths []in
 	}
 	a.store.Store(bs)
 	for i := 0; i < queryCacheSize; i++ {
-		hot, flame := NewHotBucket(DEFAULT_HOTBUCKET_SIZE), NewHotBucket(DEFAULT_HOTBUCKET_SIZE)
+		hot := NewHotBucket(DEFAULT_HOTBUCKET_SIZE)
+		flame := NewHotBucket(DEFAULT_HOTBUCKET_SIZE)
 		a.hotQueryCache[i].Store(hot)
 		a.flameQueryCache[i].Store(flame)
 		bs.hots[i] = hot

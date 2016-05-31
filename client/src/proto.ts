@@ -296,7 +296,7 @@ export class Handler {
         p.channel_list_request = req;
         return this.send(p);
     }
-    topic_list = (bucket: string, query: string, offset_id?: Long, locale?: string, 
+    topic_list = (bucket: string, query: string, offset_score?: number, offset_id?: Long, locale?: string, 
 		limit?: number): Q.Promise<Model> => {
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.TopicListRequest;
@@ -308,7 +308,6 @@ export class Handler {
             "day": ChannerProto.TopicListRequest.QueryType.Day,
             "week": ChannerProto.TopicListRequest.QueryType.Week,
             "alltime": ChannerProto.TopicListRequest.QueryType.AllTime,
-			"hoge": 0,
         }
 		var bmap : {
 			[k:string]:ChannerProto.TopicListRequest.BucketType
@@ -320,11 +319,9 @@ export class Handler {
 		req.query = qmap[query];
 		req.bucket = bmap[bucket];
         req.locale = locale || window.channer.settings.values.search_locale;
-        if (req.locale == "all") {
-            req.locale = "";
-        }
         req.limit = limit || null;
         req.offset_id = offset_id || null;
+		req.offset_score = offset_score || null;
         p.topic_list_request = req;
         return this.send(p);            
     }

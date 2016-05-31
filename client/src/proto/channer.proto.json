@@ -1157,10 +1157,17 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "int32",
+                            "name": "offset_score",
+                            "id": 5
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Long",
                             "name": "offset_id",
-                            "id": 5,
+                            "id": 6,
                             "options": {
+                                "(gogoproto.casttype)": "UUID",
                                 "(gogoproto.nullable)": true
                             }
                         }

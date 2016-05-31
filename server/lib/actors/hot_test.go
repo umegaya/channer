@@ -23,6 +23,7 @@ const (
 var node *yue.Node = &yue.Node {}
 
 var estimates []fetchCache = make([]fetchCache, 0)
+var lastFilter time.Time
 //var parentMap map[proto.UUID]proto.UUID = make(map[proto.UUID]proto.UUID)
 var mutex sync.Mutex 
 var clock time.Time = time.Now()
@@ -44,12 +45,12 @@ func testInmemVoteFetcher() ([]FetchResult, error) {
 		for ;i < int(float64(1 - NEWLY_ADD_RATE) * ENTRY_PER_FETCH); i++ {
 			//add score to existing entry
 			sample := sampleEntries.results[rand.Int31n(int32(len(sampleEntries.results)))]
-			score := int32(rand.Int31n(100) + 1)
+			up,down := int32(rand.Int31n(50) + 1), int32(rand.Int31n(50) + 1)
 			entries[i] = FetchResult {
 				id: sample.id,
-				score: score,
+				score: up - down,
 				parent: sample.parent,
-				vote: uint32(score + rand.Int31n(int32(score))),
+				vote: uint32(up + down),
 			}
 		}
 	}
@@ -57,12 +58,12 @@ func testInmemVoteFetcher() ([]FetchResult, error) {
 	genClock := getClock().Add(-1 * time.Second)
 	for ;i < ENTRY_PER_FETCH; i++ {
 		//add new entry
-		score := int32(rand.Int31n(1000) + 1)
+		up,down := int32(rand.Int31n(50) + 1), int32(rand.Int31n(50) + 1)
 		entries[i] = FetchResult {
 			id: proto.UUID(node.GenUUID(genClock)),
-			score: score,
+			score: up - down,
 			parent: proto.UUID(rand.Int31n(50) + 1),
-			vote: uint32(score + rand.Int31n(int32(score))),
+			vote: uint32(up + down),
 		}
 		//parentMap[entries[i].id] = entries[i].parent
 	}
@@ -74,38 +75,43 @@ func testInmemVoteFetcher() ([]FetchResult, error) {
 	return entries, nil	
 }
 
-func testInmemVoteParentFetcher(start, end time.Time, flame bool) ([]FetchResult, error) {
+func filterSummery(btyp proto.TopicListRequest_BucketType, b *hotbucket) *hotbucket {
+	if btyp == proto.TopicListRequest_Flame {
+		return b.filter(func (e *HotEntry) bool {
+			return e.flamy()
+		}).sort(btyp).truncate(ALLTIME_SUMMERY_LIMIT)
+	} else {
+		return b.sort(btyp).truncate(ALLTIME_SUMMERY_LIMIT)
+	}
+}
+
+func testInmemVoteParentFetcher(start, end time.Time, btyp proto.TopicListRequest_BucketType) ([]FetchResult, error) {
 	tmp := NewHotBucket(ENTRY_PER_FETCH)
 	for _, e := range estimates {
 		if start.Unix() <= e.fetchAt.Unix() && e.fetchAt.Unix() <= end.Unix() {
 			tmp.addResults(e.results)
+		} else if start.Unix() <= 0 {
+			log.Printf("testInmemVoteParentFetcher: alltime query but missing: %v %v", e.fetchAt, end)
 		}
 	}
-	if flame {
-		tmp = tmp.filter(func (e *HotEntry) bool {
-			return e.flamy()
-		}).sort().truncate(ENTRY_PER_FETCH)
-	} else {
-		tmp = tmp.sort().truncate(ENTRY_PER_FETCH)
-	}
+	tmp = filterSummery(btyp, tmp)
 	ret := make([]FetchResult, len(tmp.total.entries))
 	for i, e := range tmp.total.entries {
 		ret[i] = FetchResult{ id: e.Id, parent: tmp.idParentMap[e.Id], vote: e.Vote, score: e.Score }
 	}
-	log.Printf("testInmemVoteParentFetcher: %v", ret)
+	lastFilter = end
+	log.Printf("testInmemVoteParentFetcher: %v %v %v", btyp, lastFilter, ret)
 	return ret, nil
 }
 
-func testInmemFetcher(fetchType int, start, end time.Time, locale string) ([]FetchResult, error) {
-	switch fetchType {
-	case FETCH_FROM_VOTES:
+func testInmemFetcher(btyp proto.TopicListRequest_BucketType, start, end time.Time, locale string) ([]FetchResult, error) {
+	switch btyp {
+	case proto.TopicListRequest_Rising:
 		return testInmemVoteFetcher()
-	case FETCH_FROM_CREATED:
-		return testInmemVoteParentFetcher(start, end, false)
-	case FETCH_FROM_CREATED_FLAME:
-		return testInmemVoteParentFetcher(start, end, true)
+	case proto.TopicListRequest_Hot, proto.TopicListRequest_Flame:
+		return testInmemVoteParentFetcher(start, end, btyp)
 	default:
-		return nil, fmt.Errorf("invalid fetchType: %v", fetchType)
+		return nil, fmt.Errorf("invalid fetchType: %v", btyp)
 	}
 }
 
@@ -127,15 +133,11 @@ func estimateResults(btyp proto.TopicListRequest_BucketType, typ proto.TopicList
 		begin = time.Time{}
 	}
 	tmp := NewHotBucket(ENTRY_PER_FETCH)
-	for i := len(estimates) - 1; i >= 0; i-- {
-		e := estimates[i]
-		if e.fetchAt.UnixNano() <= begin.UnixNano() {
-			break
-		}
+	for _, e := range estimates {
 		switch btyp {
 		case proto.TopicListRequest_Rising:
 			//rising is calculated for votes which is done in specified term. so add all if its in specified term.
-			if e.fetchAt.UnixNano() <= end.UnixNano() {
+			if e.fetchAt.UnixNano() > begin.UnixNano() && e.fetchAt.UnixNano() <= end.UnixNano() {
 				tmp.addResults(e.results)
 			}
 		case proto.TopicListRequest_Hot, proto.TopicListRequest_Flame:
@@ -145,18 +147,31 @@ func estimateResults(btyp proto.TopicListRequest_BucketType, typ proto.TopicList
 				return ent.within(begin, end)
 			})
 		}
+		//week/alltime: emurate filter on making 12h summery
+		if e.fetchAt.UnixNano() == lastFilter.UnixNano() && 
+			(typ == proto.TopicListRequest_Week || typ == proto.TopicListRequest_AllTime) {
+			log.Printf("emurate filter on summery %v %v %v", lastFilter, getClock(), tmp.total.entries)
+			tmp = filterSummery(btyp, tmp)
+			log.Printf("emurate filter on summery done %v", tmp.total.entries)
+		}
 	}
 
 	switch btyp {
 	case proto.TopicListRequest_Rising, proto.TopicListRequest_Hot:
-		log.Printf("sort tmp: %v", tmp.total.entries)
-		tmp = tmp.sort().truncate(ENTRY_PER_FETCH)
+		//log.Printf("sort tmp: %v", tmp.total.entries)
+		tmp = tmp.sort(btyp).truncate(ENTRY_PER_FETCH)
 	case proto.TopicListRequest_Flame:
 		tmp = tmp.filter(func (e *HotEntry) bool {
 			return e.flamy()
-		}).sort().truncate(ENTRY_PER_FETCH)
+		}).sort(btyp).truncate(ENTRY_PER_FETCH)
+		//log.Printf("sort tmp: %v", tmp.total.entries)
 	}
-	return tmp.total.entries[start:start+count]
+	last := int(start+count)
+	if last >= len(tmp.total.entries) {
+		last = len(tmp.total.entries)
+	}
+	//log.Printf("estimateResults %v %v %v %v", tmp.total.entries, start, count, last)
+	return tmp.total.entries[start:last]
 
 }
 
@@ -184,7 +199,7 @@ log.Printf("current clock: %v", clock)
 		addClock()
 		a.update(getClock())
 		a.updateQueryCache(getClock())
-		start, end := 0, 5
+		start, count := 0, 5
 		btyp := bucketTypes[rand.Int31n(int32(len(bucketTypes)))]
 		var qtypIndex int32
 		if btyp == proto.TopicListRequest_Rising {
@@ -195,13 +210,16 @@ log.Printf("current clock: %v", clock)
 		}
 		typ := queryTypes[qtypIndex]
 		log.Printf("iter: %v %v %v", i, btyp, typ)
-		entries, err := a.Query(btyp, typ, nil, uint64(start), uint64(end))
+		entries, err := a.Query(btyp, typ, nil, 0, 0, uint32(count))
 		if err != nil {
 			t.Fatal(err.Error())
 		} else {
-			estEntries := estimateResults(btyp, typ, uint64(start), uint64(end))
-		log.Printf("check: \n%v\n%v", entries, estEntries)
-			for i := start; i < (start + end); i++ {
+			estEntries := estimateResults(btyp, typ, uint64(start), uint64(count))
+			log.Printf("check: \n%v\n%v", entries, estEntries)
+			if len(entries) != len(estEntries) {
+				t.Fatal("entry length differ %v %v", entries, estEntries)
+			}
+			for i := start; i < len(entries); i++ {
 				e := entries[i]
 				e2 := estEntries[i]
 				if btyp == proto.TopicListRequest_Flame && !e.flamy() {
