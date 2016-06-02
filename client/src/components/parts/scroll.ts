@@ -237,3 +237,7 @@ export var topic_categories = new ArrayModelCollection([
 export var topic_durations = new ArrayModelCollection([
     "hour", "day", "week", "alltime",  
 ], "topic_durations");
+
+export var rising_durations = new ArrayModelCollection([
+    "hour", "day",  
+], "rising_durations");

@@ -3,7 +3,7 @@
 import {m, Util} from "../../uikit"
 import {PropCollectionFactory, PropCollection} from "../../input/prop"
 import {ModelCollection, 
-    categories_wc, locales_wc, topic_categories, topic_durations
+    categories_wc, locales_wc, topic_categories, topic_durations, rising_durations
 } from "../parts/scroll"
 import {MenuElementComponent} from "../menu"
 import {BaseComponent} from "../base"
@@ -112,6 +112,11 @@ export class TopicFilterController extends BaseFilterController {
 }
 export function TopicFilterView(ctrl: TopicFilterController) : UI.Element {
     var props = ctrl.props.props;
+    var by = props["topic_sort_by"]();
+    var dur = props["topic_sort_duration"]();
+    if (by == "rising" && (dur != "hour" && dur != "day")) {
+        props["topic_sort_duration"]("day");
+    }
     return m(".filter", [
         m.component(PulldownComponent, {
             label: _L("Sort By"),
@@ -122,8 +127,9 @@ export function TopicFilterView(ctrl: TopicFilterController) : UI.Element {
         m.component(PulldownComponent, {
             label: _L("Sort Duration"),
             value: props["topic_sort_duration"],
-            models: topic_durations,
+            models: by == "rising" ? rising_durations : topic_durations,
             onchange: ctrl.onchange_duration,
+            key: by,
         }),
         m.component(PulldownComponent, new LocalePulldownOptions({
             label: _L("Priority Locale"),
