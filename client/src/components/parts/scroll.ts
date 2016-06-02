@@ -220,13 +220,13 @@ export class ListComponent implements UI.Component {
 }
 
 export var categories = new ArrayModelCollection(window.channer.category.data, "categories");
-var data_with_wc = window.channer.category.data.concat();
+var data_with_wc = window.channer.category.data.concat();//make copy
 data_with_wc.splice(0, 0, _L("All"))
 export var categories_wc = new ArrayModelCollection(data_with_wc, "categories_wc");
 
 var locales_data = window.channer.l10n.localeSettings();
 export var locales = new ArrayModelCollection(locales_data, "locales_data");
-var locales_with_wc = locales_data.concat();
+var locales_with_wc = locales_data.concat(); //make copy
 locales_with_wc.splice(0, 0, {key: "all", value: _L("All")})
 export var locales_wc = new ArrayModelCollection(locales_with_wc, "locales_with_wc");
 

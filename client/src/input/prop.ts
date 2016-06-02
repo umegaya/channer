@@ -122,7 +122,7 @@ export class PropCollection implements Persistable {
             var c = cond.required[k];
             if (p) {
                 var v = p();
-                if (!this.validate(v, c)) {
+                if (!this.valid(v, c)) {
                     return;
                 }
                 verified[k] = v;
@@ -133,7 +133,7 @@ export class PropCollection implements Persistable {
             var c = cond.optional[k];
             if (p) {
                 var v = p();
-                if (!this.validate(v, c)) {
+                if (!this.valid(v, c)) {
                     if (c.fallback == "") {
                         //console.log("fallback is empty str: set it");
                         v = c.fallback;
@@ -153,11 +153,13 @@ export class PropCollection implements Persistable {
         }
         return verified;
     }
-    private validate = (val: any, cond: PropCondition): boolean => {
+    private valid = (val: any, cond: PropCondition): boolean => {
         if (typeof(val) == "string" && !val) {
+            //empty string not valid
             return false;
         }
         if (typeof(cond.check) == "undefined") {
+            //if same as initial value, not valid.
             return val != cond.init;
         }
         else if (typeof(cond.check) == "function") {

@@ -46,7 +46,7 @@ PropCollectionFactory.setup("channel-create", {
             init: texts.DEFAULT_NAME, 
         },
         category: {
-            init: categories.source[0],
+            init: "",
             fallback: "1",
         },
     },

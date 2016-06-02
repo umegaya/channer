@@ -323,7 +323,7 @@ export class Handler {
         req.offset_id = offset_id || null;
 		req.offset_score = offset_score || null;
         p.topic_list_request = req;
-        return this.send(p);            
+        return this.send(p);
     }
 	post = (topic_id: Long, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
 		var post = new Builder.Post();

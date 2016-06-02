@@ -32,7 +32,7 @@ PropCollectionFactory.setup("top-models", {
             init : "latest",
         },
         channel_category : {
-            init : "",  
+            init : _L("All"),
         },
         topic_sort_by: {
             init : "rising",  

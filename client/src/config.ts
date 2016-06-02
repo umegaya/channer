@@ -57,6 +57,10 @@ export class UserSettingsValues {
 			this.pass = this.secure_random();
 			console.log("password = " + this.pass);
 		}
+		if (!this.search_locale) {
+			this.search_locale = window.channer.l10n.language;
+			console.log("locale = " + this.search_locale);
+		}
 	}
 }
 
