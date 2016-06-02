@@ -212,7 +212,7 @@ function TopView(ctrl: TopController) : UI.Element {
                     replace_history: true,
                 });
             }
-        }));
+        }));    
     return m(".top", elements);
 }
 export class TopModelCollections {
@@ -247,6 +247,7 @@ export class TopModelCollections {
 }
 export class TopComponent extends PageComponent {
     models: TopModelCollections;
+    tab: string;
     scrollProps: { [k:string]: UI.Property<ScrollProperty> };
     constructor() {
         super();
@@ -275,17 +276,32 @@ export class TopComponent extends PageComponent {
     }
     controller = (): TopController => {
         this.models.initialize();
+        this.tab = m.route.param("tab");
         return new TopController(this);
     }
     view = (ctrl: TopController): UI.Element => {
     	return TopView(ctrl);
     }
     menus = (): Array<MenuElementComponent> => {
-        return [
-            ChannelFilterComponent,
-            ChannelCreateComponent,
-            TopicFilterComponent,
-        ];
+        if (!this.tab) {
+            //return all component for initializing
+            return [
+                ChannelFilterComponent, 
+                ChannelCreateComponent,
+                TopicFilterComponent,
+            ];            
+        }
+        else if (this.tab == "channel") {
+            return [
+                ChannelFilterComponent, 
+                ChannelCreateComponent,
+            ];
+        } 
+        else if (this.tab == "topic") {
+            return [
+                TopicFilterComponent,
+            ];
+        }
     }
     unload = (category: string) => {
         console.log("top refreshed: " + category);
