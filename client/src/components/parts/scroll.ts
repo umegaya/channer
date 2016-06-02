@@ -153,7 +153,9 @@ export class ListOptions {
     onScroll: (el: HTMLElement) => void;
     models: ModelCollection;
     initialScroll: number;
-    scrollProp: UI.Property<number>;
+    //if scrollProp sets, ListComponent stores internal scroll state into it. 
+    //and use it for restoring last scroll position even if once component is unloaded.    
+    scrollProp: UI.Property<ScrollProperty>;
     state: ScrollState;
     elemopts: any;
 }
@@ -197,16 +199,16 @@ export class ListComponent implements UI.Component {
         //following enables preserving scroll position. 
         //but it needs to re-construct all element between top to current position.   
         if (base.scrollProp) {
-            var st = base.scrollProp();
+            var st = base.scrollProp().scrollTop;
             base.initialScroll = st;
-            //base.state = base.scrollProp().state;
+            base.state = base.scrollProp().state;
             base.onScroll = (el: HTMLElement) => {
                 if (Math.abs(st - el.scrollTop) > 1000) {
                     //console.log("set lastscroll: too much change ignored" + el.scrollTop + "|" + this.lastScroll);
                     return;
                 }
                 //console.log("set lastscroll to " + el.scrollTop);
-                base.scrollProp(el.scrollTop);
+                base.scrollProp().scrollTop = el.scrollTop;
             };
         }
         return base;

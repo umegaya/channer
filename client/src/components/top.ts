@@ -163,9 +163,9 @@ export class TopController implements UI.Controller {
     start: string;
     id: string;
     component: TopComponent;
-    static scrollProps: Array<UI.Property<number>> = [
-        m.prop(0),
-        m.prop(0),
+    static scrollProps: Array<UI.Property<ScrollProperty>> = [
+        m.prop(new ScrollProperty()),
+        m.prop(new ScrollProperty()),
     ];
     static factory: Array<(s: TopComponent) => UI.Element> = [
         (s: TopComponent) => {
@@ -174,9 +174,6 @@ export class TopController implements UI.Controller {
                 models: s.models.channels,
                 name: "channels",
                 scrollProp: TopController.scrollProps[0],
-                elemopts: {
-                    hrefPrefix: "/top",  
-                },
             });
         },
         (s: TopComponent) => {
@@ -185,9 +182,6 @@ export class TopController implements UI.Controller {
                 models: s.models.topics, 
                 name: "topics",
                 scrollProp: TopController.scrollProps[1],
-                elemopts: {
-                    hrefPrefix: "/top",  
-                },
             });
         },
     ];
@@ -195,36 +189,14 @@ export class TopController implements UI.Controller {
         this.active = m.prop(0);
         this.component = component;
         this.start = m.route.param("tab") || "latest";
-        this.id = m.route.param("id");
-        if (!this.id) {
-            //I don't know reason, but set redraw storategy to diff causes 
-            //stop rendering of topic/channel list. call redraw right now here solves this issue.
-            setTimeout(() => m.redraw(), 1);        
-        }
         TABS.map((tab, idx) => {
             if (tab.id == this.start) {
                 this.active(Number(idx));
             }
         });
 	}
-    viewComponent(): UI.Component {
-        switch (this.active()) {
-            case 0: return window.channer.parts.Channel;
-            case 1: return window.channer.parts.Topic;
-            default:
-                throw new Error("invalid active index:" + this.active());
-        }
-    }
     tabContent(): UI.Element {
         return TopController.factory[this.active()](this.component);
-    }
-    requireViewContent(): boolean {
-        return !!this.id;
-    }
-    viewContent(): UI.Element {
-        return m.component(this.viewComponent(), {
-            id: this.id, 
-        });        
     }
 }
 function TopView(ctrl: TopController) : UI.Element {
@@ -239,21 +211,11 @@ function TopView(ctrl: TopController) : UI.Element {
             selectedTab: ctrl.active(),
             activeSelected: true,
             getState: (state: { index: number }) => {
-                if (!ctrl.requireViewContent()) {
-                    TABS.map((tab, idx) => {
-                        if (idx != state.index) {
-                            TopController.scrollProps[idx](0);
-                        }
-                    })
-                    Util.route("/top/" + TABS[state.index].id, null, {
-                        replace_history: true,
-                    });
-                }
+                Util.route("/top/" + TABS[state.index].id, null, {
+                    replace_history: true,
+                });
             }
         }));
-    if (ctrl.requireViewContent()) {
-        elements.push(ctrl.viewContent());
-    }
     return m(".top", elements);
 }
 export class TopModelCollections {
