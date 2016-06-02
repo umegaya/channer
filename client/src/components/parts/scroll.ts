@@ -154,7 +154,27 @@ export class ListOptions {
     models: ModelCollection;
     initialScroll: number;
     scrollProp: UI.Property<number>;
+    state: ScrollState;
     elemopts: any;
+}
+//this heavily rely on internal data structure of mithril-infinite.
+//be careful when migrate mithril-infinite to higher version.
+export class ScrollState {
+    dimensions: {[k:string]:any};
+}
+export class ScrollProperty {
+    scrollTop: number;
+    state: ScrollState;
+    constructor() {
+        this.scrollTop = 0;
+        this.state = {
+            dimensions: {},
+        };
+    }
+}
+export class ScrollController {
+    scrollView: HTMLElement;
+    state: any;
 }
 export class ListComponent implements UI.Component {
 	elemview: (c: ModelCollection, model: any, options?: any) => UI.Element;
@@ -162,6 +182,7 @@ export class ListComponent implements UI.Component {
         this.elemview = view;
 	}
     controller = (options: ListOptions): any => {
+        m.redraw.strategy("diff");
         return options;
     }
     mkoption = (options: ListOptions): UI.Attributes => {
@@ -176,9 +197,11 @@ export class ListComponent implements UI.Component {
         //following enables preserving scroll position. 
         //but it needs to re-construct all element between top to current position.   
         if (base.scrollProp) {
-            base.initialScroll = base.scrollProp();
+            var st = base.scrollProp();
+            base.initialScroll = st;
+            //base.state = base.scrollProp().state;
             base.onScroll = (el: HTMLElement) => {
-                if (Math.abs(base.scrollProp() - el.scrollTop) > 1000) {
+                if (Math.abs(st - el.scrollTop) > 1000) {
                     //console.log("set lastscroll: too much change ignored" + el.scrollTop + "|" + this.lastScroll);
                     return;
                 }

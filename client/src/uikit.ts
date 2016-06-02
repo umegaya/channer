@@ -10,6 +10,7 @@ export class Util {
             route_only?: boolean; 
             replace_history?: boolean; 
     }) {
+        //console.error("route to:" + dest);
         options = options || {};
 		if (!options.route_only) {
             if (!dest) {

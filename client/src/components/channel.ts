@@ -12,7 +12,7 @@ export class ChannelController implements UI.Controller {
 	tab_contents: {
 		[x: string]: UI.Component;
 	}
-	constructor(component: ChannelComponent) {
+	constructor(component: ChannelComponent, opts: ChannelOptions) {
 //        console.log("channel")
 		this.component = component;
 		this.selected = "joins";
@@ -51,8 +51,10 @@ function ChannelView(ctrl: ChannelController) : UI.Element {
 		ctrl.activetab(),
 	]);
 }
+export class ChannelOptions {
+	id: string;
+}
 export class ChannelComponent extends PageComponent {
-    id: string;
     //menu components
     top: TransitMenuElementComponent
 
@@ -62,16 +64,12 @@ export class ChannelComponent extends PageComponent {
         this.top = new TransitMenuElementComponent(
             "img.home", "go to top", "/top"
         );
-		this.controller = () => {
-            this.id = m.route.param("ch");
-			return new ChannelController(this);
-		}
 	}
     view = (ctrl: ChannelController): UI.Element => {
         return ChannelView(ctrl);
     }
-    controller = (): ChannelController => {
-        return new ChannelController(this);
+    controller = (opts: ChannelOptions): ChannelController => {
+        return new ChannelController(this, opts);
     }
     menus = (): Array<MenuElementComponent> => {
         return [
@@ -80,4 +78,5 @@ export class ChannelComponent extends PageComponent {
     }
 }
 
+window.channer.parts.Channel = new ChannelComponent();
 window.channer.components.Channel = Pagify(ChannelComponent);

@@ -3,7 +3,7 @@
 import {m, Util} from "../uikit"
 import {Pagify, PageComponent} from "./base"
 import {PropCollectionFactory, PropConditions, PropCollection} from "../input/prop"
-import {ModelCollection, ProtoModelCollection, ProtoModelChunk, Boundary} from "./parts/scroll"
+import {ModelCollection, ProtoModelCollection, ProtoModelChunk, Boundary, ScrollProperty} from "./parts/scroll"
 import {MenuElementComponent} from "./menu"
 import {Config} from "../config"
 import {Handler} from "../proto"
@@ -161,6 +161,7 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
 export class TopController implements UI.Controller {
     active: UI.Property<number>;
     start: string;
+    id: string;
     component: TopComponent;
     static scrollProps: Array<UI.Property<number>> = [
         m.prop(0),
@@ -173,6 +174,9 @@ export class TopController implements UI.Controller {
                 models: s.models.channels,
                 name: "channels",
                 scrollProp: TopController.scrollProps[0],
+                elemopts: {
+                    hrefPrefix: "/top",  
+                },
             });
         },
         (s: TopComponent) => {
@@ -181,27 +185,52 @@ export class TopController implements UI.Controller {
                 models: s.models.topics, 
                 name: "topics",
                 scrollProp: TopController.scrollProps[1],
+                elemopts: {
+                    hrefPrefix: "/top",  
+                },
             });
         },
     ];
 	constructor(component: TopComponent) {
         this.active = m.prop(0);
         this.component = component;
-        this.start = m.route.param("tab") || "latest";        
+        this.start = m.route.param("tab") || "latest";
+        this.id = m.route.param("id");
+        if (!this.id) {
+            //I don't know reason, but set redraw storategy to diff causes 
+            //stop rendering of topic/channel list. call redraw right now here solves this issue.
+            setTimeout(() => m.redraw(), 1);        
+        }
         TABS.map((tab, idx) => {
             if (tab.id == this.start) {
                 this.active(Number(idx));
             }
         });
 	}
-    content(): UI.Element {
-        //console.log("tab: active = " + this.active());
+    viewComponent(): UI.Component {
+        switch (this.active()) {
+            case 0: return window.channer.parts.Channel;
+            case 1: return window.channer.parts.Topic;
+            default:
+                throw new Error("invalid active index:" + this.active());
+        }
+    }
+    tabContent(): UI.Element {
         return TopController.factory[this.active()](this.component);
+    }
+    requireViewContent(): boolean {
+        return !!this.id;
+    }
+    viewContent(): UI.Element {
+        return m.component(this.viewComponent(), {
+            id: this.id, 
+        });        
     }
 }
 function TopView(ctrl: TopController) : UI.Element {
-    return m(".top", [ 
-        ctrl.content(),
+	var elements : Array<UI.Element> = []; 
+    elements.push(
+        ctrl.tabContent(),
         m.component(Tabs, {
             menu: true,
             buttons: TABS,
@@ -210,17 +239,22 @@ function TopView(ctrl: TopController) : UI.Element {
             selectedTab: ctrl.active(),
             activeSelected: true,
             getState: (state: { index: number }) => {
-                TABS.map((tab, idx) => {
-                    if (idx != state.index) {
-                        TopController.scrollProps[idx](0);
-                    }
-                })
-                Util.route("/top/" + TABS[state.index].id, null, {
-                    replace_history: true,
-                });
+                if (!ctrl.requireViewContent()) {
+                    TABS.map((tab, idx) => {
+                        if (idx != state.index) {
+                            TopController.scrollProps[idx](0);
+                        }
+                    })
+                    Util.route("/top/" + TABS[state.index].id, null, {
+                        replace_history: true,
+                    });
+                }
             }
-        }),
-    ]);
+        }));
+    if (ctrl.requireViewContent()) {
+        elements.push(ctrl.viewContent());
+    }
+    return m(".top", elements);
 }
 export class TopModelCollections {
     initialized: boolean;

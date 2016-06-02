@@ -14,6 +14,7 @@ window.channer.router = function () {
         "/rescue/:rescue":   window.channer.components.Login,
         "/top":              window.channer.components.Top,
         "/top/:tab":         window.channer.components.Top,
+        "/top/:tab/:id":     window.channer.components.Top,
         "/channel/:ch":      window.channer.components.Channel,
         "/channel/:ch/:tab": window.channer.components.Channel,
         "/topic/:id":        window.channer.components.Topic,

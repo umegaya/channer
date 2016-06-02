@@ -11,7 +11,7 @@ export class TopicController implements UI.Controller {
 	}
 }
 function TopicView(ctrl: TopicController) : UI.Element {
-	return m("div")
+	return m(".topic")
 }
 export class TopicComponent extends PageComponent {
 	controller: () => TopicController;
@@ -25,4 +25,5 @@ export class TopicComponent extends PageComponent {
 		}
 	}
 }
+window.channer.parts.Topic = new TopicComponent();
 window.channer.components.Topic = Pagify(TopicComponent);

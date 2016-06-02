@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
 import {m, Util} from "../../uikit"
-import {ListComponent, ModelCollection} from "../parts/scroll"
+import {ListComponent, ModelCollection, ListOptions} from "../parts/scroll"
 import {Handler, Builder} from "../../proto"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
@@ -15,10 +15,12 @@ var idlevel_text : { [t:number]:string } = {
 
 function ChannelInfoView(
     c: ModelCollection, 
-    model: ChannerProto.Model.Channel
+    model: ChannerProto.Model.Channel,
+    elemopts: ChannelInfoElemConfig
 ): UI.Element {
     var copied = model.options.slice();
     var options = Builder.Model.Channel.Options.decode(copied);
+    var hrefPrefix = elemopts ? elemopts.hrefPrefix : "";
     var elems: Array<UI.Element> = [];
     elems.push(m(".title-h2.name", model.name + "/" + model.locale + "," + model.category));
     elems.push(m(".desc", model.description || _L("no description")));
@@ -41,9 +43,12 @@ function ChannelInfoView(
     ]));
     return m(".block", <UI.Attributes>{
         id: "channel-" + model.id,
-        href: "/channel/" + model.id,
+        href: hrefPrefix + "/channel/" + model.id,
         onclick: m.withAttr("href", Util.route),
     }, elems);
+}
+class ChannelInfoElemConfig {
+    hrefPrefix: string;
 }
 class ChannelList extends ListComponent {
     constructor() {
@@ -55,10 +60,12 @@ export var ChannelListComponent: ChannelList = new ChannelList();
 
 function TopicInfoView(
     c: ModelCollection, 
-    model: ChannerProto.Model.Topic
+    model: ChannerProto.Model.Topic,
+    elemopts: TopicInfoElemConfig
 ): UI.Element {
     var copied = model.body.slice();
     var body = Builder.Model.Topic.Body.decode(copied);
+    var hrefPrefix = elemopts ? elemopts.hrefPrefix : "";
     var elems: Array<UI.Element> = [];
     elems.push(m(".attributes", [
         m(".attr.score", [
@@ -74,7 +81,7 @@ function TopicInfoView(
         ]),
     ]));
     elems.push(m(".title.name", <UI.Attributes>{
-        href: "/topic/" + model.id,
+        href: hrefPrefix + "/topic/" + model.id,
         onclick: m.withAttr("href", Util.route),
     }, model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content));
     elems.push(m(".attributes", [
@@ -101,6 +108,9 @@ function TopicInfoView(
     return m(".block", <UI.Attributes>{
         id: "topic-" + model.id,
     }, elems);
+}
+class TopicInfoElemConfig {
+    hrefPrefix: string;
 }
 class TopicList extends ListComponent {
     constructor() {
