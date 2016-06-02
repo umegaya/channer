@@ -137,6 +137,7 @@ export class MenuComponent extends PageComponent {
 }
 window.channer.components.Menu = new MenuComponent();
 
+declare type watchCB = (ctrl: UI.Controller, type: string, ...args: any[]) => void;
 export class MenuElementComponent implements UI.Component {
     static _factory: MenuController;
     static factory():  MenuController {
@@ -145,6 +146,10 @@ export class MenuElementComponent implements UI.Component {
             MenuElementComponent._factory.switch(true);
         }
         return MenuElementComponent._factory;
+    }
+    watchers: Array<watchCB>;
+    constructor() {
+        this.watchers = [];
     }
     controller = (): any => {
         throw new Error("override this");        
@@ -185,6 +190,23 @@ export class MenuElementComponent implements UI.Component {
     onselected = (ctrl: MenuController) => {
         MenuElementComponent.factory().switch(true);
         Util.route(this.pageurl());
+    }
+    addWatcher = (fn: watchCB) => {
+        if (this.watchers.indexOf(fn) < 0) {
+            this.watchers.push(fn);
+        }
+    }
+    removeWatcher = (fn: watchCB) => {
+        if (this.watchers.indexOf(fn) >= 0) {
+            this.watchers = this.watchers.filter((v: watchCB): boolean => {
+                return v != fn;
+            });
+        }
+    }
+    notifyMenuEvent = (ctrl: UI.Controller, type: string, ...args: any[]) => {
+        this.watchers.forEach((v: watchCB) => {
+            v(ctrl, type, ...args);
+        });
     }
 }
 export class TransitMenuElementComponent extends MenuElementComponent {

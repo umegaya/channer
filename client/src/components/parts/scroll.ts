@@ -184,7 +184,6 @@ export class ListComponent implements UI.Component {
         this.elemview = view;
 	}
     controller = (options: ListOptions): any => {
-        m.redraw.strategy("diff");
         return options;
     }
     mkoption = (options: ListOptions): UI.Attributes => {
@@ -204,7 +203,7 @@ export class ListComponent implements UI.Component {
             base.state = base.scrollProp().state;
             base.onScroll = (el: HTMLElement) => {
                 if (Math.abs(st - el.scrollTop) > 1000) {
-                    //console.log("set lastscroll: too much change ignored" + el.scrollTop + "|" + this.lastScroll);
+                    //console.log("set lastscroll: too much change ignored" + el.scrollTop + "|" + st);
                     return;
                 }
                 //console.log("set lastscroll to " + el.scrollTop);

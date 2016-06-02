@@ -13,32 +13,42 @@ import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 
 //-------------------------------------------------------------
-//channel filter
-export class ChannelFilterController implements UI.Controller {
-	component: ChannelFilter;
+//base filter controller
+export class BaseFilterController implements UI.Controller {
+    component: MenuElementComponent;
+    id: string;
     dirty: boolean;
+    localeDirty: boolean;
     locale: UI.Property<string>;
     props: PropCollection;
 
-	constructor(component: ChannelFilter) {
-		this.component = component;
+	constructor(component: MenuElementComponent, id: string, propName: string) {
+        this.component = component;
+        this.id = id;
         this.dirty = false;
-        this.props = PropCollectionFactory.ref("top-models");
+        this.props = PropCollectionFactory.ref(propName);
         this.locale = m.prop(window.channer.settings.values.search_locale);
 	}
     onchange_locale = (locale: {key: string, value: string}) => {
         window.channer.settings.values.search_locale = locale.key;
         window.channer.settings.save();
-        this.dirty = true;
+        this.localeDirty = true;
     }
+}
+
+
+//-------------------------------------------------------------
+//channel filter
+export class ChannelFilterController extends BaseFilterController {
+	constructor(component: ChannelFilter) {
+        super(component, "channel", "top-models");
+	}
     onchange_category = (category: string) => {
         this.props.update("channel_category", category);
         this.dirty = true;
     }
     onunload = () => {
-        if (this.dirty) {
-            (<TopComponent>(<BaseComponent>window.channer.components.Top).content).onunload();
-        }
+        this.component.notifyMenuEvent(this, "filter-changed");
     }
 }
 export function ChannelFilterView(ctrl: ChannelFilterController) : UI.Element {
@@ -84,23 +94,10 @@ export var ChannelFilterComponent: ChannelFilter = new ChannelFilter();
 
 //-------------------------------------------------------------
 //topic filter
-export class TopicFilterController implements UI.Controller {
-	component: TopicFilter;
-    locale: UI.Property<string>;
-    dirty: boolean;
-    props: PropCollection;
-
+export class TopicFilterController extends BaseFilterController {
 	constructor(component: TopicFilter) {
-		this.component = component;
-        this.dirty = false;
-        this.props = PropCollectionFactory.ref("top-models");
-        this.locale = m.prop(window.channer.settings.values.search_locale);
+        super(component, "topic", "top-models");
 	}
-    onchange_locale = (locale: {key: string, value: string}) => {
-        window.channer.settings.values.search_locale = locale.key;
-        window.channer.settings.save();
-        this.dirty = true;
-    }
     onchange_category = (category: string) => {
         this.props.update("topic_sort_by", category);
         this.dirty = true;
@@ -110,9 +107,7 @@ export class TopicFilterController implements UI.Controller {
         this.dirty = true;
     }
     onunload = () => {
-        if (this.dirty) {
-            (<TopComponent>(<BaseComponent>window.channer.components.Top).content).onunload();
-        }
+        this.component.notifyMenuEvent(this, "filter-changed");
     }
 }
 export function TopicFilterView(ctrl: TopicFilterController) : UI.Element {

@@ -106,6 +106,7 @@ export class ChannelCreateController implements UI.Controller {
             ).then((r: ChannerProto.ChannelCreateResponse) => {
                 console.log("new channel create:" + r.channel.id);
                 this.component.input.clear(); //cleanup input data
+                this.component.notifyMenuEvent(this, "channel-created");
                 Util.route("/channel/" + r.channel.id);
             }, (e: ProtoError) => {
                 console.log("error:" + e.message);

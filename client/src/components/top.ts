@@ -8,7 +8,7 @@ import {MenuElementComponent} from "./menu"
 import {Config} from "../config"
 import {Handler} from "../proto"
 import {ChannelCreateComponent} from "./menus/create"
-import {ChannelFilterComponent, TopicFilterComponent} from "./menus/filter"
+import {ChannelFilterComponent, TopicFilterComponent, BaseFilterController} from "./menus/filter"
 import {ChannelListComponent, TopicListComponent} from "./parts/list"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 import Q = require('q');
@@ -163,17 +163,13 @@ export class TopController implements UI.Controller {
     start: string;
     id: string;
     component: TopComponent;
-    static scrollProps: Array<UI.Property<ScrollProperty>> = [
-        m.prop(new ScrollProperty()),
-        m.prop(new ScrollProperty()),
-    ];
     static factory: Array<(s: TopComponent) => UI.Element> = [
         (s: TopComponent) => {
             return m.component(ChannelListComponent, {
                 key: s.models.channels.key,
                 models: s.models.channels,
                 name: "channels",
-                scrollProp: TopController.scrollProps[0],
+                scrollProp: s.scrollProps["channel"],
             });
         },
         (s: TopComponent) => {
@@ -181,7 +177,7 @@ export class TopController implements UI.Controller {
                 key: s.models.topics.key,
                 models: s.models.topics, 
                 name: "topics",
-                scrollProp: TopController.scrollProps[1],
+                scrollProp: s.scrollProps["topic"],
             });
         },
     ];
@@ -189,6 +185,7 @@ export class TopController implements UI.Controller {
         this.active = m.prop(0);
         this.component = component;
         this.start = m.route.param("tab") || "latest";
+        setTimeout(() => m.redraw(), 1);
         TABS.map((tab, idx) => {
             if (tab.id == this.start) {
                 this.active(Number(idx));
@@ -239,15 +236,42 @@ export class TopModelCollections {
             this.initialized = true;
         }
     }
-    refresh = (): void => {
-        this.iter(coll => { coll.refresh(); });
+    refresh = (category: string): void => {
+        if (category == "channel") {
+            this.channels.refresh();
+        } 
+        else if (category == "topic") {
+            this.topics.refresh();
+        }
     }
 }
 export class TopComponent extends PageComponent {
     models: TopModelCollections;
+    scrollProps: { [k:string]: UI.Property<ScrollProperty> };
     constructor() {
         super();
         this.models = new TopModelCollections();
+        this.scrollProps = {
+            channel: m.prop(new ScrollProperty()),
+            topic: m.prop(new ScrollProperty()),
+        };
+        //set menu callback
+        ChannelFilterComponent.addWatcher(this.on_filter_change);
+        TopicFilterComponent.addWatcher(this.on_filter_change);
+        ChannelCreateComponent.addWatcher(this.on_create_channel);
+    }
+    on_filter_change = (ctrl: UI.Controller, type: string, ...args: any[]) => {
+        var filt = <BaseFilterController>ctrl;
+        if (filt.localeDirty) {
+            this.unload("channel");
+            this.unload("topic");
+        }
+        else if (filt.dirty) {
+            this.unload(filt.id);
+        }
+    }
+    on_create_channel = (ctrl: UI.Controller, type: string, ...args: any[]) => {
+        this.unload("channel");
     }
     controller = (): TopController => {
         this.models.initialize();
@@ -263,9 +287,10 @@ export class TopComponent extends PageComponent {
             TopicFilterComponent,
         ];
     }
-    onunload = () => {
-        console.log("top refreshed");
-        this.models.refresh();
+    unload = (category: string) => {
+        console.log("top refreshed: " + category);
+        this.scrollProps[category](new ScrollProperty());
+        this.models.refresh(category);
     }
 }
 window.channer.components.Top = Pagify(TopComponent);
