@@ -17,7 +17,7 @@ export var Builder : Proto2TypeScript.ChannerProtoBuilder
 export class Handler {
 	watcher: ProtoWatcher;
 	latency: number;
-    querying: boolean;
+    querying: ChannerProto.Payload.Type;
     last_error: Error;
 	private url: string;
 	private socket: Socket;
@@ -36,7 +36,7 @@ export class Handler {
 		this.last_auth = 0;
 		this.deactivate_limit_ms = 0;
 		this.timer = timer;
-        this.querying = false;
+        this.querying = ChannerProto.Payload.Type.Unknown;
         this.reconnect_attempt = 0;
         this.reconnect_wait = 0;
 	}
@@ -50,7 +50,7 @@ export class Handler {
 	private redraw = () => {
         m.startComputation()
 		setTimeout(() => {
-            this.querying = false;
+            this.querying = ChannerProto.Payload.Type.Unknown;
 			m.endComputation();
 		}, 1);
 	}
@@ -85,7 +85,7 @@ export class Handler {
 			}, 1);
 			return df.promise;
         }
-        this.querying = true;
+        this.querying = p.type;
         try {
             this.watcher.subscribe_response(msgid, (model: Model) => {
                 df.resolve(model);
@@ -175,6 +175,10 @@ export class Handler {
     connected = (): boolean => {
         return this.socket.connected();
     }
+	has_query = (): boolean => {
+		return this.querying != ChannerProto.Payload.Type.Unknown && 
+			this.querying != ChannerProto.Payload.Type.PingRequest;
+	}
     connecting = (): boolean => {
         return this.socket.connecting();
     }

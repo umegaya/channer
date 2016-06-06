@@ -1,6 +1,7 @@
 /// <reference path="../typings/extern.d.ts"/>
 
 export var m : _mithril.MithrilStatic = window.channer.m;
+export var Hammer: HammerStatic = window.channer.Hammer;
 var _L = window.channer.l10n.translate;
 var _LD = window.channer.l10n.translateDate;
 import ChannerProto = Proto2TypeScript.ChannerProto;

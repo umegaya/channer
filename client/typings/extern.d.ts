@@ -24,6 +24,7 @@ interface ChannerModules {
 	conn: any/*Handler*/;
 	config: any/*Config*/;
 	m: _mithril.MithrilStatic;
+    Hammer: HammerStatic;
     mtransit: (...args:Array<any>) => any;
 	ProtoBuf: any;
 	timer: any/*Timer*/;

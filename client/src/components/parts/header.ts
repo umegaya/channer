@@ -35,9 +35,9 @@ export var HeaderComponent: UI.Component = {
             msgs = tmp;
         }
         else if (c.connected()) {
-            if (c.querying) {
+            if (c.has_query()) {
                 //TODO: replace to cool CSS anim
-                msgs = m("div", {class: "msg"}, _L("sending request now"));
+                msgs = m("div", {class: "msg"}, _L("sending request now $1", c.querying));
             }
             else if (err && err.message) {
                 msgs = [

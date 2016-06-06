@@ -7,6 +7,9 @@ window.channer.mtransit = require('mithril-transition');
 (require('mithril.bindings'))(window.channer.m);
 require('mithril.animate');
 window.m = undefined;
+//load hammerjs
+window.channer.Hammer = require('hammerjs');
+//js hash function
 window.channer.hash = require('jshashes');
 //UI parts from polythene and mithril-infinite
 window.channer.parts.Scroll = require('mithril-infinite');
