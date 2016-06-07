@@ -1,6 +1,7 @@
 /// <reference path="../typings/mithril.d.ts"/>
+/// <reference path="../typings/react/react.d.ts"/>
 declare namespace UI {
-	interface Element extends _mithril.MithrilVirtualElement {		
+	interface Element extends JSX.Element {		
 	}
 	
 	interface Property<T> extends _mithril.MithrilProperty<T> {

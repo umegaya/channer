@@ -21,7 +21,7 @@ module.exports = {
             .assert.elementPresent('.login .input-text.mail')
             .assert.elementPresent('.login button.disabled')
             .execute(function () {
-                if (window.channer.mobile) {
+                if (window.channer.app) {
                     return ["should not be mobile"];
                 }
                 if (window.channer.m.route().contains("top")) {

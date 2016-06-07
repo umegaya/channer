@@ -9,6 +9,10 @@ import {Storage, StorageIO} from "./storage"
 //for debug. remove user setting
 var truncate_settings = window.environment.match(/test/);
 
+var errRaiser = (): any => {
+	throw new Error("errRaiser!!");
+}
+
 window.channer.bootstrap = function (config: any) {	
     console.log("bootstrap");
 	//create system modules
@@ -48,13 +52,11 @@ window.channer.bootstrap = function (config: any) {
 		}
 		u.values.init();
 		window.channer.settings = u;
-        return p.start(window.channer.mobile);  
+        return p.start(window.channer.app);  
 	}, (e: Error) => {
 		console.log("user setting broken. remove all");
 		setting_io.rm();
-		throw e;
-		//never reach here. to make compiler feel good. :<
-        return p.start(window.channer.mobile);  
+        return errRaiser();
 	})
 	.then((resp: PhonegapPluginPush.RegistrationEventResponse) => {
 		window.channer.settings.values.device_id = resp.registrationId;

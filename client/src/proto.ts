@@ -124,14 +124,14 @@ export class Handler {
 		}
 	}
 	private reauth = () => {
-		var current = m.route();
+		/*var current = m.route();
 		if (!current.match(/^\/(login|rescue)/)) {
 			console.log("re-authenticate current url:" + current);
 			Util.route("/login?next=" + encodeURIComponent(current), null, {
                 route_only: true,
                 replace_history: true,
             });
-		}		
+		}*/		
 	}
 	private onopen = () => {
 		this.reauth();
@@ -223,7 +223,7 @@ export class Handler {
 		if (device_id && device_id.length > 0) {
 			req.device_id = device_id;
 		}
-        else if (window.channer.mobile) {
+        else if (window.channer.app) {
             req.device_id = device.uuid;
         }
         req.device_type = device.platform;

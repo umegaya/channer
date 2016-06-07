@@ -3,7 +3,8 @@
         "noImplicitAny": true,
         "removeComments": true,
         "module": "commonjs",
-        "declaration": true
+        "declaration": true,
+        "jsx": "react"
     },
     "files": [
         "./typings/phonegap.d.ts",

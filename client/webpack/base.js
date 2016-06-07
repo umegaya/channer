@@ -11,14 +11,9 @@ module.exports = function (settings) {
             vendor: "./src/vendor.ts",
             patch: "./src/patch.ts",
             boot: "./src/boot.ts",
-            route: "./src/route.ts",
+            route: "./src/route.tsx",
             l10n: "./src/l10n",
             category: "./src/category.ts",
-            channel: "./src/components/channel.ts",
-            top: "./src/components/top.ts",
-            login: "./src/components/login.ts",
-            topic: "./src/components/topic.ts",
-            rescue: "./src/components/rescue.ts",
         },
         output: {
             path: __root + "/www/assets",
@@ -27,7 +22,7 @@ module.exports = function (settings) {
             assetServerPort: 9999,
         },
         resolve: {
-            extensions: ['', '.ts', '.js', '.proto', '.css'],
+            extensions: ['', '.ts', '.tsx', '.js', '.proto', '.css'],
             modulesDirectories: ["node_modules", "src/proto"],
             alias: {
                 protobufjs: __root + "/node_modules/protobufjs/dist/ProtoBuf-light.js",
@@ -45,7 +40,7 @@ module.exports = function (settings) {
         devtool: 'inline-source-map',
         module: {
             loaders: [
-                {test: /\.ts$/,     loader: 'awesome-typescript-loader?tsconfig=./tsconfig.json'},
+                {test: /\.tsx?$/,     loader: 'awesome-typescript-loader?tsconfig=./tsconfig.json'},
                 {test: /\.json$/,   loader: 'raw-loader'},
                 {test: /\.css$/,    loader: 'css-loader'},
                 {test: /\.styl$/,   loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'},

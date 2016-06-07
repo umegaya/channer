@@ -63,7 +63,7 @@ export class Util {
         );
         return date;
     }
-    static date(d: Date, duration?:boolean) {
+    static date(d: Date, duration?:boolean): string {
         var str: string;
         if (duration) {
             var diff: number = ((new Date()).getTime() - d.getTime());
@@ -88,12 +88,12 @@ export class Util {
         else {
             str = d.getHours() + ":" + d.getMinutes();
         }
-        return m("div", {class: "date"}, str);
+        return str;
     }
-    static datebyuuid(uuid: any, duration?:boolean) {
+    static datebyuuid(uuid: any, duration?:boolean): string {
         return Util.date(Util.uuid2date(<Long>uuid), duration);
     }
-    static datebylong(long: any, duration?:boolean) {
+    static datebylong(long: any, duration?:boolean): string {
         return Util.date(Util.long2date(<Long>long), duration);
     }
     static upvote_percent(model: ChannerProto.Model.Topic): number {

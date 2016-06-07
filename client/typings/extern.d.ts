@@ -5,6 +5,11 @@
 /// <reference path="./hammerjs/hammerjs.d.ts"/>
 /// <reference path="./UI.d.ts"/>
 /// <reference path="./mithril.d.ts"/>
+/// <reference path="./react/react.d.ts"/>
+/// <reference path="./react/react-dom.d.ts"/>
+/// <reference path="./react/react-list.d.ts"/>
+/// <reference path="./react-router/history.d.ts"/>
+/// <reference path="./react-router/react-router.d.ts"/>
 /// <reference path="./protobuf.d.ts"/>
 /// <reference path="./long/long.d.ts"/>
 /// <reference path="./webpack-runtime.d.ts"/>
@@ -35,7 +40,7 @@ interface ChannerModules {
 	hash: any;
 	storage: any;
 	patch: any;
-	mobile: boolean;
+	app: boolean;
     category: {
         data: Array<any>;
         to_id: (cat: string) => number;
@@ -74,6 +79,9 @@ interface ChannerModules {
         Radio: UI.Component;
         Channel: UI.Component;
         Topic: UI.Component;
+    }
+    rparts: {
+        List: __React.ComponentClass<any>;
     }
     testtmp: any;
 }

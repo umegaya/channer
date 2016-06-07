@@ -8,6 +8,7 @@ window.channer = {
         active: {},
     },
     parts: {},
+	rparts: {},
     category: {},
 	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
     testtmp: {},
@@ -55,7 +56,7 @@ document.addEventListener("deviceready", function () {
 				throw new Error((error && error.message) ? error.message : "dummy");
 			}
 			catch (e) {
-				console.log("env = " + window.environment + "|" + window.channer.mobile);
+				console.log("env = " + window.environment + "|" + window.channer.app);
 				alert("this device under bad network connection. " + 
 					"go to the place where provides good connection, then retry. " + 
 					"error at " + e.stack);

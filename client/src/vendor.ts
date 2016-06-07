@@ -22,6 +22,11 @@ window.channer.parts.Button = require('polythene/button/button');
 window.channer.parts.TextField = require('polythene/textfield/textfield');
 window.channer.parts.Tabs = require('polythene/tabs/tabs');
 window.channer.parts.Radio = require('polythene/radio-button/radio-button');
+//importing rparts
+if (!console.debug) { //because react refers console.debug to show introduction message of react devtool.
+	console.debug = console.log;
+}
+window.channer.rparts.List = require('react-list');
 
 //utility method for member ByteBuffer of protobuf data structure.
 window.channer.ProtoBuf.ByteBuffer.prototype.slice = 
