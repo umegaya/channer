@@ -10,13 +10,8 @@ export class RadioOptions {
     prop: UI.Property<any>;
     onchange: (next: any) => void;
 }
-
-class _RadioComponent implements UI.Component {
-	constructor() {}
-    controller = (options?: RadioOptions) => {
-        return options;
-    }
-    view = (options: RadioOptions): UI.Element => {
+export var RadioComponent: UI.Component = {
+    view: (ctrl: any, options: RadioOptions): UI.Element => {
         var ret: Array<UI.Element> = [];
         for (var k in options.elements) {
             ret.push(m.component(Radio, {
@@ -37,5 +32,3 @@ class _RadioComponent implements UI.Component {
         return m(".radio", ret);
     }
 }
-
-export var RadioComponent: _RadioComponent = new _RadioComponent();

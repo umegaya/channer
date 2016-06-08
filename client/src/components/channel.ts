@@ -1,6 +1,8 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util, BaseComponent, ListComponent} from "../uikit"
+import {m} from "../uikit"
+import {Pagify, PageComponent} from "./base"
+import {ListComponent} from "./parts/scroll"
 import {MenuElementComponent, TransitMenuElementComponent} from "./menu"
 import {Config} from "../config"
 
@@ -10,9 +12,8 @@ export class ChannelController implements UI.Controller {
 	tab_contents: {
 		[x: string]: UI.Component;
 	}
-	constructor(component: ChannelComponent) {
+	constructor(component: ChannelComponent, opts: ChannelOptions) {
 //        console.log("channel")
-		Util.active(this, component);
 		this.component = component;
 		this.selected = "joins";
 		this.tab_contents = {
@@ -32,7 +33,7 @@ export class ChannelController implements UI.Controller {
 	}
     
 	tab = (name: string) => {
-		return m("a", {
+		return m("a", <UI.Attributes>{
 			class: "Channel-tab" + (this.selected == name ? "_selected" : ""), 
 			onclick: function () { this.onchange(name) },
 		}, name);
@@ -45,29 +46,31 @@ export class ChannelController implements UI.Controller {
 	}
 }
 function ChannelView(ctrl: ChannelController) : UI.Element {
-	return ctrl.component.layout([
+	return m(".channel", [
 		ctrl.tabs(),
 		ctrl.activetab(),
 	]);
 }
-export class ChannelComponent extends BaseComponent {
-	controller: () => ChannelController;
-	view: UI.View<ChannelController>;
-    id: string;
+export class ChannelOptions {
+	id: string;
+}
+export class ChannelComponent extends PageComponent {
     //menu components
     top: TransitMenuElementComponent
 
-	constructor(config: Config) {
+	constructor() {
         super();
 		this.view = ChannelView;
         this.top = new TransitMenuElementComponent(
-            this, "img.home", "go to top", "/top"
+            "img.home", "go to top", "/top"
         );
-		this.controller = () => {
-            this.id = m.route.param("ch");
-			return new ChannelController(this);
-		}
 	}
+    view = (ctrl: ChannelController): UI.Element => {
+        return ChannelView(ctrl);
+    }
+    controller = (opts: ChannelOptions): ChannelController => {
+        return new ChannelController(this, opts);
+    }
     menus = (): Array<MenuElementComponent> => {
         return [
             this.top
@@ -75,4 +78,5 @@ export class ChannelComponent extends BaseComponent {
     }
 }
 
-window.channer.components.Channel = ChannelComponent
+window.channer.parts.Channel = new ChannelComponent();
+window.channer.components.Channel = Pagify(ChannelComponent);

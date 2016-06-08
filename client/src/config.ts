@@ -36,7 +36,9 @@ export class UserSettingsValues {
 	device_id: string;
 	secret: string;	
 	last_url: string;
+    last_page_url: string;
 	mail: string;
+    search_locale: string;
 	private secure_random = (): string => {
 		var array = new Uint8Array(16);
 		window.crypto.getRandomValues(array);
@@ -54,6 +56,10 @@ export class UserSettingsValues {
 		if (!this.pass) {
 			this.pass = this.secure_random();
 			console.log("password = " + this.pass);
+		}
+		if (!this.search_locale) {
+			this.search_locale = window.channer.l10n.language;
+			console.log("locale = " + this.search_locale);
 		}
 	}
 }
@@ -82,7 +88,9 @@ export class UserSettings implements Persistable {
 			this.values.secret = loaded.secret;
 			this.values.device_id = loaded.device_id;
 			this.values.last_url = loaded.last_url;
+			this.values.last_page_url = loaded.last_page_url;
 			this.values.mail = loaded.mail;
+			this.values.search_locale = loaded.search_locale;
 		}
 	}
 	write = (): string => {

@@ -1,0 +1,5087 @@
+[
+  [
+    "kakolog",
+    "過去ログ倉庫",
+    "/2/kakolog - 過去ログ倉庫"
+  ],
+  [
+    "bbynamazu",
+    "地震headline",
+    "/2/bbynamazu - 地震headline"
+  ],
+  [
+    "namazuplus",
+    "地震速報",
+    "/2/namazuplus - 地震速報"
+  ],
+  [
+    "eq",
+    "臨時地震",
+    "/2/eq - 臨時地震"
+  ],
+  [
+    "eqplus",
+    "臨時地震+",
+    "/2/eqplus - 臨時地震+"
+  ],
+  [
+    "lifeline",
+    "緊急自然災害",
+    "/2/lifeline - 緊急自然災害"
+  ],
+  [
+    "chinasmog",
+    "中国スモッグ(PM2.5)",
+    "/2/chinasmog - 中国スモッグ(PM2.5)"
+  ],
+  [
+    "base",
+    "プロ野球",
+    "/2/base - プロ野球"
+  ],
+  [
+    "photo",
+    "写真撮影",
+    "/2/photo - 写真撮影"
+  ],
+  [
+    "employee",
+    "リーマン",
+    "/2/employee - リーマン"
+  ],
+  [
+    "campus",
+    "大学生活",
+    "/2/campus - 大学生活"
+  ],
+  [
+    "ftax",
+    "ふるさと納税",
+    "/2/ftax - ふるさと納税"
+  ],
+  [
+    "be",
+    "面白ネタnews",
+    "/2/be - 面白ネタnews"
+  ],
+  [
+    "nandemo",
+    "なんでも質問",
+    "/2/nandemo - なんでも質問"
+  ],
+  [
+    "argue",
+    "朝生",
+    "/2/argue - 朝生"
+  ],
+  [
+    "bbynews",
+    "速報headline",
+    "/2/bbynews - 速報headline"
+  ],
+  [
+    "news",
+    "ニュース速報",
+    "/2/news - ニュース速報"
+  ],
+  [
+    "newsplus",
+    "ニュース速報+",
+    "/2/newsplus - ニュース速報+"
+  ],
+  [
+    "chinasmog",
+    "中国スモッグ(PM2.5)",
+    "/2/chinasmog - 中国スモッグ(PM2.5)"
+  ],
+  [
+    "news2",
+    "ニュース議論",
+    "/2/news2 - ニュース議論"
+  ],
+  [
+    "liveplus",
+    "ニュース実況+",
+    "/2/liveplus - ニュース実況+"
+  ],
+  [
+    "mnewsplus",
+    "芸スポ速報+",
+    "/2/mnewsplus - 芸スポ速報+"
+  ],
+  [
+    "musicnews",
+    "芸能音楽速報",
+    "/2/musicnews - 芸能音楽速報"
+  ],
+  [
+    "idolplus",
+    "アイドルニュース+",
+    "/2/idolplus - アイドルニュース+"
+  ],
+  [
+    "seijinewsplus",
+    "政治ニュース+",
+    "/2/seijinewsplus - 政治ニュース+"
+  ],
+  [
+    "news4plus",
+    "東アジアnews+",
+    "/2/news4plus - 東アジアnews+"
+  ],
+  [
+    "news4plusd",
+    "アジア速報+",
+    "/2/news4plusd - アジア速報+"
+  ],
+  [
+    "asia",
+    "ニュース極東",
+    "/2/asia - ニュース極東"
+  ],
+  [
+    "bizplus",
+    "ビジネスnews+",
+    "/2/bizplus - ビジネスnews+"
+  ],
+  [
+    "ticketplus",
+    "イベントnews+",
+    "/2/ticketplus - イベントnews+"
+  ],
+  [
+    "scienceplus",
+    "科学ニュース+",
+    "/2/scienceplus - 科学ニュース+"
+  ],
+  [
+    "pinkplus",
+    "PINKニュース+",
+    "/2/pinkplus - PINKニュース+"
+  ],
+  [
+    "avplus",
+    "AV+",
+    "/2/avplus - AV+"
+  ],
+  [
+    "snsplus",
+    "SNSニュース+",
+    "/2/snsplus - SNSニュース+"
+  ],
+  [
+    "wildplus",
+    "元気ニュース+",
+    "/2/wildplus - 元気ニュース+"
+  ],
+  [
+    "femnewsplus",
+    "ローカルnews+",
+    "/2/femnewsplus - ローカルnews+"
+  ],
+  [
+    "dqnplus",
+    "痛いニュース+",
+    "/2/dqnplus - 痛いニュース+"
+  ],
+  [
+    "moeplus",
+    "萌えニュース+",
+    "/2/moeplus - 萌えニュース+"
+  ],
+  [
+    "comicnews",
+    "アニメ漫画速報",
+    "/2/comicnews - アニメ漫画速報"
+  ],
+  [
+    "gamenews",
+    "ゲーム速報",
+    "/2/gamenews - ゲーム速報"
+  ],
+  [
+    "pcnews",
+    "PCニュース",
+    "/2/pcnews - PCニュース"
+  ],
+  [
+    "owabiplus",
+    "お詫び+",
+    "/2/owabiplus - お詫び+"
+  ],
+  [
+    "trafficinfo",
+    "交通情報",
+    "/2/trafficinfo - 交通情報"
+  ],
+  [
+    "lifeline",
+    "緊急自然災害",
+    "/2/lifeline - 緊急自然災害"
+  ],
+  [
+    "news7",
+    "私のニュース",
+    "/2/news7 - 私のニュース"
+  ],
+  [
+    "archives",
+    "懐かしニュース",
+    "/2/archives - 懐かしニュース"
+  ],
+  [
+    "bakanews",
+    "バカニュース",
+    "/2/bakanews - バカニュース"
+  ],
+  [
+    "editorial",
+    "社説",
+    "/2/editorial - 社説"
+  ],
+  [
+    "editorialplus",
+    "社説+",
+    "/2/editorialplus - 社説+"
+  ],
+  [
+    "wikileaks",
+    "WikiLeaks",
+    "/2/wikileaks - WikiLeaks"
+  ],
+  [
+    "kokusai",
+    "国際情勢",
+    "/2/kokusai - 国際情勢"
+  ],
+  [
+    "war",
+    "戦争・国防",
+    "/2/war - 戦争・国防"
+  ],
+  [
+    "news4plus",
+    "東アジアnews+",
+    "/2/news4plus - 東アジアnews+"
+  ],
+  [
+    "asia",
+    "ニュース極東",
+    "/2/asia - ニュース極東"
+  ],
+  [
+    "news4plusd",
+    "アジア速報+",
+    "/2/news4plusd - アジア速報+"
+  ],
+  [
+    "news5",
+    "イスラム情勢",
+    "/2/news5 - イスラム情勢"
+  ],
+  [
+    "iraq",
+    "イラク情勢",
+    "/2/iraq - イラク情勢"
+  ],
+  [
+    "africa",
+    "アフリカ情勢",
+    "/2/africa - アフリカ情勢"
+  ],
+  [
+    "europa",
+    "欧州・CIS情勢",
+    "/2/europa - 欧州・CIS情勢"
+  ],
+  [
+    "news5plus",
+    "ニュース国際+",
+    "/2/news5plus - ニュース国際+"
+  ],
+  [
+    "dejima",
+    "dejima",
+    "/2/dejima - dejima"
+  ],
+  [
+    "entrance",
+    "ラウンジ",
+    "/2/entrance - ラウンジ"
+  ],
+  [
+    "entrance2",
+    "ﾗｳﾝｼﾞｸﾗｼｯｸ",
+    "/2/entrance2 - ﾗｳﾝｼﾞｸﾗｼｯｸ"
+  ],
+  [
+    "qa",
+    "初心者の質問",
+    "/2/qa - 初心者の質問"
+  ],
+  [
+    "pcqa",
+    "PC初心者",
+    "/2/pcqa - PC初心者"
+  ],
+  [
+    "wiki",
+    "2chプロジェクト",
+    "/2/wiki - 2chプロジェクト"
+  ],
+  [
+    "goods",
+    "グッズリスト",
+    "/2/goods - グッズリスト"
+  ],
+  [
+    "gline",
+    "ガイドライン",
+    "/2/gline - ガイドライン"
+  ],
+  [
+    "event",
+    "イベント企画",
+    "/2/event - イベント企画"
+  ],
+  [
+    "2chse",
+    "2ch証券取引所",
+    "/2/2chse - 2ch証券取引所"
+  ],
+  [
+    "rank",
+    "いろいろランク",
+    "/2/rank - いろいろランク"
+  ],
+  [
+    "dataroom",
+    "資料室",
+    "/2/dataroom - 資料室"
+  ],
+  [
+    "vote",
+    "投票所",
+    "/2/vote - 投票所"
+  ],
+  [
+    "operate",
+    "2ch運用情報",
+    "/2/operate - 2ch運用情報"
+  ],
+  [
+    "operatex",
+    "運用情報臨時",
+    "/2/operatex - 運用情報臨時"
+  ],
+  [
+    "sec2ch",
+    "2ch規制情報",
+    "/2/sec2ch - 2ch規制情報"
+  ],
+  [
+    "sec2chd",
+    "2ch規制議論",
+    "/2/sec2chd - 2ch規制議論"
+  ],
+  [
+    "saku",
+    "削除要請",
+    "/2/saku - 削除要請"
+  ],
+  [
+    "saku",
+    "削除整理",
+    "/2/saku - 削除整理"
+  ],
+  [
+    "sakud",
+    "削除議論",
+    "/2/sakud - 削除議論"
+  ],
+  [
+    "sakukb",
+    "削除知恵袋",
+    "/2/sakukb - 削除知恵袋"
+  ],
+  [
+    "intro",
+    "自己紹介",
+    "/2/intro - 自己紹介"
+  ],
+  [
+    "honobono",
+    "ほのぼの",
+    "/2/honobono - ほのぼの"
+  ],
+  [
+    "yume",
+    "夢・独り言",
+    "/2/yume - 夢・独り言"
+  ],
+  [
+    "offmatrix",
+    "大規模OFF",
+    "/2/offmatrix - 大規模OFF"
+  ],
+  [
+    "offreg",
+    "定期OFF",
+    "/2/offreg - 定期OFF"
+  ],
+  [
+    "offevent",
+    "突発OFF",
+    "/2/offevent - 突発OFF"
+  ],
+  [
+    "aasaloon",
+    "AAサロン",
+    "/2/aasaloon - AAサロン"
+  ],
+  [
+    "mona",
+    "モナー",
+    "/2/mona - モナー"
+  ],
+  [
+    "nida",
+    "ニダー",
+    "/2/nida - ニダー"
+  ],
+  [
+    "aastory",
+    "AA長編",
+    "/2/aastory - AA長編"
+  ],
+  [
+    "kao",
+    "顔文字",
+    "/2/kao - 顔文字"
+  ],
+  [
+    "mass",
+    "マスコミ",
+    "/2/mass - マスコミ"
+  ],
+  [
+    "youth",
+    "少年犯罪",
+    "/2/youth - 少年犯罪"
+  ],
+  [
+    "disaster",
+    "自然災害",
+    "/2/disaster - 自然災害"
+  ],
+  [
+    "119",
+    "消防救急防災",
+    "/2/119 - 消防救急防災"
+  ],
+  [
+    "gender",
+    "男性論女性論",
+    "/2/gender - 男性論女性論"
+  ],
+  [
+    "giin",
+    "議員・選挙",
+    "/2/giin - 議員・選挙"
+  ],
+  [
+    "manifesto",
+    "政治家語録",
+    "/2/manifesto - 政治家語録"
+  ],
+  [
+    "police",
+    "警察",
+    "/2/police - 警察"
+  ],
+  [
+    "court",
+    "裁判・司法",
+    "/2/court - 裁判・司法"
+  ],
+  [
+    "saibanin",
+    "裁判員制度",
+    "/2/saibanin - 裁判員制度"
+  ],
+  [
+    "soc",
+    "社会・世評",
+    "/2/soc - 社会・世評"
+  ],
+  [
+    "atom",
+    "環境・電力",
+    "/2/atom - 環境・電力"
+  ],
+  [
+    "energy",
+    "エネルギー",
+    "/2/energy - エネルギー"
+  ],
+  [
+    "river",
+    "河川・ダム等",
+    "/2/river - 河川・ダム等"
+  ],
+  [
+    "traf",
+    "運輸・交通",
+    "/2/traf - 運輸・交通"
+  ],
+  [
+    "way",
+    "道路・高速道路",
+    "/2/way - 道路・高速道路"
+  ],
+  [
+    "develop",
+    "都市計画",
+    "/2/develop - 都市計画"
+  ],
+  [
+    "recruit",
+    "就職",
+    "/2/recruit - 就職"
+  ],
+  [
+    "job",
+    "転職",
+    "/2/job - 転職"
+  ],
+  [
+    "volunteer",
+    "ボランティア",
+    "/2/volunteer - ボランティア"
+  ],
+  [
+    "welfare",
+    "介護・福祉",
+    "/2/welfare - 介護・福祉"
+  ],
+  [
+    "mayor",
+    "地方自治知事",
+    "/2/mayor - 地方自治知事"
+  ],
+  [
+    "ftax",
+    "ふるさと納税",
+    "/2/ftax - ふるさと納税"
+  ],
+  [
+    "jsdf",
+    "自衛隊",
+    "/2/jsdf - 自衛隊"
+  ],
+  [
+    "nenga",
+    "郵便・郵政",
+    "/2/nenga - 郵便・郵政"
+  ],
+  [
+    "lifework",
+    "生涯学習",
+    "/2/lifework - 生涯学習"
+  ],
+  [
+    "regulate",
+    "通信行政",
+    "/2/regulate - 通信行政"
+  ],
+  [
+    "forex",
+    "外為",
+    "/2/forex - 外為"
+  ],
+  [
+    "venture",
+    "ベンチャー",
+    "/2/venture - ベンチャー"
+  ],
+  [
+    "manage",
+    "経営学",
+    "/2/manage - 経営学"
+  ],
+  [
+    "management",
+    "店舗運営",
+    "/2/management - 店舗運営"
+  ],
+  [
+    "estate",
+    "賃貸不動産",
+    "/2/estate - 賃貸不動産"
+  ],
+  [
+    "koumu",
+    "公務員",
+    "/2/koumu - 公務員"
+  ],
+  [
+    "shikaku",
+    "法律勉強相談",
+    "/2/shikaku - 法律勉強相談"
+  ],
+  [
+    "lic",
+    "資格全般",
+    "/2/lic - 資格全般"
+  ],
+  [
+    "haken",
+    "派遣業界",
+    "/2/haken - 派遣業界"
+  ],
+  [
+    "hoken",
+    "保険業界",
+    "/2/hoken - 保険業界"
+  ],
+  [
+    "tax",
+    "税金経理会計",
+    "/2/tax - 税金経理会計"
+  ],
+  [
+    "exam",
+    "会計全般試験",
+    "/2/exam - 会計全般試験"
+  ],
+  [
+    "hosp",
+    "病院・医者",
+    "/2/hosp - 病院・医者"
+  ],
+  [
+    "bio",
+    "医療業界",
+    "/2/bio - 医療業界"
+  ],
+  [
+    "hikari",
+    "光通信",
+    "/2/hikari - 光通信"
+  ],
+  [
+    "dtp",
+    "DTP・印刷",
+    "/2/dtp - DTP・印刷"
+  ],
+  [
+    "part",
+    "アルバイト",
+    "/2/part - アルバイト"
+  ],
+  [
+    "koukoku",
+    "広告業界",
+    "/2/koukoku - 広告業界"
+  ],
+  [
+    "agri",
+    "農林水産業",
+    "/2/agri - 農林水産業"
+  ],
+  [
+    "build",
+    "建設住宅業界",
+    "/2/build - 建設住宅業界"
+  ],
+  [
+    "industry",
+    "製造業界",
+    "/2/industry - 製造業界"
+  ],
+  [
+    "peko",
+    "食品業界・問題",
+    "/2/peko - 食品業界・問題"
+  ],
+  [
+    "company",
+    "ちくり裏事情",
+    "/2/company - ちくり裏事情"
+  ],
+  [
+    "bouhan",
+    "防犯・詐欺対策",
+    "/2/bouhan - 防犯・詐欺対策"
+  ],
+  [
+    "antispam",
+    "架空請求・spam",
+    "/2/antispam - 架空請求・spam"
+  ],
+  [
+    "ihan",
+    "違反の潰し方",
+    "/2/ihan - 違反の潰し方"
+  ],
+  [
+    "hokkaido",
+    "北海道",
+    "/2/hokkaido - 北海道"
+  ],
+  [
+    "tohoku",
+    "東北",
+    "/2/tohoku - 東北"
+  ],
+  [
+    "kousinetu",
+    "北陸・甲信越",
+    "/2/kousinetu - 北陸・甲信越"
+  ],
+  [
+    "kanto",
+    "関東",
+    "/2/kanto - 関東"
+  ],
+  [
+    "tokyo",
+    "東京",
+    "/2/tokyo - 東京"
+  ],
+  [
+    "tama",
+    "多摩",
+    "/2/tama - 多摩"
+  ],
+  [
+    "kana",
+    "神奈川",
+    "/2/kana - 神奈川"
+  ],
+  [
+    "tokai",
+    "東海",
+    "/2/tokai - 東海"
+  ],
+  [
+    "kinki",
+    "近畿",
+    "/2/kinki - 近畿"
+  ],
+  [
+    "osaka",
+    "大阪",
+    "/2/osaka - 大阪"
+  ],
+  [
+    "chugoku",
+    "中国",
+    "/2/chugoku - 中国"
+  ],
+  [
+    "sikoku",
+    "四国",
+    "/2/sikoku - 四国"
+  ],
+  [
+    "kyusyu",
+    "九州",
+    "/2/kyusyu - 九州"
+  ],
+  [
+    "okinawa",
+    "沖縄",
+    "/2/okinawa - 沖縄"
+  ],
+  [
+    "expo",
+    "万博・地方博",
+    "/2/expo - 万博・地方博"
+  ],
+  [
+    "subcal",
+    "サブカル",
+    "/2/subcal - サブカル"
+  ],
+  [
+    "bun",
+    "創作文芸",
+    "/2/bun - 創作文芸"
+  ],
+  [
+    "mitemite",
+    "創作発表",
+    "/2/mitemite - 創作発表"
+  ],
+  [
+    "poem",
+    "詩・ポエム",
+    "/2/poem - 詩・ポエム"
+  ],
+  [
+    "rongo",
+    "名言・格言",
+    "/2/rongo - 名言・格言"
+  ],
+  [
+    "movie",
+    "映画一般・8mm",
+    "/2/movie - 映画一般・8mm"
+  ],
+  [
+    "cinema",
+    "映画作品・人",
+    "/2/cinema - 映画作品・人"
+  ],
+  [
+    "endroll",
+    "映画人",
+    "/2/endroll - 映画人"
+  ],
+  [
+    "rmovie",
+    "懐かし邦画",
+    "/2/rmovie - 懐かし邦画"
+  ],
+  [
+    "kinema",
+    "懐かし洋画",
+    "/2/kinema - 懐かし洋画"
+  ],
+  [
+    "netflix",
+    "Netflix",
+    "/2/netflix - Netflix"
+  ],
+  [
+    "occult",
+    "オカルト",
+    "/2/occult - オカルト"
+  ],
+  [
+    "kaidan",
+    "創作怪談",
+    "/2/kaidan - 創作怪談"
+  ],
+  [
+    "esp",
+    "超能力",
+    "/2/esp - 超能力"
+  ],
+  [
+    "sfx",
+    "特撮！",
+    "/2/sfx - 特撮！"
+  ],
+  [
+    "rsfx",
+    "昭和特撮",
+    "/2/rsfx - 昭和特撮"
+  ],
+  [
+    "drama",
+    "演劇・舞台役者",
+    "/2/drama - 演劇・舞台役者"
+  ],
+  [
+    "siki",
+    "宝塚・四季",
+    "/2/siki - 宝塚・四季"
+  ],
+  [
+    "fortune",
+    "占い",
+    "/2/fortune - 占い"
+  ],
+  [
+    "uranai",
+    "占術理論実践",
+    "/2/uranai - 占術理論実践"
+  ],
+  [
+    "kyoto",
+    "神社・仏閣",
+    "/2/kyoto - 神社・仏閣"
+  ],
+  [
+    "gallery",
+    "美術鑑賞",
+    "/2/gallery - 美術鑑賞"
+  ],
+  [
+    "rakugo",
+    "伝統芸能",
+    "/2/rakugo - 伝統芸能"
+  ],
+  [
+    "ruins",
+    "世界遺産",
+    "/2/ruins - 世界遺産"
+  ],
+  [
+    "emperor",
+    "皇室・王侯貴族",
+    "/2/emperor - 皇室・王侯貴族"
+  ],
+  [
+    "spiritual",
+    "スピリチュアル",
+    "/2/spiritual - スピリチュアル"
+  ],
+  [
+    "rikei",
+    "理系全般",
+    "/2/rikei - 理系全般"
+  ],
+  [
+    "sci",
+    "物理",
+    "/2/sci - 物理"
+  ],
+  [
+    "life",
+    "生物",
+    "/2/life - 生物"
+  ],
+  [
+    "bake",
+    "化学",
+    "/2/bake - 化学"
+  ],
+  [
+    "kikai",
+    "機械・工学",
+    "/2/kikai - 機械・工学"
+  ],
+  [
+    "denki",
+    "電気・電子",
+    "/2/denki - 電気・電子"
+  ],
+  [
+    "robot",
+    "ロボット技術",
+    "/2/robot - ロボット技術"
+  ],
+  [
+    "infosys",
+    "情報システム",
+    "/2/infosys - 情報システム"
+  ],
+  [
+    "informatics",
+    "情報学",
+    "/2/informatics - 情報学"
+  ],
+  [
+    "sim",
+    "シミュレート",
+    "/2/sim - シミュレート"
+  ],
+  [
+    "nougaku",
+    "農学",
+    "/2/nougaku - 農学"
+  ],
+  [
+    "sky",
+    "天文・気象",
+    "/2/sky - 天文・気象"
+  ],
+  [
+    "galileo",
+    "宇宙",
+    "/2/galileo - 宇宙"
+  ],
+  [
+    "doctor",
+    "医歯薬看護",
+    "/2/doctor - 医歯薬看護"
+  ],
+  [
+    "kampo",
+    "東洋医学",
+    "/2/kampo - 東洋医学"
+  ],
+  [
+    "math",
+    "数学",
+    "/2/math - 数学"
+  ],
+  [
+    "doboku",
+    "土木・建築",
+    "/2/doboku - 土木・建築"
+  ],
+  [
+    "material",
+    "材料物性",
+    "/2/material - 材料物性"
+  ],
+  [
+    "space",
+    "航空・船舶",
+    "/2/space - 航空・船舶"
+  ],
+  [
+    "future",
+    "未来技術",
+    "/2/future - 未来技術"
+  ],
+  [
+    "wild",
+    "野生生物",
+    "/2/wild - 野生生物"
+  ],
+  [
+    "plants",
+    "植物",
+    "/2/plants - 植物"
+  ],
+  [
+    "earth",
+    "地球科学",
+    "/2/earth - 地球科学"
+  ],
+  [
+    "psycho",
+    "心理学",
+    "/2/psycho - 心理学"
+  ],
+  [
+    "gengo",
+    "言語学",
+    "/2/gengo - 言語学"
+  ],
+  [
+    "dialect",
+    "方言",
+    "/2/dialect - 方言"
+  ],
+  [
+    "pedagogy",
+    "教育学",
+    "/2/pedagogy - 教育学"
+  ],
+  [
+    "sociology",
+    "社会学",
+    "/2/sociology - 社会学"
+  ],
+  [
+    "economics",
+    "経済学",
+    "/2/economics - 経済学"
+  ],
+  [
+    "book",
+    "文学",
+    "/2/book - 文学"
+  ],
+  [
+    "poetics",
+    "詩文学",
+    "/2/poetics - 詩文学"
+  ],
+  [
+    "history",
+    "日本史",
+    "/2/history - 日本史"
+  ],
+  [
+    "history2",
+    "日本近代史",
+    "/2/history2 - 日本近代史"
+  ],
+  [
+    "whis",
+    "世界史",
+    "/2/whis - 世界史"
+  ],
+  [
+    "archeology",
+    "考古学",
+    "/2/archeology - 考古学"
+  ],
+  [
+    "min",
+    "民俗・神話学",
+    "/2/min - 民俗・神話学"
+  ],
+  [
+    "kobun",
+    "古文・漢文",
+    "/2/kobun - 古文・漢文"
+  ],
+  [
+    "english",
+    "ENGLISH",
+    "/2/english - ENGLISH"
+  ],
+  [
+    "usa",
+    "アメリカ",
+    "/2/usa - アメリカ"
+  ],
+  [
+    "korea",
+    "ハングル",
+    "/2/korea - ハングル"
+  ],
+  [
+    "china",
+    "中国",
+    "/2/china - 中国"
+  ],
+  [
+    "taiwan",
+    "台湾",
+    "/2/taiwan - 台湾"
+  ],
+  [
+    "myanmar",
+    "ミャンマー",
+    "/2/myanmar - ミャンマー"
+  ],
+  [
+    "yangon",
+    "ヤンゴン",
+    "/2/yangon - ヤンゴン"
+  ],
+  [
+    "geo",
+    "地理・人類学",
+    "/2/geo - 地理・人類学"
+  ],
+  [
+    "chiri",
+    "地理お国自慢",
+    "/2/chiri - 地理お国自慢"
+  ],
+  [
+    "gogaku",
+    "外国語",
+    "/2/gogaku - 外国語"
+  ],
+  [
+    "art",
+    "芸術デザイン",
+    "/2/art - 芸術デザイン"
+  ],
+  [
+    "philo",
+    "哲学",
+    "/2/philo - 哲学"
+  ],
+  [
+    "jurisp",
+    "法学",
+    "/2/jurisp - 法学"
+  ],
+  [
+    "shihou",
+    "司法試験",
+    "/2/shihou - 司法試験"
+  ],
+  [
+    "kaden",
+    "家電製品",
+    "/2/kaden - 家電製品"
+  ],
+  [
+    "wm",
+    "ポータブルAV",
+    "/2/wm - ポータブルAV"
+  ],
+  [
+    "vcamera",
+    "ビデオカメラ",
+    "/2/vcamera - ビデオカメラ"
+  ],
+  [
+    "bakery",
+    "調理家電",
+    "/2/bakery - 調理家電"
+  ],
+  [
+    "toilet",
+    "シャワートイレ",
+    "/2/toilet - シャワートイレ"
+  ],
+  [
+    "sony",
+    "ソニー",
+    "/2/sony - ソニー"
+  ],
+  [
+    "apple2",
+    "Apple",
+    "/2/apple2 - Apple"
+  ],
+  [
+    "phs",
+    "携帯・ＰＨＳ",
+    "/2/phs - 携帯・ＰＨＳ"
+  ],
+  [
+    "keitai",
+    "携帯機種",
+    "/2/keitai - 携帯機種"
+  ],
+  [
+    "spsaloon",
+    "スマホサロン",
+    "/2/spsaloon - スマホサロン"
+  ],
+  [
+    "smartphone",
+    "スマートフォン",
+    "/2/smartphone - スマートフォン"
+  ],
+  [
+    "ios",
+    "iOS",
+    "/2/ios - iOS"
+  ],
+  [
+    "iPhone",
+    "iOSゲーム",
+    "/2/iPhone - iOSゲーム"
+  ],
+  [
+    "android",
+    "Android",
+    "/2/android - Android"
+  ],
+  [
+    "chakumelo",
+    "携帯コンテンツ",
+    "/2/chakumelo - 携帯コンテンツ"
+  ],
+  [
+    "appli",
+    "携帯電話ゲー",
+    "/2/appli - 携帯電話ゲー"
+  ],
+  [
+    "applism",
+    "スマホアプリ",
+    "/2/applism - スマホアプリ"
+  ],
+  [
+    "dgoods",
+    "デジタルモノ",
+    "/2/dgoods - デジタルモノ"
+  ],
+  [
+    "camera",
+    "カメラ",
+    "/2/camera - カメラ"
+  ],
+  [
+    "dcamera",
+    "デジカメ",
+    "/2/dcamera - デジカメ"
+  ],
+  [
+    "av",
+    "AV機器",
+    "/2/av - AV機器"
+  ],
+  [
+    "pav",
+    "ピュアAU",
+    "/2/pav - ピュアAU"
+  ],
+  [
+    "battery",
+    "電池等",
+    "/2/battery - 電池等"
+  ],
+  [
+    "seiji",
+    "政治",
+    "/2/seiji - 政治"
+  ],
+  [
+    "diplomacy",
+    "外交政策",
+    "/2/diplomacy - 外交政策"
+  ],
+  [
+    "trafficpolicy",
+    "交通政策",
+    "/2/trafficpolicy - 交通政策"
+  ],
+  [
+    "eco",
+    "経済",
+    "/2/eco - 経済"
+  ],
+  [
+    "stock",
+    "株式",
+    "/2/stock - 株式"
+  ],
+  [
+    "stockb",
+    "株個別銘柄",
+    "/2/stockb - 株個別銘柄"
+  ],
+  [
+    "market",
+    "投資一般",
+    "/2/market - 投資一般"
+  ],
+  [
+    "livemarket1",
+    "市況1",
+    "/2/livemarket1 - 市況1"
+  ],
+  [
+    "livemarket2",
+    "市況2",
+    "/2/livemarket2 - 市況2"
+  ],
+  [
+    "deal",
+    "先物",
+    "/2/deal - 先物"
+  ],
+  [
+    "koumei",
+    "創価・公明",
+    "/2/koumei - 創価・公明"
+  ],
+  [
+    "kyousan",
+    "共産党",
+    "/2/kyousan - 共産党"
+  ],
+  [
+    "sisou",
+    "政治思想",
+    "/2/sisou - 政治思想"
+  ],
+  [
+    "kova",
+    "ゴーマニズム",
+    "/2/kova - ゴーマニズム"
+  ],
+  [
+    "money",
+    "金融",
+    "/2/money - 金融"
+  ],
+  [
+    "food",
+    "食べ物",
+    "/2/food - 食べ物"
+  ],
+  [
+    "candy",
+    "お菓子",
+    "/2/candy - お菓子"
+  ],
+  [
+    "juice",
+    "ソフトドリンク",
+    "/2/juice - ソフトドリンク"
+  ],
+  [
+    "pot",
+    "お茶・珈琲",
+    "/2/pot - お茶・珈琲"
+  ],
+  [
+    "cook",
+    "料理",
+    "/2/cook - 料理"
+  ],
+  [
+    "okome",
+    "米・米加工品",
+    "/2/okome - 米・米加工品"
+  ],
+  [
+    "yasai",
+    "野菜・果物",
+    "/2/yasai - 野菜・果物"
+  ],
+  [
+    "kinoko",
+    "きのこ",
+    "/2/kinoko - きのこ"
+  ],
+  [
+    "takenoko",
+    "たけのこ",
+    "/2/takenoko - たけのこ"
+  ],
+  [
+    "salt",
+    "調味料",
+    "/2/salt - 調味料"
+  ],
+  [
+    "ramen",
+    "ラーメン",
+    "/2/ramen - ラーメン"
+  ],
+  [
+    "nissin",
+    "インスタント麺",
+    "/2/nissin - インスタント麺"
+  ],
+  [
+    "jnoodle",
+    "そば・うどん",
+    "/2/jnoodle - そば・うどん"
+  ],
+  [
+    "sushi",
+    "おすし",
+    "/2/sushi - おすし"
+  ],
+  [
+    "don",
+    "丼",
+    "/2/don - 丼"
+  ],
+  [
+    "curry",
+    "カレー",
+    "/2/curry - カレー"
+  ],
+  [
+    "bread",
+    "パン",
+    "/2/bread - パン"
+  ],
+  [
+    "pasta",
+    "パスタ・ピザ",
+    "/2/pasta - パスタ・ピザ"
+  ],
+  [
+    "kbbq",
+    "焼肉",
+    "/2/kbbq - 焼肉"
+  ],
+  [
+    "konamono",
+    "たこ焼き等",
+    "/2/konamono - たこ焼き等"
+  ],
+  [
+    "toba",
+    "珍味",
+    "/2/toba - 珍味"
+  ],
+  [
+    "gurume",
+    "グルメ外食",
+    "/2/gurume - グルメ外食"
+  ],
+  [
+    "famires",
+    "ファミレス",
+    "/2/famires - ファミレス"
+  ],
+  [
+    "jfoods",
+    "Ｂ級グルメ",
+    "/2/jfoods - Ｂ級グルメ"
+  ],
+  [
+    "bento",
+    "弁当・駅弁",
+    "/2/bento - 弁当・駅弁"
+  ],
+  [
+    "sake",
+    "お酒・Bar",
+    "/2/sake - お酒・Bar"
+  ],
+  [
+    "wine",
+    "ワイン",
+    "/2/wine - ワイン"
+  ],
+  [
+    "beer",
+    "ビール",
+    "/2/beer - ビール"
+  ],
+  [
+    "drunk",
+    "居酒屋",
+    "/2/drunk - 居酒屋"
+  ],
+  [
+    "recipe",
+    "レシピ",
+    "/2/recipe - レシピ"
+  ],
+  [
+    "patissier",
+    "製菓・製パン",
+    "/2/patissier - 製菓・製パン"
+  ],
+  [
+    "supplement",
+    "健康食・サプリ",
+    "/2/supplement - 健康食・サプリ"
+  ],
+  [
+    "vegetarian",
+    "ベジタリアン",
+    "/2/vegetarian - ベジタリアン"
+  ],
+  [
+    "lifesaloon",
+    "生活サロン",
+    "/2/lifesaloon - 生活サロン"
+  ],
+  [
+    "kankon",
+    "生活全般",
+    "/2/kankon - 生活全般"
+  ],
+  [
+    "okiraku",
+    "その日暮らし",
+    "/2/okiraku - その日暮らし"
+  ],
+  [
+    "homealone",
+    "一人暮らし",
+    "/2/homealone - 一人暮らし"
+  ],
+  [
+    "countrylife",
+    "田舎暮らし",
+    "/2/countrylife - 田舎暮らし"
+  ],
+  [
+    "debt",
+    "借金生活",
+    "/2/debt - 借金生活"
+  ],
+  [
+    "inpatient",
+    "入院生活",
+    "/2/inpatient - 入院生活"
+  ],
+  [
+    "sportsclub",
+    "スポーツクラブ",
+    "/2/sportsclub - スポーツクラブ"
+  ],
+  [
+    "bath",
+    "お風呂・銭湯",
+    "/2/bath - お風呂・銭湯"
+  ],
+  [
+    "anniversary",
+    "記念日",
+    "/2/anniversary - 記念日"
+  ],
+  [
+    "sousai",
+    "冠婚葬祭",
+    "/2/sousai - 冠婚葬祭"
+  ],
+  [
+    "baby",
+    "育児",
+    "/2/baby - 育児"
+  ],
+  [
+    "kagu",
+    "家具",
+    "/2/kagu - 家具"
+  ],
+  [
+    "diy",
+    "DIY",
+    "/2/diy - DIY"
+  ],
+  [
+    "diary",
+    "日記",
+    "/2/diary - 日記"
+  ],
+  [
+    "shop",
+    "通販・買い物",
+    "/2/shop - 通販・買い物"
+  ],
+  [
+    "hcenter",
+    "家電等量販店",
+    "/2/hcenter - 家電等量販店"
+  ],
+  [
+    "used",
+    "中古リサイクル",
+    "/2/used - 中古リサイクル"
+  ],
+  [
+    "rental",
+    "レンタル",
+    "/2/rental - レンタル"
+  ],
+  [
+    "trend",
+    "流行",
+    "/2/trend - 流行"
+  ],
+  [
+    "ticketplus",
+    "Walker+",
+    "/2/ticketplus - Walker+"
+  ],
+  [
+    "model",
+    "モデル",
+    "/2/model - モデル"
+  ],
+  [
+    "fashion",
+    "ファッション",
+    "/2/fashion - ファッション"
+  ],
+  [
+    "underwear",
+    "下着",
+    "/2/underwear - 下着"
+  ],
+  [
+    "shoes",
+    "靴",
+    "/2/shoes - 靴"
+  ],
+  [
+    "female",
+    "化粧",
+    "/2/female - 化粧"
+  ],
+  [
+    "diet",
+    "美容",
+    "/2/diet - 美容"
+  ],
+  [
+    "mensbeauty",
+    "男の美容・化粧",
+    "/2/mensbeauty - 男の美容・化粧"
+  ],
+  [
+    "aroma",
+    "香水芳香消臭",
+    "/2/aroma - 香水芳香消臭"
+  ],
+  [
+    "seikei",
+    "美容整形",
+    "/2/seikei - 美容整形"
+  ],
+  [
+    "shapeup",
+    "ダイエット",
+    "/2/shapeup - ダイエット"
+  ],
+  [
+    "world",
+    "一般海外生活",
+    "/2/world - 一般海外生活"
+  ],
+  [
+    "northa",
+    "北米海外生活",
+    "/2/northa - 北米海外生活"
+  ],
+  [
+    "credit",
+    "クレジット",
+    "/2/credit - クレジット"
+  ],
+  [
+    "point",
+    "ポイント・マイル",
+    "/2/point - ポイント・マイル"
+  ],
+  [
+    "cafe30",
+    "３０代",
+    "/2/cafe30 - ３０代"
+  ],
+  [
+    "cafe40",
+    "４０代",
+    "/2/cafe40 - ４０代"
+  ],
+  [
+    "cafe50",
+    "５０代以上",
+    "/2/cafe50 - ５０代以上"
+  ],
+  [
+    "cafe60",
+    "６０歳以上",
+    "/2/cafe60 - ６０歳以上"
+  ],
+  [
+    "live",
+    "家庭",
+    "/2/live - 家庭"
+  ],
+  [
+    "souji",
+    "掃除全般",
+    "/2/souji - 掃除全般"
+  ],
+  [
+    "goki",
+    "害虫害獣対策",
+    "/2/goki - 害虫害獣対策"
+  ],
+  [
+    "radiation",
+    "放射能",
+    "/2/radiation - 放射能"
+  ],
+  [
+    "kechi2",
+    "ドケチ",
+    "/2/kechi2 - ドケチ"
+  ],
+  [
+    "chance",
+    "懸賞",
+    "/2/chance - 懸賞"
+  ],
+  [
+    "cigaret",
+    "たばこ",
+    "/2/cigaret - たばこ"
+  ],
+  [
+    "megane",
+    "めがね",
+    "/2/megane - めがね"
+  ],
+  [
+    "yuusen",
+    "マイライン",
+    "/2/yuusen - マイライン"
+  ],
+  [
+    "conv",
+    "コンビニ",
+    "/2/conv - コンビニ"
+  ],
+  [
+    "sale",
+    "バーゲン",
+    "/2/sale - バーゲン"
+  ],
+  [
+    "stationery",
+    "文房具",
+    "/2/stationery - 文房具"
+  ],
+  [
+    "class",
+    "習い事",
+    "/2/class - 習い事"
+  ],
+  [
+    "shar",
+    "新シャア専用",
+    "/2/shar - 新シャア専用"
+  ],
+  [
+    "x3",
+    "旧シャア専用",
+    "/2/x3 - 旧シャア専用"
+  ],
+  [
+    "denpa",
+    "電波・お花畑",
+    "/2/denpa - 電波・お花畑"
+  ],
+  [
+    "owarai",
+    "お笑い小咄",
+    "/2/owarai - お笑い小咄"
+  ],
+  [
+    "2chbook",
+    "同人ノウハウ",
+    "/2/2chbook - 同人ノウハウ"
+  ],
+  [
+    "uwasa",
+    "噂話",
+    "/2/uwasa - 噂話"
+  ],
+  [
+    "charaneta",
+    "キャラネタ",
+    "/2/charaneta - キャラネタ"
+  ],
+  [
+    "charaneta2",
+    "なりきりネタ",
+    "/2/charaneta2 - なりきりネタ"
+  ],
+  [
+    "mascot",
+    "マスコットキャラ",
+    "/2/mascot - マスコットキャラ"
+  ],
+  [
+    "senji",
+    "戦時",
+    "/2/senji - 戦時"
+  ],
+  [
+    "lovesaloon",
+    "恋愛サロン",
+    "/2/lovesaloon - 恋愛サロン"
+  ],
+  [
+    "ex",
+    "カップル",
+    "/2/ex - カップル"
+  ],
+  [
+    "x1",
+    "×１",
+    "/2/x1 - ×１"
+  ],
+  [
+    "gaysaloon",
+    "同性愛サロン",
+    "/2/gaysaloon - 同性愛サロン"
+  ],
+  [
+    "nohodame",
+    "のほほんダメ",
+    "/2/nohodame - のほほんダメ"
+  ],
+  [
+    "dame",
+    "無職・だめ",
+    "/2/dame - 無職・だめ"
+  ],
+  [
+    "loser",
+    "負け組",
+    "/2/loser - 負け組"
+  ],
+  [
+    "hikky",
+    "ヒッキー",
+    "/2/hikky - ヒッキー"
+  ],
+  [
+    "mental",
+    "メンヘルサロン",
+    "/2/mental - メンヘルサロン"
+  ],
+  [
+    "single",
+    "独身貴族",
+    "/2/single - 独身貴族"
+  ],
+  [
+    "wom",
+    "女性",
+    "/2/wom - 女性"
+  ],
+  [
+    "sfe",
+    "独身女性限定",
+    "/2/sfe - 独身女性限定"
+  ],
+  [
+    "wmotenai",
+    "もてない女",
+    "/2/wmotenai - もてない女"
+  ],
+  [
+    "ms",
+    "既婚女性",
+    "/2/ms - 既婚女性"
+  ],
+  [
+    "male",
+    "独身男性",
+    "/2/male - 独身男性"
+  ],
+  [
+    "motetai",
+    "もてたい男",
+    "/2/motetai - もてたい男"
+  ],
+  [
+    "motenai",
+    "モテない男性",
+    "/2/motenai - モテない男性"
+  ],
+  [
+    "alone",
+    "孤独な男性",
+    "/2/alone - 孤独な男性"
+  ],
+  [
+    "tomorrow",
+    "既婚男性",
+    "/2/tomorrow - 既婚男性"
+  ],
+  [
+    "employee",
+    "リーマン",
+    "/2/employee - リーマン"
+  ],
+  [
+    "campus",
+    "大学生活",
+    "/2/campus - 大学生活"
+  ],
+  [
+    "student",
+    "大学学部・研究",
+    "/2/student - 大学学部・研究"
+  ],
+  [
+    "otaku",
+    "おたく",
+    "/2/otaku - おたく"
+  ],
+  [
+    "nendai",
+    "年代別",
+    "/2/nendai - 年代別"
+  ],
+  [
+    "sepia",
+    "セピア",
+    "/2/sepia - セピア"
+  ],
+  [
+    "gag",
+    "駄洒落",
+    "/2/gag - 駄洒落"
+  ],
+  [
+    "575",
+    "しりとり",
+    "/2/575 - しりとり"
+  ],
+  [
+    "tanka",
+    "五七五・短歌",
+    "/2/tanka - 五七五・短歌"
+  ],
+  [
+    "4649",
+    "アウトロー",
+    "/2/4649 - アウトロー"
+  ],
+  [
+    "hidari",
+    "左利き",
+    "/2/hidari - 左利き"
+  ],
+  [
+    "worldskb",
+    "世界のスケベ",
+    "/2/worldskb - 世界のスケベ"
+  ],
+  [
+    "bbylive",
+    "実況headline",
+    "/2/bbylive - 実況headline"
+  ],
+  [
+    "livesaturn",
+    "なんでも実況S",
+    "/2/livesaturn - なんでも実況S"
+  ],
+  [
+    "livevenus",
+    "なんでも実況V",
+    "/2/livevenus - なんでも実況V"
+  ],
+  [
+    "livejupiter",
+    "なんでも実況J",
+    "/2/livejupiter - なんでも実況J"
+  ],
+  [
+    "liveuranus",
+    "なんでも実況U",
+    "/2/liveuranus - なんでも実況U"
+  ],
+  [
+    "endless",
+    "実況ch",
+    "/2/endless - 実況ch"
+  ],
+  [
+    "weekly",
+    "番組ch",
+    "/2/weekly - 番組ch"
+  ],
+  [
+    "livewar",
+    "戦場実況",
+    "/2/livewar - 戦場実況"
+  ],
+  [
+    "livefield",
+    "現場実況",
+    "/2/livefield - 現場実況"
+  ],
+  [
+    "liveelection",
+    "選挙実況",
+    "/2/liveelection - 選挙実況"
+  ],
+  [
+    "livewkwest",
+    "番組ch(西日本)",
+    "/2/livewkwest - 番組ch(西日本)"
+  ],
+  [
+    "livenhk",
+    "番組ch(NHK)",
+    "/2/livenhk - 番組ch(NHK)"
+  ],
+  [
+    "liveetv",
+    "番組ch(教育)",
+    "/2/liveetv - 番組ch(教育)"
+  ],
+  [
+    "liventv",
+    "番組ch(NTV)",
+    "/2/liventv - 番組ch(NTV)"
+  ],
+  [
+    "livetbs",
+    "番組ch(TBS)",
+    "/2/livetbs - 番組ch(TBS)"
+  ],
+  [
+    "livecx",
+    "番組ch(フジ)",
+    "/2/livecx - 番組ch(フジ)"
+  ],
+  [
+    "liveanb",
+    "番組ch(朝日)",
+    "/2/liveanb - 番組ch(朝日)"
+  ],
+  [
+    "livetx",
+    "番組ch(TX)",
+    "/2/livetx - 番組ch(TX)"
+  ],
+  [
+    "livemx",
+    "番組ch(MX)",
+    "/2/livemx - 番組ch(MX)"
+  ],
+  [
+    "livebs",
+    "BS実況(NHK)",
+    "/2/livebs - BS実況(NHK)"
+  ],
+  [
+    "livebs2",
+    "BS実況(無料)",
+    "/2/livebs2 - BS実況(無料)"
+  ],
+  [
+    "livewowow",
+    "BS実況(有料)",
+    "/2/livewowow - BS実況(有料)"
+  ],
+  [
+    "liveskyp",
+    "スカパー実況",
+    "/2/liveskyp - スカパー実況"
+  ],
+  [
+    "liveradio",
+    "ラジオ実況",
+    "/2/liveradio - ラジオ実況"
+  ],
+  [
+    "liveanime",
+    "アニメ特撮実況",
+    "/2/liveanime - アニメ特撮実況"
+  ],
+  [
+    "kokkai",
+    "議会選挙実況",
+    "/2/kokkai - 議会選挙実況"
+  ],
+  [
+    "dome",
+    "スポーツch",
+    "/2/dome - スポーツch"
+  ],
+  [
+    "livebase",
+    "野球ch",
+    "/2/livebase - 野球ch"
+  ],
+  [
+    "livefoot",
+    "サッカーch",
+    "/2/livefoot - サッカーch"
+  ],
+  [
+    "oonna",
+    "五輪実況(女)",
+    "/2/oonna - 五輪実況(女)"
+  ],
+  [
+    "ootoko",
+    "五輪実況(男)",
+    "/2/ootoko - 五輪実況(男)"
+  ],
+  [
+    "dancesite",
+    "芸能ch",
+    "/2/dancesite - 芸能ch"
+  ],
+  [
+    "festival",
+    "お祭りch",
+    "/2/festival - お祭りch"
+  ],
+  [
+    "jasmine",
+    "streaming実況",
+    "/2/jasmine - streaming実況"
+  ],
+  [
+    "liveanarchy",
+    "Anarchy実況",
+    "/2/liveanarchy - Anarchy実況"
+  ],
+  [
+    "livesangyou",
+    "三行実況",
+    "/2/livesangyou - 三行実況"
+  ],
+  [
+    "livemarket1",
+    "市況1",
+    "/2/livemarket1 - 市況1"
+  ],
+  [
+    "livemarket2",
+    "市況2",
+    "/2/livemarket2 - 市況2"
+  ],
+  [
+    "edu",
+    "教育・先生",
+    "/2/edu - 教育・先生"
+  ],
+  [
+    "jsaloon",
+    "大学受験サロン",
+    "/2/jsaloon - 大学受験サロン"
+  ],
+  [
+    "kouri",
+    "大学受験",
+    "/2/kouri - 大学受験"
+  ],
+  [
+    "juku",
+    "学習塾・予備校",
+    "/2/juku - 学習塾・予備校"
+  ],
+  [
+    "ojyuken",
+    "お受験",
+    "/2/ojyuken - お受験"
+  ],
+  [
+    "senmon",
+    "専門学校",
+    "/2/senmon - 専門学校"
+  ],
+  [
+    "design",
+    "美術系学校",
+    "/2/design - 美術系学校"
+  ],
+  [
+    "musicology",
+    "音楽系学校",
+    "/2/musicology - 音楽系学校"
+  ],
+  [
+    "govexam",
+    "公務員試験",
+    "/2/govexam - 公務員試験"
+  ],
+  [
+    "hobby",
+    "趣味一般",
+    "/2/hobby - 趣味一般"
+  ],
+  [
+    "magic",
+    "手品・曲芸",
+    "/2/magic - 手品・曲芸"
+  ],
+  [
+    "card",
+    "トランプ",
+    "/2/card - トランプ"
+  ],
+  [
+    "puzzle",
+    "パズル",
+    "/2/puzzle - パズル"
+  ],
+  [
+    "craft",
+    "ハンドクラフト",
+    "/2/craft - ハンドクラフト"
+  ],
+  [
+    "toy",
+    "おもちゃ",
+    "/2/toy - おもちゃ"
+  ],
+  [
+    "zoid",
+    "ゾイド",
+    "/2/zoid - ゾイド"
+  ],
+  [
+    "watch",
+    "時計・小物",
+    "/2/watch - 時計・小物"
+  ],
+  [
+    "smoking",
+    "煙草銘柄・器具",
+    "/2/smoking - 煙草銘柄・器具"
+  ],
+  [
+    "knife",
+    "刃物",
+    "/2/knife - 刃物"
+  ],
+  [
+    "doll",
+    "お人形",
+    "/2/doll - お人形"
+  ],
+  [
+    "engei",
+    "園芸",
+    "/2/engei - 園芸"
+  ],
+  [
+    "dog",
+    "犬猫大好き",
+    "/2/dog - 犬猫大好き"
+  ],
+  [
+    "pet",
+    "ペット大好き",
+    "/2/pet - ペット大好き"
+  ],
+  [
+    "aquarium",
+    "アクアリウム",
+    "/2/aquarium - アクアリウム"
+  ],
+  [
+    "goldenfish",
+    "日本の淡水魚",
+    "/2/goldenfish - 日本の淡水魚"
+  ],
+  [
+    "insect",
+    "昆虫・節足動物",
+    "/2/insect - 昆虫・節足動物"
+  ],
+  [
+    "cat",
+    "生き物苦手",
+    "/2/cat - 生き物苦手"
+  ],
+  [
+    "bike",
+    "バイク",
+    "/2/bike - バイク"
+  ],
+  [
+    "motorbike",
+    "バイク車種ﾒｰｶｰ",
+    "/2/motorbike - バイク車種ﾒｰｶｰ"
+  ],
+  [
+    "car",
+    "車",
+    "/2/car - 車"
+  ],
+  [
+    "kcar",
+    "軽自動車",
+    "/2/kcar - 軽自動車"
+  ],
+  [
+    "auto",
+    "車種・車メーカー",
+    "/2/auto - 車種・車メーカー"
+  ],
+  [
+    "usedcar",
+    "中古車",
+    "/2/usedcar - 中古車"
+  ],
+  [
+    "truck",
+    "大型・特殊車両",
+    "/2/truck - 大型・特殊車両"
+  ],
+  [
+    "army",
+    "軍事",
+    "/2/army - 軍事"
+  ],
+  [
+    "radio",
+    "無線",
+    "/2/radio - 無線"
+  ],
+  [
+    "train",
+    "鉄道総合",
+    "/2/train - 鉄道総合"
+  ],
+  [
+    "rail",
+    "鉄道路線・車両",
+    "/2/rail - 鉄道路線・車両"
+  ],
+  [
+    "jnr",
+    "鉄道懐かし",
+    "/2/jnr - 鉄道懐かし"
+  ],
+  [
+    "ice",
+    "鉄道(海外)",
+    "/2/ice - 鉄道(海外)"
+  ],
+  [
+    "gage",
+    "鉄道模型",
+    "/2/gage - 鉄道模型"
+  ],
+  [
+    "bus",
+    "バス・バス路線",
+    "/2/bus - バス・バス路線"
+  ],
+  [
+    "airline",
+    "エアライン",
+    "/2/airline - エアライン"
+  ],
+  [
+    "mokei",
+    "模型・プラモ",
+    "/2/mokei - 模型・プラモ"
+  ],
+  [
+    "radiocontrol",
+    "RC（ラジコン)",
+    "/2/radiocontrol - RC（ラジコン)"
+  ],
+  [
+    "gun",
+    "サバゲー",
+    "/2/gun - サバゲー"
+  ],
+  [
+    "fireworks",
+    "花火",
+    "/2/fireworks - 花火"
+  ],
+  [
+    "warhis",
+    "三国志・戦国",
+    "/2/warhis - 三国志・戦国"
+  ],
+  [
+    "chinahero",
+    "中国英雄",
+    "/2/chinahero - 中国英雄"
+  ],
+  [
+    "sengoku",
+    "戦国時代",
+    "/2/sengoku - 戦国時代"
+  ],
+  [
+    "nanminhis",
+    "歴史難民",
+    "/2/nanminhis - 歴史難民"
+  ],
+  [
+    "dance",
+    "ダンス",
+    "/2/dance - ダンス"
+  ],
+  [
+    "yoga",
+    "ヨガ",
+    "/2/yoga - ヨガ"
+  ],
+  [
+    "bird",
+    "野鳥観察",
+    "/2/bird - 野鳥観察"
+  ],
+  [
+    "collect",
+    "コレクション",
+    "/2/collect - コレクション"
+  ],
+  [
+    "photo",
+    "写真撮影",
+    "/2/photo - 写真撮影"
+  ],
+  [
+    "oekaki",
+    "お絵描き",
+    "/2/oekaki - お絵描き"
+  ],
+  [
+    "sposaloon",
+    "スポーツサロン",
+    "/2/sposaloon - スポーツサロン"
+  ],
+  [
+    "sports",
+    "スポーツ",
+    "/2/sports - スポーツ"
+  ],
+  [
+    "rsports",
+    "懐かしスポーツ",
+    "/2/rsports - 懐かしスポーツ"
+  ],
+  [
+    "stadium",
+    "スポーツ施設",
+    "/2/stadium - スポーツ施設"
+  ],
+  [
+    "athletics",
+    "陸上競技",
+    "/2/athletics - 陸上競技"
+  ],
+  [
+    "gymnastics",
+    "体操・新体操",
+    "/2/gymnastics - 体操・新体操"
+  ],
+  [
+    "muscle",
+    "ウエイトトレ",
+    "/2/muscle - ウエイトトレ"
+  ],
+  [
+    "noroma",
+    "運動音痴",
+    "/2/noroma - 運動音痴"
+  ],
+  [
+    "wsports",
+    "冬スポーツ",
+    "/2/wsports - 冬スポーツ"
+  ],
+  [
+    "ski",
+    "スキースノボ",
+    "/2/ski - スキースノボ"
+  ],
+  [
+    "skate",
+    "スケート",
+    "/2/skate - スケート"
+  ],
+  [
+    "swim",
+    "水泳",
+    "/2/swim - 水泳"
+  ],
+  [
+    "msports",
+    "マリンスポーツ",
+    "/2/msports - マリンスポーツ"
+  ],
+  [
+    "boat",
+    "船スポーツ",
+    "/2/boat - 船スポーツ"
+  ],
+  [
+    "birdman",
+    "空スポーツ",
+    "/2/birdman - 空スポーツ"
+  ],
+  [
+    "fish",
+    "釣り",
+    "/2/fish - 釣り"
+  ],
+  [
+    "bass",
+    "バス釣り",
+    "/2/bass - バス釣り"
+  ],
+  [
+    "bicycle",
+    "自転車",
+    "/2/bicycle - 自転車"
+  ],
+  [
+    "equestrian",
+    "乗馬・馬術",
+    "/2/equestrian - 乗馬・馬術"
+  ],
+  [
+    "f1",
+    "ﾓｰﾀｰｽﾎﾟｰﾂ",
+    "/2/f1 - ﾓｰﾀｰｽﾎﾟｰﾂ"
+  ],
+  [
+    "olympic",
+    "オリンピック",
+    "/2/olympic - オリンピック"
+  ],
+  [
+    "bullseye",
+    "的スポーツ",
+    "/2/bullseye - 的スポーツ"
+  ],
+  [
+    "parksports",
+    "公園スポーツ",
+    "/2/parksports - 公園スポーツ"
+  ],
+  [
+    "amespo",
+    "アメスポ",
+    "/2/amespo - アメスポ"
+  ],
+  [
+    "cheerleading",
+    "チア",
+    "/2/cheerleading - チア"
+  ],
+  [
+    "xsports",
+    "xsports",
+    "/2/xsports - xsports"
+  ],
+  [
+    "base",
+    "プロ野球",
+    "/2/base - プロ野球"
+  ],
+  [
+    "npb",
+    "球界改革議論",
+    "/2/npb - 球界改革議論"
+  ],
+  [
+    "meikyu",
+    "野球殿堂",
+    "/2/meikyu - 野球殿堂"
+  ],
+  [
+    "mlb",
+    "野球総合",
+    "/2/mlb - 野球総合"
+  ],
+  [
+    "hsb",
+    "高校野球",
+    "/2/hsb - 高校野球"
+  ],
+  [
+    "kyozin",
+    "アンチ球団",
+    "/2/kyozin - アンチ球団"
+  ],
+  [
+    "soccer",
+    "国内サッカー",
+    "/2/soccer - 国内サッカー"
+  ],
+  [
+    "eleven",
+    "日本代表蹴球",
+    "/2/eleven - 日本代表蹴球"
+  ],
+  [
+    "wc",
+    "ワールドカップ",
+    "/2/wc - ワールドカップ"
+  ],
+  [
+    "football",
+    "海外サッカー",
+    "/2/football - 海外サッカー"
+  ],
+  [
+    "basket",
+    "バスケット",
+    "/2/basket - バスケット"
+  ],
+  [
+    "tennis",
+    "テニス",
+    "/2/tennis - テニス"
+  ],
+  [
+    "volley",
+    "バレーボール",
+    "/2/volley - バレーボール"
+  ],
+  [
+    "ovalball",
+    "ラグビー",
+    "/2/ovalball - ラグビー"
+  ],
+  [
+    "pingpong",
+    "卓球",
+    "/2/pingpong - 卓球"
+  ],
+  [
+    "gutter",
+    "ボウリング",
+    "/2/gutter - ボウリング"
+  ],
+  [
+    "golf",
+    "ゴルフ",
+    "/2/golf - ゴルフ"
+  ],
+  [
+    "billiards",
+    "ビリヤード",
+    "/2/billiards - ビリヤード"
+  ],
+  [
+    "ballgame",
+    "その他球技",
+    "/2/ballgame - その他球技"
+  ],
+  [
+    "k1",
+    "格闘技",
+    "/2/k1 - 格闘技"
+  ],
+  [
+    "wres",
+    "プロレス",
+    "/2/wres - プロレス"
+  ],
+  [
+    "budou",
+    "武道・武芸",
+    "/2/budou - 武道・武芸"
+  ],
+  [
+    "boxing",
+    "ボクシング",
+    "/2/boxing - ボクシング"
+  ],
+  [
+    "sumou",
+    "相撲",
+    "/2/sumou - 相撲"
+  ],
+  [
+    "jyudo",
+    "伝統武術",
+    "/2/jyudo - 伝統武術"
+  ],
+  [
+    "mma",
+    "MMA",
+    "/2/mma - MMA"
+  ],
+  [
+    "oversea",
+    "海外旅行",
+    "/2/oversea - 海外旅行"
+  ],
+  [
+    "21oversea",
+    "危ない海外",
+    "/2/21oversea - 危ない海外"
+  ],
+  [
+    "travel",
+    "国内旅行",
+    "/2/travel - 国内旅行"
+  ],
+  [
+    "hotel",
+    "ホテル･旅館",
+    "/2/hotel - ホテル･旅館"
+  ],
+  [
+    "localfoods",
+    "土産物・特産物",
+    "/2/localfoods - 土産物・特産物"
+  ],
+  [
+    "tropical",
+    "トロピカル",
+    "/2/tropical - トロピカル"
+  ],
+  [
+    "onsen",
+    "温泉",
+    "/2/onsen - 温泉"
+  ],
+  [
+    "park",
+    "遊園地",
+    "/2/park - 遊園地"
+  ],
+  [
+    "zoo",
+    "動物園・水族館",
+    "/2/zoo - 動物園・水族館"
+  ],
+  [
+    "museum",
+    "博物館・美術館",
+    "/2/museum - 博物館・美術館"
+  ],
+  [
+    "out",
+    "登山キャンプ",
+    "/2/out - 登山キャンプ"
+  ],
+  [
+    "sapa",
+    "道の駅",
+    "/2/sapa - 道の駅"
+  ],
+  [
+    "tvsaloon",
+    "テレビサロン",
+    "/2/tvsaloon - テレビサロン"
+  ],
+  [
+    "kouhaku",
+    "年末年始番組",
+    "/2/kouhaku - 年末年始番組"
+  ],
+  [
+    "tv",
+    "テレビ番組",
+    "/2/tv - テレビ番組"
+  ],
+  [
+    "natsutv",
+    "懐かしテレビ",
+    "/2/natsutv - 懐かしテレビ"
+  ],
+  [
+    "tvd",
+    "テレビドラマ",
+    "/2/tvd - テレビドラマ"
+  ],
+  [
+    "nhkdrama",
+    "大河ドラマ",
+    "/2/nhkdrama - 大河ドラマ"
+  ],
+  [
+    "natsudora",
+    "懐かしドラマ",
+    "/2/natsudora - 懐かしドラマ"
+  ],
+  [
+    "kin",
+    "時代劇",
+    "/2/kin - 時代劇"
+  ],
+  [
+    "radiosaloon",
+    "ラジオサロン",
+    "/2/radiosaloon - ラジオサロン"
+  ],
+  [
+    "am",
+    "ラジオ番組",
+    "/2/am - ラジオ番組"
+  ],
+  [
+    "rradio",
+    "懐かしラジオ",
+    "/2/rradio - 懐かしラジオ"
+  ],
+  [
+    "tv2",
+    "海外テレビ",
+    "/2/tv2 - 海外テレビ"
+  ],
+  [
+    "hanryu",
+    "韓流",
+    "/2/hanryu - 韓流"
+  ],
+  [
+    "cs",
+    "ケーブル放送",
+    "/2/cs - ケーブル放送"
+  ],
+  [
+    "skyp",
+    "スカパー",
+    "/2/skyp - スカパー"
+  ],
+  [
+    "bs",
+    "デジタル放送",
+    "/2/bs - デジタル放送"
+  ],
+  [
+    "nhk",
+    "NHK",
+    "/2/nhk - NHK"
+  ],
+  [
+    "netflix",
+    "Netflix",
+    "/2/netflix - Netflix"
+  ],
+  [
+    "cm",
+    "広告・ＣＭ",
+    "/2/cm - 広告・ＣＭ"
+  ],
+  [
+    "geino",
+    "芸能",
+    "/2/geino - 芸能"
+  ],
+  [
+    "celebrity",
+    "海外芸能人",
+    "/2/celebrity - 海外芸能人"
+  ],
+  [
+    "4sama",
+    "アジアエンタメ",
+    "/2/4sama - アジアエンタメ"
+  ],
+  [
+    "kyon2",
+    "懐かし芸能人",
+    "/2/kyon2 - 懐かし芸能人"
+  ],
+  [
+    "actor",
+    "男性俳優",
+    "/2/actor - 男性俳優"
+  ],
+  [
+    "actress",
+    "女優",
+    "/2/actress - 女優"
+  ],
+  [
+    "geinin",
+    "お笑い芸人",
+    "/2/geinin - お笑い芸人"
+  ],
+  [
+    "ana",
+    "アナウンサー",
+    "/2/ana - アナウンサー"
+  ],
+  [
+    "ami",
+    "あみ＆あゆ",
+    "/2/ami - あみ＆あゆ"
+  ],
+  [
+    "apple",
+    "椎名林檎",
+    "/2/apple - 椎名林檎"
+  ],
+  [
+    "idolplus",
+    "アイドルニュース+",
+    "/2/idolplus - アイドルニュース+"
+  ],
+  [
+    "mendol",
+    "男性アイドル",
+    "/2/mendol - 男性アイドル"
+  ],
+  [
+    "idol",
+    "女性アイドル",
+    "/2/idol - 女性アイドル"
+  ],
+  [
+    "geinoj",
+    "U-15タレント",
+    "/2/geinoj - U-15タレント"
+  ],
+  [
+    "ainotane",
+    "モ娘（羊）",
+    "/2/ainotane - モ娘（羊）"
+  ],
+  [
+    "zurui",
+    "モ娘（鳩）",
+    "/2/zurui - モ娘（鳩）"
+  ],
+  [
+    "morningcoffee",
+    "モ娘（狼）",
+    "/2/morningcoffee - モ娘（狼）"
+  ],
+  [
+    "momoclo",
+    "ももクロ",
+    "/2/momoclo - ももクロ"
+  ],
+  [
+    "babymetal",
+    "BABYMETAL",
+    "/2/babymetal - BABYMETAL"
+  ],
+  [
+    "exile",
+    "EXILE",
+    "/2/exile - EXILE"
+  ],
+  [
+    "smap",
+    "スマップ",
+    "/2/smap - スマップ"
+  ],
+  [
+    "jan",
+    "ジャニーズ",
+    "/2/jan - ジャニーズ"
+  ],
+  [
+    "jr",
+    "ジャニーズ２",
+    "/2/jr - ジャニーズ２"
+  ],
+  [
+    "jr2",
+    "ジャニーズJr",
+    "/2/jr2 - ジャニーズJr"
+  ],
+  [
+    "akb",
+    "地下アイドル(AKB48)",
+    "/2/akb - 地下アイドル(AKB48)"
+  ],
+  [
+    "akbsaloon",
+    "AKBサロン(表)",
+    "/2/akbsaloon - AKBサロン(表)"
+  ],
+  [
+    "uraidol",
+    "AKBサロン(裏)",
+    "/2/uraidol - AKBサロン(裏)"
+  ],
+  [
+    "world48",
+    "海外AKB48G",
+    "/2/world48 - 海外AKB48G"
+  ],
+  [
+    "nogizaka",
+    "乃木坂46",
+    "/2/nogizaka - 乃木坂46"
+  ],
+  [
+    "ske",
+    "SKE48",
+    "/2/ske - SKE48"
+  ],
+  [
+    "sdn",
+    "SDN48",
+    "/2/sdn - SDN48"
+  ],
+  [
+    "nmb",
+    "NMB48",
+    "/2/nmb - NMB48"
+  ],
+  [
+    "hkt",
+    "HKT48",
+    "/2/hkt - HKT48"
+  ],
+  [
+    "ngt",
+    "NGT48",
+    "/2/ngt - NGT48"
+  ],
+  [
+    "netidol",
+    "ネットアイドル",
+    "/2/netidol - ネットアイドル"
+  ],
+  [
+    "indieidol",
+    "インディーアイドル",
+    "/2/indieidol - インディーアイドル"
+  ],
+  [
+    "mj",
+    "麻雀・他",
+    "/2/mj - 麻雀・他"
+  ],
+  [
+    "pachi",
+    "パチンコサロン",
+    "/2/pachi - パチンコサロン"
+  ],
+  [
+    "pachij",
+    "パチンコ店情報",
+    "/2/pachij - パチンコ店情報"
+  ],
+  [
+    "pachik",
+    "パチンコ機種等",
+    "/2/pachik - パチンコ機種等"
+  ],
+  [
+    "slot",
+    "スロットサロン",
+    "/2/slot - スロットサロン"
+  ],
+  [
+    "slotj",
+    "スロット店情報",
+    "/2/slotj - スロット店情報"
+  ],
+  [
+    "slotk",
+    "スロット機種",
+    "/2/slotk - スロット機種"
+  ],
+  [
+    "keiba",
+    "競馬",
+    "/2/keiba - 競馬"
+  ],
+  [
+    "uma",
+    "競馬２",
+    "/2/uma - 競馬２"
+  ],
+  [
+    "keirin",
+    "競輪",
+    "/2/keirin - 競輪"
+  ],
+  [
+    "kyotei",
+    "競艇",
+    "/2/kyotei - 競艇"
+  ],
+  [
+    "autorace",
+    "オートレース",
+    "/2/autorace - オートレース"
+  ],
+  [
+    "gamble",
+    "ギャンブル",
+    "/2/gamble - ギャンブル"
+  ],
+  [
+    "loto",
+    "宝くじ",
+    "/2/loto - 宝くじ"
+  ],
+  [
+    "gsaloon",
+    "ゲームサロン",
+    "/2/gsaloon - ゲームサロン"
+  ],
+  [
+    "gamenews",
+    "ゲーム速報",
+    "/2/gamenews - ゲーム速報"
+  ],
+  [
+    "gameover",
+    "家ゲー攻略",
+    "/2/gameover - 家ゲー攻略"
+  ],
+  [
+    "goveract",
+    "家ゲACT攻略",
+    "/2/goveract - 家ゲACT攻略"
+  ],
+  [
+    "goverrpg",
+    "家ゲRPG攻略",
+    "/2/goverrpg - 家ゲRPG攻略"
+  ],
+  [
+    "gamerpg",
+    "家ゲーRPG",
+    "/2/gamerpg - 家ゲーRPG"
+  ],
+  [
+    "ff",
+    "FF・ドラクエ",
+    "/2/ff - FF・ドラクエ"
+  ],
+  [
+    "gamesrpg",
+    "家ゲーSRPG",
+    "/2/gamesrpg - 家ゲーSRPG"
+  ],
+  [
+    "gamerobo",
+    "ロボットゲー",
+    "/2/gamerobo - ロボットゲー"
+  ],
+  [
+    "gal",
+    "ギャルゲー",
+    "/2/gal - ギャルゲー"
+  ],
+  [
+    "ggirl",
+    "女向ゲー一般",
+    "/2/ggirl - 女向ゲー一般"
+  ],
+  [
+    "gamespo",
+    "スポーツ・RACE",
+    "/2/gamespo - スポーツ・RACE"
+  ],
+  [
+    "gamehis",
+    "歴史ゲーム",
+    "/2/gamehis - 歴史ゲーム"
+  ],
+  [
+    "otoge",
+    "音ゲー",
+    "/2/otoge - 音ゲー"
+  ],
+  [
+    "gamefight",
+    "格闘ゲーム",
+    "/2/gamefight - 格闘ゲーム"
+  ],
+  [
+    "gamestg",
+    "シューティング",
+    "/2/gamestg - シューティング"
+  ],
+  [
+    "gamef",
+    "PCアクション",
+    "/2/gamef - PCアクション"
+  ],
+  [
+    "touhou",
+    "東方project",
+    "/2/touhou - 東方project"
+  ],
+  [
+    "fly",
+    "フライトシム",
+    "/2/fly - フライトシム"
+  ],
+  [
+    "famicom",
+    "家庭用ゲーム",
+    "/2/famicom - 家庭用ゲーム"
+  ],
+  [
+    "zgame",
+    "家ゲーZ区分",
+    "/2/zgame - 家ゲーZ区分"
+  ],
+  [
+    "retro",
+    "レトロゲーム",
+    "/2/retro - レトロゲーム"
+  ],
+  [
+    "retro2",
+    "家ゲーレトロ",
+    "/2/retro2 - 家ゲーレトロ"
+  ],
+  [
+    "game90",
+    "レトロ32bit以上",
+    "/2/game90 - レトロ32bit以上"
+  ],
+  [
+    "arc",
+    "アーケード",
+    "/2/arc - アーケード"
+  ],
+  [
+    "rarc",
+    "アケゲーレトロ",
+    "/2/rarc - アケゲーレトロ"
+  ],
+  [
+    "amusement",
+    "メダル・プライズ",
+    "/2/amusement - メダル・プライズ"
+  ],
+  [
+    "gecen",
+    "ゲーセン",
+    "/2/gecen - ゲーセン"
+  ],
+  [
+    "game",
+    "PCゲーム",
+    "/2/game - PCゲーム"
+  ],
+  [
+    "gameama",
+    "同人ゲーム",
+    "/2/gameama - 同人ゲーム"
+  ],
+  [
+    "gameswf",
+    "ブラウザゲーム",
+    "/2/gameswf - ブラウザゲーム"
+  ],
+  [
+    "cgame",
+    "卓上ゲーム",
+    "/2/cgame - 卓上ゲーム"
+  ],
+  [
+    "tcg",
+    "TCG",
+    "/2/tcg - TCG"
+  ],
+  [
+    "bgame",
+    "将棋・チェス",
+    "/2/bgame - 将棋・チェス"
+  ],
+  [
+    "gamestones",
+    "囲碁・オセロ",
+    "/2/gamestones - 囲碁・オセロ"
+  ],
+  [
+    "quiz",
+    "クイズ雑学",
+    "/2/quiz - クイズ雑学"
+  ],
+  [
+    "ghard",
+    "ハード・業界",
+    "/2/ghard - ハード・業界"
+  ],
+  [
+    "hunter",
+    "モンハン",
+    "/2/hunter - モンハン"
+  ],
+  [
+    "gameurawaza",
+    "裏技・改造",
+    "/2/gameurawaza - 裏技・改造"
+  ],
+  [
+    "gamechara",
+    "ゲームキャラ",
+    "/2/gamechara - ゲームキャラ"
+  ],
+  [
+    "gamemusic",
+    "ゲーム音楽",
+    "/2/gamemusic - ゲーム音楽"
+  ],
+  [
+    "minecraft",
+    "Minecraft",
+    "/2/minecraft - Minecraft"
+  ],
+  [
+    "aimasu",
+    "アイドルマスター",
+    "/2/aimasu - アイドルマスター"
+  ],
+  [
+    "yugioh",
+    "遊戯王",
+    "/2/yugioh - 遊戯王"
+  ],
+  [
+    "steam",
+    "Steam",
+    "/2/steam - Steam"
+  ],
+  [
+    "handygame",
+    "携帯ゲーソフト",
+    "/2/handygame - 携帯ゲーソフト"
+  ],
+  [
+    "handygover",
+    "携帯ゲー攻略",
+    "/2/handygover - 携帯ゲー攻略"
+  ],
+  [
+    "handygrpg",
+    "携帯ゲーRPG",
+    "/2/handygrpg - 携帯ゲーRPG"
+  ],
+  [
+    "poke",
+    "ポケモン",
+    "/2/poke - ポケモン"
+  ],
+  [
+    "wifi",
+    "Wi-Fi",
+    "/2/wifi - Wi-Fi"
+  ],
+  [
+    "rhandyg",
+    "携帯ゲーレトロ",
+    "/2/rhandyg - 携帯ゲーレトロ"
+  ],
+  [
+    "pokechara",
+    "携帯ゲーキャラ",
+    "/2/pokechara - 携帯ゲーキャラ"
+  ],
+  [
+    "mmonews",
+    "ネトゲ速報",
+    "/2/mmonews - ネトゲ速報"
+  ],
+  [
+    "mmoqa",
+    "ネトゲ質問",
+    "/2/mmoqa - ネトゲ質問"
+  ],
+  [
+    "ogame",
+    "ネトゲ実況",
+    "/2/ogame - ネトゲ実況"
+  ],
+  [
+    "ogame2",
+    "ネトゲ実況2",
+    "/2/ogame2 - ネトゲ実況2"
+  ],
+  [
+    "ogame3",
+    "ネトゲ実況3",
+    "/2/ogame3 - ネトゲ実況3"
+  ],
+  [
+    "mmosaloon",
+    "ネトゲサロン",
+    "/2/mmosaloon - ネトゲサロン"
+  ],
+  [
+    "netgame",
+    "ネットゲーム",
+    "/2/netgame - ネットゲーム"
+  ],
+  [
+    "mmo",
+    "大規模MMO",
+    "/2/mmo - 大規模MMO"
+  ],
+  [
+    "mmominor",
+    "小規模MMO",
+    "/2/mmominor - 小規模MMO"
+  ],
+  [
+    "pso",
+    "PSO",
+    "/2/pso - PSO"
+  ],
+  [
+    "dqo",
+    "DQO",
+    "/2/dqo - DQO"
+  ],
+  [
+    "ffo",
+    "FFO",
+    "/2/ffo - FFO"
+  ],
+  [
+    "comicnews",
+    "アニメ漫画速報",
+    "/2/comicnews - アニメ漫画速報"
+  ],
+  [
+    "asaloon",
+    "アニメサロン",
+    "/2/asaloon - アニメサロン"
+  ],
+  [
+    "anime4vip",
+    "アニメサロンex",
+    "/2/anime4vip - アニメサロンex"
+  ],
+  [
+    "anime",
+    "アニメ",
+    "/2/anime - アニメ"
+  ],
+  [
+    "anime2",
+    "アニメ２",
+    "/2/anime2 - アニメ２"
+  ],
+  [
+    "anime3",
+    "アニメ新作情報",
+    "/2/anime3 - アニメ新作情報"
+  ],
+  [
+    "antianime",
+    "アニメアンチ",
+    "/2/antianime - アニメアンチ"
+  ],
+  [
+    "ranime",
+    "懐アニ昭和",
+    "/2/ranime - 懐アニ昭和"
+  ],
+  [
+    "ranimeh",
+    "懐アニ平成",
+    "/2/ranimeh - 懐アニ平成"
+  ],
+  [
+    "animovie",
+    "アニメ映画",
+    "/2/animovie - アニメ映画"
+  ],
+  [
+    "anichara",
+    "アニキャラ総合",
+    "/2/anichara - アニキャラ総合"
+  ],
+  [
+    "anichara2",
+    "アニキャラ個別",
+    "/2/anichara2 - アニキャラ個別"
+  ],
+  [
+    "cosp",
+    "コスプレ",
+    "/2/cosp - コスプレ"
+  ],
+  [
+    "voice",
+    "声優総合",
+    "/2/voice - 声優総合"
+  ],
+  [
+    "voiceactor",
+    "声優個人",
+    "/2/voiceactor - 声優個人"
+  ],
+  [
+    "doujin",
+    "同人",
+    "/2/doujin - 同人"
+  ],
+  [
+    "comiket",
+    "同人イベント",
+    "/2/comiket - 同人イベント"
+  ],
+  [
+    "csaloon",
+    "漫画サロン",
+    "/2/csaloon - 漫画サロン"
+  ],
+  [
+    "comic",
+    "漫画",
+    "/2/comic - 漫画"
+  ],
+  [
+    "rcomic",
+    "懐かし漫画",
+    "/2/rcomic - 懐かし漫画"
+  ],
+  [
+    "ymag",
+    "少年漫画",
+    "/2/ymag - 少年漫画"
+  ],
+  [
+    "wcomic",
+    "週刊少年漫画",
+    "/2/wcomic - 週刊少年漫画"
+  ],
+  [
+    "gcomic",
+    "少女漫画",
+    "/2/gcomic - 少女漫画"
+  ],
+  [
+    "4koma",
+    "４コマ漫画",
+    "/2/4koma - ４コマ漫画"
+  ],
+  [
+    "cchara",
+    "漫画キャラ",
+    "/2/cchara - 漫画キャラ"
+  ],
+  [
+    "sakura",
+    "CCさくら",
+    "/2/sakura - CCさくら"
+  ],
+  [
+    "eva",
+    "エヴァ",
+    "/2/eva - エヴァ"
+  ],
+  [
+    "cartoon",
+    "海外アニメ漫画",
+    "/2/cartoon - 海外アニメ漫画"
+  ],
+  [
+    "iga",
+    "アニメ漫画業界",
+    "/2/iga - アニメ漫画業界"
+  ],
+  [
+    "bookall",
+    "文芸書籍サロン",
+    "/2/bookall - 文芸書籍サロン"
+  ],
+  [
+    "magazin",
+    "ライトノベル",
+    "/2/magazin - ライトノベル"
+  ],
+  [
+    "mystery",
+    "ミステリー",
+    "/2/mystery - ミステリー"
+  ],
+  [
+    "sf",
+    "SF・ﾌｧﾝﾀｼﾞｰ・ﾎﾗｰ",
+    "/2/sf - SF・ﾌｧﾝﾀｼﾞｰ・ﾎﾗｰ"
+  ],
+  [
+    "cyberpunk",
+    "サイバーパンク",
+    "/2/cyberpunk - サイバーパンク"
+  ],
+  [
+    "litechara",
+    "小説・ラノベキャラ",
+    "/2/litechara - 小説・ラノベキャラ"
+  ],
+  [
+    "zassi",
+    "雑誌",
+    "/2/zassi - 雑誌"
+  ],
+  [
+    "books",
+    "一般書籍",
+    "/2/books - 一般書籍"
+  ],
+  [
+    "ebooks",
+    "電子書籍",
+    "/2/ebooks - 電子書籍"
+  ],
+  [
+    "ehon",
+    "絵本",
+    "/2/ehon - 絵本"
+  ],
+  [
+    "juvenile",
+    "児童書",
+    "/2/juvenile - 児童書"
+  ],
+  [
+    "illustrator",
+    "イラストレーター",
+    "/2/illustrator - イラストレーター"
+  ],
+  [
+    "lovelive",
+    "ラブライブ！",
+    "/2/lovelive - ラブライブ！"
+  ],
+  [
+    "idolmaster",
+    "アイドルマスタ",
+    "/2/idolmaster - アイドルマスタ"
+  ],
+  [
+    "yugioh",
+    "遊戯王",
+    "/2/yugioh - 遊戯王"
+  ],
+  [
+    "magicalgirls",
+    "魔法少女",
+    "/2/magicalgirls - 魔法少女"
+  ],
+  [
+    "musicnews",
+    "芸能音楽速報",
+    "/2/musicnews - 芸能音楽速報"
+  ],
+  [
+    "msaloon",
+    "音楽サロン",
+    "/2/msaloon - 音楽サロン"
+  ],
+  [
+    "mjsaloon",
+    "邦楽サロン",
+    "/2/mjsaloon - 邦楽サロン"
+  ],
+  [
+    "musicj",
+    "邦楽",
+    "/2/musicj - 邦楽"
+  ],
+  [
+    "musicjm",
+    "邦楽男性ソロ",
+    "/2/musicjm - 邦楽男性ソロ"
+  ],
+  [
+    "musicjf",
+    "邦楽女性ソロ",
+    "/2/musicjf - 邦楽女性ソロ"
+  ],
+  [
+    "musicjg",
+    "邦楽グループ",
+    "/2/musicjg - 邦楽グループ"
+  ],
+  [
+    "natsumeloj",
+    "懐メロ邦楽",
+    "/2/natsumeloj - 懐メロ邦楽"
+  ],
+  [
+    "enka",
+    "演歌",
+    "/2/enka - 演歌"
+  ],
+  [
+    "mesaloon",
+    "洋楽サロン",
+    "/2/mesaloon - 洋楽サロン"
+  ],
+  [
+    "musice",
+    "洋楽",
+    "/2/musice - 洋楽"
+  ],
+  [
+    "natsumeloe",
+    "懐メロ洋楽",
+    "/2/natsumeloe - 懐メロ洋楽"
+  ],
+  [
+    "music",
+    "音楽一般",
+    "/2/music - 音楽一般"
+  ],
+  [
+    "beatles",
+    "ビートルズ",
+    "/2/beatles - ビートルズ"
+  ],
+  [
+    "visual",
+    "ヴィジュサロン",
+    "/2/visual - ヴィジュサロン"
+  ],
+  [
+    "visualb",
+    "ヴィジュバンド",
+    "/2/visualb - ヴィジュバンド"
+  ],
+  [
+    "dj",
+    "ＤＪ・クラブ",
+    "/2/dj - ＤＪ・クラブ"
+  ],
+  [
+    "disco",
+    "ディスコ",
+    "/2/disco - ディスコ"
+  ],
+  [
+    "randb",
+    "R&B・SOUL",
+    "/2/randb - R&B・SOUL"
+  ],
+  [
+    "punk",
+    "パンク",
+    "/2/punk - パンク"
+  ],
+  [
+    "hrhm",
+    "HR・HM",
+    "/2/hrhm - HR・HM"
+  ],
+  [
+    "hiphop",
+    "HIPHOP",
+    "/2/hiphop - HIPHOP"
+  ],
+  [
+    "techno",
+    "TECHNO",
+    "/2/techno - TECHNO"
+  ],
+  [
+    "progre",
+    "プログレ",
+    "/2/progre - プログレ"
+  ],
+  [
+    "healmusic",
+    "ヒーリング音楽",
+    "/2/healmusic - ヒーリング音楽"
+  ],
+  [
+    "wmusic",
+    "ワールド音楽",
+    "/2/wmusic - ワールド音楽"
+  ],
+  [
+    "reggae",
+    "レゲエ",
+    "/2/reggae - レゲエ"
+  ],
+  [
+    "classic",
+    "ジャズ",
+    "/2/classic - ジャズ"
+  ],
+  [
+    "fusion",
+    "フュージョン",
+    "/2/fusion - フュージョン"
+  ],
+  [
+    "classical",
+    "クラシック",
+    "/2/classical - クラシック"
+  ],
+  [
+    "contemporary",
+    "現代音楽",
+    "/2/contemporary - 現代音楽"
+  ],
+  [
+    "nika",
+    "エレクトロニカ",
+    "/2/nika - エレクトロニカ"
+  ],
+  [
+    "suisou",
+    "吹奏楽",
+    "/2/suisou - 吹奏楽"
+  ],
+  [
+    "chorus",
+    "合唱",
+    "/2/chorus - 合唱"
+  ],
+  [
+    "doyo",
+    "童謡・唱歌",
+    "/2/doyo - 童謡・唱歌"
+  ],
+  [
+    "asong",
+    "アニソン等",
+    "/2/asong - アニソン等"
+  ],
+  [
+    "soundtrack",
+    "サントラ",
+    "/2/soundtrack - サントラ"
+  ],
+  [
+    "karaok",
+    "カラオケ",
+    "/2/karaok - カラオケ"
+  ],
+  [
+    "legend",
+    "伝説の",
+    "/2/legend - 伝説の"
+  ],
+  [
+    "minor",
+    "インディーズ",
+    "/2/minor - インディーズ"
+  ],
+  [
+    "band",
+    "バンド",
+    "/2/band - バンド"
+  ],
+  [
+    "compose",
+    "楽器・作曲",
+    "/2/compose - 楽器・作曲"
+  ],
+  [
+    "piano",
+    "鍵盤楽器",
+    "/2/piano - 鍵盤楽器"
+  ],
+  [
+    "hogaku",
+    "純邦楽",
+    "/2/hogaku - 純邦楽"
+  ],
+  [
+    "healing",
+    "癒し",
+    "/2/healing - 癒し"
+  ],
+  [
+    "jinsei",
+    "人生相談",
+    "/2/jinsei - 人生相談"
+  ],
+  [
+    "psy",
+    "心と宗教",
+    "/2/psy - 心と宗教"
+  ],
+  [
+    "body",
+    "身体・健康",
+    "/2/body - 身体・健康"
+  ],
+  [
+    "keihatsu",
+    "自己啓発",
+    "/2/keihatsu - 自己啓発"
+  ],
+  [
+    "stretch",
+    "マッサージ等",
+    "/2/stretch - マッサージ等"
+  ],
+  [
+    "handicap",
+    "ハンディキャップ",
+    "/2/handicap - ハンディキャップ"
+  ],
+  [
+    "cancer",
+    "癌・腫瘍",
+    "/2/cancer - 癌・腫瘍"
+  ],
+  [
+    "nanbyou",
+    "難病",
+    "/2/nanbyou - 難病"
+  ],
+  [
+    "infection",
+    "新型感染症",
+    "/2/infection - 新型感染症"
+  ],
+  [
+    "hiv",
+    "HIVサロン",
+    "/2/hiv - HIVサロン"
+  ],
+  [
+    "atopi",
+    "アトピー",
+    "/2/atopi - アトピー"
+  ],
+  [
+    "allergy",
+    "アレルギー",
+    "/2/allergy - アレルギー"
+  ],
+  [
+    "hage",
+    "ハゲ・ズラ",
+    "/2/hage - ハゲ・ズラ"
+  ],
+  [
+    "pure",
+    "純情恋愛",
+    "/2/pure - 純情恋愛"
+  ],
+  [
+    "furin",
+    "不倫・浮気",
+    "/2/furin - 不倫・浮気"
+  ],
+  [
+    "gay",
+    "同性愛",
+    "/2/gay - 同性愛"
+  ],
+  [
+    "utu",
+    "メンタルヘルス",
+    "/2/utu - メンタルヘルス"
+  ],
+  [
+    "break",
+    "失恋",
+    "/2/break - 失恋"
+  ],
+  [
+    "pc2nanmin",
+    "PCサロン",
+    "/2/pc2nanmin - PCサロン"
+  ],
+  [
+    "pcnews",
+    "PCニュース",
+    "/2/pcnews - PCニュース"
+  ],
+  [
+    "win",
+    "Windows",
+    "/2/win - Windows"
+  ],
+  [
+    "jobs",
+    "旧・mac",
+    "/2/jobs - 旧・mac"
+  ],
+  [
+    "mac",
+    "新・mac",
+    "/2/mac - 新・mac"
+  ],
+  [
+    "os",
+    "OS",
+    "/2/os - OS"
+  ],
+  [
+    "desktop",
+    "デスクトップ",
+    "/2/desktop - デスクトップ"
+  ],
+  [
+    "pc",
+    "パソコン一般",
+    "/2/pc - パソコン一般"
+  ],
+  [
+    "notepc",
+    "ノートPC",
+    "/2/notepc - ノートPC"
+  ],
+  [
+    "jisaku",
+    "自作PC",
+    "/2/jisaku - 自作PC"
+  ],
+  [
+    "printer",
+    "プリンタ",
+    "/2/printer - プリンタ"
+  ],
+  [
+    "hard",
+    "ハードウェア",
+    "/2/hard - ハードウェア"
+  ],
+  [
+    "cdr",
+    "CD-R,DVD",
+    "/2/cdr - CD-R,DVD"
+  ],
+  [
+    "software",
+    "ソフトウェア",
+    "/2/software - ソフトウェア"
+  ],
+  [
+    "mobile",
+    "モバイル",
+    "/2/mobile - モバイル"
+  ],
+  [
+    "bsoft",
+    "ビジネスsoft",
+    "/2/bsoft - ビジネスsoft"
+  ],
+  [
+    "unix",
+    "UNIX",
+    "/2/unix - UNIX"
+  ],
+  [
+    "db",
+    "データベース",
+    "/2/db - データベース"
+  ],
+  [
+    "linux",
+    "Linux",
+    "/2/linux - Linux"
+  ],
+  [
+    "prog",
+    "プログラマー",
+    "/2/prog - プログラマー"
+  ],
+  [
+    "tech",
+    "プログラム",
+    "/2/tech - プログラム"
+  ],
+  [
+    "cg",
+    "ＣＧ",
+    "/2/cg - ＣＧ"
+  ],
+  [
+    "dtm",
+    "DTM",
+    "/2/dtm - DTM"
+  ],
+  [
+    "avi",
+    "DTV",
+    "/2/avi - DTV"
+  ],
+  [
+    "swf",
+    "FLASH",
+    "/2/swf - FLASH"
+  ],
+  [
+    "gamedev",
+    "ゲ製作技術",
+    "/2/gamedev - ゲ製作技術"
+  ],
+  [
+    "i4004",
+    "昔のPC",
+    "/2/i4004 - 昔のPC"
+  ],
+  [
+    "internet",
+    "インターネット",
+    "/2/internet - インターネット"
+  ],
+  [
+    "download",
+    "Download",
+    "/2/download - Download"
+  ],
+  [
+    "hp",
+    "Web制作",
+    "/2/hp - Web制作"
+  ],
+  [
+    "affiliate",
+    "Web収入",
+    "/2/affiliate - Web収入"
+  ],
+  [
+    "hosting",
+    "レンタル鯖",
+    "/2/hosting - レンタル鯖"
+  ],
+  [
+    "mysv",
+    "自宅サーバ",
+    "/2/mysv - 自宅サーバ"
+  ],
+  [
+    "php",
+    "WebProg",
+    "/2/php - WebProg"
+  ],
+  [
+    "hack",
+    "ネットワーク",
+    "/2/hack - ネットワーク"
+  ],
+  [
+    "sec",
+    "セキュリティ",
+    "/2/sec - セキュリティ"
+  ],
+  [
+    "network",
+    "通信技術",
+    "/2/network - 通信技術"
+  ],
+  [
+    "cryptocoin",
+    "仮想通貨板",
+    "/2/cryptocoin - 仮想通貨板"
+  ],
+  [
+    "ipv6",
+    "IPv6",
+    "/2/ipv6 - IPv6"
+  ],
+  [
+    "friend",
+    "ポスペ・irc",
+    "/2/friend - ポスペ・irc"
+  ],
+  [
+    "isp",
+    "プロバイダー",
+    "/2/isp - プロバイダー"
+  ],
+  [
+    "netspot",
+    "ネットカフェ",
+    "/2/netspot - ネットカフェ"
+  ],
+  [
+    "nifty",
+    "Nifty",
+    "/2/nifty - Nifty"
+  ],
+  [
+    "google",
+    "Google",
+    "/2/google - Google"
+  ],
+  [
+    "mmag",
+    "メルマガ",
+    "/2/mmag - メルマガ"
+  ],
+  [
+    "nanmin",
+    "難民",
+    "/2/nanmin - 難民"
+  ],
+  [
+    "ad",
+    "宣伝掲示板",
+    "/2/ad - 宣伝掲示板"
+  ],
+  [
+    "esite",
+    "ネットサービス",
+    "/2/esite - ネットサービス"
+  ],
+  [
+    "streaming",
+    "YouTube",
+    "/2/streaming - YouTube"
+  ],
+  [
+    "mstreaming",
+    "携帯動画",
+    "/2/mstreaming - 携帯動画"
+  ],
+  [
+    "mdis",
+    "音楽配信",
+    "/2/mdis - 音楽配信"
+  ],
+  [
+    "netradio",
+    "ネットラジオ等",
+    "/2/netradio - ネットラジオ等"
+  ],
+  [
+    "blog",
+    "ブログ",
+    "/2/blog - ブログ"
+  ],
+  [
+    "sns",
+    "ソーシャルネット",
+    "/2/sns - ソーシャルネット"
+  ],
+  [
+    "net",
+    "ネットwatch",
+    "/2/net - ネットwatch"
+  ],
+  [
+    "twwatch",
+    "ツイッター観察",
+    "/2/twwatch - ツイッター観察"
+  ],
+  [
+    "watchbakusai",
+    "爆サイ",
+    "/2/watchbakusai - 爆サイ"
+  ],
+  [
+    "yahoo",
+    "オークション",
+    "/2/yahoo - オークション"
+  ],
+  [
+    "nntp",
+    "nntp",
+    "/2/nntp - nntp"
+  ],
+  [
+    "starwars",
+    "STARWARS",
+    "/2/starwars - STARWARS"
+  ],
+  [
+    "bobby",
+    "おいらロビー",
+    "/2/bobby - おいらロビー"
+  ],
+  [
+    "lobby",
+    "ロビー",
+    "/2/lobby - ロビー"
+  ],
+  [
+    "maru",
+    "●",
+    "/2/maru - ●"
+  ],
+  [
+    "mog2",
+    "なんでもあり",
+    "/2/mog2 - なんでもあり"
+  ],
+  [
+    "mukashi",
+    "昔",
+    "/2/mukashi - 昔"
+  ],
+  [
+    "kitchen",
+    "厨房！",
+    "/2/kitchen - 厨房！"
+  ],
+  [
+    "tubo",
+    "最悪",
+    "/2/tubo - 最悪"
+  ],
+  [
+    "joke",
+    "学歴",
+    "/2/joke - 学歴"
+  ],
+  [
+    "shugi",
+    "主義・主張",
+    "/2/shugi - 主義・主張"
+  ],
+  [
+    "rights",
+    "人権問題",
+    "/2/rights - 人権問題"
+  ],
+  [
+    "anarchy",
+    "Anarchy",
+    "/2/anarchy - Anarchy"
+  ],
+  [
+    "accuse",
+    "2ch批判要望",
+    "/2/accuse - 2ch批判要望"
+  ],
+  [
+    "morningcoffee",
+    "モ娘（狼）",
+    "/2/morningcoffee - モ娘（狼）"
+  ],
+  [
+    "ranking",
+    "格付け",
+    "/2/ranking - 格付け"
+  ],
+  [
+    "record",
+    "新記録・珍記録",
+    "/2/record - 新記録・珍記録"
+  ],
+  [
+    "siberia",
+    "シベリア超速報",
+    "/2/siberia - シベリア超速報"
+  ],
+  [
+    "news4vip",
+    "ニュー速VIP",
+    "/2/news4vip - ニュー速VIP"
+  ],
+  [
+    "news4viptasu",
+    "ニュー速VIP+",
+    "/2/news4viptasu - ニュー速VIP+"
+  ],
+  [
+    "poverty",
+    "ニュー速(嫌儲)",
+    "/2/poverty - ニュー速(嫌儲)"
+  ],
+  [
+    "heaven4vip",
+    "天国",
+    "/2/heaven4vip - 天国"
+  ],
+  [
+    "neet4vip",
+    "ニー速",
+    "/2/neet4vip - ニー速"
+  ],
+  [
+    "aniki",
+    "ガチホモ",
+    "/2/aniki - ガチホモ"
+  ],
+  [
+    "frenchfry",
+    "ふれんちふらい",
+    "/2/frenchfry - ふれんちふらい"
+  ],
+  [
+    "matsumotorise",
+    "松本りせ",
+    "/2/matsumotorise - 松本りせ"
+  ],
+  [
+    "gorakubu",
+    "ごらく部",
+    "/2/gorakubu - ごらく部"
+  ],
+  [
+    "anime8",
+    "Anime & Manga",
+    "/2/anime8 - Anime & Manga"
+  ],
+  [
+    "book8",
+    "Books",
+    "/2/book8 - Books"
+  ],
+  [
+    "carcom8",
+    "Comics & Cartoons",
+    "/2/carcom8 - Comics & Cartoons"
+  ],
+  [
+    "comp8",
+    "Computers",
+    "/2/comp8 - Computers"
+  ],
+  [
+    "food8",
+    "Food",
+    "/2/food8 - Food"
+  ],
+  [
+    "games8",
+    "Video Games",
+    "/2/games8 - Video Games"
+  ],
+  [
+    "img8",
+    "Imageboard Discussion",
+    "/2/img8 - Imageboard Discussion"
+  ],
+  [
+    "lang8",
+    "Foreign Language",
+    "/2/lang8 - Foreign Language"
+  ],
+  [
+    "lounge8",
+    "Lounge",
+    "/2/lounge8 - Lounge"
+  ],
+  [
+    "music8",
+    "Music",
+    "/2/music8 - Music"
+  ],
+  [
+    "neet4vip8",
+    "NEET",
+    "/2/neet4vip8 - NEET"
+  ],
+  [
+    "vip8",
+    "News for VIP",
+    "/2/vip8 - News for VIP"
+  ],
+  [
+    "newnew8",
+    "World News",
+    "/2/newnew8 - World News"
+  ],
+  [
+    "newpol8",
+    "Politics",
+    "/2/newpol8 - Politics"
+  ],
+  [
+    "prog8",
+    "Programming",
+    "/2/prog8 - Programming"
+  ],
+  [
+    "poverty8",
+    "Revolution News",
+    "/2/poverty8 - Revolution News"
+  ],
+  [
+    "sci8",
+    "Science & Math",
+    "/2/sci8 - Science & Math"
+  ],
+  [
+    "sjis8",
+    "SJIS Room",
+    "/2/sjis8 - SJIS Room"
+  ],
+  [
+    "sports8",
+    "Sports",
+    "/2/sports8 - Sports"
+  ],
+  [
+    "tech8",
+    "Technology",
+    "/2/tech8 - Technology"
+  ],
+  [
+    "tele8",
+    "Television & Film",
+    "/2/tele8 - Television & Film"
+  ],
+  [
+    "akari",
+    "あかり",
+    "/2/akari - あかり"
+  ],
+  [
+    "sugiuraayano",
+    "ニュース速報(杉浦綾乃)",
+    "/2/sugiuraayano - ニュース速報(杉浦綾乃)"
+  ],
+  [
+    "oekaki",
+    "お絵描き",
+    "/2/oekaki - お絵描き"
+  ],
+  [
+    "mango",
+    "MANGO",
+    "/2/mango - MANGO"
+  ],
+  [
+    "guide",
+    "ガイドライン",
+    "/2/guide - ガイドライン"
+  ],
+  [
+    "mag",
+    "2chメルマガ",
+    "/2/mag - 2chメルマガ"
+  ],
+  [
+    "saku2ch",
+    "削除依頼",
+    "/2/saku2ch - 削除依頼"
+  ],
+  [
+    "accuse",
+    "批判要望",
+    "/2/accuse - 批判要望"
+  ],
+  [
+    "pinkplus",
+    "PINKニュース+",
+    "/2/pinkplus - PINKニュース+"
+  ],
+  [
+    "avplus",
+    "AV+",
+    "/2/avplus - AV+"
+  ],
+  [
+    "hnews",
+    "ピンクニュース",
+    "/2/hnews - ピンクニュース"
+  ],
+  [
+    "pinkj",
+    "ピンクJ",
+    "/2/pinkj - ピンクJ"
+  ],
+  [
+    "news4pink",
+    "ニュース速報ピンク",
+    "/2/news4pink - ニュース速報ピンク"
+  ],
+  [
+    "pinkqa",
+    "pink初心者",
+    "/2/pinkqa - pink初心者"
+  ],
+  [
+    "sureh",
+    "スレH・エロ会話",
+    "/2/sureh - スレH・エロ会話"
+  ],
+  [
+    "erolive",
+    "大人の実況",
+    "/2/erolive - 大人の実況"
+  ],
+  [
+    "xvideos",
+    "XVIDEOS",
+    "/2/xvideos - XVIDEOS"
+  ],
+  [
+    "dmm",
+    "DMM",
+    "/2/dmm - DMM"
+  ],
+  [
+    "hneta",
+    "えっちねた",
+    "/2/hneta - えっちねた"
+  ],
+  [
+    "pinkcafe",
+    "PINKのおいらロ",
+    "/2/pinkcafe - PINKのおいらロ"
+  ],
+  [
+    "eromog2",
+    "PINKのなんでも",
+    "/2/eromog2 - PINKのなんでも"
+  ],
+  [
+    "ogefin",
+    "お下品",
+    "/2/ogefin - お下品"
+  ],
+  [
+    "bishojo",
+    "美少女",
+    "/2/bishojo - 美少女"
+  ],
+  [
+    "dere",
+    "デレ全般",
+    "/2/dere - デレ全般"
+  ],
+  [
+    "801saloon",
+    "801サロン",
+    "/2/801saloon - 801サロン"
+  ],
+  [
+    "pinknanmin",
+    "ぴんく難民",
+    "/2/pinknanmin - ぴんく難民"
+  ],
+  [
+    "erobbs",
+    "pink秘密基地",
+    "/2/erobbs - pink秘密基地"
+  ],
+  [
+    "housekeeping",
+    "PINK削除依頼",
+    "/2/housekeeping - PINK削除依頼"
+  ],
+  [
+    "ccc",
+    "PINK規制議論",
+    "/2/ccc - PINK規制議論"
+  ],
+  [
+    "yama",
+    "くノ一の山",
+    "/2/yama - くノ一の山"
+  ],
+  [
+    "21oversea2",
+    "大人の海外",
+    "/2/21oversea2 - 大人の海外"
+  ],
+  [
+    "hgame",
+    "エロゲー",
+    "/2/hgame - エロゲー"
+  ],
+  [
+    "hgame2",
+    "エロゲー作品別",
+    "/2/hgame2 - エロゲー作品別"
+  ],
+  [
+    "erog",
+    "エロゲネタ",
+    "/2/erog - エロゲネタ"
+  ],
+  [
+    "leaf",
+    "Leaf・key",
+    "/2/leaf - Leaf・key"
+  ],
+  [
+    "gagame",
+    "女向ゲー大人",
+    "/2/gagame - 女向ゲー大人"
+  ],
+  [
+    "adultsite",
+    "アダルトサイト",
+    "/2/adultsite - アダルトサイト"
+  ],
+  [
+    "webmaster",
+    "ウェブマスター",
+    "/2/webmaster - ウェブマスター"
+  ],
+  [
+    "avideo",
+    "AV総合",
+    "/2/avideo - AV総合"
+  ],
+  [
+    "avideo2",
+    "AV女優",
+    "/2/avideo2 - AV女優"
+  ],
+  [
+    "debut",
+    "AV新人",
+    "/2/debut - AV新人"
+  ],
+  [
+    "nude",
+    "ヌード・エロ本",
+    "/2/nude - ヌード・エロ本"
+  ],
+  [
+    "eroanime",
+    "エロアニメ等",
+    "/2/eroanime - エロアニメ等"
+  ],
+  [
+    "erocomic",
+    "エロ漫画小説",
+    "/2/erocomic - エロ漫画小説"
+  ],
+  [
+    "erodoujin",
+    "エロ同人",
+    "/2/erodoujin - エロ同人"
+  ],
+  [
+    "natuero",
+    "懐かしエロ",
+    "/2/natuero - 懐かしエロ"
+  ],
+  [
+    "kgirls",
+    "韓国美人",
+    "/2/kgirls - 韓国美人"
+  ],
+  [
+    "erocosp",
+    "エロコスプレ",
+    "/2/erocosp - エロコスプレ"
+  ],
+  [
+    "butler",
+    "執事萌え",
+    "/2/butler - 執事萌え"
+  ],
+  [
+    "maid",
+    "メイド",
+    "/2/maid - メイド"
+  ],
+  [
+    "eroacademy",
+    "PINKな学問",
+    "/2/eroacademy - PINKな学問"
+  ],
+  [
+    "mcheck",
+    "健康相談(大人)",
+    "/2/mcheck - 健康相談(大人)"
+  ],
+  [
+    "couple",
+    "夫婦生活",
+    "/2/couple - 夫婦生活"
+  ],
+  [
+    "kageki",
+    "過激な恋愛",
+    "/2/kageki - 過激な恋愛"
+  ],
+  [
+    "kageki2",
+    "大人の恋愛",
+    "/2/kageki2 - 大人の恋愛"
+  ],
+  [
+    "onatech",
+    "オナテク",
+    "/2/onatech - オナテク"
+  ],
+  [
+    "loveho",
+    "ラブホテル",
+    "/2/loveho - ラブホテル"
+  ],
+  [
+    "adultgoods",
+    "アダルトグッズ",
+    "/2/adultgoods - アダルトグッズ"
+  ],
+  [
+    "adultaccessory",
+    "大人の飾り",
+    "/2/adultaccessory - 大人の飾り"
+  ],
+  [
+    "lovedoll",
+    "ラブドール",
+    "/2/lovedoll - ラブドール"
+  ],
+  [
+    "sm",
+    "ＳＭ",
+    "/2/sm - ＳＭ"
+  ],
+  [
+    "feti",
+    "フェチ",
+    "/2/feti - フェチ"
+  ],
+  [
+    "feet",
+    "足萌え",
+    "/2/feet - 足萌え"
+  ],
+  [
+    "armpits",
+    "腋下萌え",
+    "/2/armpits - 腋下萌え"
+  ],
+  [
+    "uniform",
+    "制服",
+    "/2/uniform - 制服"
+  ],
+  [
+    "eyes",
+    "目萌え",
+    "/2/eyes - 目萌え"
+  ],
+  [
+    "glasses",
+    "眼鏡萌え",
+    "/2/glasses - 眼鏡萌え"
+  ],
+  [
+    "swimsuit",
+    "水着・スク水",
+    "/2/swimsuit - 水着・スク水"
+  ],
+  [
+    "hitozuma",
+    "人妻",
+    "/2/hitozuma - 人妻"
+  ],
+  [
+    "mature",
+    "熟女",
+    "/2/mature - 熟女"
+  ],
+  [
+    "cougar",
+    "クーガー",
+    "/2/cougar - クーガー"
+  ],
+  [
+    "pregnant",
+    "妊婦萌え",
+    "/2/pregnant - 妊婦萌え"
+  ],
+  [
+    "senpai",
+    "先輩萌え",
+    "/2/senpai - 先輩萌え"
+  ],
+  [
+    "sensei",
+    "教師萌え",
+    "/2/sensei - 教師萌え"
+  ],
+  [
+    "mom",
+    "ママ熟女",
+    "/2/mom - ママ熟女"
+  ],
+  [
+    "okama",
+    "おかま・おなべ",
+    "/2/okama - おかま・おなべ"
+  ],
+  [
+    "gaypink",
+    "大人の同性愛",
+    "/2/gaypink - 大人の同性愛"
+  ],
+  [
+    "lesbian",
+    "レズ・百合萌え",
+    "/2/lesbian - レズ・百合萌え"
+  ],
+  [
+    "brocon",
+    "兄萌え",
+    "/2/brocon - 兄萌え"
+  ],
+  [
+    "siscon",
+    "妹萌え",
+    "/2/siscon - 妹萌え"
+  ],
+  [
+    "eroaa",
+    "エロAA",
+    "/2/eroaa - エロAA"
+  ],
+  [
+    "erochara",
+    "キャラサロン",
+    "/2/erochara - キャラサロン"
+  ],
+  [
+    "erochara2",
+    "オリキャラ",
+    "/2/erochara2 - オリキャラ"
+  ],
+  [
+    "801",
+    "８０１",
+    "/2/801 - ８０１"
+  ],
+  [
+    "futanari",
+    "ふたなり",
+    "/2/futanari - ふたなり"
+  ],
+  [
+    "erocg",
+    "お絵描き・創作",
+    "/2/erocg - お絵描き・創作"
+  ],
+  [
+    "eroparo",
+    "エロパロ",
+    "/2/eroparo - エロパロ"
+  ],
+  [
+    "makeup",
+    "化粧",
+    "/2/makeup - 化粧"
+  ],
+  [
+    "plastic",
+    "整形・豊胸",
+    "/2/plastic - 整形・豊胸"
+  ],
+  [
+    "ascii",
+    "半角文字列",
+    "/2/ascii - 半角文字列"
+  ],
+  [
+    "ascii2d",
+    "半角二次元",
+    "/2/ascii2d - 半角二次元"
+  ],
+  [
+    "ascii2kana",
+    "半角かな",
+    "/2/ascii2kana - 半角かな"
+  ],
+  [
+    "girls",
+    "アイドル画像",
+    "/2/girls - アイドル画像"
+  ],
+  [
+    "sportgirls",
+    "スポーツ画像",
+    "/2/sportgirls - スポーツ画像"
+  ],
+  [
+    "club",
+    "風俗全般",
+    "/2/club - 風俗全般"
+  ],
+  [
+    "pub",
+    "お水出会い系",
+    "/2/pub - お水出会い系"
+  ],
+  [
+    "host",
+    "ホストクラブ",
+    "/2/host - ホストクラブ"
+  ],
+  [
+    "nuki",
+    "へるす",
+    "/2/nuki - へるす"
+  ],
+  [
+    "soap",
+    "ソープ",
+    "/2/soap - ソープ"
+  ],
+  [
+    "neet4pink",
+    "ニー速(pink)",
+    "/2/neet4pink - ニー速(pink)"
+  ],
+  [
+    "cherryboy",
+    "童貞",
+    "/2/cherryboy - 童貞"
+  ],
+  [
+    "megami",
+    "女神",
+    "/2/megami - 女神"
+  ],
+  [
+    "livemegami",
+    "女神実況",
+    "/2/livemegami - 女神実況"
+  ],
+  [
+    "meow",
+    "にゃあ",
+    "/2/meow - にゃあ"
+  ],
+  [
+    "mobpink",
+    "大人のモバイル",
+    "/2/mobpink - 大人のモバイル"
+  ],
+  [
+    "3shuchaku",
+    "ニュー速Ｆ",
+    "/2/3shuchaku - ニュー速Ｆ"
+  ],
+  [
+    "scat",
+    "スキャット",
+    "/2/scat - スキャット"
+  ],
+  [
+    "bukkake",
+    "ぶっかけ",
+    "/2/bukkake - ぶっかけ"
+  ],
+  [
+    "tentacle",
+    "触手",
+    "/2/tentacle - 触手"
+  ],
+  [
+    "bbbb",
+    "English",
+    "/2/bbbb - English"
+  ]
+]

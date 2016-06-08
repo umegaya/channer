@@ -6,21 +6,21 @@ var TextField = window.channer.parts.TextField;
 
 export class TextFieldOptions {
     label: string;
+    help: string;
+    focusHelp: boolean;
     floatingLabel: boolean;
+    dontBlurOnMouseDown: boolean;
     value: UI.Property<any>;
     oninput: (val: any) => void;
     onchange: (next: any) => void;
+    events: any;
 }
-
-class _TextFieldComponent implements UI.Component {
-	constructor() {}
-    controller = (options?: TextFieldOptions) => {
-        return options;
-    }
-    view = (options: TextFieldOptions): UI.Element => {
+export var TextFieldComponent: UI.Component = {
+    view: (ctrl: any, options: TextFieldOptions): UI.Element => {
         if (!options.hasOwnProperty("floatingLabel")) {
             options.floatingLabel = true;
         }
+        options.dontBlurOnMouseDown = true;
         if (options.hasOwnProperty("value") && 
             !(typeof options.value === "undefined")) {
             var oninput = options.hasOwnProperty("oninput") ? 
@@ -36,5 +36,3 @@ class _TextFieldComponent implements UI.Component {
         return m.component(TextField, options);
     }
 }
-
-export var TextFieldComponent: _TextFieldComponent = new _TextFieldComponent();

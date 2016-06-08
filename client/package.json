@@ -33,6 +33,7 @@
     "raw-loader": "^0.5.1",
     "selenium-server-standalone-jar": "2.48.2",
     "stylus-loader": "^1.4.2",
+    "through2": "^2.0.1",
     "url-loader": "^0.5.7",
     "webpack": "^1.12.6",
     "webpack-dev-server": "^1.12.1",

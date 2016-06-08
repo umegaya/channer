@@ -24,6 +24,7 @@ interface ChannerModules {
 	conn: any/*Handler*/;
 	config: any/*Config*/;
 	m: _mithril.MithrilStatic;
+    Hammer: HammerStatic;
     mtransit: (...args:Array<any>) => any;
 	ProtoBuf: any;
 	timer: any/*Timer*/;
@@ -35,11 +36,18 @@ interface ChannerModules {
 	storage: any;
 	patch: any;
 	mobile: boolean;
+    category: {
+        data: Array<any>;
+        to_id: (cat: string) => number;
+        from_id: (id: number) => string;
+    };
+    router: () => void;
     l10n: { 
         translate(text: string, ...args:Array<any>): string; 
         translateDate(date: Date): any;
         setuplang(): any;
         localeSettings(): any;
+        localeNameFromCode(code: string): string;
         language: string;
     };
     jsloader_promise: any;
@@ -47,18 +55,16 @@ interface ChannerModules {
 	onPause: Array<() => void>;
 	onPush: Array<(resp:any) => void>;/*PushReceiver*/
 	components: {
-		Login: UI.ComponentFactory;
-		Rescue: UI.ComponentFactory;
-		Top: UI.ComponentFactory;
-		Compose: UI.ComponentFactory;
-		Topic: UI.ComponentFactory;
-		Channel: UI.ComponentFactory;
-		Edit: UI.ComponentFactory;
-        Menu: UI.ComponentFactory;
-        active: {
-            component: UI.Component;
-            ctrl: UI.Controller;
-        }
+		Login: UI.Component;
+		Rescue: UI.Component;
+		Top: UI.Component;
+		Topic: UI.Component;
+		Channel: UI.Component;
+        Menu: UI.Component;
+        //menu
+        ChannelCreate: UI.Component;
+        ChannelFilter: UI.Component;
+        TopicFilter: UI.Component;
 	}
     parts: {
         Scroll: UI.Component;
@@ -66,6 +72,8 @@ interface ChannerModules {
         TextField: UI.Component;
         Tabs: UI.Component;
         Radio: UI.Component;
+        Channel: UI.Component;
+        Topic: UI.Component;
     }
     testtmp: any;
 }

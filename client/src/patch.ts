@@ -126,7 +126,7 @@ window.channer.patch = function (loaderURL: string, onfinished: (config: any) =>
     var patcher = new Patcher(window.channer.fs, debug);
     patcher.patch(loaderURL).then(function (config: any) {
         if (!config.url) {
-            config.url = loaderURL.replace(/[0-9]+$/, "8888").replace(/^http/, "wss") + "/ws";
+            config.url = loaderURL.replace(/[0-9]+$/, "8888").replace(/^http/, "ws") + "/ws";
         }
         console.log("end patch: endpoint = " + config.url);
         onfinished(config);

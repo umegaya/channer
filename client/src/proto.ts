@@ -9,13 +9,15 @@ import Q = require('q');
 import ChannerProto = Proto2TypeScript.ChannerProto;
 
 var ProtoBuf = window.channer.ProtoBuf;
+//TODO: recover original value more respectively
+var proto_def = (<string>require('channer.proto.json')).replace(/Long/g, "fixed64");
 export var Builder : Proto2TypeScript.ChannerProtoBuilder 
-	= window.channer.ProtoBuf.loadJson(require('channer.proto.json')).build("ChannerProto");
+	= window.channer.ProtoBuf.loadJson(proto_def).build("ChannerProto");
 
 export class Handler {
 	watcher: ProtoWatcher;
 	latency: number;
-    querying: boolean;
+    querying: ChannerProto.Payload.Type;
     last_error: Error;
 	private url: string;
 	private socket: Socket;
@@ -34,7 +36,7 @@ export class Handler {
 		this.last_auth = 0;
 		this.deactivate_limit_ms = 0;
 		this.timer = timer;
-        this.querying = false;
+        this.querying = ChannerProto.Payload.Type.Unknown;
         this.reconnect_attempt = 0;
         this.reconnect_wait = 0;
 	}
@@ -46,10 +48,10 @@ export class Handler {
 		return this.msgid_seed;
 	}
 	private redraw = () => {
-        //TODO: should use start/end Computation?
+        m.startComputation()
 		setTimeout(() => {
-            this.querying = false;
-			m.redraw();
+            this.querying = ChannerProto.Payload.Type.Unknown;
+			m.endComputation();
 		}, 1);
 	}
     private debug_close = (error_count: number) => {
@@ -57,32 +59,50 @@ export class Handler {
     }
 	private send = (p: ChannerProto.Payload, e?: ChannerProto.Error.Type, no_redraw?:boolean): Q.Promise<Model> => {
 		var df : Q.Deferred<Model> = Q.defer<Model>();
+		if (!no_redraw) {
+			df.promise.done(this.redraw, this.redraw);
+		}
 		if (e) {
 			//return error with same manner when error caused by server
-			setTimeout(function () {
-				df.reject(new ProtoError({ type: e }));
+			setTimeout(() => {
+                this.last_error = new ProtoError({ type: e }, errorMessages[e]);
+				df.reject(this.last_error);
 			}, 1);
 			return df.promise;
 		}
 		var msgid : number = this.new_msgid();
 		p.msgid = msgid;
-		this.socket.send(p);
-        this.querying = true;
-		this.watcher.subscribe_response(msgid, (model: Model) => {
-			df.resolve(model);
-		}, (e: Error) => {
-            this.last_error = e;
-			if (e instanceof ProtoError) {
-				var pe = <ProtoError>e;
-				if (!e.message && pe.payload) {
-					e.message = errorMessages[pe.payload.type];
-				}
-			}
-			df.reject(e);
-		});
-		if (!no_redraw) {
-			df.promise.done(this.redraw, this.redraw);
-		}
+        try {
+    		this.socket.send(p);
+        }
+        catch (e) {
+            console.error("socket send error:" + e.message);
+			setTimeout(() => {
+                this.last_error = new ProtoError(
+                    { type: ChannerProto.Error.Type.InvalidPayload }, 
+                    errorMessages[ChannerProto.Error.Type.InvalidPayload]);
+				df.reject(this.last_error);
+			}, 1);
+			return df.promise;
+        }
+        this.querying = p.type;
+        try {
+            this.watcher.subscribe_response(msgid, (model: Model) => {
+                df.resolve(model);
+            }, (e: Error) => {
+                this.last_error = e;
+                if (e instanceof ProtoError) {
+                    var pe = <ProtoError>e;
+                    if (!e.message && pe.payload) {
+                        e.message = errorMessages[pe.payload.type];
+                    }
+                }
+                df.reject(e);
+            });
+        }
+        catch (e) {
+            console.error("subscribe_response error: " + e.message);
+        }
 		return df.promise;
 	}
 	private ontimer = (nowms: number) => {
@@ -107,7 +127,7 @@ export class Handler {
 		var current = m.route();
 		if (!current.match(/^\/(login|rescue)/)) {
 			console.log("re-authenticate current url:" + current);
-			Util.route("/login?next=" + current, null, {
+			Util.route("/login?next=" + encodeURIComponent(current), null, {
                 route_only: true,
                 replace_history: true,
             });
@@ -146,8 +166,8 @@ export class Handler {
 		this.deactivate_limit_ms = 0;
 		this.timer.remove(this.deactivate_timer);
 	}
-	private signature = (user: string, secret: string, walltime: number): string => {
-		return (new window.channer.hash.SHA256()).b64(walltime + user + secret);
+	private signature = (user: Long, secret: string, walltime: number): string => {
+		return (new window.channer.hash.SHA256()).b64(walltime + user.toString() + secret);
 	}
     reconnect_duration = (): number => {
         return this.socket.reconnect_duration();
@@ -155,6 +175,10 @@ export class Handler {
     connected = (): boolean => {
         return this.socket.connected();
     }
+	has_query = (): boolean => {
+		return this.querying != ChannerProto.Payload.Type.Unknown && 
+			this.querying != ChannerProto.Payload.Type.PingRequest;
+	}
     connecting = (): boolean => {
         return this.socket.connecting();
     }
@@ -208,7 +232,6 @@ export class Handler {
 		req.user = user;
 		req.mail = mail;
 		req.walltime = Timer.now();
-        console.log("data:" + req.user + "|" + req.mail);
 		if (secret) {
 			if (!req.id) {
 				return this.send(null, ChannerProto.Error.Type.Login_BrokenClientData);
@@ -240,35 +263,73 @@ export class Handler {
 		p.rescue_request = req;
 		return this.send(p);
 	}
-    channel_create = (name: string, desc?: string, style?: string, 
+    channel_create = (name: string, category: string, locale?: string, 
+        desc?: string, style?: string, 
         options?: ChannerProto.Model.Channel.Options): Q.Promise<Model> => {
         var req = new Builder.ChannelCreateRequest();
         req.name = name;
         req.description = desc;
         req.style = style;
         req.options = options;
+        req.category = window.channer.category.to_id(category);
+        req.locale = locale || window.channer.l10n.language;
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.ChannelCreateRequest;
         p.channel_create_request = req;
         return this.send(p);
     }
-    channel_list = (category?: string, limit?: number): Q.Promise<Model> => {
+    channel_list = (query: string, offset_id: Long, locale?: string, 
+        category?: number, limit?: number): Q.Promise<Model> => {
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.ChannelListRequest;
         var req = new Builder.ChannelListRequest();
         var map : {
-            [k:string]:ChannerProto.ChannelListRequest.Category
+            [k:string]:ChannerProto.ChannelListRequest.QueryType
         } = {
-            "latest": ChannerProto.ChannelListRequest.Category.New,
-            "popular": ChannerProto.ChannelListRequest.Category.Popular,
+            "latest": ChannerProto.ChannelListRequest.QueryType.New,
+            "popular": ChannerProto.ChannelListRequest.QueryType.Popular,
         }
-        console.log("category:" + category);
-        req.category = map[category];
+        req.query = map[query];
+        req.locale = locale || window.channer.settings.values.search_locale;
+        if (!req.locale || req.locale == "all") {
+            req.locale = "";
+        }
+        req.category = category;
         req.limit = limit || null;
+        req.offset_id = offset_id || null;
         p.channel_list_request = req;
         return this.send(p);
     }
-	post = (topic_id: number, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
+    topic_list = (bucket: string, query: string, offset_score?: number, offset_id?: Long, locale?: string, 
+		limit?: number): Q.Promise<Model> => {
+        var p = new Builder.Payload();
+        p.type = ChannerProto.Payload.Type.TopicListRequest;
+        var req = new Builder.TopicListRequest();
+        var qmap : {
+            [k:string]:ChannerProto.TopicListRequest.QueryType
+        } = {
+            "hour": ChannerProto.TopicListRequest.QueryType.Hour,
+            "day": ChannerProto.TopicListRequest.QueryType.Day,
+            "week": ChannerProto.TopicListRequest.QueryType.Week,
+            "alltime": ChannerProto.TopicListRequest.QueryType.AllTime,
+        }
+		var bmap : {
+			[k:string]:ChannerProto.TopicListRequest.BucketType
+        } = {
+            "hot": ChannerProto.TopicListRequest.BucketType.Hot,
+            "flame": ChannerProto.TopicListRequest.BucketType.Flame,
+            "rising": ChannerProto.TopicListRequest.BucketType.Rising,
+        }
+		req.query = qmap[query];
+		req.bucket = bmap[bucket];
+        req.locale = locale || window.channer.settings.values.search_locale;
+        req.limit = limit || null;
+        req.offset_id = offset_id || null;
+		req.offset_score = offset_score || null;
+        p.topic_list_request = req;
+        return this.send(p);
+    }
+	post = (topic_id: Long, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
 		var post = new Builder.Post();
 		post.text = text;
 		if (options) {

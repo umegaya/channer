@@ -97,15 +97,15 @@ declare module _mithril {
 	}
 
 	interface MithrilControllerFunction extends MithrilController {
-		(): any;
+		(...args: any[]): any;
 	}
 
 	interface MithrilView<T extends MithrilController> {
-		(ctrl: T): string|MithrilVirtualElement;
+		(ctrl: T, ...args: any[]): string|MithrilVirtualElement;
 	}
 
 	interface MithrilComponent<T extends MithrilController> {
-		controller: MithrilControllerFunction|{ new(): T };
+		controller?: MithrilControllerFunction|{ new(): T };
 		view: MithrilView<T>;
 	}
 

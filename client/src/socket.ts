@@ -114,7 +114,6 @@ export class Socket {
         );
 	}
 	private onopen = () => {
-        console.log("websocket connected");
 		this.state = SocketState.CONNECTED;
 		for (var i = 0; i < this.pendings.length; i++) {
 			this.send(this.pendings[i]);
@@ -128,12 +127,14 @@ export class Socket {
 		this.d.onmessage(event);
 	}
 	private onclose = (event:any) => {
+        console.log("onclose:" + JSON.stringify(event));
 		this.state = SocketState.DISCONNECT;
 		this.ws = null;
 		this.add_error_streak();
 		this.d.onclose(event);
 	}
 	private onerror = (event:any) => {
+        console.log("onerror:" + JSON.stringify(event));
 		this.state = SocketState.DISCONNECT;
 		this.ws = null;
 		//this.add_error_streak();

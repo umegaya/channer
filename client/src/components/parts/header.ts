@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, Template} from "../../uikit"
+import {m, Util} from "../../uikit"
 import {Config} from "../../config"
 import {Handler, Builder} from "../../proto"
 import {ProtoError} from "../../watcher"
@@ -8,20 +8,12 @@ import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 
 export class HeaderController implements UI.Controller {
-	component: HeaderComponent;
-	constructor(component: HeaderComponent) {
-		this.component = component;
-	}
-    onunload = (event: any) => {
-    }
 }
-export class HeaderComponent implements UI.Component {
-	constructor() {
-    }
-	controller = (): HeaderController => {
-        return new HeaderController(this);
-    }
-	view = (ctrl: HeaderController) : UI.Element => {
+export var HeaderComponent: UI.Component = {
+	controller: (): HeaderController => {
+        return new HeaderController();
+    },
+	view: () : UI.Element => {
         var elements : Array<UI.Element> = [];
         var c : Handler = window.channer.conn;
         var rd = c.reconnect_duration();
@@ -43,9 +35,9 @@ export class HeaderComponent implements UI.Component {
             msgs = tmp;
         }
         else if (c.connected()) {
-            if (c.querying) {
+            if (c.has_query()) {
                 //TODO: replace to cool CSS anim
-                msgs = m("div", {class: "msg"}, _L("sending request now"));
+                msgs = m("div", {class: "msg"}, _L("sending request now $1", c.querying));
             }
             else if (err && err.message) {
                 msgs = [
@@ -65,7 +57,7 @@ export class HeaderComponent implements UI.Component {
                 ])
             );
         }
-        else if (c.connecting() || rd <= 0) {
+        else if (c.connecting() || (rd && rd <= 0)) {
             msgs = m("div", {class: "msg"}, _L("reconnecting"));
         }
         return m("div", {class: "header"}, 

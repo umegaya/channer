@@ -104,7 +104,7 @@
                             "fields": [
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "id",
                                     "id": 1,
                                     "options": {
@@ -196,9 +196,12 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "string",
+                                    "type": "Long",
                                     "name": "account",
-                                    "id": 2
+                                    "id": 2,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 },
                                 {
                                     "rule": "required",
@@ -213,7 +216,7 @@
                             "fields": [
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "id",
                                     "id": 1,
                                     "options": {
@@ -227,31 +230,49 @@
                                     "id": 2
                                 },
                                 {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "locale",
+                                    "id": 3
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint32",
+                                    "name": "category",
+                                    "id": 4
+                                },
+                                {
                                     "rule": "optional",
                                     "type": "string",
                                     "name": "description",
-                                    "id": 3
+                                    "id": 5
                                 },
                                 {
                                     "rule": "required",
                                     "type": "string",
                                     "name": "style",
-                                    "id": 4
+                                    "id": 6
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "established",
-                                    "id": 5,
+                                    "id": 7,
                                     "options": {
                                         "(gogoproto.casttype)": "UUID"
                                     }
                                 },
                                 {
                                     "rule": "required",
+                                    "type": "uint64",
+                                    "name": "watcher",
+                                    "id": 8
+                                },
+                                {
+                                    "rule": "required",
                                     "type": "bytes",
                                     "name": "options",
-                                    "id": 6
+                                    "id": 9
                                 }
                             ],
                             "messages": [
@@ -373,7 +394,7 @@
                             "fields": [
                                 {
                                     "rule": "required",
-                                    "type": "uint32",
+                                    "type": "Long",
                                     "name": "id",
                                     "id": 1,
                                     "options": {
@@ -399,7 +420,7 @@
                             "fields": [
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "id",
                                     "id": 1,
                                     "options": {
@@ -408,7 +429,7 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "channel",
                                     "id": 2,
                                     "options": {
@@ -417,7 +438,7 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "account",
                                     "id": 3,
                                     "options": {
@@ -437,7 +458,7 @@
                             "fields": [
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "id",
                                     "id": 1,
                                     "options": {
@@ -446,7 +467,7 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "topic",
                                     "id": 2,
                                     "options": {
@@ -455,7 +476,7 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "persona",
                                     "id": 3,
                                     "options": {
@@ -464,15 +485,77 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
-                                    "name": "attr",
+                                    "type": "string",
+                                    "name": "locale",
                                     "id": 4
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "string",
-                                    "name": "text",
+                                    "type": "uint64",
+                                    "name": "attr",
                                     "id": 5
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "fixed32",
+                                    "name": "point",
+                                    "id": 6
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "fixed32",
+                                    "name": "vote",
+                                    "id": 7
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "content",
+                                    "id": 8
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "bytes",
+                                    "name": "body",
+                                    "id": 9
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "name": "Body",
+                                    "fields": [
+                                        {
+                                            "rule": "required",
+                                            "type": "string",
+                                            "name": "name",
+                                            "id": 1
+                                        },
+                                        {
+                                            "rule": "repeated",
+                                            "type": "Reaction",
+                                            "name": "reactions",
+                                            "id": 2
+                                        }
+                                    ],
+                                    "messages": [
+                                        {
+                                            "name": "Reaction",
+                                            "fields": [
+                                                {
+                                                    "rule": "required",
+                                                    "type": "Long",
+                                                    "name": "id",
+                                                    "id": 1
+                                                },
+                                                {
+                                                    "rule": "required",
+                                                    "type": "Long",
+                                                    "name": "count",
+                                                    "id": 2
+                                                }
+                                            ]
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -481,7 +564,7 @@
                             "fields": [
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "id",
                                     "id": 1,
                                     "options": {
@@ -490,9 +573,88 @@
                                 },
                                 {
                                     "rule": "required",
+                                    "type": "Long",
+                                    "name": "channel",
+                                    "id": 2,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "Long",
+                                    "name": "persona",
+                                    "id": 3,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
+                                },
+                                {
+                                    "rule": "required",
                                     "type": "string",
-                                    "name": "name",
-                                    "id": 2
+                                    "name": "locale",
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "uint64",
+                                    "name": "attr",
+                                    "id": 5
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "sfixed32",
+                                    "name": "point",
+                                    "id": 6
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "fixed32",
+                                    "name": "vote",
+                                    "id": 7
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "fixed32",
+                                    "name": "comment",
+                                    "id": 8
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "title",
+                                    "id": 9
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "string",
+                                    "name": "content",
+                                    "id": 10
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "bytes",
+                                    "name": "body",
+                                    "id": 11
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "name": "Body",
+                                    "fields": [
+                                        {
+                                            "rule": "required",
+                                            "type": "string",
+                                            "name": "channel_name",
+                                            "id": 3
+                                        },
+                                        {
+                                            "rule": "required",
+                                            "type": "string",
+                                            "name": "name",
+                                            "id": 4
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -501,7 +663,7 @@
                             "fields": [
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "id",
                                     "id": 1,
                                     "options": {
@@ -510,8 +672,8 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
-                                    "name": "post",
+                                    "type": "Long",
+                                    "name": "persona",
                                     "id": 2,
                                     "options": {
                                         "(gogoproto.casttype)": "UUID"
@@ -519,15 +681,9 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "Type",
-                                    "name": "type",
-                                    "id": 3
-                                },
-                                {
-                                    "rule": "required",
-                                    "type": "uint64",
-                                    "name": "persona",
-                                    "id": 4,
+                                    "type": "Long",
+                                    "name": "parent",
+                                    "id": 3,
                                     "options": {
                                         "(gogoproto.casttype)": "UUID"
                                     }
@@ -535,8 +691,29 @@
                                 {
                                     "rule": "required",
                                     "type": "string",
-                                    "name": "text",
+                                    "name": "locale",
+                                    "id": 4
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "Type",
+                                    "name": "type",
                                     "id": 5
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "Long",
+                                    "name": "param",
+                                    "id": 6
+                                },
+                                {
+                                    "rule": "required",
+                                    "type": "Long",
+                                    "name": "created",
+                                    "id": 7,
+                                    "options": {
+                                        "(gogoproto.casttype)": "UUID"
+                                    }
                                 }
                             ],
                             "enums": [
@@ -548,16 +725,28 @@
                                             "id": 0
                                         },
                                         {
-                                            "name": "Star",
+                                            "name": "Post",
                                             "id": 1
                                         },
                                         {
-                                            "name": "Other",
+                                            "name": "Topic",
                                             "id": 2
                                         },
                                         {
-                                            "name": "Admin",
+                                            "name": "Channel",
                                             "id": 3
+                                        },
+                                        {
+                                            "name": "Post_Vote",
+                                            "id": 11
+                                        },
+                                        {
+                                            "name": "Topic_Vote",
+                                            "id": 12
+                                        },
+                                        {
+                                            "name": "Channel_Watch",
+                                            "id": 13
                                         }
                                     ]
                                 }
@@ -568,7 +757,7 @@
                             "fields": [
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "id",
                                     "id": 1,
                                     "options": {
@@ -577,7 +766,7 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "channel",
                                     "id": 2,
                                     "options": {
@@ -586,7 +775,7 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "uint64",
+                                    "type": "Long",
                                     "name": "account",
                                     "id": 3,
                                     "options": {
@@ -626,11 +815,12 @@
                         },
                         {
                             "rule": "optional",
-                            "type": "string",
+                            "type": "Long",
                             "name": "id",
                             "id": 5,
                             "options": {
-                                "(gogoproto.nullable)": true
+                                "(gogoproto.nullable)": true,
+                                "(gogoproto.casttype)": "UUID"
                             }
                         },
                         {
@@ -685,7 +875,7 @@
                     "fields": [
                         {
                             "rule": "required",
-                            "type": "uint64",
+                            "type": "Long",
                             "name": "topic_id",
                             "id": 1,
                             "options": {
@@ -734,7 +924,7 @@
                     "fields": [
                         {
                             "rule": "required",
-                            "type": "uint64",
+                            "type": "Long",
                             "name": "topic_id",
                             "id": 1,
                             "options": {
@@ -754,7 +944,7 @@
                     "fields": [
                         {
                             "rule": "required",
-                            "type": "uint64",
+                            "type": "Long",
                             "name": "topic_id",
                             "id": 1,
                             "options": {
@@ -768,7 +958,7 @@
                     "fields": [
                         {
                             "rule": "required",
-                            "type": "uint64",
+                            "type": "Long",
                             "name": "topic_id",
                             "id": 1,
                             "options": {
@@ -793,9 +983,12 @@
                     "fields": [
                         {
                             "rule": "required",
-                            "type": "string",
+                            "type": "Long",
                             "name": "account",
-                            "id": 1
+                            "id": 1,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
                         },
                         {
                             "rule": "required",
@@ -821,22 +1014,34 @@
                             "id": 1
                         },
                         {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "locale",
+                            "id": 2
+                        },
+                        {
+                            "rule": "required",
+                            "type": "uint32",
+                            "name": "category",
+                            "id": 3
+                        },
+                        {
                             "rule": "optional",
                             "type": "string",
                             "name": "description",
-                            "id": 2
+                            "id": 4
                         },
                         {
                             "rule": "optional",
                             "type": "string",
                             "name": "style",
-                            "id": 3
+                            "id": 5
                         },
                         {
                             "rule": "optional",
                             "type": "Model.Channel.Options",
                             "name": "options",
-                            "id": 4
+                            "id": 6
                         }
                     ]
                 },
@@ -844,21 +1049,42 @@
                     "name": "ChannelListRequest",
                     "fields": [
                         {
-                            "rule": "optional",
-                            "type": "Category",
-                            "name": "category",
+                            "rule": "required",
+                            "type": "QueryType",
+                            "name": "query",
                             "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "locale",
+                            "id": 2
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "uint32",
+                            "name": "category",
+                            "id": 3
                         },
                         {
                             "rule": "optional",
                             "type": "int32",
                             "name": "limit",
-                            "id": 2
+                            "id": 4
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "Long",
+                            "name": "offset_id",
+                            "id": 5,
+                            "options": {
+                                "(gogoproto.nullable)": true
+                            }
                         }
                     ],
                     "enums": [
                         {
-                            "name": "Category",
+                            "name": "QueryType",
                             "values": [
                                 {
                                     "name": "None",
@@ -877,13 +1103,135 @@
                     ]
                 },
                 {
+                    "name": "TopicCreateRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "Long",
+                            "name": "channel",
+                            "id": 1,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
+                        },
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "name",
+                            "id": 2
+                        },
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "content",
+                            "id": 3
+                        }
+                    ]
+                },
+                {
+                    "name": "TopicListRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "QueryType",
+                            "name": "query",
+                            "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "BucketType",
+                            "name": "bucket",
+                            "id": 2
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "locale",
+                            "id": 3
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "int32",
+                            "name": "limit",
+                            "id": 4
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "int32",
+                            "name": "offset_score",
+                            "id": 5
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "Long",
+                            "name": "offset_id",
+                            "id": 6,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID",
+                                "(gogoproto.nullable)": true
+                            }
+                        }
+                    ],
+                    "enums": [
+                        {
+                            "name": "BucketType",
+                            "values": [
+                                {
+                                    "name": "Invalid",
+                                    "id": 0
+                                },
+                                {
+                                    "name": "Rising",
+                                    "id": 1
+                                },
+                                {
+                                    "name": "Hot",
+                                    "id": 2
+                                },
+                                {
+                                    "name": "Flame",
+                                    "id": 3
+                                }
+                            ]
+                        },
+                        {
+                            "name": "QueryType",
+                            "values": [
+                                {
+                                    "name": "None",
+                                    "id": 0
+                                },
+                                {
+                                    "name": "Hour",
+                                    "id": 1
+                                },
+                                {
+                                    "name": "Day",
+                                    "id": 2
+                                },
+                                {
+                                    "name": "Week",
+                                    "id": 3
+                                },
+                                {
+                                    "name": "AllTime",
+                                    "id": 4
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
                     "name": "LoginResponse",
                     "fields": [
                         {
                             "rule": "required",
-                            "type": "string",
+                            "type": "Long",
                             "name": "id",
-                            "id": 1
+                            "id": 1,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
                         },
                         {
                             "rule": "required",
@@ -1005,6 +1353,28 @@
                     ]
                 },
                 {
+                    "name": "TopicCreateResponse",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "Model.Topic",
+                            "name": "created",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "TopicListResponse",
+                    "fields": [
+                        {
+                            "rule": "repeated",
+                            "type": "Model.Topic",
+                            "name": "list",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
                     "name": "Error",
                     "fields": [
                         {
@@ -1033,48 +1403,72 @@
                                     "id": 1
                                 },
                                 {
-                                    "name": "Login_InvalidAuth",
+                                    "name": "InvalidPayload",
                                     "id": 2
                                 },
                                 {
-                                    "name": "Login_UserNotFound",
+                                    "name": "RuntimeError",
                                     "id": 3
                                 },
                                 {
-                                    "name": "Login_UserAlreadyExists",
+                                    "name": "TemporaryUnavailable",
                                     "id": 4
                                 },
                                 {
-                                    "name": "Login_OutdatedVersion",
-                                    "id": 5
-                                },
-                                {
-                                    "name": "Login_DatabaseError",
-                                    "id": 6
-                                },
-                                {
-                                    "name": "Login_BrokenClientData",
-                                    "id": 7
-                                },
-                                {
-                                    "name": "Rescue_DatabaseError",
+                                    "name": "Login_InvalidAuth",
                                     "id": 10
                                 },
                                 {
-                                    "name": "Rescue_CannotRescue",
+                                    "name": "Login_UserNotFound",
                                     "id": 11
                                 },
                                 {
-                                    "name": "Rescue_InvalidAuth",
+                                    "name": "Login_UserAlreadyExists",
                                     "id": 12
                                 },
                                 {
-                                    "name": "ChannelCreate_DatabaseError",
+                                    "name": "Login_OutdatedVersion",
+                                    "id": 13
+                                },
+                                {
+                                    "name": "Login_DatabaseError",
+                                    "id": 14
+                                },
+                                {
+                                    "name": "Login_BrokenClientData",
+                                    "id": 15
+                                },
+                                {
+                                    "name": "Rescue_DatabaseError",
                                     "id": 20
                                 },
                                 {
-                                    "name": "ChannelList_DatabaseError",
+                                    "name": "Rescue_CannotRescue",
+                                    "id": 21
+                                },
+                                {
+                                    "name": "Rescue_InvalidAuth",
+                                    "id": 22
+                                },
+                                {
+                                    "name": "ChannelCreate_DatabaseError",
                                     "id": 30
+                                },
+                                {
+                                    "name": "ChannelList_DatabaseError",
+                                    "id": 40
+                                },
+                                {
+                                    "name": "TopicCreate_DatabaseError",
+                                    "id": 50
+                                },
+                                {
+                                    "name": "TopicCreate_NoPersonaError",
+                                    "id": 51
+                                },
+                                {
+                                    "name": "TopicList_DatabaseError",
+                                    "id": 60
                                 }
                             ]
                         }
@@ -1157,6 +1551,18 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "TopicCreateRequest",
+                            "name": "topic_create_request",
+                            "id": 13
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "TopicListRequest",
+                            "name": "topic_list_request",
+                            "id": 14
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Error",
                             "name": "error",
                             "id": 30
@@ -1223,6 +1629,18 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "TopicCreateResponse",
+                            "name": "topic_create_response",
+                            "id": 41
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "TopicListResponse",
+                            "name": "topic_list_response",
+                            "id": 42
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Post",
                             "name": "post_notify",
                             "id": 61
@@ -1277,6 +1695,14 @@
                                     "id": 10
                                 },
                                 {
+                                    "name": "TopicCreateRequest",
+                                    "id": 11
+                                },
+                                {
+                                    "name": "TopicListRequest",
+                                    "id": 12
+                                },
+                                {
                                     "name": "LoginResponse",
                                     "id": 31
                                 },
@@ -1315,6 +1741,14 @@
                                 {
                                     "name": "ChannelListResponse",
                                     "id": 40
+                                },
+                                {
+                                    "name": "TopicCreateResponse",
+                                    "id": 41
+                                },
+                                {
+                                    "name": "TopicListResponse",
+                                    "id": 42
                                 },
                                 {
                                     "name": "PostNotify",

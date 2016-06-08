@@ -6,11 +6,13 @@ import (
 	"log"
 	"time"
 
-	proto "../proto"
-	"./packets"
-	"./assets"
-	"./models"
+	proto "github.com/umegaya/channer/server/proto"
+	"github.com/umegaya/channer/server/lib/packets"
+	"github.com/umegaya/channer/server/lib/assets"
+	"github.com/umegaya/channer/server/lib/models"
+	"github.com/umegaya/channer/server/lib/actors"
 
+	"github.com/umegaya/yue"
 	"github.com/gorilla/websocket"
 )
 
@@ -142,6 +144,35 @@ func (sv *FrontServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     c.reader(sv)
 }
 
+func (sv *FrontServer) initActors() error {
+	config := sv.config
+	//initialize actor system
+	if err := yue.Init(&yue.Config {
+		DatabaseAddress: config.DBHost,
+		CertPath: config.DBCertPath,
+		HostAddress: config.NodeIpv4Address,
+	}); err != nil {
+		return err
+	}
+	yue.Register("/hello", yue.ActorConfig {
+		SpawnConfig: yue.SpawnConfig {
+			Factory: yue.InmemoryExecuterFactory {
+				Constructor: actors.NewHelloActor,
+			},
+		},
+		Size: 1,
+	}, "channer")
+	go func() {
+		var r string
+		if err := yue.Call("/hello", "Hello", "actor-caller", &r); err != nil {
+			log.Fatalf("err should not happen: %v %v", err)
+		} else if r != "hello, actor-caller! from channer" {
+			log.Fatalf("unexpected response: %v", r)
+		}
+	}()
+	return nil
+}
+
 //init initialize related modules 
 func (sv *FrontServer) init() {
 	config := sv.config
@@ -151,11 +182,27 @@ func (sv *FrontServer) init() {
 		log.Fatal(err)
 	}
 	packets.Init(&a);
+	//initialize actor system
+	if err := sv.initActors(); err != nil {
+		log.Fatal(err)
+	}
 	//initialize models
-	if err := models.Init(config.DBHost, config.DBCertPath, config.NodeIpv4Address); err != nil {
+	if err := models.Init(
+			config.DBHost, config.DBCertPath, 
+			config.NodeIpv4Address, config.DataPath, 
+			config.InsertFixture); err != nil {
 		log.Fatal(err)
 	}
 	sv.assets = &a	
+	//Initialize builtin actor setting
+	yue.Register("/hot/:locale", yue.ActorConfig {
+		SpawnConfig: yue.SpawnConfig {
+			Factory: yue.InmemoryExecuterFactory {
+				Constructor: actors.NewHotActor,
+			},
+		},
+		Size: 1,
+	}, 60 * time.Second)
 }
 
 //Run sets up websocket handler, starts listen on configured address
@@ -164,8 +211,14 @@ func (sv *FrontServer) Run() {
 	http.Handle(sv.config.EndPoint, sv)
 	go sv.processEvents()
     go sv.updateAssetsConfig(sv.config.AssetsConfigURL)
- 	if err := http.ListenAndServeTLS(sv.config.ListenAddress, sv.config.CertPath, sv.config.KeyPath, nil); err != nil {
-        panic("FrontServer.Run fails to listen: " + err.Error())
+    if sv.config.CertPath == "" {
+		if err := http.ListenAndServe(sv.config.ListenAddress, nil); err != nil {
+        	panic("FrontServer.Run fails to listen: " + err.Error())
+    	}
+    } else {
+ 		if err := http.ListenAndServeTLS(sv.config.ListenAddress, sv.config.CertPath, sv.config.KeyPath, nil); err != nil {
+        	panic("FrontServer.Run fails to listen: " + err.Error())
+    	}
     }
 }
 

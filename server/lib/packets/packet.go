@@ -4,9 +4,10 @@ import (
 	"log"
 	"fmt"
 
-	"../assets"
-	"../models"
-	proto "../../proto"
+	"github.com/umegaya/yue"
+	"github.com/umegaya/channer/server/lib/assets"
+	"github.com/umegaya/channer/server/lib/models"
+	proto "github.com/umegaya/channer/server/proto"
 )
 
 //Source is interface which is required packet source information 
@@ -71,6 +72,16 @@ var handlers = map[proto.Payload_Type]func (pkt *RecvPacket, t Transport) {
 			go ProcessChannelList(pkt.From, pkt.Payload.Msgid, pkt.Payload.ChannelListRequest, t)
 		}
 	},
+	proto.Payload_TopicCreateRequest: func (pkt *RecvPacket, t Transport) {
+		if pkt.Payload.TopicCreateRequest != nil {
+			go ProcessTopicCreate(pkt.From, pkt.Payload.Msgid, pkt.Payload.TopicCreateRequest, t)
+		}
+	},
+	proto.Payload_TopicListRequest: func (pkt *RecvPacket, t Transport) {
+		if pkt.Payload.TopicListRequest != nil {
+			go ProcessTopicList(pkt.From, pkt.Payload.Msgid, pkt.Payload.TopicListRequest, t)
+		}
+	},
 }
 
 //Init initializes packet processing system
@@ -92,16 +103,39 @@ func (pkt *RecvPacket) Process(t Transport) {
 	}
 }
 
+func Actor2ProtoError(aerr *yue.ActorError) *proto.Err {
+	if aerr.Is(yue.ActorUnavailable) {
+		return &proto.Err {
+			Type: proto.Error_TemporaryUnavailable,
+		}
+	} else {
+		return &proto.Err {
+			Type: proto.Error_RuntimeError,
+			Explanation: aerr.Error(),			
+		}
+	}
+}
+
 //SendError sents error with specified reason
-func SendError(src Source, msgid uint32, reason proto.Error_Type) {
-	log.Printf("SendError:%v", reason);
+func SendError(src Source, msgid uint32, err error) {
+	perr, ok := err.(*proto.Err)
+	if !ok {
+		aerr, ok2 := err.(*yue.ActorError)
+		if ok2 {
+			perr = Actor2ProtoError(aerr)
+		} else {
+			perr = &proto.Err {
+				Type: proto.Error_RuntimeError,
+				Explanation: err.Error(),
+			}
+		}
+	}
+	log.Printf("SendError:%v", err);
 	typ := proto.Payload_Error
 	src.Send(&proto.Payload {
 		Type: typ,
 		Msgid: msgid,
-		Error: &proto.Error {
-			Type: reason,
-		},
+		Error: ((*proto.Error)(perr)),
 	})
 }
 

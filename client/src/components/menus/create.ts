@@ -1,6 +1,8 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 
-import {m, Util, Template, PropConditions, PropCollection} from "../../uikit"
+import {m, Util} from "../../uikit"
+import {PropCollectionFactory, PropConditions, PropCollection} from "../../input/prop"
+import {ArrayModelCollection, categories, locales} from "../parts/scroll"
 import {TopComponent} from "../top"
 import {MenuElementComponent} from "../menu"
 import {Config} from "../../config"
@@ -8,6 +10,7 @@ import {Handler, Builder} from "../../proto"
 import {ProtoError} from "../../watcher"
 import {RadioComponent} from "../parts/radio"
 import {TextFieldComponent} from "../parts/textfield"
+import {PulldownComponent, LocalePulldownOptions} from "../parts/pulldown"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var _L = window.channer.l10n.translate;
 var Button = window.channer.parts.Button;
@@ -37,10 +40,14 @@ var texts = {
     DEFAULT_POST_LIMIT: _L("max posts for topic"),
 }
 
-var cond: PropConditions = {
+PropCollectionFactory.setup("channel-create", {
     required: {
         name: {
             init: texts.DEFAULT_NAME, 
+        },
+        category: {
+            init: "",
+            fallback: "1",
         },
     },
     optional: {
@@ -51,6 +58,10 @@ var cond: PropConditions = {
         desc: {
             init: texts.DEFAULT_DESCRIPTION, 
             fallback: "",
+        },
+        locale: {
+            init: window.channer.l10n.language,
+            fallback: window.channer.l10n.language,
         },
         style: {
             init: texts.DEFAULT_STYLE_URL, 
@@ -69,19 +80,18 @@ var cond: PropConditions = {
             check: ChannerProto.Model.Channel.TopicDisplayStyle.Invalid,
         },
     }
-}
+});
 
 export class ChannelCreateController implements UI.Controller {
-	component: ChannelCreateComponent;
-    show_advanced: boolean;
-    oncreate: (ch: ChannerProto.Model.Channel) => void;
+	component: ChannelCreate;
+    page: number;
 
-	constructor(component: ChannelCreateComponent) {
-		this.component = component;
-        this.show_advanced = false;
-        this.oncreate = component.parent<TopComponent>().oncreate;
-	}
-    onsend = () => {
+	constructor(component: ChannelCreate) {
+ 		this.component = component;
+        var p = m.route.param("page");
+        this.page = p ? Number(p) : 1;
+ 	}
+    onsend() {
         var conn: Handler = window.channer.conn;
         var vals = this.component.input.check();
         if (vals) {
@@ -90,56 +100,106 @@ export class ChannelCreateController implements UI.Controller {
             options.identity = vals["idlevel"];
             options.topic_post_limit = parseInt(vals["postlimit"], 10);
             options.topic_display_style = vals["display"];
-            conn.channel_create(vals["name"], vals["desc"], vals["style"], options)
-            .then((r: ChannerProto.ChannelCreateResponse) => {
+            conn.channel_create(
+                vals["name"], vals["category"], vals["locale"], 
+                vals["desc"], vals["style"], options
+            ).then((r: ChannerProto.ChannelCreateResponse) => {
                 console.log("new channel create:" + r.channel.id);
                 this.component.input.clear(); //cleanup input data
-                this.oncreate(r.channel);
+                this.component.notifyMenuEvent(this, "channel-created");
                 Util.route("/channel/" + r.channel.id);
             }, (e: ProtoError) => {
                 console.log("error:" + e.message);
             });
         }
     }
-    on_advanced_settings = () => {
-        this.show_advanced = !this.show_advanced;
+    nexturl = () => {
+        return "/menu/create/" + (this.page + 1);
+    }
+    backurl = () => {
+        return "/menu/create/" + (this.page - 1);
     }
     onchange = (v: any) => {
         this.component.input.save();
     }
-    sendready = ():boolean => {
+    sendready():boolean {
         return !!this.component.input.check();
     }
 }
+function sendbutton(ctrl: ChannelCreateController): UI.Element {
+    return m.component(Button, {
+        class: "send",
+        label: _L("Create"),
+        disabled: !ctrl.sendready(), 
+        events: {
+            onclick: ctrl.onsend.bind(ctrl),
+        }
+    });
+}
+function backbutton(ctrl: ChannelCreateController): UI.Element {
+    return m.component(Button, {
+        class: "prev",
+        label: _L("Back"),
+        events: {
+            onclick: (e: any) => { Util.route(ctrl.backurl()) },
+        }
+    });    
+}
+function nextbutton(ctrl: ChannelCreateController, label: string): UI.Element {
+    return m.component(Button, {
+        class: "next",
+        label: label,
+        events: {
+            onclick: (e: any) => { Util.route(ctrl.nexturl()) },
+        }
+    });    
+}
 function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
 	var elements : Array<UI.Element> = []; 
+    var buttons: Array<UI.Element> = [];
     var props = ctrl.component.input.props;
-    console.log("name/desc:" + props["name"]() + "|" + props["desc"]());
-    if (!ctrl.show_advanced) {
-        elements.push(m(".block", [
+    switch (ctrl.page) {
+    case 1:
+        elements.push(m(".form", [
             m.component(TextFieldComponent, {
                 label: texts.DEFAULT_NAME,
                 required: true,
+                autofocus: true,
                 value: props["name"],
                 onchange: ctrl.onchange,
             }),
+            m.component(PulldownComponent, {
+                label: _L("Category"),
+                required: true,
+                value: props["category"],
+                models: categories,
+                onchange: ctrl.onchange,
+            }),
+        ]));
+        buttons.push(sendbutton(ctrl));
+        buttons.push(nextbutton(ctrl, _L("Add Description")));
+        break;
+    case 2:
+        elements.push(m(".form", [
             m.component(TextFieldComponent, {
                 label: texts.DEFAULT_DESCRIPTION,
                 multiline: true,
-                rows: 3,
+                rows: 7,
                 value: props["desc"],
                 onchange: ctrl.onchange,
             }),
         ]));
-    }
-    else {
+        buttons.push(backbutton(ctrl));
+        buttons.push(nextbutton(ctrl, _L("Detail")));
+        break;    
+    case 3:
         //idlevel radiobox
         var idlevel = props["idlevel"];
         var idlevel_block = [m(".title", _L("identity level"))];
         idlevel_block.push(m.component(RadioComponent, {
             name: "id-level",
             elements: {
-                none: ChannerProto.Model.Channel.IdentityLevel.None,
+                //none: ChannerProto.Model.Channel.IdentityLevel.None,
                 topic: ChannerProto.Model.Channel.IdentityLevel.Topic,
                 channel: ChannerProto.Model.Channel.IdentityLevel.Channel,
                 account: ChannerProto.Model.Channel.IdentityLevel.Account,
@@ -151,7 +211,6 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
         if (idl != ChannerProto.Model.Channel.IdentityLevel.Unknown) {
             idlevel_block.push(m("div", {class: "explaination"}, idlevel_text[idl]));
         }
-        elements.push(m("div", {class: "block id-level"}, idlevel_block));
 
         //disp radiobox
         var disp = props["display"];
@@ -164,68 +223,69 @@ function ChannelCreateView(ctrl: ChannelCreateController) : UI.Element {
             },
             prop: disp,
             onchange: ctrl.onchange,
-        }));
+        }));    
         var d = disp();
         if (d != ChannerProto.Model.Channel.TopicDisplayStyle.Invalid) {
             disp_block.push(m("div", {class: "explaination"}, display_text[d]));
         }
-        elements.push(m(".block.display-style", disp_block));
-
+        elements.push(m(".form", [
+            m(".block.id-level", idlevel_block),
+            m(".block.display-style", disp_block),
+        ]));
+        buttons.push(backbutton(ctrl));
+        buttons.push(nextbutton(ctrl, _L("Next")));
+        break;
+    case 4:
         //anon signature
-        elements.push(m.component(TextFieldComponent, {
-            label: texts.DEFAULT_ANONYMOUS,
-            value: props["anon"],
-            onchange: ctrl.onchange,
-        }));
-        //postlimit, styl, textarea
-        elements.push(m.component(TextFieldComponent, {
-            label: texts.DEFAULT_POST_LIMIT,
-            value: props["postlimit"],
-            onchange: ctrl.onchange,
-        }));
-        elements.push(m.component(TextFieldComponent, {
-            label: texts.DEFAULT_STYLE_URL,
-            value: props["style"],
-            onchange: ctrl.onchange,
-        }));
+        elements.push(m(".form", [
+            m.component(TextFieldComponent, {
+                label: texts.DEFAULT_ANONYMOUS,
+                value: props["anon"],
+                onchange: ctrl.onchange,
+            }),
+            m.component(PulldownComponent, new LocalePulldownOptions({
+                label: _L("Language"),
+                value: props["locale"],
+                onchange: ctrl.onchange,
+            })),
+        ]));
+        buttons.push(backbutton(ctrl));
+        buttons.push(sendbutton(ctrl));
     }
     //send button
-    elements.push(m(".buttons", [
-        m.component(Button, {
-            class: "send",
-            label: _L("Create"),
-            disabled: !ctrl.sendready(), 
-            events: {
-                onclick: ctrl.onsend,
-            }
-        }),
-        m.component(Button, {
-            class: "detail",
-            label: ctrl.show_advanced ? _L("Back") : _L("Detail"),
-            events: {
-                onclick: ctrl.on_advanced_settings,
-            }
-        })
-    ]));
+    elements.push(m(".buttons", buttons));
     return m(".create", elements);
 }
-export class ChannelCreateComponent extends MenuElementComponent {
-	controller: (args?: any) => ChannelCreateController;
-	view: UI.View<ChannelCreateController>;
+export class ChannelCreate extends MenuElementComponent {
     input: PropCollection;
 
-	constructor(parent: TopComponent) {
-        super(parent);
-		this.view = ChannelCreateView;
-        this.input = new PropCollection("channel-create", cond);
-		this.controller = () => {
-			return new ChannelCreateController(this);
-		}
+	constructor() {
+        super();
 	}
+    controller = (): ChannelCreateController => {
+        if (!this.input) {
+            this.input = PropCollectionFactory.ref("channel-create");
+        }
+        return new ChannelCreateController(this);
+    }
+    menuview = (ctrl: ChannelCreateController): UI.Element => {
+        return ChannelCreateView(ctrl);
+    }
     iconview = (): UI.Element => {
         return this.format_iconview("img.create_channel", _L("create channel"));
     }
     name = (): string => {
         return "channel create";
     }
+    pageurl = (): string => {
+        return "/menu/create";
+    }
+    pagert = (): Array<string> => {
+        return [
+            this.pageurl(),
+            "/menu/create/:page",
+        ];
+    }
 }
+
+export var ChannelCreateComponent: ChannelCreate = new ChannelCreate();

@@ -1,0 +1,23 @@
+[
+    {"name": "Share"},
+    {"name": "Ask"},
+    {"name": "Commentary"},
+    {"name": "Meetup"},
+    {"name": "Society"},
+    {"name": "Region"},
+    {"name": "Culture"},
+    {"name": "Science"},
+    {"name": "Humanities"},
+    {"name": "Food"},
+    {"name": "Life"},
+    {"name": "Chat"},
+    {"name": "Hobby"},
+    {"name": "Sports"},
+    {"name": "Game"},
+    {"name": "Anime"},
+    {"name": "Manga"},
+    {"name": "Music"},
+    {"name": "Health"},
+    {"name": "Admin", "private": true },
+    {"name": "Forum", "private": true }
+]

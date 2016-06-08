@@ -34,24 +34,23 @@ message Model {
 			User = 1;
 			Bot = 2;
 		}
-		enum Status {
+		enum Status {	//flags.
 			None = 0;
 			Banned = 1;
 			Admin = 2;
 		}
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string user = 2;
 		required Type type = 3;
 		required string secret = 4;
 		required string pass = 5;
 		required string mail = 6;
-		//when user forget password, we set some random hash here and login command with same value of this, can replace hash with new value
 		required uint32 status = 7;
 	}
 
 	message Rescue {
 		required bytes id = 1;
-		required string account = 2;
+		required fixed64 account = 2 [(gogoproto.casttype) = "UUID"];
 		required int64 valid_date = 3;
 	}
 
@@ -74,12 +73,15 @@ message Model {
 			optional uint32 topic_post_limit = 3;				//how many post can be posted to same topic?
 			optional string anonymous_name = 4;					//how anonymous to be shown its name? eg. 名無しさん.
 		}
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string name = 2;
-		optional string description = 3;
-		required string style = 4;
-		required uint64 established = 5 [(gogoproto.casttype) = "UUID"];	//account id which create this channel TODO: forum creation limit per account.
-		required bytes options = 6;
+		required string locale = 3;
+		required uint32 category = 4;
+		optional string description = 5;
+		required string style = 6;
+		required fixed64 established = 7 [(gogoproto.casttype) = "UUID"];	//account id which create this channel
+		required uint64 watcher = 8;
+		required bytes options = 9;
 	}
 
 	message Device {
@@ -91,49 +93,79 @@ message Model {
 	}
 
 	message Node {
-		required uint32 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 		required string address = 2;
 		required uint64 seed = 3;
 	}
 
 	message Persona {
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required uint64 channel = 2 [(gogoproto.casttype) = "UUID"];
-		required uint64 account = 3 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 channel = 2 [(gogoproto.casttype) = "UUID"];
+		required fixed64 account = 3 [(gogoproto.casttype) = "UUID"];
 		required string name = 4;
 	}
 
 	message Post {
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"]; 
-		required uint64 topic = 2 [(gogoproto.casttype) = "UUID"];//parent topic id
-		required uint64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who post it.
-		required uint64 attr = 4;//attr flag (banned or something)
-		required string text = 5;//posted text
+		message Body {
+			message Reaction {
+				required fixed64 id = 1;
+				required fixed64 count = 2;
+			}
+			required string name = 1;
+			repeated Reaction reactions = 2;
+		}
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"]; 
+		required fixed64 topic = 2 [(gogoproto.casttype) = "UUID"];//parent topic id
+		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who post it.
+		required string locale = 4;
+		required uint64 attr = 5;//attr flag (banned or something)
+		required fixed32 point = 6;
+		required fixed32 vote = 7;
+		required string content = 8;//posted text TODO: parse it and store metadata to body
+		required bytes body = 9; //packed Body message
 	}
 
 	message Topic {
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required string name = 2;
+		message Body {
+			required string channel_name = 3;
+			required string name = 4;
+		}
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 channel = 2 [(gogoproto.casttype) = "UUID"];
+		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"]; //persona id 
+		required string locale = 4;
+		required uint64 attr = 5;//attr flag (banned or something)
+		required sfixed32 point = 6;
+		required fixed32 vote = 7;
+		required fixed32 comment = 8;
+		required string title = 9;
+		required string content = 10; //text or url
+		required bytes body = 11; //packed Body message
 	}
 
 	message Reaction {
 		enum Type {
 			Unknown = 0;
-			Star = 1;
-			Other = 2;
-			Admin = 3;
+			Post = 1;
+			Topic = 2;
+			Channel = 3;
+			Post_Vote = 11;
+			Topic_Vote = 12;
+			Channel_Watch = 13;
 		}
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required uint64 post = 2 [(gogoproto.casttype) = "UUID"]; //parent post id
-		required Type type = 3;//0: star, 1: other emoji reactions, 2: special reactions (like ban)
-		required uint64 persona = 4 [(gogoproto.casttype) = "UUID"];//persona who react it.
-		required string text = 5;//0: empty string, 1: emoji definition. 2: misc data (maybe JSON)
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"]; //reaction target object id
+		required fixed64 persona = 2 [(gogoproto.casttype) = "UUID"];//persona who react target.
+		required fixed64 parent = 3 [(gogoproto.casttype) = "UUID"];//target object's parent id (topic => channel, post => topic, ...)
+		required string locale = 4;
+		required Type type = 5;
+		required sfixed64 param = 6;//+1,-1 for vote reaction. emoji_id for other reaction
+		required fixed64 created = 7 [(gogoproto.casttype) = "UUID"]; //uuid for creation date
 	}
 
 	message Service {
-		required uint64 id = 1 [(gogoproto.casttype) = "UUID"];
-		required uint64 channel = 2 [(gogoproto.casttype) = "UUID"];
-		required uint64 account = 3 [(gogoproto.casttype) = "UUID"];
+		required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
+		required fixed64 channel = 2 [(gogoproto.casttype) = "UUID"];
+		required fixed64 account = 3 [(gogoproto.casttype) = "UUID"];
 	}
 }
 
@@ -143,7 +175,7 @@ message LoginRequest {
 	required string user = 2;
 	required string version = 3;
 	optional string mail = 4;
-	optional string id = 5 [(gogoproto.nullable) = true]; //actually uint64 integer. but js isnt good at handle this.
+	optional fixed64 id = 5 [(gogoproto.nullable) = true, (gogoproto.casttype) = "UUID"]; //actually uint64 integer. but js isnt good at handle this.
 	optional string sign = 6 [(gogoproto.nullable) = true]; //walltime + username + password + salt with sha256 
 	optional string pass = 7 [(gogoproto.nullable) = true]; //only first time (before this client receive unique salt from server)
 	optional string device_id = 8 [(gogoproto.nullable) = true]; //if sent from mobile device, it should be specified
@@ -152,7 +184,7 @@ message LoginRequest {
 }
 
 message PostRequest {
-	required uint64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
+	required fixed64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
 	required uint64 walltime = 2;
 	required Post post = 3;
 }
@@ -164,16 +196,16 @@ message FetchRequest {
 }
 
 message ReadRequest {
-	required uint64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
+	required fixed64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
 	required HLC read_post_ts = 2;
 }
 
 message EnterTopicRequest {
-	required uint64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
+	required fixed64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
 }
 
 message ExitTopicRequest {
-	required uint64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
+	required fixed64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
 }
 
 message PingRequest {
@@ -181,34 +213,65 @@ message PingRequest {
 }
 
 message RescueRequest {
-	required string account = 1;
+	required fixed64 account = 1 [(gogoproto.casttype) = "UUID"];
 	required string sign = 2;
 	required uint64 walltime = 3;
 }
 
 message ChannelCreateRequest {
 	required string name = 1;
-	optional string description = 2;
-	optional string style = 3;
-	optional Model.Channel.Options options = 4;
+	required string locale = 2;
+	required uint32 category = 3;
+	optional string description = 4;
+	optional string style = 5;
+	optional Model.Channel.Options options = 6;
 }
 
 message ChannelListRequest {
-	enum Category {
+	enum QueryType {
 		None = 0;
 		New = 1;
 		Popular = 2;
 	}
-	optional Category category = 1;
-	optional int32 limit = 2;
-
+	required QueryType query = 1;
+	optional string locale = 2;
+	optional uint32 category = 3;
+	optional int32 limit = 4;
+	optional fixed64 offset_id = 5 [(gogoproto.nullable) = true];
 }
 
+message TopicCreateRequest {
+	required fixed64 channel = 1 [(gogoproto.casttype) = "UUID"];
+	required string name = 2;
+	required string content = 3;
+}
+
+message TopicListRequest {
+	enum BucketType {
+		Invalid = 0;
+		Rising = 1;
+		Hot = 2;
+		Flame = 3;
+	}
+	enum QueryType {
+		None = 0;
+		Hour = 1;
+		Day = 2;
+		Week = 3;
+		AllTime = 4;
+	}
+	required QueryType query = 1;
+	optional BucketType bucket = 2;
+	optional string locale = 3;
+	optional int32 limit = 4;
+	optional int32 offset_score = 5;
+	optional fixed64 offset_id = 6 [(gogoproto.casttype) = "UUID", (gogoproto.nullable) = true];
+}
 
 
 //response
 message LoginResponse {
-	required string id = 1;  //actually uint64 integer. but js isnt good at handle this.
+	required fixed64 id = 1 [(gogoproto.casttype) = "UUID"];
 	required string secret = 2;
 	optional string pass = 3 [(gogoproto.nullable) = true];
 	optional string mail = 4 [(gogoproto.nullable) = true];
@@ -249,6 +312,13 @@ message ChannelListResponse {
 	repeated Model.Channel list = 1;
 }
 
+message TopicCreateResponse {
+	required Model.Topic created = 1;
+}
+
+message TopicListResponse {
+	repeated Model.Topic list = 1;
+}
 
 
 //response error
@@ -256,20 +326,29 @@ message Error {
 	enum Type {
 		Unknown = 0;
 		Timeout = 1;
-		Login_InvalidAuth = 2;
-		Login_UserNotFound = 3;
-		Login_UserAlreadyExists = 4;
-		Login_OutdatedVersion = 5;
-		Login_DatabaseError = 6;
-		Login_BrokenClientData = 7;
+		InvalidPayload = 2;
+		RuntimeError = 3;
+		TemporaryUnavailable = 4;
 
-		Rescue_DatabaseError = 10;
-		Rescue_CannotRescue = 11;
-		Rescue_InvalidAuth = 12;
+		Login_InvalidAuth = 10;
+		Login_UserNotFound = 11;
+		Login_UserAlreadyExists = 12;
+		Login_OutdatedVersion = 13;
+		Login_DatabaseError = 14;
+		Login_BrokenClientData = 15;
 
-		ChannelCreate_DatabaseError = 20;
+		Rescue_DatabaseError = 20;
+		Rescue_CannotRescue = 21;
+		Rescue_InvalidAuth = 22;
 
-		ChannelList_DatabaseError = 30;
+		ChannelCreate_DatabaseError = 30;
+
+		ChannelList_DatabaseError = 40;
+
+		TopicCreate_DatabaseError = 50;
+		TopicCreate_NoPersonaError = 51;
+
+		TopicList_DatabaseError = 60;
 	}
 	required Type type = 1;
 	optional string explanation = 2;
@@ -288,9 +367,9 @@ message Payload {
 	enum Type { 
 		Unknown = 0;
 		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7; 
-		RescueRequest = 8; ChannelCreateRequest = 9; ChannelListRequest = 10;
+		RescueRequest = 8; ChannelCreateRequest = 9; ChannelListRequest = 10; TopicCreateRequest = 11; TopicListRequest = 12;
 		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37; 
-		RescueResponse = 38; ChannelCreateResponse = 39; ChannelListResponse = 40;
+		RescueResponse = 38; ChannelCreateResponse = 39; ChannelListResponse = 40; TopicCreateResponse = 41; TopicListResponse = 42;
 		PostNotify = 61;
 		Error = 101;
 	}
@@ -306,6 +385,8 @@ message Payload {
 	optional RescueRequest rescue_request = 10;
 	optional ChannelCreateRequest channel_create_request = 11;
 	optional ChannelListRequest channel_list_request = 12;
+	optional TopicCreateRequest topic_create_request = 13;
+	optional TopicListRequest topic_list_request  = 14;
 
 	optional Error error = 30;
 
@@ -319,6 +400,8 @@ message Payload {
 	optional RescueResponse rescue_response = 38;
 	optional ChannelCreateResponse channel_create_response = 39;
 	optional ChannelListResponse channel_list_response = 40;
+	optional TopicCreateResponse topic_create_response = 41;
+	optional TopicListResponse topic_list_response = 42;
 
 	optional Post post_notify = 61;
 }

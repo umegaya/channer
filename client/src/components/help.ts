@@ -9,7 +9,6 @@ var helptexts = JSON.parse(require('./helptexts.json'));
 export class HelpController implements UI.Controller {
 	component: HelpComponent;
 	constructor(component: HelpComponent) {
-		Util.active(this, component);
 		this.component = component;
 	}
 }
