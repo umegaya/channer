@@ -105,6 +105,8 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
         //console.log("get " + index + " " + page_index);
         var chunk = this.chunks[page_index];
         if (!chunk) {
+            //for each page_index, only first time chunk is missing, fetch is called. 
+            //then fetch set chunk to this.chunks[page_index].
             this.fetch(page_index + 1).then(fetchCB);
             return null;
         }
@@ -173,6 +175,53 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     }
 }
 
+export interface ItemProp {
+    width: number;
+    model: ProtoModel;
+    renderItem: (c: ModelCollection, model: any, options?: any) => UI.Element;
+    models: ModelCollection;
+    elementOptions?: any;    
+}
+
+export interface ItemState {
+    
+}
+
+export class ItemComponent extends React.Component<ItemProp, ItemState> {
+    render(): UI.Element {
+        /*
+        if (!model) {
+            return <div className="block" key={index}>loading new records...</div>;
+        }
+        return this.props.renderItem(this.props.models, model, this.props.elementOptions);
+        */
+        var itemStyle = {
+            width: this.props.width,
+            height: ItemComponent.itemHeight(),
+        };            
+        var textStyle = {
+            top: 32,
+            left: 80,
+            width: this.props.width - 90,
+            height: 18,
+            fontSize: 14,
+            lineHeight: 18
+        };
+        if (!this.props.model) {
+            return <window.channer.canvas.Group style={itemStyle}>
+                <window.channer.canvas.Text style={textStyle}>loading new records..</window.channer.canvas.Text>
+            </window.channer.canvas.Group>
+        }
+        return <window.channer.canvas.Group style={itemStyle}>
+                <window.channer.canvas.Text style={textStyle}>load done</window.channer.canvas.Text>
+            </window.channer.canvas.Group>        
+    }
+    static itemHeight(): number {
+        return 80;
+    }
+
+}
+
 export interface ListProp {
     renderItem: (c: ModelCollection, model: any, options?: any) => UI.Element;
     models: ModelCollection;
@@ -184,25 +233,50 @@ export interface ListState {
 }
 
 export class ListComponent extends React.Component<ListProp, ListState> {
+    size: ClientRect;
+    constructor(props: ListProp) {
+        super(props);
+        this.size = document.getElementById('app').getBoundingClientRect();
+    }
     renderItem = (index: number, key: string): UI.Element => {
-        //console.log("renderItem " + index + " " + key);
         var model = this.props.models.get(index, (c: ModelCollection) => { 
             //console.log("index updated:" + index);
             this.forceUpdate();
         });
+        /*
         if (!model) {
             return <div className="block" key={index}>loading new records...</div>;
         }
         return this.props.renderItem(this.props.models, model, this.props.elementOptions);
+        */
+        return <ItemComponent 
+            width={this.size.width}
+            model={model}
+            renderItem={this.props.renderItem}
+            models={this.props.models}
+            elementOptions={this.props.elementOptions}
+        />
     }
     render(): UI.Element {
-        return <window.channer.rparts.List
+        /*return <window.channer.rparts.List
             itemRenderer={this.renderItem}
             length={this.props.models.length()}
             type='variable'
             pageSize={ProtoModelCollection.FETCH_LIMIT}
             threshold={600}
             useTranslate3d={true}
-        />;
+        />;*/
+        return <window.channer.canvas.Surface top={0} left={0} width={this.size.width} height={this.size.height}>
+            <window.channer.canvas.ListView
+                style={{
+                    top: 0,
+                    left: 0,
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                }}
+                numberOfItemsGetter={this.props.models.length}
+                itemHeightGetter={ItemComponent.itemHeight}
+                itemGetter={this.renderItem} />
+        </window.channer.canvas.Surface>
     }
 }

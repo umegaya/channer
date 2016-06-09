@@ -27,6 +27,7 @@ if (!console.debug) { //because react refers console.debug to show introduction 
 	console.debug = console.log;
 }
 window.channer.rparts.List = require('react-list');
+window.channer.canvas = require('react-canvas');
 
 //utility method for member ByteBuffer of protobuf data structure.
 window.channer.ProtoBuf.ByteBuffer.prototype.slice = 

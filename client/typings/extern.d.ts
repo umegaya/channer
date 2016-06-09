@@ -83,5 +83,14 @@ interface ChannerModules {
     rparts: {
         List: __React.ComponentClass<any>;
     }
+    canvas: {
+        Surface: __React.ComponentClass<any>;
+        Layer: __React.ComponentClass<any>;
+        Group: __React.ComponentClass<any>;
+        Image: __React.ComponentClass<any>;
+        Text: __React.ComponentClass<any>;
+        ListView: __React.ComponentClass<any>;
+        Gradient: __React.ComponentClass<any>;       
+    }
     testtmp: any;
 }
