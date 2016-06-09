@@ -17,7 +17,7 @@
     "react-dom": "^15.1.0",
     "react-list": "^0.7.18",
     "react-router": "^2.4.1",
-    "typescript": "^1.6.2"
+    "typescript": "^1.8.10"
   },
   "devDependencies": {
     "awesome-typescript-loader": "^0.19.0",
@@ -55,5 +55,8 @@
   "bugs": {
     "url": "https://github.com/umegaya/channer/issues"
   },
-  "homepage": "https://github.com/umegaya/channer#readme"
+  "homepage": "https://github.com/umegaya/channer#readme",
+  "directories": {
+    "test": "test"
+  }
 }
