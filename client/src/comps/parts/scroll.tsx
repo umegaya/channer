@@ -2,6 +2,7 @@
 import * as React from 'react'
 import ProtoBufModel = Proto2TypeScript.ProtoBufModel;
 import Q = require('q');
+import {init_metrics, vw, vh} from "../canvas_styler"
 var Scroll = window.channer.parts.Scroll;
 var Long = window.channer.ProtoBuf.Long;
 var _L = window.channer.l10n.translate;
@@ -102,8 +103,8 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     }
     get = (index: number, fetchCB: (c: ModelCollection) => void): T => {
         var page_index = Math.floor(index / ProtoModelCollection.FETCH_LIMIT);
-        //console.log("get " + index + " " + page_index);
         var chunk = this.chunks[page_index];
+        //console.log("get " + index + " " + page_index + " " + (!!chunk));
         if (!chunk) {
             //for each page_index, only first time chunk is missing, fetch is called. 
             //then fetch set chunk to this.chunks[page_index].
@@ -119,8 +120,8 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     }
     fetch = (page: number): Q.Promise<ModelCollection> => {
 		var df : Q.Deferred<ProtoModelCollection<T,B>> = Q.defer<ProtoModelCollection<T,B>>();
-        //console.log("fetch for " + page);
         var chunk : ProtoModelChunk<T, B> = this.chunks[page - 1];
+        //console.log("fetch for " + page + " " + (chunk == null));
         if (!chunk || !chunk.initialized) {
             if (this.defers[page - 1]) {
                 //console.log("fetch for " + page + " returns promiss");
@@ -152,6 +153,7 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
         return df.promise;
     }
     private fetchraw = (page: number, offset: B, limit: number) => {
+        //console.log("featchraw:" + page);
         var chunk = this.chunks[page - 1];
         var df = this.defers[page - 1];
         this.fetch_request(offset, limit).then((list: Array<T>) => {
@@ -177,6 +179,7 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
 
 export interface ItemProp {
     width: number;
+    index: number;
     model: ProtoModel;
     renderItem: (c: ModelCollection, model: any, options?: any) => UI.Element;
     models: ModelCollection;
@@ -229,33 +232,48 @@ export interface ListProp {
 }
 
 export interface ListState {
-    lastIndex: number;
+    size: ClientRect;
+    itemStyle: any;
+    textStyle: any;
 }
 
 export class ListComponent extends React.Component<ListProp, ListState> {
     size: ClientRect;
     constructor(props: ListProp) {
         super(props);
-        this.size = document.getElementById('app').getBoundingClientRect();
+        var sz = document.getElementById('app').getBoundingClientRect();
+        init_metrics(sz.width, sz.height);
+        this.state = {
+            size: sz,
+            itemStyle: {
+                width: sz.width,
+                height: ItemComponent.itemHeight(),
+            },
+            textStyle: {
+                top: 32,
+                left: 80,
+                width: sz.width - 90,
+                height: 18,
+                fontSize: 14,
+                lineHeight: 18                
+            },
+        };
     }
-    renderItem = (index: number, key: string): UI.Element => {
+    renderItem = (index: number, scrollTop: number): UI.Element => {
         var model = this.props.models.get(index, (c: ModelCollection) => { 
-            //console.log("index updated:" + index);
+            console.log("index updated:" + index);
             this.forceUpdate();
         });
-        /*
+        //console.log("renderItem:" + index + "|" + !!model);
         if (!model) {
-            return <div className="block" key={index}>loading new records...</div>;
+            return <window.channer.canvas.Group style={this.state.itemStyle} key={index}>
+                <window.channer.canvas.Text style={this.state.textStyle}>loading new records..</window.channer.canvas.Text>
+            </window.channer.canvas.Group>
         }
         return this.props.renderItem(this.props.models, model, this.props.elementOptions);
-        */
-        return <ItemComponent 
-            width={this.size.width}
-            model={model}
-            renderItem={this.props.renderItem}
-            models={this.props.models}
-            elementOptions={this.props.elementOptions}
-        />
+        /*return <window.channer.canvas.Group style={this.state.itemStyle} key={index}>
+                <window.channer.canvas.Text style={this.state.textStyle}>loading done.</window.channer.canvas.Text>
+            </window.channer.canvas.Group>*/
     }
     render(): UI.Element {
         /*return <window.channer.rparts.List
@@ -266,7 +284,8 @@ export class ListComponent extends React.Component<ListProp, ListState> {
             threshold={600}
             useTranslate3d={true}
         />;*/
-        return <window.channer.canvas.Surface top={0} left={0} width={this.size.width} height={this.size.height}>
+        return <window.channer.canvas.Surface 
+            top={0} left={0} width={this.state.size.width} height={this.state.size.height}>
             <window.channer.canvas.ListView
                 style={{
                     top: 0,

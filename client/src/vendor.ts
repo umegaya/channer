@@ -26,7 +26,7 @@ window.channer.parts.Radio = require('polythene/radio-button/radio-button');
 if (!console.debug) { //because react refers console.debug to show introduction message of react devtool.
 	console.debug = console.log;
 }
-window.channer.rparts.List = require('react-list');
+//window.channer.rparts.List = require('react-list');
 window.channer.canvas = require('react-canvas');
 
 //utility method for member ByteBuffer of protobuf data structure.

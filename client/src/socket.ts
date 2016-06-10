@@ -114,8 +114,10 @@ export class Socket {
         );
 	}
 	private onopen = () => {
+		console.log("websocket opened");
 		this.state = SocketState.CONNECTED;
 		for (var i = 0; i < this.pendings.length; i++) {
+		console.log("websocket opened: send pending " + i);
 			this.send(this.pendings[i]);
 		}
 		this.pendings = [];
@@ -124,6 +126,7 @@ export class Socket {
 		this.d.onopen();
 	}
 	private onmessage = (event:any) => {
+		console.log("on message");
 		this.d.onmessage(event);
 	}
 	private onclose = (event:any) => {

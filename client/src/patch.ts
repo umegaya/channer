@@ -46,7 +46,7 @@ class Patcher {
                 }
             }
             return Q.all(loaders).then((entries : Array<FileEntry>) => {
-                entries.shift(); //prevent patch.js from loading
+                entries.splice(0, 2); //prevent commons.js and patch.js from loading
                 if (entries.length > 0) {
                     //setup sequencial js loader (because halfway loaded js may cause error)
                     var promise : Q.Promise<any> = this.fs.load(entries[0]);
@@ -56,6 +56,7 @@ class Patcher {
                             return this.fs.load(ent);
                         }                   
                     }
+                    //exclude commons.js and patch.js, which is already loaded in init.js.
                     for (var i = 1; i < entries.length; i++) {
                         var ent = entries[i];
                         var idx = i;

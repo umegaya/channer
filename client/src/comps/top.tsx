@@ -1,5 +1,4 @@
 /// <reference path="../../typings/extern.d.ts"/>
-
 import * as React from 'react'
 import {PropCollectionFactory, PropConditions, PropCollection} from "../input/prop"
 import {ModelCollection, ProtoModelCollection, ProtoModelChunk, Boundary, 
@@ -7,11 +6,16 @@ import {ModelCollection, ProtoModelCollection, ProtoModelChunk, Boundary,
 import {Config} from "../config"
 import {Handler, Builder} from "../proto"
 import {Util} from "../uikit"
+import {img, vw, vh, h} from "./canvas_styler"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 import Q = require('q');
 var _L = window.channer.l10n.translate;
 var Long = window.channer.ProtoBuf.Long;
 var Tabs = window.channer.parts.Tabs;
+var Group = window.channer.canvas.Group, 
+    Image = window.channer.canvas.Image,
+    Text = window.channer.canvas.Text,
+    Gradient = window.channer.canvas.Gradient;
 
 PropCollectionFactory.setup("top-models", {
     required: {
@@ -152,13 +156,59 @@ var idlevel_text : { [t:number]:string } = {
     [ChannerProto.Model.Channel.IdentityLevel.None]: _L("none"),
 }
 
+class ChannelInfoStyler {
+    name(): any {
+        return {
+            top: vh(1),
+            left: vw(1),
+            height: vh(3.5),
+            width: vw(98),
+            fontSize: h(2),
+            lineHeight: h(2) + vh(0.5),
+        }
+    }
+    desc(): any {
+        return {
+            top: vh(4),
+            left: vw(1),
+            height: vh(2.5),
+            width: vw(98),
+            fontSize: h(3),
+            lineHeight: h(3) + vh(0.5),            
+        }
+    }
+    img(wofs: number): any {
+        return {
+            top: vh(7),
+            left: vw(1 + wofs),
+            width: vh(2.5),
+            height: vh(2.5),
+            backgroundColor: '#ddd',
+            //borderColor: '#999',
+            //borderWidth: 1
+        }
+    }
+    attr_text(wofs: number): any {
+        return {
+            top: vh(7),
+            left: vw(1 + wofs) + vh(2.5),
+            width: vw(20),
+            height: vh(2.5),
+            fontSize: h(3),
+            lineHeight: h(3) + vh(0.5),            
+        }        
+    }
+}
+
+var styler = new ChannelInfoStyler();
+
 function ChannelInfoView(
     c: ModelCollection, 
     model: ChannerProto.Model.Channel
 ): UI.Element {
     var copied = model.options.slice();
     var options = Builder.Model.Channel.Options.decode(copied);
-    return <div className="block" key={model.id.toString()}>
+/* <div className="block" key={model.id.toString()}>
         <div className="title-h2 name">
             {model.name + "/" + model.locale + "," + model.category}
         </div>
@@ -184,7 +234,20 @@ function ChannelInfoView(
                 </div>
             </div>
         </div>
-    </div>;
+    </div>; */
+    var clock = img("clock");//require("../img/clock.svg");
+    var user = img("user");//require("../img/user.svg");
+    var star = img("star");//require("../img/star.svg");
+    return <Group>
+        <Text style={styler.name()}>{model.name + "/" + model.locale + "," + model.category}</Text>
+        <Text style={styler.desc()}>{model.description || _L("no description")}</Text>
+        <Image style={styler.img(0)} src={clock}/>
+        <Text style={styler.attr_text(0)}>{Util.datebyuuid(model.id, true)}</Text>
+        <Image style={styler.img(25)} src={user}/>
+        <Text style={styler.attr_text(25)}>11111</Text>
+        <Image style={styler.img(50)} src={star}/>
+        <Text style={styler.attr_text(50)}>33333</Text>
+    </Group>;
 }
 
 
@@ -208,7 +271,7 @@ export class TopComponent extends React.Component<TopProp, TopState> {
             channels: new ChannelCollection(settings),
         }        
     }
-    render(): JSX.Element {
+    render(): UI.Element {
         return <div className="top"><ListComponent
             renderItem={ChannelInfoView}
             models={this.state.channels}

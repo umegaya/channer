@@ -88,6 +88,7 @@ export class Handler {
         this.querying = p.type;
         try {
             this.watcher.subscribe_response(msgid, (model: Model) => {
+				console.log("resolved:" + msgid);
                 df.resolve(model);
             }, (e: Error) => {
                 this.last_error = e;
@@ -106,13 +107,14 @@ export class Handler {
 		return df.promise;
 	}
 	private ontimer = (nowms: number) => {
+		/*
         if (this.socket.next_connection || !this.socket.connected()) {
             this.redraw();
         }
 		else if ((nowms - this.last_ping) > window.channer.config.ping_interval_ms) {
 			this.ping(nowms).then((m: ChannerProto.PingResponse) => {
 				this.latency = (Timer.now() - m.walltime);
-				//console.log("ping latency:" + this.latency);
+				console.log("ping latency:" + this.latency);
 			}, (e: ProtoError) => {
 				console.log("ping error:" + e.message);
 			});
@@ -122,6 +124,7 @@ export class Handler {
 			this.reauth();
 			this.last_auth = nowms;
 		}
+		*/
 	}
 	private reauth = () => {
 		/*var current = m.route();

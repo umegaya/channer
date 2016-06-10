@@ -1,6 +1,7 @@
 /* global __dirname */
 var fs = require("fs");
 var hashes = require('jshashes');
+var webpack = require('webpack');
 var StatsWriterPlugin = require("webpack-stats-plugin").StatsWriterPlugin;
 var __root = __dirname + "/..";
 module.exports = function (settings) {
@@ -31,7 +32,7 @@ module.exports = function (settings) {
                 ByteBuffer: __root + "/node_modules/protobufjs/node_modules/bytebuffer/dist/ByteBufferAB.js",
                 bytebuffer: __root + "/node_modules/protobufjs/node_modules/bytebuffer/dist/ByteBufferAB.js",
                 "mithril.animate": __root + "/node_modules/mithril.animate/dist/mithril.animate.js",
-                "mithril.bindings": __root + "/node_modules/mithril.animate/node_modules/mithril.bindings/dist/mithril.bindings.js"
+                "mithril.bindings": __root + "/node_modules/mithril.animate/node_modules/mithril.bindings/dist/mithril.bindings.js",
             }
         },
         node: {
@@ -48,19 +49,31 @@ module.exports = function (settings) {
                 {test: /\.gif$/,     loader: 'url-loader?mimetype=image/gif&limit=100000&name=[hash:6].[ext]' },
                 {test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url?limit=10000&minetype=application/font-woff'},
                 {test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file'}
+            ],
+            postLoaders: [
+                { loader: "transform?brfs" }
             ]
         },
         plugins: [
+            new webpack.DefinePlugin({
+                "process.env": { 
+                    NODE_ENV: JSON.stringify("production") 
+                }
+            }),
+            new webpack.optimize.DedupePlugin(),
+            new webpack.optimize.CommonsChunkPlugin("commons", "commons.[chunkhash].js"),
             // Write out stats file to build directory.
             new StatsWriterPlugin({
                 filename: "config.json",
                 transform: function (data) {
                     //declare simple dependency of each assets
                     //TODO : if it goes really complex, enable graph-style dependency declaration
-                    var deps = ["vendor", "l10n", "boot", "route", "category", "channel", "top", "login", "rescue", "topic", "compose"];
+                    var deps = ["commons", "patch", "vendor", "l10n", "boot", "route", 
+                        "category", "channel", "top", "login", "rescue", "topic", "compose"];
                     function sorter(a, b) {
                         return deps.indexOf(a.name) - deps.indexOf(b.name);
                     }
+                    console.log(JSON.stringify(data));
                     var hash_src = "";
                     var ret = { versions: [], appconfig: false };
                     for (var k in data.assetsByChunkName) {

@@ -14,6 +14,7 @@
     "protobufjs": "^4.1.3",
     "q": "^1.4.1",
     "react": "^15.1.0",
+    "react-canvas": "git://github.com/nd0ut/react-canvas.git#react-15",
     "react-dom": "^15.1.0",
     "react-list": "^0.7.18",
     "react-router": "^2.4.1",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "awesome-typescript-loader": "^0.19.0",
+    "brfs": "^1.4.3",
     "chromedriver": "^2.20.0",
     "copy-webpack-plugin": "^0.2.0",
     "css-loader": "^0.23.1",
@@ -38,6 +40,7 @@
     "selenium-server-standalone-jar": "2.48.2",
     "stylus-loader": "^1.4.2",
     "through2": "^2.0.1",
+    "transform-loader": "^0.2.3",
     "url-loader": "^0.5.7",
     "webpack": "^1.12.6",
     "webpack-dev-server": "^1.12.1",
