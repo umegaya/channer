@@ -7,8 +7,10 @@
 /// <reference path="./mithril.d.ts"/>
 /// <reference path="./react/react.d.ts"/>
 /// <reference path="./react/react-dom.d.ts"/>
+/// <reference path="./react/react-canvas.d.ts"/>
 /// <reference path="./react-router/history.d.ts"/>
 /// <reference path="./react-router/react-router.d.ts"/>
+/// <reference path="./material-ui/material-ui.d.ts"/>
 /// <reference path="./protobuf.d.ts"/>
 /// <reference path="./long/long.d.ts"/>
 /// <reference path="./webpack-runtime.d.ts"/>
@@ -29,7 +31,6 @@ interface ChannerModules {
 	config: any/*Config*/;
 	m: _mithril.MithrilStatic;
     Hammer: HammerStatic;
-    mtransit: (...args:Array<any>) => any;
 	ProtoBuf: any;
 	timer: any/*Timer*/;
 	settings: any/*UserSettings*/;
@@ -79,17 +80,4 @@ interface ChannerModules {
         Channel: UI.Component;
         Topic: UI.Component;
     }
-    rparts: {
-        List: __React.ComponentClass<any>;
-    }
-    canvas: {
-        Surface: __React.ComponentClass<any>;
-        Layer: __React.ComponentClass<any>;
-        Group: __React.ComponentClass<any>;
-        Image: __React.ComponentClass<any>;
-        Text: __React.ComponentClass<any>;
-        ListView: __React.ComponentClass<any>;
-        Gradient: __React.ComponentClass<any>;       
-    }
-    testtmp: any;
 }

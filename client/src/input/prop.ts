@@ -1,6 +1,6 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m, Util} from "../uikit"
+import {m} from "../uikit"
 import {Storage, StorageIO, Persistable} from "../storage"
 
 export interface PropCondition {

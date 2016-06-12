@@ -2,7 +2,8 @@
 import * as React from 'react'
 import ProtoBufModel = Proto2TypeScript.ProtoBufModel;
 import Q = require('q');
-import {init_metrics, vw, vh} from "../canvas_styler"
+import {init_metrics, vw, vh} from "./styler"
+import {Surface, ListView, Text, Group} from "react-canvas"
 var Scroll = window.channer.parts.Scroll;
 var Long = window.channer.ProtoBuf.Long;
 var _L = window.channer.l10n.translate;
@@ -38,6 +39,40 @@ export interface Boundary {
     lessThan(c: Boundary): boolean;
     greaterThan(c: Boundary): boolean;
     isZero(): boolean;
+}
+export class LongBoundary implements Boundary {
+    id: Long;
+    constructor(n: number|Long) {
+        this.id = (typeof(n) == "number" ? new Long(n as number) : n as Long);
+    }
+    isZero(): boolean {
+        return this.id.equals(Long.UZERO);
+    }
+    lessThan(b: LongBoundary): boolean {
+        return this.id.lessThan(b.id);
+    }
+    greaterThan(b: LongBoundary): boolean {
+        return this.id.greaterThan(b.id);
+    }
+}
+export class ScoreBoundary implements Boundary {
+    id: Long;
+    score: number;
+    constructor(id: Long, score: number) {
+        this.id = id;
+        this.score = score;
+    }
+    isZero(): boolean {
+        return this.id.equals(Long.UZERO);
+    }
+    //score < b.score || this.id < b.id
+    lessThan(b: ScoreBoundary): boolean {
+        return this.score < b.score || this.id.lessThan(b.id);
+    }
+    //score > b.score || this.id > b.id
+    greaterThan(b: ScoreBoundary): boolean {
+        return this.score > b.score || this.id.greaterThan(b.id);
+    }
 }
 export class ProtoModelChunk<T extends ProtoModel, B extends Boundary> {
     list: Array<T>;
@@ -177,56 +212,9 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     }
 }
 
-export interface ItemProp {
-    width: number;
-    index: number;
-    model: ProtoModel;
-    renderItem: (c: ModelCollection, model: any, options?: any) => UI.Element;
-    models: ModelCollection;
-    elementOptions?: any;    
-}
-
-export interface ItemState {
-    
-}
-
-export class ItemComponent extends React.Component<ItemProp, ItemState> {
-    render(): UI.Element {
-        /*
-        if (!model) {
-            return <div className="block" key={index}>loading new records...</div>;
-        }
-        return this.props.renderItem(this.props.models, model, this.props.elementOptions);
-        */
-        var itemStyle = {
-            width: this.props.width,
-            height: ItemComponent.itemHeight(),
-        };            
-        var textStyle = {
-            top: 32,
-            left: 80,
-            width: this.props.width - 90,
-            height: 18,
-            fontSize: 14,
-            lineHeight: 18
-        };
-        if (!this.props.model) {
-            return <window.channer.canvas.Group style={itemStyle}>
-                <window.channer.canvas.Text style={textStyle}>loading new records..</window.channer.canvas.Text>
-            </window.channer.canvas.Group>
-        }
-        return <window.channer.canvas.Group style={itemStyle}>
-                <window.channer.canvas.Text style={textStyle}>load done</window.channer.canvas.Text>
-            </window.channer.canvas.Group>        
-    }
-    static itemHeight(): number {
-        return 80;
-    }
-
-}
-
 export interface ListProp {
     renderItem: (c: ModelCollection, model: any, options?: any) => UI.Element;
+    itemHeight?: (itemIndex: number) => number;
     models: ModelCollection;
     elementOptions?: any;
 }
@@ -235,6 +223,7 @@ export interface ListState {
     size: ClientRect;
     itemStyle: any;
     textStyle: any;
+    listStyle: any;
 }
 
 export class ListComponent extends React.Component<ListProp, ListState> {
@@ -247,7 +236,7 @@ export class ListComponent extends React.Component<ListProp, ListState> {
             size: sz,
             itemStyle: {
                 width: sz.width,
-                height: ItemComponent.itemHeight(),
+                height: ListComponent.defaultItemHeightGetter(),
             },
             textStyle: {
                 top: 32,
@@ -257,7 +246,16 @@ export class ListComponent extends React.Component<ListProp, ListState> {
                 fontSize: 14,
                 lineHeight: 18                
             },
+            listStyle: {
+                top: 0,
+                left: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            }
         };
+    }
+    static defaultItemHeightGetter(): number {
+        return 80;
     }
     renderItem = (index: number, scrollTop: number): UI.Element => {
         var model = this.props.models.get(index, (c: ModelCollection) => { 
@@ -266,14 +264,11 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         });
         //console.log("renderItem:" + index + "|" + !!model);
         if (!model) {
-            return <window.channer.canvas.Group style={this.state.itemStyle} key={index}>
-                <window.channer.canvas.Text style={this.state.textStyle}>loading new records..</window.channer.canvas.Text>
-            </window.channer.canvas.Group>
+            return <Group style={this.state.itemStyle} key={index}>
+                <Text style={this.state.textStyle}>loading new records..</Text>
+            </Group>
         }
         return this.props.renderItem(this.props.models, model, this.props.elementOptions);
-        /*return <window.channer.canvas.Group style={this.state.itemStyle} key={index}>
-                <window.channer.canvas.Text style={this.state.textStyle}>loading done.</window.channer.canvas.Text>
-            </window.channer.canvas.Group>*/
     }
     render(): UI.Element {
         /*return <window.channer.rparts.List
@@ -284,18 +279,13 @@ export class ListComponent extends React.Component<ListProp, ListState> {
             threshold={600}
             useTranslate3d={true}
         />;*/
-        return <window.channer.canvas.Surface 
+        return <Surface 
             top={0} left={0} width={this.state.size.width} height={this.state.size.height}>
-            <window.channer.canvas.ListView
-                style={{
-                    top: 0,
-                    left: 0,
-                    width: window.innerWidth,
-                    height: window.innerHeight
-                }}
+            <ListView
+                style={this.state.listStyle}
                 numberOfItemsGetter={this.props.models.length}
-                itemHeightGetter={ItemComponent.itemHeight}
+                itemHeightGetter={this.props.itemHeight || ListComponent.defaultItemHeightGetter}
                 itemGetter={this.renderItem} />
-        </window.channer.canvas.Surface>
+        </Surface>
     }
 }

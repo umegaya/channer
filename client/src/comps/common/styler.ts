@@ -1,8 +1,3 @@
-
-export function img(name: string) {
-        return require("../img/" + name + ".svg");
-}
-
 var view_width = 0, view_height = 0;
 export function init_metrics(width: number, height: number) {
     view_width = width;
