@@ -50,6 +50,9 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
             chunk.update_range(new ScoreBoundary(model.id, model.vote));
         }
     }
+    item_height = (index: number): number => {
+        return vh(20);
+    }
 }
 
 var styler = new TopicListStyler();
@@ -62,31 +65,29 @@ export function TopicListView(
     var body = Builder.Model.Topic.Body.decode(copied);
     var index = model.id.modulo(10).toNumber() + 1;
     return <Group>
-        <Image style={styler.img()} src={"http://lorempixel.com/360/420/cats/" + index + "/"} />
-        
-        <Text style={styler.point()}>{model.point}</Text>
+        <Text style={styler.point()}>{model.point.toString()}</Text>
         <Text style={styler.point_unit()}>pt</Text>
         
-        <Text style={styler.channel_name()}>{body.channel_name + "/" + model.locale}</Text>
+        <Image style={styler.img()} src={"http://lorempixel.com/360/420/cats/" + index + "/"} />
         
         <Text style={styler.title()}>
             {model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content}
         </Text>
         
+        <Text style={styler.channel_name()}>{body.channel_name + "/" + model.locale}</Text>
+        
         <Text style={styler.icon(0, 0)}>⏰</Text>
         <Text style={styler.attr_text(0, 0)}>{Util.datebyuuid(model.id, true)}</Text>
         
-        <Text style={styler.icon(50, 0)}>👭</Text>
-        <Text style={styler.attr_text(50, 0)}>body.name</Text>        
+        <Text style={styler.icon(50, 0)}>✍</Text>
+        <Text style={styler.attr_text(50, 0)}>{model.comment.toString()}</Text>
         
         <Text style={styler.icon(25, 0)}>👍</Text>
         <Text style={styler.attr_text(25, 0)}>{Util.upvote_percent(model) + "%"}</Text>
-        
-        <Text style={styler.icon(0, 3)}>👭</Text>
-        <Text style={styler.attr_text(0, 3)}>body.name</Text>
     </Group>;
+    /*
+        <Text style={styler.icon(0, 3)}>👭</Text>
+        <Text style={styler.attr_text(0, 3)}>{body.name}</Text>
+    */
 }
 
-export function TopicListHeight(model: ChannerProto.Model.Topic): number {
-    return vh(20);
-}

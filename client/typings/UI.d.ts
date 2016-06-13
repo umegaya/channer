@@ -6,7 +6,7 @@ declare namespace UI {
 	interface Property<T> {
 		(prop?: T): T;
 	}
-    	
+	
 	interface Component extends __React.ComponentClass<any> {
 	}
     

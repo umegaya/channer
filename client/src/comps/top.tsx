@@ -1,5 +1,5 @@
 /// <reference path="../../typings/extern.d.ts"/>
-import {PropCollectionFactory, PropCollection} from "../input/prop"
+import {PropCollectionFactory, PropCollection, prop} from "../input/prop"
 import {ChannelListView, ChannelCollection} from "./lists/channel"
 import {TopicListView, TopicCollection} from "./lists/topic"
 import {ListComponent} from "./common/scroll"
@@ -31,12 +31,15 @@ PropCollectionFactory.setup("top-models", {
 
 export interface TopProp {
     tab: string;    
+    params?: any; //URL params
 }
 
 export interface TopState {
     settings: PropCollection;
     topics: TopicCollection;
     channels: ChannelCollection;
+    selected: string;
+    scrollProps: {[k:string]:UI.Property<number>};
 }
 
 export class TopComponent extends React.Component<TopProp, TopState> {
@@ -44,25 +47,43 @@ export class TopComponent extends React.Component<TopProp, TopState> {
         super(props);
         var settings = PropCollectionFactory.ref("top-models"); 
         this.state = {
+            selected: this.props.params.tab || "topic",
             settings: settings,
             topics: new TopicCollection(settings),
             channels: new ChannelCollection(settings),
-        }        
+            scrollProps: {
+                channel: prop(0),
+                topic: prop(0),
+            }
+        }
+    }
+    tabContent = ():{[k:string]: UI.Element} => {
+        return {
+            channel: <ListComponent
+                key="channel"
+                renderItem={ChannelListView}
+                models={this.state.channels}
+                scrollProp={this.state.scrollProps["channel"]}
+            />,
+            topic: <ListComponent
+                key="topic"
+                renderItem={TopicListView}
+                models={this.state.topics}
+                scrollProp={this.state.scrollProps["topic"]}
+            />,
+        }
+    }
+    onchange = (val: string) => {
+        this.state.selected = val;
+        this.forceUpdate();
     }
     render(): UI.Element {
-        return <div className="top"><Tabs>
-            <Tab icon={<FontIcon className="material-icons">phone</FontIcon>} label="channels">
-                <ListComponent
-                    renderItem={ChannelListView}
-                    models={this.state.channels}
-                />
-            </Tab>
-            <Tab icon={<FontIcon className="material-icons">favorite</FontIcon>} label="topics">
-                <ListComponent
-                    renderItem={TopicListView}
-                    models={this.state.topics}
-                />
-            </Tab>
-        </Tabs></div>;
+        return <div className="top">
+        <Tabs value={this.state.selected} onChange={this.onchange}>
+            <Tab label="channels" value="channel"/>
+            <Tab label="topics" value="topic"/>
+        </Tabs>
+        {this.tabContent()[this.state.selected]}
+        </div>;
     }
 }

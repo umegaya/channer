@@ -128,7 +128,8 @@ declare module 'react-canvas' {
       snapping?: boolean;
       scrollingDeceleration?: number;
       scrollingPenetrationAcceleration?: number;
-      onScroll?: React.EventHandler<React.SyntheticEvent>;
+      onScroll?: (scrollTop: number) => void;
+      scrollTop?: number;
   }
 
   class ListView extends React.Component<ListViewProps,{}> {

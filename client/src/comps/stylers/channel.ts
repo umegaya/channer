@@ -14,7 +14,7 @@ export class ChannelListStyler {
             top: vh(1),
             left: vw(1) + vh(15),
             height: vh(3.5),
-            width: vw(98),
+            width: vw(98) - vh(15),
             fontSize: h(2),
             lineHeight: h(2) + vh(0.5),
         }
@@ -24,7 +24,7 @@ export class ChannelListStyler {
             top: vh(4),
             left: vw(1) + vh(15),
             height: vh(2.5),
-            width: vw(98),
+            width: vw(98) - vh(15),
             fontSize: h(3),
             lineHeight: h(3) + vh(0.5),            
         }

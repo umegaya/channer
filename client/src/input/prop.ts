@@ -1,7 +1,14 @@
 /// <reference path="../../typings/extern.d.ts"/>
 
-import {m} from "../uikit"
 import {Storage, StorageIO, Persistable} from "../storage"
+
+export function prop<T>(ini?: T): UI.Property<T> {
+    var p = ini;
+    return function (v?: T): T {
+        if (v) { p = v; }
+        return p;
+    }
+}
 
 export interface PropCondition {
     init: any;
@@ -68,7 +75,7 @@ export class PropCollection implements Persistable {
         this.init(true);
     }
     private create_prop = (k: string, v: string|number) => {
-        this.props[k] = m.prop(v);
+        this.props[k] = prop(v);
     }
     //storage IO
     save = () => {
@@ -98,7 +105,7 @@ export class PropCollection implements Persistable {
 			var loaded = JSON.parse(blob);
             for (var k in loaded) {
                 if (!this.props[k]) {
-                    this.props[k] = m.prop(loaded[k]);
+                    this.props[k] = prop(loaded[k]);
                 }
                 else {
                     this.props[k](loaded[k]);

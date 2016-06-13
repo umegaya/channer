@@ -12,6 +12,7 @@ export interface ModelCollection {
     key: string;
     length(): number;
     get(index: number, fetchCB: (c: ModelCollection) => void): any;
+    item_height(index: number): number;
     refresh(): void;
 }
 // ArrayModelCollection : constant scroll data model.
@@ -27,6 +28,9 @@ export class ArrayModelCollection implements ModelCollection {
     }
     length(): number {
         return this.source.length;
+    }
+    item_height(index: number): number {
+        return vh(15);
     }
     refresh = () => {}
 }
@@ -210,12 +214,15 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     update_range = (coll: ProtoModelChunk<T, B>, model: T) => {
         throw new Error("override this");        
     }
+    item_height = (index: number) => {
+        return vh(15);
+    }
 }
 
 export interface ListProp {
     renderItem: (c: ModelCollection, model: any, options?: any) => UI.Element;
-    itemHeight?: (itemIndex: number) => number;
     models: ModelCollection;
+    scrollProp?: UI.Property<number>;
     elementOptions?: any;
 }
 
@@ -236,7 +243,7 @@ export class ListComponent extends React.Component<ListProp, ListState> {
             size: sz,
             itemStyle: {
                 width: sz.width,
-                height: ListComponent.defaultItemHeightGetter(),
+                height: this.props.models.item_height(null),
             },
             textStyle: {
                 top: 32,
@@ -253,9 +260,6 @@ export class ListComponent extends React.Component<ListProp, ListState> {
                 height: window.innerHeight
             }
         };
-    }
-    static defaultItemHeightGetter(): number {
-        return 80;
     }
     renderItem = (index: number, scrollTop: number): UI.Element => {
         var model = this.props.models.get(index, (c: ModelCollection) => { 
@@ -284,7 +288,9 @@ export class ListComponent extends React.Component<ListProp, ListState> {
             <ListView
                 style={this.state.listStyle}
                 numberOfItemsGetter={this.props.models.length}
-                itemHeightGetter={this.props.itemHeight || ListComponent.defaultItemHeightGetter}
+                itemHeightGetter={this.props.models.item_height}
+                scrollTop={this.props.scrollProp()}
+                onScroll={this.props.scrollProp}
                 itemGetter={this.renderItem} />
         </Surface>
     }

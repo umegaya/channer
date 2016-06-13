@@ -101,3 +101,14 @@ export class Util {
         return 50 + (Math.ceil(500 * model.point / model.vote) / 10);
     }
 }
+
+namespace UI {
+    type Property<T> = (v?: T) => T;
+    function prop<T>(ini?: T): (v?: T) => T {
+        var p = ini;
+        return function (v?: T): T {
+            if (v) { p = v; }
+            return p;
+        }
+    }
+}
