@@ -1,4 +1,13 @@
 /// <reference path="../typings/extern.d.ts"/>
+import * as React from 'react'
+import { render } from 'react-dom'
+import { Router, Route, browserHistory, hashHistory } from 'react-router'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+// enable materil UI interaction
+var injectTapEventPlugin = require("react-tap-event-plugin");
+injectTapEventPlugin();
+
 window.channer.ProtoBuf = require('protobufjs');
 window.channer.m = require('mithril');
 //window.m must exist for initializing some of mithril plugin

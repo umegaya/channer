@@ -230,6 +230,7 @@ export interface ListProp {
 
 export interface ListState {
     size: ClientRect;
+    showRefresh: boolean;
     itemStyle: any;
     textStyle: any;
     listStyle: any;
@@ -243,6 +244,7 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         init_metrics(sz.width, sz.height);
         this.state = {
             size: sz,
+            showRefresh: false,
             itemStyle: {
                 width: sz.width,
                 height: this.props.models.item_height(null),
@@ -277,6 +279,18 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         }
         return this.props.renderItem(this.props.models, model, this.props.elementOptions);
     }
+    onRefresh = (event: string, cb?: () => void) => {
+        if (event == "start" && cb) {
+            this.props.models.refresh();
+            setTimeout(cb, 300);
+        }
+        else if (event == "activate") {
+            this.state.showRefresh = true;
+        }
+        else if (event == "deactivate") {
+            this.state.showRefresh = false;            
+        }        
+    }
     render(): UI.Element {
         /*return <window.channer.rparts.List
             itemRenderer={this.renderItem}
@@ -293,7 +307,8 @@ export class ListComponent extends React.Component<ListProp, ListState> {
                 numberOfItemsGetter={this.props.models.length}
                 itemHeightGetter={this.props.models.item_height}
                 scrollState={this.props.scrollState}
-                itemGetter={this.renderItem} />
+                itemGetter={this.renderItem} 
+                onRefresh={this.onRefresh}/>
         </Surface>
     }
 }

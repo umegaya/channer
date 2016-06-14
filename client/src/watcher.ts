@@ -95,12 +95,10 @@ export class ProtoWatcher {
 	watch = (event: any) => {
 		var payload : ProtoPayloadModel = this.parser(event.data);
 		var m : Model = <Model>payload[this.protomap[payload.type]];
-		console.log("Watcher.watch msgid = " + payload.msgid);
 		if (payload.msgid) {
 			var [at, f, e] = this.callers[payload.msgid];
 			delete this.callers[payload.msgid];
 			if (at) {
-				console.log("at exists:" + payload.msgid + "|" + payload.error);
 				if (payload.error) {
 					e(new ProtoError(payload.error));	
 				}

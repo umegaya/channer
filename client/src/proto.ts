@@ -88,7 +88,6 @@ export class Handler {
         this.querying = p.type;
         try {
             this.watcher.subscribe_response(msgid, (model: Model) => {
-				console.log("resolved:" + msgid);
                 df.resolve(model);
             }, (e: Error) => {
                 this.last_error = e;
