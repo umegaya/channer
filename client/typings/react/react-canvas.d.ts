@@ -103,7 +103,7 @@ declare module 'react-canvas' {
 
   class FontFace {
     constructor(family: string, url?: string, attributes?: { style: string; weight: number});
-    static Default: FontFace;
+    static Default(wait?:number): FontFace;
 
     private _fontFaceBrand: any;
 
@@ -116,20 +116,27 @@ declare module 'react-canvas' {
   type Measure = {
     width: number;
     height: number;
+    lines: Array<any>;
   }
 
   function measureText(text: string, width: number, fontFace: FontFace, fontSize: number, lineHeight: number): Measure;
+  function clearMeastureTextCache(): void;
+
+  type ScrollState = {
+    scrollTop: number,
+    itemHeights: {},    
+  }
 
   type ListViewProps = {
-      style?: {};
-      numberOfItemsGetter: () => number;
-      itemHeightGetter: (index: number) => number;
-      itemGetter: (index: number, scrollTop: number) => JSX.Element;
-      snapping?: boolean;
-      scrollingDeceleration?: number;
-      scrollingPenetrationAcceleration?: number;
-      onScroll?: (scrollTop: number) => void;
-      scrollTop?: number;
+    style?: {};
+    numberOfItemsGetter: () => number;
+    itemHeightGetter: (index: number) => number;
+    itemGetter: (index: number, scrollTop: number) => JSX.Element;
+    snapping?: boolean;
+    scrollingDeceleration?: number;
+    scrollingPenetrationAcceleration?: number;
+    onScroll?: (scrollTop: number) => void;
+    scrollState?: ScrollState;
   }
 
   class ListView extends React.Component<ListViewProps,{}> {

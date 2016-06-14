@@ -64,6 +64,7 @@ export function ChannelListView(
     var copied = model.options.slice();
     var options = Builder.Model.Channel.Options.decode(copied);
     var index = model.id.modulo(10).toNumber() + 1;
+    //TODO: if no image is set, generate or give default graphics according to its ID
     return <Group>
         <Image style={styler.img()} src={"http://lorempixel.com/360/420/cats/" + index + "/"} />
         <Text style={styler.name()}>{model.name + "/" + model.locale + "," + model.category}</Text>

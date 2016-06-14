@@ -3,7 +3,7 @@ import * as React from 'react'
 import ProtoBufModel = Proto2TypeScript.ProtoBufModel;
 import Q = require('q');
 import {init_metrics, vw, vh} from "./styler"
-import {Surface, ListView, Text, Group} from "react-canvas"
+import {Surface, ListView, Text, Group, ScrollState} from "react-canvas"
 var Scroll = window.channer.parts.Scroll;
 var Long = window.channer.ProtoBuf.Long;
 var _L = window.channer.l10n.translate;
@@ -23,10 +23,10 @@ export class ArrayModelCollection implements ModelCollection {
         this.source = source;
         this.key = key;
     }
-    get(index: number, fetchCB: (c: ModelCollection) => void): any {
+    get = (index: number, fetchCB: (c: ModelCollection) => void): any => {
         return this.source[index];
     }
-    length(): number {
+    length = (): number => {
         return this.source.length;
     }
     item_height(index: number): number {
@@ -49,13 +49,13 @@ export class LongBoundary implements Boundary {
     constructor(n: number|Long) {
         this.id = (typeof(n) == "number" ? new Long(n as number) : n as Long);
     }
-    isZero(): boolean {
+    isZero = (): boolean => {
         return this.id.equals(Long.UZERO);
     }
-    lessThan(b: LongBoundary): boolean {
+    lessThan = (b: LongBoundary): boolean => {
         return this.id.lessThan(b.id);
     }
-    greaterThan(b: LongBoundary): boolean {
+    greaterThan = (b: LongBoundary): boolean => {
         return this.id.greaterThan(b.id);
     }
 }
@@ -66,15 +66,15 @@ export class ScoreBoundary implements Boundary {
         this.id = id;
         this.score = score;
     }
-    isZero(): boolean {
+    isZero = (): boolean => {
         return this.id.equals(Long.UZERO);
     }
     //score < b.score || this.id < b.id
-    lessThan(b: ScoreBoundary): boolean {
+    lessThan = (b: ScoreBoundary): boolean => {
         return this.score < b.score || this.id.lessThan(b.id);
     }
     //score > b.score || this.id > b.id
-    greaterThan(b: ScoreBoundary): boolean {
+    greaterThan = (b: ScoreBoundary): boolean => {
         return this.score > b.score || this.id.greaterThan(b.id);
     }
 }
@@ -140,22 +140,24 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
             }
         }
     }
-    get = (index: number, fetchCB: (c: ModelCollection) => void): T => {
+    get = (index: number, fetchCB?: (c: ModelCollection) => void): T => {
         var page_index = Math.floor(index / ProtoModelCollection.FETCH_LIMIT);
         var chunk = this.chunks[page_index];
         //console.log("get " + index + " " + page_index + " " + (!!chunk));
         if (!chunk) {
             //for each page_index, only first time chunk is missing, fetch is called. 
             //then fetch set chunk to this.chunks[page_index].
-            this.fetch(page_index + 1).then(fetchCB);
+            if (fetchCB) {
+                this.fetch(page_index + 1).then(fetchCB);
+            }
             return null;
         }
         var index_in_page = index % ProtoModelCollection.FETCH_LIMIT;
         return chunk.list[index_in_page];
     }
-    length(): number {
+    length = (): number => {
         //console.log("length: n_models = " + this.n_models);
-        return this.finished ? this.n_models : 10000;
+        return this.finished ? this.n_models : (this.n_models + ProtoModelCollection.FETCH_LIMIT);
     }
     fetch = (page: number): Q.Promise<ModelCollection> => {
 		var df : Q.Deferred<ProtoModelCollection<T,B>> = Q.defer<ProtoModelCollection<T,B>>();
@@ -222,7 +224,7 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
 export interface ListProp {
     renderItem: (c: ModelCollection, model: any, options?: any) => UI.Element;
     models: ModelCollection;
-    scrollProp?: UI.Property<number>;
+    scrollState?: ScrollState;
     elementOptions?: any;
 }
 
@@ -257,7 +259,8 @@ export class ListComponent extends React.Component<ListProp, ListState> {
                 top: 0,
                 left: 0,
                 width: window.innerWidth,
-                height: window.innerHeight
+                height: window.innerHeight,
+                scrollHeight: 2000000
             }
         };
     }
@@ -289,8 +292,7 @@ export class ListComponent extends React.Component<ListProp, ListState> {
                 style={this.state.listStyle}
                 numberOfItemsGetter={this.props.models.length}
                 itemHeightGetter={this.props.models.item_height}
-                scrollTop={this.props.scrollProp()}
-                onScroll={this.props.scrollProp}
+                scrollState={this.props.scrollState}
                 itemGetter={this.renderItem} />
         </Surface>
     }

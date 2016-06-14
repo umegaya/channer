@@ -11,6 +11,11 @@ import Q = require('q');
 var _L = window.channer.l10n.translate;
 var Long = window.channer.ProtoBuf.Long;
 
+var styler = new TopicListStyler();
+
+function get_title_text(model: ChannerProto.Model.Topic): string {
+    return model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content + " " + model.content;
+}
 
 export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Topic, ScoreBoundary> {
     static NULL_OFFSET = new ScoreBoundary(Long.UZERO, 0);
@@ -51,11 +56,17 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
         }
     }
     item_height = (index: number): number => {
-        return vh(20);
+        var model = this.get(index);
+        if (!model) {
+            return vh(20);
+        } 
+        else {
+            var texts = get_title_text(model);
+            styler.set_texts(texts);
+            return styler.height();
+        }
     }
 }
-
-var styler = new TopicListStyler();
 
 export function TopicListView(
     c: ModelCollection, 
@@ -64,15 +75,23 @@ export function TopicListView(
     var copied = model.body.slice();
     var body = Builder.Model.Topic.Body.decode(copied);
     var index = model.id.modulo(10).toNumber() + 1;
+    var p = model.point.toString();
+    //TODO: replace it to actual check
+    var imageComponentOrEmpty: UI.Element;
+    if (styler.has_image(model.id.modulo(100).toNumber() < 50)) {
+        imageComponentOrEmpty = 
+            <Image style={styler.img()} src={"http://lorempixel.com/360/420/cats/" + index + "/"} />        
+    }
+    //apply text metrics
+    var texts = get_title_text(model);
+    styler.set_texts(texts);
     return <Group>
-        <Text style={styler.point()}>{model.point.toString()}</Text>
-        <Text style={styler.point_unit()}>pt</Text>
+        <Text style={styler.point()}>{p}</Text>
+        <Text style={styler.point_unit(p)}>pt</Text>
         
-        <Image style={styler.img()} src={"http://lorempixel.com/360/420/cats/" + index + "/"} />
+        {imageComponentOrEmpty}
         
-        <Text style={styler.title()}>
-            {model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content}
-        </Text>
+        <Text style={styler.title()}>{texts}</Text>
         
         <Text style={styler.channel_name()}>{body.channel_name + "/" + model.locale}</Text>
         

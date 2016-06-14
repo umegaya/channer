@@ -34,12 +34,21 @@ export interface TopProp {
     params?: any; //URL params
 }
 
+export class ScrollState {
+    scrollTop: number;
+    itemHeights: {[k:number]:number}
+    constructor() {
+        this.scrollTop = 0;
+        this.itemHeights = {};
+    }
+}
+
 export interface TopState {
     settings: PropCollection;
     topics: TopicCollection;
     channels: ChannelCollection;
     selected: string;
-    scrollProps: {[k:string]:UI.Property<number>};
+    scrollStates: {[k:string]:ScrollState};
 }
 
 export class TopComponent extends React.Component<TopProp, TopState> {
@@ -51,9 +60,9 @@ export class TopComponent extends React.Component<TopProp, TopState> {
             settings: settings,
             topics: new TopicCollection(settings),
             channels: new ChannelCollection(settings),
-            scrollProps: {
-                channel: prop(0),
-                topic: prop(0),
+            scrollStates: {
+                channel: new ScrollState(),
+                topic: new ScrollState(),
             }
         }
     }
@@ -63,13 +72,13 @@ export class TopComponent extends React.Component<TopProp, TopState> {
                 key="channel"
                 renderItem={ChannelListView}
                 models={this.state.channels}
-                scrollProp={this.state.scrollProps["channel"]}
+                scrollState={this.state.scrollStates["channel"]}
             />,
             topic: <ListComponent
                 key="topic"
                 renderItem={TopicListView}
                 models={this.state.topics}
-                scrollProp={this.state.scrollProps["topic"]}
+                scrollState={this.state.scrollStates["topic"]}
             />,
         }
     }
