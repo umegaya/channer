@@ -89,6 +89,7 @@ declare module 'react-canvas' {
 
   class Text extends React.Component<ComponentProps,{}> { }
 
+  class Gradient extends React.Component<ComponentProps,{}> { }
 
   type ImageProps = {
     src: string;

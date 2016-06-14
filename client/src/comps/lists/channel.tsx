@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {PropCollectionFactory, PropConditions, PropCollection} from "../../input/prop"
 import {ModelCollection, ProtoModelCollection, ProtoModelChunk, LongBoundary} from "../common/scroll"
-import {Surface, ListView, Text, Group, Image} from "react-canvas"
+import {Surface, ListView, Text, Group, Image, Gradient} from "react-canvas"
 import {Handler, Builder} from "../../proto"
 import {Util} from "../../uikit"
 import {ChannelListStyler} from "../stylers/channel"
@@ -66,6 +66,7 @@ export function ChannelListView(
     var index = model.id.modulo(10).toNumber() + 1;
     //TODO: if no image is set, generate or give default graphics according to its ID
     return <Group>
+        <Image style={styler.bg()} src={""}/>
         <Image style={styler.img()} src={"http://lorempixel.com/360/420/cats/" + index + "/"} />
         <Text style={styler.name()}>{model.name + "/" + model.locale + "," + model.category}</Text>
         <Text style={styler.desc()}>{model.description || _L("no description")}</Text>

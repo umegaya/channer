@@ -1,3 +1,5 @@
+import {FontFace} from "react-canvas"
+
 var view_width = 0, view_height = 0;
 export function init_metrics(width: number, height: number) {
     view_width = width;
@@ -22,3 +24,6 @@ var fontsizez: Array<number> = [
 export function h(level: number) {
     return fontsizez[level - 1];
 }
+
+export var font = new FontFace("Roboto");
+

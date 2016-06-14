@@ -255,14 +255,15 @@ export class ListComponent extends React.Component<ListProp, ListState> {
                 width: sz.width - 90,
                 height: 18,
                 fontSize: 14,
-                lineHeight: 18                
+                lineHeight: 18,
             },
             listStyle: {
                 top: 0,
                 left: 0,
                 width: window.innerWidth,
                 height: window.innerHeight,
-                scrollHeight: 2000000
+                scrollHeight: 2000000,
+                backgroundColor: "#aaaaaa",
             }
         };
     }

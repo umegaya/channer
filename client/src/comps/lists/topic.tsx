@@ -86,6 +86,7 @@ export function TopicListView(
     var texts = get_title_text(model);
     styler.set_texts(texts);
     return <Group>
+        <Image style={styler.bg()} src={""}/>
         <Text style={styler.point()}>{p}</Text>
         <Text style={styler.point_unit(p)}>pt</Text>
         
