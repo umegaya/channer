@@ -39,7 +39,7 @@ export class ChannelComponent extends PageComponent<ChannelProp, ChannelState> {
     }
     render(): UI.Element {
         return <div className="channel">
-            {"channel of " + this.props.channel.id.toString()}
+            {"channel of " + this.props.params.id}
         </div>;
     }
 }

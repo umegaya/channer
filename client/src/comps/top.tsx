@@ -36,26 +36,39 @@ export interface TopProp extends PageProp {
 }
 
 export interface TopState extends PageState {
+    selected: string;
+}
+
+export class TopStaticState {
     settings: PropCollection;
     topics: TopicCollection;
     channels: ChannelCollection;
-    selected: string;
     scrollStates: {[k:string]:ListScrollState};
+    constructor() {
+        this.settings = PropCollectionFactory.ref("top-models");
+        this.scrollStates = {};
+        this.refresh_topic();
+        this.refresh_channel();
+    }
+    refresh_topic = (): void => {
+        this.topics = new TopicCollection(this.settings);
+        this.scrollStates["topic"] = new ListScrollState();
+    }
+    refresh_channel = (): void => {
+        this.channels = new ChannelCollection(this.settings);
+        this.scrollStates["channel"] = new ListScrollState();        
+    }
 }
 
 export class TopComponent extends PageComponent<TopProp, TopState> {
+    static state: TopStaticState = null;
     constructor(props: TopProp) {
         super(props);
-        var settings = PropCollectionFactory.ref("top-models"); 
         this.state = {
             selected: this.props.params.tab || "topic",
-            settings: settings,
-            topics: new TopicCollection(settings),
-            channels: new ChannelCollection(settings),
-            scrollStates: {
-                channel: new ListScrollState(),
-                topic: new ListScrollState(),
-            }
+        }
+        if (!TopComponent.state) {
+            TopComponent.state = new TopStaticState();
         }
     }
     tabContent = ():{[k:string]: UI.Element} => {
@@ -63,15 +76,15 @@ export class TopComponent extends PageComponent<TopProp, TopState> {
             channel: <ListComponent
                 key="channel"
                 renderItem={ChannelListView}
-                models={this.state.channels}
-                scrollState={this.state.scrollStates["channel"]}
+                models={TopComponent.state.channels}
+                scrollState={TopComponent.state.scrollStates["channel"]}
                 elementOptions={this.route_to}
             />,
             topic: <ListComponent
                 key="topic"
                 renderItem={TopicListView}
-                models={this.state.topics}
-                scrollState={this.state.scrollStates["topic"]}
+                models={TopComponent.state.topics}
+                scrollState={TopComponent.state.scrollStates["topic"]}
                 elementOptions={this.route_to}
             />,
         }

@@ -13,8 +13,8 @@ window.channer.router = function () {
         <MuiThemeProvider muiTheme={getMuiTheme()}>
             <Router history={hashHistory}>
                 <Route path="/" component={TopComponent} />
-                <Route path="/topic/:topic_id" component={TopicComponent} />
-                <Route path="/channel/:channel_id" component={ChannelComponent} />
+                <Route path="/topic/:id" component={TopicComponent} />
+                <Route path="/channel/:id" component={ChannelComponent} />
             </Router>
         </MuiThemeProvider>
     , document.getElementById("app"));

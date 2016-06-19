@@ -39,7 +39,7 @@ export class TopicComponent extends PageComponent<TopicProp, TopicState> {
     }
     render(): UI.Element {
         return <div className="topic">
-            {"topic of " + this.props.topic.id.toString()}
+            {"topic of " + this.props.params.id}
         </div>;
     }
 }
