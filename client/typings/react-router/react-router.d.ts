@@ -419,6 +419,12 @@ declare module "react-router/lib/createMemoryHistory" {
   export default ReactRouter.createMemoryHistory;
 }
 
+declare module "react-router/lib/withRouter" {
+    import React = __React
+
+    export default function withRouter<P>(wrapped: React.ComponentClass<P>): React.ComponentClass<P>;
+}
+
 declare module "react-router" {
 
     import Router from "react-router/lib/Router"
@@ -460,6 +466,8 @@ declare module "react-router" {
     import useRouterHistory from "react-router/lib/useRouterHistory";
 
     import createMemoryHistory from "react-router/lib/createMemoryHistory";
+    
+    import withRouter from "react-router/lib/withRouter";
 
     // PlainRoute is defined in the API documented at:
     // https://github.com/rackt/react-router/blob/master/docs/API.md
@@ -501,7 +509,8 @@ declare module "react-router" {
         PropTypes,
         match,
         useRouterHistory,
-        createMemoryHistory
+        createMemoryHistory,
+        withRouter
     }
 
     export default Router

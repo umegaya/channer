@@ -184,7 +184,7 @@ export class PropCollectionFactory {
         [k:string]:PropConditions;
     } = {};
     static setup = (name: string, cond: PropConditions) => {
-        PropCollectionFactory.config[name] = cond;
+        PropCollectionFactory.config[<string>name] = cond;
     }
     static ref = (name: string): PropCollection => {
         var p: PropCollection = PropCollectionFactory.map[name];

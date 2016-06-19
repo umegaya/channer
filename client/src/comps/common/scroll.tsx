@@ -3,7 +3,7 @@ import * as React from 'react'
 import ProtoBufModel = Proto2TypeScript.ProtoBufModel;
 import Q = require('q');
 import {init_metrics, vw, vh} from "./styler"
-import {Surface, ListView, Text, Group, ScrollState} from "react-canvas"
+import {Surface, ListView, Text, Group} from "react-canvas"
 var Scroll = window.channer.parts.Scroll;
 var Long = window.channer.ProtoBuf.Long;
 var _L = window.channer.l10n.translate;
@@ -221,10 +221,19 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     }
 }
 
+export class ListScrollState {
+    scrollTop: number;
+    itemHeights: {[k:number]:number}
+    constructor() {
+        this.scrollTop = 0;
+        this.itemHeights = {};
+    }
+}
+
 export interface ListProp {
     renderItem: (c: ModelCollection, model: any, options?: any) => UI.Element;
     models: ModelCollection;
-    scrollState?: ScrollState;
+    scrollState?: ListScrollState;
     elementOptions?: any;
 }
 

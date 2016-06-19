@@ -70,7 +70,8 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
 
 export function TopicListView(
     c: ModelCollection, 
-    model: ChannerProto.Model.Topic
+    model: ChannerProto.Model.Topic,
+    elemOpts: (path: string) => (() => void)
 ): UI.Element {
     var copied = model.body.slice();
     var body = Builder.Model.Topic.Body.decode(copied);
@@ -85,8 +86,7 @@ export function TopicListView(
     //apply text metrics
     var texts = get_title_text(model);
     styler.set_texts(texts);
-    return <Group>
-        <Image style={styler.bg()} src={""}/>
+    return <Group style={styler.bg()} onClick={elemOpts("/topic/" + model.id.toString())}>
         <Text style={styler.point()}>{p}</Text>
         <Text style={styler.point_unit(p)}>pt</Text>
         

@@ -1,13 +1,15 @@
 /// <reference path="../../typings/extern.d.ts"/>
+import {PageProp, PageState, PageComponent} from "./common/page"
 import {PropCollectionFactory, PropCollection, prop} from "../input/prop"
 import {ChannelListView, ChannelCollection} from "./lists/channel"
 import {TopicListView, TopicCollection} from "./lists/topic"
-import {ListComponent} from "./common/scroll"
+import {ListComponent, ListScrollState} from "./common/scroll"
 import Q = require('q');
 var _L = window.channer.l10n.translate;
 
 //matrial ui
 import * as React from 'react'
+import { withRouter } from 'react-router'
 import {Tabs, Tab} from "material-ui/Tabs"
 import FontIcon from 'material-ui/FontIcon';
 
@@ -29,29 +31,19 @@ PropCollectionFactory.setup("top-models", {
     optional: {},
 });
 
-export interface TopProp {
+export interface TopProp extends PageProp {
     tab: string;    
-    params?: any; //URL params
 }
 
-export class ScrollState {
-    scrollTop: number;
-    itemHeights: {[k:number]:number}
-    constructor() {
-        this.scrollTop = 0;
-        this.itemHeights = {};
-    }
-}
-
-export interface TopState {
+export interface TopState extends PageState {
     settings: PropCollection;
     topics: TopicCollection;
     channels: ChannelCollection;
     selected: string;
-    scrollStates: {[k:string]:ScrollState};
+    scrollStates: {[k:string]:ListScrollState};
 }
 
-export class TopComponent extends React.Component<TopProp, TopState> {
+export class TopComponent extends PageComponent<TopProp, TopState> {
     constructor(props: TopProp) {
         super(props);
         var settings = PropCollectionFactory.ref("top-models"); 
@@ -61,8 +53,8 @@ export class TopComponent extends React.Component<TopProp, TopState> {
             topics: new TopicCollection(settings),
             channels: new ChannelCollection(settings),
             scrollStates: {
-                channel: new ScrollState(),
-                topic: new ScrollState(),
+                channel: new ListScrollState(),
+                topic: new ListScrollState(),
             }
         }
     }
@@ -73,14 +65,19 @@ export class TopComponent extends React.Component<TopProp, TopState> {
                 renderItem={ChannelListView}
                 models={this.state.channels}
                 scrollState={this.state.scrollStates["channel"]}
+                elementOptions={this.route_to}
             />,
             topic: <ListComponent
                 key="topic"
                 renderItem={TopicListView}
                 models={this.state.topics}
                 scrollState={this.state.scrollStates["topic"]}
+                elementOptions={this.route_to}
             />,
         }
+    }
+    route_to = (path: string, options: any): () => void => {
+        return this.route.bind(this, path, options);
     }
     onchange = (val: string) => {
         this.state.selected = val;
