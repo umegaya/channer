@@ -224,9 +224,11 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
 export class ListScrollState {
     scrollTop: number;
     itemHeights: {[k:number]:number}
+    cachedHeights: {}
     constructor() {
         this.scrollTop = 0;
         this.itemHeights = {};
+        this.cachedHeights = {};
     }
 }
 

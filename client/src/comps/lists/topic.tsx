@@ -68,6 +68,10 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
     }
 }
 
+var clock = require('../../img/clock.png');
+var post = require('../../img/post.png');
+var upvote = require('../../img/upvote.png');
+
 export function TopicListView(
     c: ModelCollection, 
     model: ChannerProto.Model.Topic,
@@ -89,21 +93,21 @@ export function TopicListView(
     return <Group style={styler.bg()} onClick={elemOpts("/topic/" + model.id.toString())}>
         <Text style={styler.point()}>{p}</Text>
         <Text style={styler.point_unit(p)}>pt</Text>
-        
-        {imageComponentOrEmpty}
-        
+                
         <Text style={styler.title()}>{texts}</Text>
         
         <Text style={styler.channel_name()}>{body.channel_name + "/" + model.locale}</Text>
         
-        <Text style={styler.icon(0, 0)}>⏰</Text>
+        {imageComponentOrEmpty}
+
+        <Image style={styler.icon(0, 0)} src={clock} />       
         <Text style={styler.attr_text(0, 0)}>{Util.datebyuuid(model.id, true)}</Text>
         
-        <Text style={styler.icon(50, 0)}>✍</Text>
-        <Text style={styler.attr_text(50, 0)}>{model.comment.toString()}</Text>
-        
-        <Text style={styler.icon(25, 0)}>👍</Text>
+        <Image style={styler.icon(25, 0)} src={upvote} />
         <Text style={styler.attr_text(25, 0)}>{Util.upvote_percent(model) + "%"}</Text>
+
+        <Image style={styler.icon(50, 0)} src={post} />
+        <Text style={styler.attr_text(50, 0)}>{model.comment.toString()}</Text>        
     </Group>;
     /*
         <Text style={styler.icon(0, 3)}>👭</Text>

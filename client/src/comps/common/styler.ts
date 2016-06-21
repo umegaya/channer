@@ -26,4 +26,4 @@ export function h(level: number) {
 }
 
 export var font = new FontFace("Roboto");
-
+export var iconFont = new FontFace("channer-icons");

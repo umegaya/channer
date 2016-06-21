@@ -2,15 +2,15 @@ import {vw, vh, h, font} from "../common/styler"
 import {measureText, Measure, FontFace} from "react-canvas"
 
 export class TopicListStyler {
-    textOffset: number;
+    textWidth: number;
     titleHeight: number;
     has_image(yes: boolean):boolean {
-        this.textOffset = yes ? vh(15) : vh(0);
+        this.textWidth = yes ? (vw(98) - vh(15)) : vw(98);
         return yes;
     }
     set_texts(texts: string, font?: FontFace): void {
         var measure = measureText(texts, 
-            vw(98) - this.textOffset, font || FontFace.Default(), 
+            this.textWidth, font || FontFace.Default(), 
             h(2), h(2) + vh(0.5));
         this.titleHeight = measure.height;
     }
@@ -29,7 +29,7 @@ export class TopicListStyler {
     img(): any {
         return {
             top: vh(1),
-            left: vw(1),
+            left: this.textWidth,
             height: vh(13),
             width: vh(13),
         }
@@ -60,9 +60,9 @@ export class TopicListStyler {
     title(): any {
         return {
             top: vh(1),
-            left: vw(1) + this.textOffset,
+            left: vw(1),
             height: this.titleHeight,
-            width: vw(98) - this.textOffset,
+            width: this.textWidth,
             fontFace: font,
             fontSize: h(2),
             lineHeight: h(2) + vh(0.5),
@@ -71,9 +71,10 @@ export class TopicListStyler {
     channel_name(): any {
         return {
             top: vh(1.5) + this.titleHeight,
-            left: vw(1) + this.textOffset,
+            left: vw(1),
             height: vh(3.5),
-            width: vw(98) - this.textOffset,
+            width: this.textWidth,
+            color: "#aaaaaa",
             fontFace: font,
             fontSize: h(3),
             lineHeight: h(3) + vh(0.5),            
@@ -83,8 +84,8 @@ export class TopicListStyler {
         return {
             top: vh(4.5) + vh(hofs) + this.titleHeight,
             left: vw(1 + wofs) + vh(15),
-            width: vh(4),
-            height: vh(3),
+            width: vh(2.5),
+            height: vh(2.5),
             fontFace: font,
             fontSize: h(3),
             lineHeight: h(3) + vh(0.5),
@@ -93,7 +94,7 @@ export class TopicListStyler {
     attr_text(wofs: number, hofs: number): any {
         return {
             top: vh(4.5) + vh(hofs) + this.titleHeight,
-            left: vw(1 + wofs) + vh(2.5) + vh(15),
+            left: vw(1 + wofs) + vh(3) + vh(15),
             width: vw(20),
             height: vh(2.5),
             fontFace: font,

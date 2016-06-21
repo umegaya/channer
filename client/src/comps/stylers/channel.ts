@@ -1,4 +1,4 @@
-import {vw, vh, h, font} from "../common/styler"
+import {vw, vh, h, font, iconFont} from "../common/styler"
 
 export class ChannelListStyler {
     bg(): any {
@@ -31,10 +31,11 @@ export class ChannelListStyler {
     }
     desc(): any {
         return {
-            top: vh(4),
+            top: vh(4.5),
             left: vw(1) + vh(15),
-            height: vh(2.5),
+            height: vh(6),
             width: vw(98) - vh(15),
+            color: "#aaaaaa",
             fontFace: font,
             fontSize: h(3),
             lineHeight: h(3) + vh(0.5),            
@@ -42,19 +43,19 @@ export class ChannelListStyler {
     }
     icon(wofs: number): any {
         return {
-            top: vh(7),
+            top: vh(11),
             left: vw(1 + wofs) + vh(15),
-            width: vh(4),
-            height: vh(3),
-            fontFace: font,
+            width: vh(2.5),
+            height: vh(2.5),
+            fontFace: iconFont,
             fontSize: h(3),
             lineHeight: h(3) + vh(0.5),
         }
     }
     attr_text(wofs: number): any {
         return {
-            top: vh(7),
-            left: vw(1 + wofs) + vh(2.5) + vh(15),
+            top: vh(11),
+            left: vw(1 + wofs) + vh(3) + vh(15),
             width: vw(20),
             height: vh(2.5),
             fontFace: font,

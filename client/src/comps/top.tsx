@@ -65,7 +65,7 @@ export class TopComponent extends PageComponent<TopProp, TopState> {
     constructor(props: TopProp) {
         super(props);
         this.state = {
-            selected: this.props.params.tab || "topic",
+            selected: this.props.params.tab || "channel",
         }
         if (!TopComponent.state) {
             TopComponent.state = new TopStaticState();

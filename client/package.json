@@ -6,6 +6,7 @@
   "dependencies": {
     "hammerjs": "^2.0.6",
     "jshashes": "^1.0.5",
+    "material-ui": "^0.15.0",
     "mithril": "^0.2.0",
     "mithril-infinite": "^0.4.0",
     "mithril-transition": "^2.2.0",

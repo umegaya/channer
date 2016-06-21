@@ -144,4 +144,7 @@ declare module 'react-canvas' {
   class ListView extends React.Component<ListViewProps,{}> {
 
   }
+  
+  function registerLayerType(type: string, 
+    drawFunction: (ctx: CanvasRenderingContext2D, layer: Layer) => void): void;
 }
