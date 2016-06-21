@@ -14,7 +14,7 @@ var Long = window.channer.ProtoBuf.Long;
 var styler = new TopicListStyler();
 
 function get_title_text(model: ChannerProto.Model.Topic): string {
-    return model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content + " " + model.content;
+    return model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content;
 }
 
 export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Topic, ScoreBoundary> {
@@ -61,8 +61,7 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
             return vh(20);
         } 
         else {
-            var texts = get_title_text(model);
-            styler.set_texts(texts);
+            styler.set_model(model);
             return styler.height();
         }
     }
@@ -72,46 +71,46 @@ var clock = require('../../img/clock.png');
 var post = require('../../img/post.png');
 var upvote = require('../../img/upvote.png');
 
-export function TopicListView(
-    c: ModelCollection, 
-    model: ChannerProto.Model.Topic,
-    elemOpts: (path: string) => (() => void)
-): UI.Element {
-    var copied = model.body.slice();
-    var body = Builder.Model.Topic.Body.decode(copied);
-    var index = model.id.modulo(10).toNumber() + 1;
-    var p = model.point.toString();
-    //TODO: replace it to actual check
-    var imageComponentOrEmpty: UI.Element;
-    if (styler.has_image(model.id.modulo(100).toNumber() < 50)) {
-        imageComponentOrEmpty = 
-            <Image style={styler.img()} src={"http://lorempixel.com/360/420/cats/" + index + "/"} />        
-    }
-    //apply text metrics
-    var texts = get_title_text(model);
-    styler.set_texts(texts);
-    return <Group style={styler.bg()} onClick={elemOpts("/topic/" + model.id.toString())}>
-        <Text style={styler.point()}>{p}</Text>
-        <Text style={styler.point_unit(p)}>pt</Text>
-                
-        <Text style={styler.title()}>{texts}</Text>
-        
-        <Text style={styler.channel_name()}>{body.channel_name + "/" + model.locale}</Text>
-        
-        {imageComponentOrEmpty}
-
-        <Image style={styler.icon(0, 0)} src={clock} />       
-        <Text style={styler.attr_text(0, 0)}>{Util.datebyuuid(model.id, true)}</Text>
-        
-        <Image style={styler.icon(25, 0)} src={upvote} />
-        <Text style={styler.attr_text(25, 0)}>{Util.upvote_percent(model) + "%"}</Text>
-
-        <Image style={styler.icon(50, 0)} src={post} />
-        <Text style={styler.attr_text(50, 0)}>{model.comment.toString()}</Text>        
-    </Group>;
-    /*
-        <Text style={styler.icon(0, 3)}>👭</Text>
-        <Text style={styler.attr_text(0, 3)}>{body.name}</Text>
-    */
+export interface TopicElementProp {
+    c?: ModelCollection;
+    model: ChannerProto.Model.Topic;
+    elemOpts: (path: string) => (() => void);
 }
 
+export interface TopicElementState {
+
+}
+
+export class TopicElementComponent extends React.Component<TopicElementProp, TopicElementState> {
+    render(): UI.Element {
+        var model = this.props.model;
+        var copied = model.body.slice();
+        var body = Builder.Model.Topic.Body.decode(copied);
+        var p = model.point.toString();
+        var imageComponentOrEmpty: UI.Element;
+        styler.set_model(model);
+        if (styler.image_url()) {
+            imageComponentOrEmpty = <Image style={styler.img()} src={styler.image_url()} />        
+        }
+        //apply text metrics
+        return <Group style={styler.bg()} onClick={this.props.elemOpts("/topic/" + model.id.toString())}>
+            <Text style={styler.point()}>{p}</Text>
+            <Text style={styler.point_unit(p)}>pt</Text>
+                    
+            <Text style={styler.title()}>{styler.get_title_text()}</Text>
+            
+            <Text style={styler.channel_name()}>{body.channel_name + "/" + model.locale}</Text>
+            
+            {imageComponentOrEmpty}
+
+            <Image style={styler.icon(0, 0)} src={clock} />       
+            <Text style={styler.attr_text(0, 0)}>{Util.datebyuuid(model.id, true)}</Text>
+            
+            <Image style={styler.icon(25, 0)} src={upvote} />
+            <Text style={styler.attr_text(25, 0)}>{Util.upvote_percent(model) + "%"}</Text>
+
+            <Image style={styler.icon(50, 0)} src={post} />
+            <Text style={styler.attr_text(50, 0)}>{model.comment.toString()}</Text>        
+        </Group>;
+    }
+}

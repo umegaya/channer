@@ -233,7 +233,7 @@ export class ListScrollState {
 }
 
 export interface ListProp {
-    renderItem: (c: ModelCollection, model: any, options?: any) => UI.Element;
+    elementComponent: React.ComponentClass<any>;
     models: ModelCollection;
     scrollState?: ListScrollState;
     elementOptions?: any;
@@ -289,7 +289,12 @@ export class ListComponent extends React.Component<ListProp, ListState> {
                 <Text style={this.state.textStyle}>loading new records..</Text>
             </Group>
         }
-        return this.props.renderItem(this.props.models, model, this.props.elementOptions);
+        return React.createElement(this.props.elementComponent, {
+            key: index,
+            model: model, 
+            elemOpts: this.props.elementOptions,
+        });
+//        return this.props.renderItem(this.props.models, model, this.props.elementOptions);
     }
     onRefresh = (event: string, cb?: () => void) => {
         if (event == "start" && cb) {

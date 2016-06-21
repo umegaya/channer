@@ -1,22 +1,41 @@
 import {vw, vh, h, font} from "../common/styler"
 import {measureText, Measure, FontFace} from "react-canvas"
+import ChannerProto = Proto2TypeScript.ChannerProto;
 
 export class TopicListStyler {
+    model: ChannerProto.Model.Topic;
+    imageUrl: string;
     textWidth: number;
     titleHeight: number;
-    has_image(yes: boolean):boolean {
-        this.textWidth = yes ? (vw(98) - vh(15)) : vw(98);
-        return yes;
-    }
-    set_texts(texts: string, font?: FontFace): void {
+    //handle variable properties
+    set_model(model: ChannerProto.Model.Topic): void {
+        this.model = model;
+        //temporary test for image displaying
+        if (model.id.modulo(100).toNumber() < 50) {
+            var index = model.id.modulo(10).toNumber() + 1;
+            this.imageUrl = "http://lorempixel.com/360/420/cats/" + index + "/";
+        } else {
+            this.imageUrl = null;
+        }
+        this.textWidth = (this.imageUrl != null) ? (vw(100) - vh(15)) : vw(100);
+        var texts = this.get_title_text();
         var measure = measureText(texts, 
-            this.textWidth, font || FontFace.Default(), 
+            this.textWidth, font, 
             h(2), h(2) + vh(0.5));
         this.titleHeight = measure.height;
+    }
+    get_title_text():string {
+        var model = this.model;
+        return model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content;
+    }
+    image_url():string {
+        return this.imageUrl;
     }
     height(): number {
         return this.titleHeight + vh(10);
     }
+
+    //metrics
     bg(): any {
         return {
             top: vh(0),
@@ -29,7 +48,7 @@ export class TopicListStyler {
     img(): any {
         return {
             top: vh(1),
-            left: this.textWidth,
+            left: this.textWidth + vh(1),
             height: vh(13),
             width: vh(13),
         }

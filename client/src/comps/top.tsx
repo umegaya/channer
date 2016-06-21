@@ -1,8 +1,8 @@
 /// <reference path="../../typings/extern.d.ts"/>
 import {PageProp, PageState, PageComponent} from "./common/page"
 import {PropCollectionFactory, PropCollection, prop} from "../input/prop"
-import {ChannelListView, ChannelCollection} from "./lists/channel"
-import {TopicListView, TopicCollection} from "./lists/topic"
+import {ChannelElementComponent, ChannelCollection} from "./lists/channel"
+import {TopicElementComponent, TopicCollection} from "./lists/topic"
 import {ListComponent, ListScrollState} from "./common/scroll"
 import Q = require('q');
 var _L = window.channer.l10n.translate;
@@ -75,14 +75,14 @@ export class TopComponent extends PageComponent<TopProp, TopState> {
         return {
             channel: <ListComponent
                 key="channel"
-                renderItem={ChannelListView}
+                elementComponent={ChannelElementComponent}
                 models={TopComponent.state.channels}
                 scrollState={TopComponent.state.scrollStates["channel"]}
                 elementOptions={this.route_to}
             />,
             topic: <ListComponent
                 key="topic"
-                renderItem={TopicListView}
+                elementComponent={TopicElementComponent}
                 models={TopComponent.state.topics}
                 scrollState={TopComponent.state.scrollStates["topic"]}
                 elementOptions={this.route_to}

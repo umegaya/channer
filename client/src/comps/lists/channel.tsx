@@ -59,31 +59,32 @@ var idlevel_text : { [t:number]:string } = {
 
 var clock = require('../../img/clock.png');
 var user = require('../../img/user.png');
-//var star = require('../../img/star.png')
 
-export function ChannelListView(
-    c: ModelCollection, 
-    model: ChannerProto.Model.Channel,
-    elemOpts: (path: string) => (() => void)
-): UI.Element {
-    var copied = model.options.slice();
-    var options = Builder.Model.Channel.Options.decode(copied);
-    var index = model.id.modulo(10).toNumber() + 1;
-    //TODO: if no image is set, generate or give default graphics according to its ID
-    return <Group style={styler.bg()} onClick={elemOpts("/channel/" + model.id.toString())}>
-        <Image style={styler.img()} src={"http://lorempixel.com/360/420/cats/" + index + "/"} />
-        <Text style={styler.name()}>{model.name + "/" + model.locale + "," + model.category}</Text>
-        <Text style={styler.desc()}>{model.description || _L("no description")}</Text>
-        <Image style={styler.icon(0)} src={clock} />
-        <Text style={styler.attr_text(0)}>{Util.datebyuuid(model.id, true)}</Text>
-        <Image style={styler.icon(25)} src={user} />
-        <Text style={styler.attr_text(25)}>11111</Text>
-    </Group>;
-    /*
-        <Image style={styler.icon(50)} src={star} />
-        <Text style={styler.attr_text(50)}>33333</Text>
-        <Text style={styler.icon(0)}>⏰</Text>
-        <Text style={styler.icon(25)}>👭</Text>
-        <Text style={styler.icon(50)}>⭐</Text>    
-    */
+export interface ChannelElementProp {
+    c?: ModelCollection;
+    model: ChannerProto.Model.Channel;
+    elemOpts: (path: string) => (() => void);
+}
+
+export interface ChannelElementState {
+
+}
+
+export class ChannelElementComponent extends React.Component<ChannelElementProp, ChannelElementState> {
+    render(): UI.Element {
+        var model = this.props.model;
+        var copied = model.options.slice();
+        var options = Builder.Model.Channel.Options.decode(copied);
+        var index = model.id.modulo(10).toNumber() + 1;
+        //TODO: if no image is set, generate or give default graphics according to its ID
+        return <Group style={styler.bg()} onClick={this.props.elemOpts("/channel/" + model.id.toString())}>
+            <Image style={styler.img()} src={"http://lorempixel.com/360/420/cats/" + index + "/"} />
+            <Text style={styler.name()}>{model.name + "/" + model.locale + "," + model.category}</Text>
+            <Text style={styler.desc()}>{model.description || _L("no description")}</Text>
+            <Image style={styler.icon(0)} src={clock} />
+            <Text style={styler.attr_text(0)}>{Util.datebyuuid(model.id, true)}</Text>
+            <Image style={styler.icon(25)} src={user} />
+            <Text style={styler.attr_text(25)}>11111</Text>
+        </Group>;
+    }
 }
