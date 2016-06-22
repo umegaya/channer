@@ -7,6 +7,7 @@ export class TopicListStyler {
     imageUrl: string;
     textWidth: number;
     titleHeight: number;
+    vote: number;
     //handle variable properties
     set_model(model: ChannerProto.Model.Topic): void {
         this.model = model;
@@ -24,6 +25,9 @@ export class TopicListStyler {
             h(2), h(2) + vh(0.5));
         this.titleHeight = measure.height;
     }
+    set_vote(v: number): void {
+        this.vote = v;
+    }
     get_title_text():string {
         var model = this.model;
         return model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content;
@@ -33,6 +37,9 @@ export class TopicListStyler {
     }
     height(): number {
         return this.titleHeight + vh(10);
+    }
+    vote_text_color(vote: number, inactive?: string): string {
+        return vote > 0 ? "#00b300" : (vote < 0 ? "#ff3333" : (inactive || "#999999"));        
     }
 
     //metrics
@@ -47,44 +54,70 @@ export class TopicListStyler {
     }
     img(): any {
         return {
-            top: vh(1),
+            top: vh(4.5),
             left: this.textWidth + vh(1),
             height: vh(13),
             width: vh(13),
         }
     }
-    point(): any {
-        return {
-            top: vh(4) + this.titleHeight,
-            left: vw(1),
-            height: vh(4),
-            width: vh(13),
-            fontFace: font,
-            fontSize: h(2),
-            lineHeight: h(2) + vh(0.5),
-        }
-    }
-    point_unit(point: string): any {
-        var l = vw(point.length * 3);　//3vw * length
-        return {
-            top: vh(4) + this.titleHeight,
-            left: vw(1) + vw(0.5) + l,
-            height: vh(4),
-            width: vw(10),
-            fontFace: font,
-            fontSize: h(3),
-            lineHeight: h(3) + vh(0.5),
-        }
-    }
     title(): any {
         return {
-            top: vh(1),
+            top: vh(4.5),
             left: vw(1),
             height: this.titleHeight,
             width: this.textWidth,
             fontFace: font,
             fontSize: h(2),
             lineHeight: h(2) + vh(0.5),
+        }
+    }
+    point(vote: number): any {
+        return {
+            //top: vh(1.5) + this.titleHeight,
+            top: vh(1),
+            left: vw(1),
+            height: vh(3.5),
+            width: vw(15),
+            color: this.vote_text_color(vote),
+            fontFace: font,
+            fontSize: h(2),
+            lineHeight: h(2) + vh(0.5),
+        }
+    }
+    point_unit(point: string, vote: number): any {
+        var l = vw(point.length * 3);　//3vw * length
+        return {
+            //top: vh(2) + this.titleHeight,
+            top: vh(1.5),
+            left: vw(1) + vw(0.5) + l,
+            height: vh(3.5),
+            width: vw(6),
+            color: this.vote_text_color(vote),
+            fontFace: font,
+            fontSize: h(3),
+            lineHeight: h(3) + vh(0.5),
+        }
+    }
+    vote_icon(wofs: number, vote: number): any {
+        return {
+            //top: vh(2 - vote * 0.2) + this.titleHeight,
+            top: vh(1.5 - vote * 0.2),
+            left: vw(26 + wofs),
+            width: vh(2.5),
+            height: vh(2.5),
+        }
+    }
+    vote_text(wofs: number, vote: number): any {
+        return {
+            //top: vh(2) + this.titleHeight,
+            top: vh(1.5),
+            left: vw(26 + wofs) + vh(3.5),
+            width: vw(25),
+            height: vh(2.5),
+            color: this.vote_text_color(vote),
+            fontFace: font,
+            fontSize: h(3),
+            lineHeight: h(3) + vh(0.5),
         }
     }
     channel_name(): any {
@@ -99,23 +132,22 @@ export class TopicListStyler {
             lineHeight: h(3) + vh(0.5),            
         }
     }
-    icon(wofs: number, hofs: number): any {
+    icon(wofs: number): any {
         return {
-            top: vh(4.5) + vh(hofs) + this.titleHeight,
-            left: vw(1 + wofs) + vh(15),
+            top: vh(5.5) + this.titleHeight,
+            //top: vh(1),
+            left: vw(1 + wofs),
             width: vh(2.5),
             height: vh(2.5),
-            fontFace: font,
-            fontSize: h(3),
-            lineHeight: h(3) + vh(0.5),
         }
     }
-    attr_text(wofs: number, hofs: number): any {
+    attr_text(wofs: number): any {
         return {
-            top: vh(4.5) + vh(hofs) + this.titleHeight,
-            left: vw(1 + wofs) + vh(3) + vh(15),
-            width: vw(20),
-            height: vh(2.5),
+            top: vh(5.5) + this.titleHeight,
+            //top: vh(1),
+            left: vw(1 + wofs) + vh(3.5),
+            width: vw(15),
+            height: vh(3),
             fontFace: font,
             fontSize: h(3),
             lineHeight: h(3) + vh(0.5),            
