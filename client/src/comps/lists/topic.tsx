@@ -92,12 +92,21 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
             vote: 0
         }
     }
+    vote_handler(v: number): void {
+        if (this.state.vote == v) {
+            v = 0;
+        }
+        //TODO: send deferred vote request (because sometimes user on/off vote very fast)
+        this.setState({
+            vote: v,
+        });
+    }
     render(): UI.Element {
         try {
         var model = this.props.model;
         var copied = model.body.slice();
         var body = Builder.Model.Topic.Body.decode(copied);
-        var p = (model.point * 1000).toString();
+        var p = (model.point * 1000 + this.state.vote).toString();
         var imageComponentOrEmpty: UI.Element;
         var up = (model.vote + model.point) / 2, down = (model.vote - model.point) / 2;
         styler.set_model(model);
@@ -105,22 +114,22 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
             imageComponentOrEmpty = <Image style={styler.img()} src={styler.image_url()} />        
         }
         var upvoteElement: UI.Element = this.state.vote > 0 ? 
-            <Group>
+            <Group style={styler.vote_group(0)} onClick={this.vote_handler.bind(this, 1)}>
                 <Image style={styler.vote_icon(0, 1)} src={upvote}/>
                 <Text style={styler.vote_text(0, this.state.vote)}>{(up + 1).toString()}</Text>
             </Group> : 
-            <Group>
+            <Group style={styler.vote_group(0)} onClick={this.vote_handler.bind(this, 1)}>
                 <Image style={styler.vote_icon(0, 1)} src={upvote_inactive}/>
-                <Text style={styler.vote_text(0, this.state.vote)}>{up.toString()}</Text>
+                <Text style={styler.vote_text(0, 0)}>{up.toString()}</Text>
             </Group>;
         var downvoteElement: UI.Element = this.state.vote < 0 ? 
-            <Group>
+            <Group style={styler.vote_group(20)} onClick={this.vote_handler.bind(this, -1)}>
                 <Image style={styler.vote_icon(20, -1)} src={downvote}/>
                 <Text style={styler.vote_text(20, this.state.vote)}>{(down + 1).toString()}</Text>
             </Group> : 
-            <Group>
+            <Group style={styler.vote_group(20)} onClick={this.vote_handler.bind(this, -1)}>
                 <Image style={styler.vote_icon(20, -1)} src={downvote_inactive}/>
-                <Text style={styler.vote_text(20, this.state.vote)}>{down.toString()}</Text>
+                <Text style={styler.vote_text(20, 0)}>{down.toString()}</Text>
             </Group>;
         //apply text metrics
         return <Group style={styler.bg()} onClick={this.props.elemOpts("/topic/" + model.id.toString())}>                    

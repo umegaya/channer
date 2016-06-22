@@ -98,10 +98,18 @@ export class TopicListStyler {
             lineHeight: h(3) + vh(0.5),
         }
     }
+    vote_group(wofs: number): any {
+        return {
+            top: vh(1.5),
+            left: vw(26 + wofs),
+            width: vh(2.5) + vw(25),
+            height: vh(2.5),
+        }        
+    }
     vote_icon(wofs: number, vote: number): any {
         return {
             //top: vh(2 - vote * 0.2) + this.titleHeight,
-            top: vh(1.5 - vote * 0.2),
+            top: vh(1.5 - vote * 0.3),
             left: vw(26 + wofs),
             width: vh(2.5),
             height: vh(2.8),
