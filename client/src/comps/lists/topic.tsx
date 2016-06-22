@@ -73,6 +73,7 @@ var upvote = require('../../img/upvote.png');
 var upvote_inactive = require('../../img/upvote-inactive.png');
 var downvote = require('../../img/downvote.png');
 var downvote_inactive = require('../../img/downvote-inactive.png');
+var channel = require('../../img/channel.png');
 
 export interface TopicElementProp {
     c?: ModelCollection;
@@ -123,6 +124,9 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
             </Group>;
         //apply text metrics
         return <Group style={styler.bg()} onClick={this.props.elemOpts("/topic/" + model.id.toString())}>                    
+            {upvoteElement}
+            {downvoteElement}   
+
             <Text style={styler.title()}>{styler.get_title_text()}</Text>
             
             {imageComponentOrEmpty}
@@ -134,9 +138,8 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
             <Text style={styler.attr_text(0)}>{Util.datebyuuid(model.id, true)}</Text>
             <Image style={styler.icon(25)} src={post} />
             <Text style={styler.attr_text(25)}>{model.comment.toString()}</Text>     
-
-            {upvoteElement}
-            {downvoteElement}   
+            <Image style={styler.icon(45)} src={channel} />
+            <Text style={styler.attr_text(45, 50)}>{body.channel_name + "/" + model.locale}</Text>
         </Group>;
         }
         catch (e) {

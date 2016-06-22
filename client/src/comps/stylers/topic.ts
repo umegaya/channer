@@ -39,7 +39,7 @@ export class TopicListStyler {
         return this.titleHeight + vh(10);
     }
     vote_text_color(vote: number, inactive?: string): string {
-        return vote > 0 ? "#00b300" : (vote < 0 ? "#ff3333" : (inactive || "#999999"));        
+        return vote > 0 ? "#00b300" : (vote < 0 ? "#ff3333" : (inactive || "#cccccc"));        
     }
 
     //metrics
@@ -104,7 +104,7 @@ export class TopicListStyler {
             top: vh(1.5 - vote * 0.2),
             left: vw(26 + wofs),
             width: vh(2.5),
-            height: vh(2.5),
+            height: vh(2.8),
         }
     }
     vote_text(wofs: number, vote: number): any {
@@ -122,10 +122,10 @@ export class TopicListStyler {
     }
     channel_name(): any {
         return {
-            top: vh(1.5) + this.titleHeight,
+            top: vh(5.5) + this.titleHeight,
             left: vw(1),
             height: vh(3.5),
-            width: this.textWidth,
+            width: vw(30),
             color: "#aaaaaa",
             fontFace: font,
             fontSize: h(3),
@@ -135,18 +135,16 @@ export class TopicListStyler {
     icon(wofs: number): any {
         return {
             top: vh(5.5) + this.titleHeight,
-            //top: vh(1),
             left: vw(1 + wofs),
             width: vh(2.5),
             height: vh(2.5),
         }
     }
-    attr_text(wofs: number): any {
+    attr_text(wofs: number, width?:number): any {
         return {
             top: vh(5.5) + this.titleHeight,
-            //top: vh(1),
             left: vw(1 + wofs) + vh(3.5),
-            width: vw(15),
+            width: vw(width || 15),
             height: vh(3),
             fontFace: font,
             fontSize: h(3),
