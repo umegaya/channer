@@ -4,6 +4,7 @@
   "description": "channer client by typescript and phonegap",
   "main": "gulpfile.js",
   "dependencies": {
+    "bluebird": "^3.4.1",
     "hammerjs": "^2.0.6",
     "jshashes": "^1.0.5",
     "material-ui": "^0.15.0",

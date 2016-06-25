@@ -292,9 +292,9 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         return React.createElement(this.props.elementComponent, {
             key: index,
             model: model, 
+            c: this.props.models,
             elemOpts: this.props.elementOptions,
         });
-//        return this.props.renderItem(this.props.models, model, this.props.elementOptions);
     }
     onRefresh = (event: string, cb?: () => void) => {
         if (event == "start" && cb) {
@@ -309,14 +309,6 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         }        
     }
     render(): UI.Element {
-        /*return <window.channer.rparts.List
-            itemRenderer={this.renderItem}
-            length={this.props.models.length()}
-            type='variable'
-            pageSize={ProtoModelCollection.FETCH_LIMIT}
-            threshold={600}
-            useTranslate3d={true}
-        />;*/
         return <Surface 
             top={0} left={0} width={this.state.size.width} height={this.state.size.height}>
             <ListView

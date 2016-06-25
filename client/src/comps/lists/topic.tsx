@@ -5,7 +5,7 @@ import {Surface, ListView, Text, Group, Image} from "react-canvas"
 import {Handler, Builder} from "../../proto"
 import {Util} from "../../uikit"
 import {TopicListStyler} from "../stylers/topic"
-import {vh} from "../common/styler"
+import {VoteList} from "../common/votes"
 import ChannerProto = Proto2TypeScript.ChannerProto;
 import Q = require('q');
 var _L = window.channer.l10n.translate;
@@ -13,16 +13,15 @@ var Long = window.channer.ProtoBuf.Long;
 
 var styler = new TopicListStyler();
 
-function get_title_text(model: ChannerProto.Model.Topic): string {
-    return model.title + "/" + model.point + "," + model.vote + "/" + model.locale + "/" + model.content;
-}
-
 export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Topic, ScoreBoundary> {
     static NULL_OFFSET = new ScoreBoundary(Long.UZERO, 0);
     props: PropCollection;
-    constructor(props: PropCollection) {
+    votes: VoteList;
+    constructor(props: PropCollection, votes: VoteList) {
         super();
         this.props = props;
+        this.votes = votes;
+        this.initkey();
     }
     sort_by = (): string => {
         return this.props.val("topic_sort_by");
@@ -57,13 +56,8 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
     }
     item_height = (index: number): number => {
         var model = this.get(index);
-        if (!model) {
-            return vh(20);
-        } 
-        else {
-            styler.set_model(model);
-            return styler.height();
-        }
+        styler.set_model(model);
+        return styler.height();
     }
 }
 
@@ -76,7 +70,7 @@ var downvote_inactive = require('../../img/downvote-inactive.png');
 var channel = require('../../img/channel.png');
 
 export interface TopicElementProp {
-    c?: ModelCollection;
+    c?: TopicCollection;
     model: ChannerProto.Model.Topic;
     elemOpts: (path: string) => (() => void);
 }
@@ -89,12 +83,18 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
     constructor(props: TopicElementProp) {
         super(props);
         this.state = {
-            vote: 0
+            vote: props.c.votes.get(props.model.id.toString()),
         }
     }
     vote_handler(v: number): void {
+        if (!this.props.c.votes.loaded()) {
+            return;
+        }
         if (this.state.vote == v) {
             v = 0;
+            this.props.c.votes.rm(this.props.model.id.toString());
+        } else {
+            this.props.c.votes.add(this.props.model.id.toString(), v);
         }
         //TODO: send deferred vote request (because sometimes user on/off vote very fast)
         this.setState({
@@ -102,8 +102,8 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
         });
     }
     render(): UI.Element {
-        try {
         var model = this.props.model;
+        var id = model.id;
         var copied = model.body.slice();
         var body = Builder.Model.Topic.Body.decode(copied);
         var p = (model.point * 1000 + this.state.vote).toString();
@@ -150,10 +150,6 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
             <Image style={styler.icon(45)} src={channel} />
             <Text style={styler.attr_text(45, 50)}>{body.channel_name + "/" + model.locale}</Text>
         </Group>;
-        }
-        catch (e) {
-            console.error("error:" + e.message);
-        }
         /* <Text style={styler.channel_name()}>{body.channel_name + "/" + model.locale}</Text>
             <Image style={styler.icon(25, 0)} src={upvote} />
             <Text style={styler.attr_text(25, 0)}>{Util.upvote_percent(model) + "%"}</Text>

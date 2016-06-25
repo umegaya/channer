@@ -11,6 +11,7 @@ export class TopicListStyler {
     //handle variable properties
     set_model(model: ChannerProto.Model.Topic): void {
         this.model = model;
+        if (!model) { return; }
         //temporary test for image displaying
         if (model.id.modulo(100).toNumber() < 50) {
             var index = model.id.modulo(10).toNumber() + 1;
@@ -36,6 +37,9 @@ export class TopicListStyler {
         return this.imageUrl;
     }
     height(): number {
+        if (!this.model) {
+            return vh(20);
+        }
         return this.titleHeight + vh(10);
     }
     vote_text_color(vote: number, inactive?: string): string {

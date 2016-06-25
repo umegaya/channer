@@ -4,7 +4,7 @@ import {Config, UserSettings, UserSettingsValues} from "./config"
 import {Timer} from "./timer"
 import {m, Util} from "./uikit"
 import {Push, PushReceiver} from "./push"
-import {Storage, StorageIO} from "./storage"
+import {Storage, StorageIO, Database} from "./storage"
 
 //for debug. remove user setting
 var truncate_settings = window.environment.match(/test/);
@@ -31,6 +31,7 @@ window.channer.bootstrap = function (config: any) {
 			console.log("push: onerror:" + resp.message);	
 		},
 	});
+	var d : Database = new Database("channer");
 	var setting_io : StorageIO = null;
 	//store system modules to global namespace
 	window.channer.conn = h;
@@ -38,6 +39,7 @@ window.channer.bootstrap = function (config: any) {
 	window.channer.config = c;
 	window.channer.push = p;
 	window.channer.storage = s;
+	window.channer.database = d;
 	//build bootstrap chain
 	s.open(c.user_settings_path, {create: true})
 	.then((io: StorageIO) => {
@@ -63,6 +65,15 @@ window.channer.bootstrap = function (config: any) {
 		return window.channer.settings.save();
 	})
 	.then(() => {
+		return window.channer.database.initialize((db: Database, oldv: number) => {
+			switch (oldv) {
+			case 0:
+				db.open("settings", { keyPath: "key" }, true);
+				db.open("votes", { keyPath: "id" }, true);
+			}
+		}, truncate_settings);
+	})
+	.then((db: Database) => {
 		return window.channer.fs.applycss("base", require("./css/main.styl"));
 	})
 	.then(() => {

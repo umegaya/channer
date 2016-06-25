@@ -15,6 +15,7 @@ export class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.C
     constructor(props: PropCollection) {
         super();
         this.props = props;
+        this.initkey();
     }
     initkey = () => {
         this.key = "channels/" 
@@ -61,7 +62,7 @@ var clock = require('../../img/clock.png');
 var user = require('../../img/user.png');
 
 export interface ChannelElementProp {
-    c?: ModelCollection;
+    c?: ChannelCollection;
     model: ChannerProto.Model.Channel;
     elemOpts: (path: string) => (() => void);
 }
