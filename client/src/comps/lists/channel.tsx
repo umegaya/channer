@@ -6,7 +6,7 @@ import {Handler, Builder} from "../../proto"
 import {Util} from "../../uikit"
 import {ChannelListStyler} from "../stylers/channel"
 import ChannerProto = Proto2TypeScript.ChannerProto;
-import Q = require('q');
+import * as Promise from "bluebird"
 var _L = window.channer.l10n.translate;
 var Long = window.channer.ProtoBuf.Long;
 
@@ -23,18 +23,19 @@ export class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.C
             + this.props.val("channel_category") + "/"
             + window.channer.settings.values.search_locale;
     }
-    fetch_request = (offset: LongBoundary, limit: number): Q.Promise<Array<ChannerProto.Model.Channel>> => {
-        var df: Q.Deferred<Array<ChannerProto.Model.Channel>> = Q.defer<Array<ChannerProto.Model.Channel>>();
-        var conn: Handler = window.channer.conn;
-        var sort_by: string = this.props.val("channel_sort_by");
-        var category: number = window.channer.category.to_id(
-            this.props.val("channel_category")
-        )
-        conn.channel_list(sort_by, offset && offset.id, null, category, limit)
-        .then((r: ChannerProto.ChannelListResponse) => {
-            df.resolve(r.list);
+    fetch_request = (offset: LongBoundary, limit: number): Promise<Array<ChannerProto.Model.Channel>> => {
+        return new Promise<Array<ChannerProto.Model.Channel>>(
+        (resolve: (e: Array<ChannerProto.Model.Channel>) => void, reject: (err: any) => void) => {
+            var conn: Handler = window.channer.conn;
+            var sort_by: string = this.props.val("channel_sort_by");
+            var category: number = window.channer.category.to_id(
+                this.props.val("channel_category")
+            )
+            conn.channel_list(sort_by, offset && offset.id, null, category, limit)
+            .then((r: ChannerProto.ChannelListResponse) => {
+                resolve(r.list);
+            }, reject);
         });
-        return df.promise;
     }
     update_range = (
         chunk: ProtoModelChunk<ChannerProto.Model.Channel, LongBoundary>, 

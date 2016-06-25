@@ -1,6 +1,5 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 import {Database, Txn} from "../../storage";
-//import Q = require('q');
 import * as Promise from "bluebird"
 
 export class VoteList {

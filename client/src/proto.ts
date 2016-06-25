@@ -4,7 +4,7 @@ import {ProtoWatcher, ProtoError, Model} from "./watcher"
 import {Timer} from "./timer"
 import {m, Util} from "./uikit"
 import {errorMessages} from "./error"
-import Q = require('q');
+import * as Promise from "bluebird"
 
 import ChannerProto = Proto2TypeScript.ChannerProto;
 
@@ -57,53 +57,41 @@ export class Handler {
     private debug_close = (error_count: number) => {
         this.socket.debug_close(error_count);
     }
-	private send = (p: ChannerProto.Payload, e?: ChannerProto.Error.Type, no_redraw?:boolean): Q.Promise<Model> => {
-		var df : Q.Deferred<Model> = Q.defer<Model>();
-		if (!no_redraw) {
-			df.promise.done(this.redraw, this.redraw);
-		}
-		if (e) {
-			//return error with same manner when error caused by server
-			setTimeout(() => {
-                this.last_error = new ProtoError({ type: e }, errorMessages[e]);
-				df.reject(this.last_error);
-			}, 1);
-			return df.promise;
-		}
-		var msgid : number = this.new_msgid();
-		p.msgid = msgid;
-        try {
-    		this.socket.send(p);
-        }
-        catch (e) {
-            console.error("socket send error:" + e.message);
-			setTimeout(() => {
-                this.last_error = new ProtoError(
-                    { type: ChannerProto.Error.Type.InvalidPayload }, 
-                    errorMessages[ChannerProto.Error.Type.InvalidPayload]);
-				df.reject(this.last_error);
-			}, 1);
-			return df.promise;
-        }
-        this.querying = p.type;
-        try {
-            this.watcher.subscribe_response(msgid, (model: Model) => {
-                df.resolve(model);
-            }, (e: Error) => {
-                this.last_error = e;
-                if (e instanceof ProtoError) {
-                    var pe = <ProtoError>e;
-                    if (!e.message && pe.payload) {
-                        e.message = errorMessages[pe.payload.type];
-                    }
-                }
-                df.reject(e);
-            });
-        }
-        catch (e) {
-            console.error("subscribe_response error: " + e.message);
-        }
-		return df.promise;
+	private send = (p: ChannerProto.Payload, e?: ChannerProto.Error.Type): Promise<Model> => {
+        return new Promise<Model>((resolve: (e: Model) => void, reject: (err: any) => void) => {
+			if (e) {
+				//return error with same manner when error caused by server
+				reject(this.last_error);
+			}
+			var msgid : number = this.new_msgid();
+			p.msgid = msgid;
+			try {
+				this.socket.send(p);
+			}
+			catch (e) {
+				console.error("socket send error:" + e.message);
+				reject(this.last_error);
+			}
+			this.querying = p.type;
+			try {
+				this.watcher.subscribe_response(msgid, (model: Model) => {
+					resolve(model);
+				}, (e: Error) => {
+					this.last_error = e;
+					if (e instanceof ProtoError) {
+						var pe = <ProtoError>e;
+						if (!e.message && pe.payload) {
+							e.message = errorMessages[pe.payload.type];
+						}
+					}
+					reject(e);
+				});
+			}
+			catch (e) {
+				console.error("subscribe_response error: " + e.message);
+				reject(e);
+			}
+		});
 	}
 	private ontimer = (nowms: number) => {
 		/*
@@ -210,7 +198,7 @@ export class Handler {
 		this.start_deactivate();
 	}
 	//protocol sender
-	ping = (nowms: number): Q.Promise<Model> => {
+	ping = (nowms: number): Promise<Model> => {
 		var req = new Builder.PingRequest();
 		req.walltime = nowms;
 		
@@ -219,7 +207,7 @@ export class Handler {
 		p.setPingRequest(req);
 		return this.send(p);
 	}
-	login = (user: string, mail: string, secret: string, pass?: string, rescue?: string): Q.Promise<Model> => {
+	login = (user: string, mail: string, secret: string, pass?: string, rescue?: string): Promise<Model> => {
 		var req = new Builder.LoginRequest();
 		var device_id = window.channer.settings.values.device_id;
 		if (device_id && device_id.length > 0) {
@@ -251,7 +239,7 @@ export class Handler {
 		p.login_request = req;
 		return this.send(p);		
 	}
-	rescue = (): Q.Promise<Model> => {
+	rescue = (): Promise<Model> => {
 		var req = new Builder.RescueRequest();
 		req.account = window.channer.settings.values.account_id;
 		if (!req.account) {
@@ -267,7 +255,7 @@ export class Handler {
 	}
     channel_create = (name: string, category: string, locale?: string, 
         desc?: string, style?: string, 
-        options?: ChannerProto.Model.Channel.Options): Q.Promise<Model> => {
+        options?: ChannerProto.Model.Channel.Options): Promise<Model> => {
         var req = new Builder.ChannelCreateRequest();
         req.name = name;
         req.description = desc;
@@ -281,7 +269,7 @@ export class Handler {
         return this.send(p);
     }
     channel_list = (query: string, offset_id: Long, locale?: string, 
-        category?: number, limit?: number): Q.Promise<Model> => {
+        category?: number, limit?: number): Promise<Model> => {
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.ChannelListRequest;
         var req = new Builder.ChannelListRequest();
@@ -303,7 +291,7 @@ export class Handler {
         return this.send(p);
     }
     topic_list = (bucket: string, query: string, offset_score?: number, offset_id?: Long, locale?: string, 
-		limit?: number): Q.Promise<Model> => {
+		limit?: number): Promise<Model> => {
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.TopicListRequest;
         var req = new Builder.TopicListRequest();
@@ -331,7 +319,7 @@ export class Handler {
         p.topic_list_request = req;
         return this.send(p);
     }
-	post = (topic_id: Long, text: string, options?: ChannerProto.Post.Options): Q.Promise<Model> => {
+	post = (topic_id: Long, text: string, options?: ChannerProto.Post.Options): Promise<Model> => {
 		var post = new Builder.Post();
 		post.text = text;
 		if (options) {

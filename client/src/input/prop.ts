@@ -54,9 +54,11 @@ export class PropCollection implements Persistable {
             //trigger redraw
             this.loadprop().then(() => { 
                 m.endComputation(); 
+                return null;
             }, (e: Error) => {
             console.log("PropCollection init error by " + e.message);
                 m.endComputation();             
+                return null;
             });
         }
     }
@@ -83,17 +85,17 @@ export class PropCollection implements Persistable {
             this.save_scheduled = setTimeout(this.saveprop, 1000);
         }
     }
-    private saveprop = (): Q.Promise<PropCollection> => {
+    private saveprop = (): Promise<Persistable> => {
         console.log("save");
         this.save_scheduled = undefined;
-        return window.channer.storage.open("form/" + this.name, {create: true})
+        return (<Storage>window.channer.storage).open("form/" + this.name, {create: true})
             .then(
-                (io: StorageIO) => { return io.write(this) },
+                (io: StorageIO) => { return io.write(this); },
                 (e: Error) => { console.log("save error: " + e.message)});
     }
-    private loadprop = (): Q.Promise<PropCollection> => {
-        return window.channer.storage.open("form/" + this.name, {create: true})
-            .then((io: StorageIO) => { return io.read(this) });  
+    private loadprop = (): Promise<Persistable> => {
+        return (<Storage>window.channer.storage).open("form/" + this.name, {create: true})
+            .then((io: StorageIO) => { return io.read(this); });  
     }
     //implement persistable
     type = () => {

@@ -84,6 +84,7 @@ window.channer.bootstrap = function (config: any) {
 		h.resume();
 		//setup client router
 		window.channer.router();
+		return null;
 	})
 	.done(null, (e: Error) => {
 		console.log("bootstrap error: " + e.message);

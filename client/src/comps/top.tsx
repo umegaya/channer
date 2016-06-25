@@ -5,8 +5,6 @@ import {ChannelElementComponent, ChannelCollection} from "./lists/channel"
 import {TopicElementComponent, TopicCollection} from "./lists/topic"
 import {ListComponent, ListScrollState} from "./common/scroll"
 import {VoteList} from "./common/votes"
-import Q = require('q');
-import * as Promise from "bluebird"
 var _L = window.channer.l10n.translate;
 
 //matrial ui

@@ -7,7 +7,7 @@ import {Util} from "../../uikit"
 import {TopicListStyler} from "../stylers/topic"
 import {VoteList} from "../common/votes"
 import ChannerProto = Proto2TypeScript.ChannerProto;
-import Q = require('q');
+import * as Promise from "bluebird"
 var _L = window.channer.l10n.translate;
 var Long = window.channer.ProtoBuf.Long;
 
@@ -31,17 +31,18 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
             + this.props.val("topic_sort_duration") + "/" 
             + window.channer.settings.values.search_locale;
     }
-    fetch_request = (offset: ScoreBoundary, limit: number): Q.Promise<Array<ChannerProto.Model.Topic>> => {
-        var df: Q.Deferred<Array<ChannerProto.Model.Topic>> = Q.defer<Array<ChannerProto.Model.Topic>>();
-        var conn: Handler = window.channer.conn;
-        var bucket: string = this.props.val("topic_sort_by");
-        var query: string = this.props.val("topic_sort_duration");
-        offset = offset || TopicCollection.NULL_OFFSET;
-        conn.topic_list(bucket, query, offset.score, offset.id, null, limit)
-        .then((r: ChannerProto.TopicListResponse) => {
-            df.resolve(r.list); 
-        })
-        return df.promise;
+    fetch_request = (offset: ScoreBoundary, limit: number): Promise<Array<ChannerProto.Model.Topic>> => {
+        return new Promise<Array<ChannerProto.Model.Topic>>(
+        (resolve: (e: Array<ChannerProto.Model.Topic>) => void, reject: (err: any) => void) => {
+            var conn: Handler = window.channer.conn;
+            var bucket: string = this.props.val("topic_sort_by");
+            var query: string = this.props.val("topic_sort_duration");
+            offset = offset || TopicCollection.NULL_OFFSET;
+            conn.topic_list(bucket, query, offset.score, offset.id, null, limit)
+            .then((r: ChannerProto.TopicListResponse) => {
+                resolve(r.list); 
+            }, reject);
+        });
     }
     update_range = (
         chunk: ProtoModelChunk<ChannerProto.Model.Topic, ScoreBoundary>, 

@@ -1,5 +1,4 @@
 /// <reference path="../typings/extern.d.ts"/>
-import Q = require('q');
 
 class L10nDictionary {
     [k:string]:{
@@ -47,33 +46,33 @@ class L10n {
             }
         }
     }
-    setuplang = (): Q.Promise<boolean> => {
-        var df: Q.Deferred<boolean> = Q.defer<boolean>();
-        this.g.getPreferredLanguage((lang: {value: string}) => {
-            var v = lang.value.replace("-", "_"); //sometimes _ is used for sperator
-            for (var k in L10n.normalizeLangCode) {
-                if (k == lang.value) {
-                    this.language = k;
-                    break;
-                }
-                for (var idx in L10n.normalizeLangCode[k]) {
-                    if (L10n.normalizeLangCode[k][idx] == lang.value) {
+    setuplang = (): Promise<boolean> => {
+        return new Promise<boolean>((resolve: (e: boolean) => void, reject: (err: any) => void) => {
+            this.g.getPreferredLanguage((lang: {value: string}) => {
+                var v = lang.value.replace("-", "_"); //sometimes _ is used for sperator
+                for (var k in L10n.normalizeLangCode) {
+                    if (k == lang.value) {
                         this.language = k;
-                        break;            
+                        break;
+                    }
+                    for (var idx in L10n.normalizeLangCode[k]) {
+                        if (L10n.normalizeLangCode[k][idx] == lang.value) {
+                            this.language = k;
+                            break;            
+                        }
+                    }
+                    if (this.language) {
+                        break;
                     }
                 }
-                if (this.language) {
-                    break;
+                if (!this.language) {
+                    this.language = "en";
                 }
-            }
-            if (!this.language) {
-                this.language = "en";
-            }
-            df.resolve(true);
-        }, () => {
-            df.reject(new Error("fail to get language"));
-        });
-        return df.promise;
+                resolve(true);
+            }, () => {
+                reject(new Error("fail to get language"));
+            });
+        })
     }
     translate = (text: string, ...args:Array<any>): string => {
         var fmt = text;
@@ -87,14 +86,13 @@ class L10n {
             return args[parseInt(captures[0], 10) - 1];
         });
     }
-    translateDate = (date: Date): Q.Promise<string> => {
-        var df: Q.Deferred<string> = Q.defer<string>();
-        this.g.dateToString(date, (d: {value : string}) => {
-            df.resolve(d.value);
-        }, (e: GlobalizationError) => {
-            df.reject(e);
+    translateDate = (date: Date): Promise<string> => {
+        return new Promise<string>((resolve: (e: string) => void, reject: (err: any) => void) => {
+            var df: Q.Deferred<string> = Q.defer<string>();
+            this.g.dateToString(date, (d: {value : string}) => {
+                df.resolve(d.value);
+            }, reject);
         });
-        return df.promise;
     }
     private ensureInitSetting() {
         if (!this.settings) {

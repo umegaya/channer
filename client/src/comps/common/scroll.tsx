@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 import * as React from 'react'
 import ProtoBufModel = Proto2TypeScript.ProtoBufModel;
-import Q = require('q');
+import * as Promise from "bluebird"
 import {init_metrics, vw, vh} from "./styler"
 import {Surface, ListView, Text, Group} from "react-canvas"
 var Scroll = window.channer.parts.Scroll;
@@ -112,7 +112,7 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     n_models: number;
     finished: boolean;
     chunks: Array<ProtoModelChunk<T, B>>;
-    defers: Array<Q.Deferred<ModelCollection>>;
+    defers: Array<Promise<ModelCollection>>;
     constructor() {
         //TODO: load from local store?
         this.chunks = [];
@@ -159,41 +159,41 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
         //console.log("length: n_models = " + this.n_models);
         return this.finished ? this.n_models : (this.n_models + ProtoModelCollection.FETCH_LIMIT);
     }
-    fetch = (page: number): Q.Promise<ModelCollection> => {
-		var df : Q.Deferred<ProtoModelCollection<T,B>> = Q.defer<ProtoModelCollection<T,B>>();
+    fetch = (page: number): Promise<ModelCollection> => {
         var chunk : ProtoModelChunk<T, B> = this.chunks[page - 1];
         //console.log("fetch for " + page + " " + (chunk == null));
         if (!chunk || !chunk.initialized) {
             if (this.defers[page - 1]) {
                 //console.log("fetch for " + page + " returns promiss");
-                return this.defers[page - 1].promise;
+                return this.defers[page - 1];
             }
             chunk = new ProtoModelChunk<T, B>();
             this.chunks[page - 1] = chunk;
-            this.defers[page - 1] = df;
-            //console.error("client offset for " + page + " " +this.offset_for(page));
-            var offset = this.offset_for(page), limit = ProtoModelCollection.FETCH_LIMIT;
-            if (offset && offset.isZero()) {
-                //console.error("query for previous page has not returned yet " + page);
-                //query for previous page has not returned yet.
-                //wait for previous query finished, then call fetch again.
-                var p = this.defers[page - 2].promise;
-                p.then((c: ModelCollection) => {
-                    offset = this.offset_for(page);
-                    //console.log("prev page fetched " + page + " " + offset);
-                    this.fetchraw(page, offset, limit);
-                }, (e: Error) => { df.reject(e); });
-                return df.promise;
-            }
-            this.fetchraw(page, offset, limit);
-            return df.promise;
+            this.defers[page - 1] = new Promise<ModelCollection>(
+            (resolve: (e: ModelCollection) => void, reject: (err: any) => void) => {
+                //console.error("client offset for " + page + " " +this.offset_for(page));
+                var offset = this.offset_for(page), limit = ProtoModelCollection.FETCH_LIMIT;
+                if (offset && offset.isZero()) {
+                    //console.error("query for previous page has not returned yet " + page);
+                    //query for previous page has not returned yet.
+                    //wait for previous query finished, then call fetch again.
+                    var p = this.defers[page - 2];
+                    p.then((c: ModelCollection) => {
+                        offset = this.offset_for(page);
+                        //console.log("prev page fetched " + page + " " + offset);
+                        this.fetchraw(page, offset, limit,resolve, reject);
+                    }, reject);
+                }
+                this.fetchraw(page, offset, limit, resolve, reject);
+            });
+            return this.defers[page - 1];
+        } else {
+            //already chunk initialized. return immediately.
+            return Promise.resolve(this);
         }
-        setTimeout(() => {
-            df.resolve(this);
-        }, 1);
-        return df.promise;
     }
-    private fetchraw = (page: number, offset: B, limit: number) => {
+    private fetchraw = (page: number, offset: B, limit: number, 
+        resolve: (e: ModelCollection) => void, reject: (err: any) => void) => {
         //console.log("featchraw:" + page);
         var chunk = this.chunks[page - 1];
         var df = this.defers[page - 1];
@@ -207,10 +207,10 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
             else {
                 this.finished = true;    
             }
-            df.resolve(this);
-        }, (e: Error) => { df.reject(e); });
+            resolve(this);
+        }, reject);
     }
-    fetch_request = (offset: B, limit: number): Q.Promise<Array<T>> => {
+    fetch_request = (offset: B, limit: number): Promise<Array<T>> => {
         throw new Error("override this");
     }
     update_range = (coll: ProtoModelChunk<T, B>, model: T) => {

@@ -1,6 +1,6 @@
 /// <reference path="../typings/extern.d.ts"/>
 import {StorageIO, Persistable} from "./storage";
-import Q = require('q');
+import * as Promise from "bluebird"
 
 export class Config {
 	url: string;
@@ -72,7 +72,7 @@ export class UserSettings implements Persistable {
 		this.io = io;
 		this.values = new UserSettingsValues();
 	}
-	save = (): Q.Promise<Persistable> => {
+	save = (): Promise<Persistable> => {
 		return this.io.write(this);
 	}
 	type = () => {
