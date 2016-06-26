@@ -241,6 +241,7 @@ export class Database {
 	}
 	initialize = (cb: (db: Database, ov: number, nv: number) => void, clear?:boolean): Promise<Database> => {
 		if (clear) {
+			console.log("truncate database");
 			return this.truncate().then((db: Database) => {
 				return this.create(cb);
 			})
@@ -249,7 +250,6 @@ export class Database {
 		}
 	}
 	create = (onupgrade: (db: Database, oldver: number, newver: number) => void): Promise<Database> => {
-		var ret = Database.promised_ret_call(this, this.indexedDB, "open", this.name, 1);
 		var req = this.indexedDB.open(this.name, 1);
 		var p = Database.promisify<Event>(req);
 		req.onupgradeneeded = (ev: IDBVersionChangeEvent) => {

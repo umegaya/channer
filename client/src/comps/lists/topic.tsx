@@ -148,13 +148,17 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
             <Text style={styler.attr_text(0)}>{Util.datebyuuid(model.id, true)}</Text>
             <Image style={styler.icon(25)} src={post} />
             <Text style={styler.attr_text(25)}>{model.comment.toString()}</Text>     
-            <Image style={styler.icon(45)} src={channel} />
-            <Text style={styler.attr_text(45, 50)}>{body.channel_name + "/" + model.locale}</Text>
         </Group>;
         /* <Text style={styler.channel_name()}>{body.channel_name + "/" + model.locale}</Text>
             <Image style={styler.icon(25, 0)} src={upvote} />
             <Text style={styler.attr_text(25, 0)}>{Util.upvote_percent(model) + "%"}</Text>
             
+            <Image style={styler.icon(0)} src={clock} />       
+            <Text style={styler.attr_text(0)}>{Util.datebyuuid(model.id, true)}</Text>
+            <Image style={styler.icon(25)} src={post} />
+            <Text style={styler.attr_text(25)}>{model.comment.toString()}</Text>     
+            <Image style={styler.icon(45)} src={channel} />
+            <Text style={styler.attr_text(45, 50)}>{body.channel_name + "/" + model.locale}</Text>
 
         */
     }

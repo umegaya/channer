@@ -14,7 +14,6 @@ var errRaiser = (): any => {
 }
 
 window.channer.bootstrap = function (config: any) {	
-    console.log("bootstrap");
 	//create system modules
 	var c : Config = new Config(config);
 	var t : Timer = new Timer();
@@ -66,8 +65,10 @@ window.channer.bootstrap = function (config: any) {
 	})
 	.then(() => {
 		return window.channer.database.initialize((db: Database, oldv: number) => {
+			console.log("database oldv = " + oldv);
 			switch (oldv) {
 			case 0:
+				console.log("database initialize: ver 0");
 				db.open("settings", { keyPath: "key" }, true);
 				db.open("votes", { keyPath: "id" }, true);
 			}

@@ -11,7 +11,7 @@ var _L = window.channer.l10n.translate;
 export interface ModelCollection {
     key: string;
     length(): number;
-    get(index: number, fetchCB: (c: ModelCollection) => void): any;
+    get(index: number, resolve?: (c: ModelCollection) => void, reject?: (e: any) => void): any;
     item_height(index: number): number;
     refresh(): void;
 }
@@ -23,7 +23,7 @@ export class ArrayModelCollection implements ModelCollection {
         this.source = source;
         this.key = key;
     }
-    get = (index: number, fetchCB: (c: ModelCollection) => void): any => {
+    get = (index: number, resolve?: (c: ModelCollection) => void, reject?: (e: any) => void): any => {
         return this.source[index];
     }
     length = (): number => {
@@ -140,15 +140,15 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
             }
         }
     }
-    get = (index: number, fetchCB?: (c: ModelCollection) => void): T => {
+    get = (index: number, resolve?: (c: ModelCollection) => void, reject?: (e: any) => void): T => {
         var page_index = Math.floor(index / ProtoModelCollection.FETCH_LIMIT);
         var chunk = this.chunks[page_index];
         //console.log("get " + index + " " + page_index + " " + (!!chunk));
         if (!chunk) {
             //for each page_index, only first time chunk is missing, fetch is called. 
             //then fetch set chunk to this.chunks[page_index].
-            if (fetchCB) {
-                this.fetch(page_index + 1).then(fetchCB);
+            if (resolve) {
+                this.fetch(page_index + 1).then(resolve, reject);
             }
             return null;
         }
@@ -245,6 +245,7 @@ export interface ListState {
     itemStyle: any;
     textStyle: any;
     listStyle: any;
+    fetchError: any;
 }
 
 export class ListComponent extends React.Component<ListProp, ListState> {
@@ -256,6 +257,7 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         this.state = {
             size: sz,
             showRefresh: false,
+            fetchError: null,
             itemStyle: {
                 width: sz.width,
                 height: this.props.models.item_height(null),
@@ -282,11 +284,17 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         var model = this.props.models.get(index, (c: ModelCollection) => { 
             console.log("index updated:" + index);
             this.forceUpdate();
+        }, (e: any) => {
+            this.state.fetchError = e as Error;
+            console.log("index updated error:" + this.state.fetchError.message);
+            this.forceUpdate();
         });
         //console.log("renderItem:" + index + "|" + !!model);
         if (!model) {
             return <Group style={this.state.itemStyle} key={index}>
-                <Text style={this.state.textStyle}>loading new records..</Text>
+                <Text style={this.state.textStyle}>{
+                    this.state.fetchError ? this.state.fetchError.message : "loading new records.."
+                }</Text>
             </Group>
         }
         return React.createElement(this.props.elementComponent, {

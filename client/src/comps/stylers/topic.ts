@@ -104,10 +104,10 @@ export class TopicListStyler {
     }
     vote_group(wofs: number): any {
         return {
-            top: vh(1.5),
-            left: vw(26 + wofs),
-            width: vh(2.5) + vw(25),
-            height: vh(2.5),
+            top: vh(0),
+            left: vw(20 + wofs),
+            width: vh(3.5) + vw(31),
+            height: vh(5),
         }        
     }
     vote_icon(wofs: number, vote: number): any {
