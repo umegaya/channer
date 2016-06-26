@@ -24,7 +24,11 @@ export class TopicListStyler {
         var measure = measureText(texts, 
             this.textWidth, font, 
             h(2), h(2) + vh(0.5));
-        this.titleHeight = measure.height;
+        if (this.imageUrl) {
+            this.titleHeight = Math.max(vh(14), measure.height);        
+        } else {
+            this.titleHeight = measure.height;
+        }
     }
     set_vote(v: number): void {
         this.vote = v;
@@ -106,7 +110,7 @@ export class TopicListStyler {
         return {
             top: vh(0),
             left: vw(20 + wofs),
-            width: vh(3.5) + vw(31),
+            width: vh(2.5) + vw(17.5),
             height: vh(5),
         }        
     }
@@ -124,24 +128,12 @@ export class TopicListStyler {
             //top: vh(2) + this.titleHeight,
             top: vh(1.5),
             left: vw(26 + wofs) + vh(3.5),
-            width: vw(25),
+            width: vw(17.5),
             height: vh(2.5),
             color: this.vote_text_color(vote),
             fontFace: font,
             fontSize: h(3),
             lineHeight: h(3) + vh(0.5),
-        }
-    }
-    channel_name(): any {
-        return {
-            top: vh(5.5) + this.titleHeight,
-            left: vw(1),
-            height: vh(3.5),
-            width: vw(30),
-            color: "#aaaaaa",
-            fontFace: font,
-            fontSize: h(3),
-            lineHeight: h(3) + vh(0.5),            
         }
     }
     icon(wofs: number): any {

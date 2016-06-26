@@ -314,7 +314,7 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         }
         else if (event == "deactivate") {
             this.state.showRefresh = false;            
-        }        
+        }
     }
     render(): UI.Element {
         return <Surface 

@@ -16,10 +16,12 @@ export class PageComponent<P extends PageProp, S extends PageState> extends Reac
     route = (path: string, options?: {
         replace: boolean;
     }): void => {
-        if (options && options.replace) {
-            return this.props.history.replace(path);
-        } else {
-            return this.props.history.push(path);
-        }
+        setTimeout(() => {
+            if (options && options.replace) {
+                return this.props.history.replace(path);
+            } else {
+                return this.props.history.push(path);
+            }
+        }, 250);
     }
 }
