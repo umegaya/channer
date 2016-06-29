@@ -2,8 +2,8 @@
 import * as React from 'react'
 import ProtoBufModel = Proto2TypeScript.ProtoBufModel;
 import * as Promise from "bluebird"
-import {init_metrics, vw, vh} from "./styler"
-import {Surface, ListView, Text, Group} from "react-canvas"
+import {init_metrics, vw, vh, h} from "./styler"
+import {Surface, ListView, Text, Group, ScrollState} from "react-canvas"
 var Scroll = window.channer.parts.Scroll;
 var Long = window.channer.ProtoBuf.Long;
 var _L = window.channer.l10n.translate;
@@ -11,7 +11,9 @@ var _L = window.channer.l10n.translate;
 export interface ModelCollection {
     key: string;
     length(): number;
-    get(index: number, resolve?: (c: ModelCollection) => void, reject?: (e: any) => void): any;
+    get(index: number, 
+        resolve?: (c: ModelCollection) => void, reject?: (e: any) => void, 
+        refresh?:boolean): any;
     item_height(index: number): number;
     refresh(): void;
 }
@@ -23,7 +25,9 @@ export class ArrayModelCollection implements ModelCollection {
         this.source = source;
         this.key = key;
     }
-    get = (index: number, resolve?: (c: ModelCollection) => void, reject?: (e: any) => void): any => {
+    get = (index: number, 
+        resolve?: (c: ModelCollection) => void, reject?: (e: any) => void, 
+        refresh?: boolean): any => {
         return this.source[index];
     }
     length = (): number => {
@@ -140,11 +144,13 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
             }
         }
     }
-    get = (index: number, resolve?: (c: ModelCollection) => void, reject?: (e: any) => void): T => {
+    get = (index: number, 
+        resolve?: (c: ModelCollection) => void, reject?: (e: any) => void, 
+        refresh?:boolean): T => {
         var page_index = Math.floor(index / ProtoModelCollection.FETCH_LIMIT);
         var chunk = this.chunks[page_index];
         //console.log("get " + index + " " + page_index + " " + (!!chunk));
-        if (!chunk) {
+        if (!chunk || refresh) {
             //for each page_index, only first time chunk is missing, fetch is called. 
             //then fetch set chunk to this.chunks[page_index].
             if (resolve) {
@@ -158,6 +164,12 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     length = (): number => {
         //console.log("length: n_models = " + this.n_models);
         return this.finished ? this.n_models : (this.n_models + ProtoModelCollection.FETCH_LIMIT);
+    }
+    make_rejecter = (reject: (err: any) => void, page: number): (err: any) => void => {
+        return (err: any) => {
+            this.defers[page - 1] = null;
+            reject(err);
+        }
     }
     fetch = (page: number): Promise<ModelCollection> => {
         var chunk : ProtoModelChunk<T, B> = this.chunks[page - 1];
@@ -173,12 +185,13 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
             (resolve: (e: ModelCollection) => void, reject: (err: any) => void) => {
                 //console.error("client offset for " + page + " " +this.offset_for(page));
                 var offset = this.offset_for(page), limit = ProtoModelCollection.FETCH_LIMIT;
+                reject = this.make_rejecter(reject, page);
                 if (offset && offset.isZero()) {
                     //console.error("query for previous page has not returned yet " + page);
                     //query for previous page has not returned yet.
                     //wait for previous query finished, then call fetch again.
                     var p = this.defers[page - 2];
-                    p.then((c: ModelCollection) => {
+                    return p.then((c: ModelCollection) => {
                         offset = this.offset_for(page);
                         //console.log("prev page fetched " + page + " " + offset);
                         this.fetchraw(page, offset, limit,resolve, reject);
@@ -221,14 +234,14 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     }
 }
 
-export class ListScrollState {
-    scrollTop: number;
-    itemHeights: {[k:number]:number}
-    cachedHeights: {}
-    constructor() {
-        this.scrollTop = 0;
-        this.itemHeights = {};
-        this.cachedHeights = {};
+export class ListScrollState extends ScrollState {
+    fetchError: Error;
+    getMaxScrollTop():number {
+        if (this.fetchError) {
+            return this.maxScrollTop;
+        } else {
+            return Number.MAX_VALUE;
+        }
     }
 }
 
@@ -245,7 +258,6 @@ export interface ListState {
     itemStyle: any;
     textStyle: any;
     listStyle: any;
-    fetchError: any;
 }
 
 export class ListComponent extends React.Component<ListProp, ListState> {
@@ -257,18 +269,21 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         this.state = {
             size: sz,
             showRefresh: false,
-            fetchError: null,
             itemStyle: {
+                top: 0,
+                left: 0,
                 width: sz.width,
                 height: this.props.models.item_height(null),
+                backgroundColor: "#ffffff",
             },
             textStyle: {
-                top: 32,
-                left: 80,
-                width: sz.width - 90,
-                height: 18,
-                fontSize: 14,
-                lineHeight: 18,
+                top: vh(4),
+                left: vw(1),
+                width: sz.width,
+                height: vh(12),
+                fontSize: h(2),
+                textAlign: "center",
+                lineHeight: h(2) + vh(0.5),
             },
             listStyle: {
                 top: 0,
@@ -280,22 +295,33 @@ export class ListComponent extends React.Component<ListProp, ListState> {
             }
         };
     }
-    renderItem = (index: number, scrollTop: number): UI.Element => {
-        var model = this.props.models.get(index, (c: ModelCollection) => { 
+    getItem = (index: number, refresh?:boolean): any => {
+        return this.props.models.get(index, (c: ModelCollection) => { 
+            this.props.scrollState.fetchError = null;
             console.log("index updated:" + index);
             this.forceUpdate();
         }, (e: any) => {
-            this.state.fetchError = e as Error;
-            console.log("index updated error:" + this.state.fetchError.message);
+            this.props.scrollState.fetchError = e as Error;
+            console.log("index updated error:" + e.message);
             this.forceUpdate();
-        });
+        }, refresh);
+    }
+    renderItem = (index: number, scrollTop: number): UI.Element => {
+        var model = this.getItem(index);
         //console.log("renderItem:" + index + "|" + !!model);
         if (!model) {
-            return <Group style={this.state.itemStyle} key={index}>
-                <Text style={this.state.textStyle}>{
-                    this.state.fetchError ? this.state.fetchError.message : "loading new records.."
-                }</Text>
-            </Group>
+            var e = this.props.scrollState.fetchError;
+            if (e) {
+                return <Group style={this.state.itemStyle} key={index} onClick={() => {
+                    this.getItem(index, true);
+                }}>
+                    <Text style={this.state.textStyle}>{"error: " + e.message + ". tap to refresh"}</Text>
+                </Group>
+            } else {
+                return <Group style={this.state.itemStyle} key={index}>
+                    <Text style={this.state.textStyle}>loading new records..</Text>
+                </Group>;
+            }
         }
         return React.createElement(this.props.elementComponent, {
             key: index,
@@ -304,10 +330,10 @@ export class ListComponent extends React.Component<ListProp, ListState> {
             elemOpts: this.props.elementOptions,
         });
     }
-    onRefresh = (event: string, cb?: () => void) => {
-        if (event == "start" && cb) {
+    onRefresh = (event: string, refreshEndNotifier?: () => void) => {
+        if (event == "start" && refreshEndNotifier) {
             this.props.models.refresh();
-            setTimeout(cb, 300);
+            setTimeout(refreshEndNotifier, 1000);
         }
         else if (event == "activate") {
             this.state.showRefresh = true;

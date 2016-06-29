@@ -123,9 +123,12 @@ declare module 'react-canvas' {
   function measureText(text: string, width: number, fontFace: FontFace, fontSize: number, lineHeight: number): Measure;
   function clearMeastureTextCache(): void;
 
-  type ScrollState = {
-    scrollTop: number,
-    itemHeights: {},    
+  class ScrollState {
+    scrollTop: number;
+    maxScrollTop: number;
+    itemHeights: {[k:number]:number}
+    cachedHeights: {[k:number]:number}
+    getMaxScrollTop():number;
   }
 
   type ListViewProps = {

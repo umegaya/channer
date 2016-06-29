@@ -110,7 +110,7 @@ export class TopComponent extends PageComponent<TopProp, TopState> {
     }
     render(): UI.Element {
         return <div className="top">
-        <Tabs value={this.state.selected} onChange={this.onchange}>
+        <Tabs className="tab" value={this.state.selected} onChange={this.onchange}>
             <Tab label="channels" value="channel"/>
             <Tab label="topics" value="topic"/>
         </Tabs>

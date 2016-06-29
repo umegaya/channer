@@ -83,11 +83,18 @@ export class ProtoWatcher {
 	}
 	ontimer = (now: number) => {
 		for (var k in this.callers) {
-			var c = this.callers[k]
+			var c = this.callers[k];
+			if (!c) {
+				console.log("c removed:" + k);
+			}
 			if (c[0] < now) {
-				c[2](new ProtoError({
-					type: 1, //Timeout TODO: how generalize it?
-				}));
+				try {
+					c[2](new ProtoError({
+						type: 1, //Timeout TODO: how generalize it?
+					}));
+				} catch (e) {
+					console.log("emit error error:" + e.message);
+				}
 				delete this.callers[k];
 			}
 		}
@@ -96,14 +103,17 @@ export class ProtoWatcher {
 		var payload : ProtoPayloadModel = this.parser(event.data);
 		var m : Model = <Model>payload[this.protomap[payload.type]];
 		if (payload.msgid) {
-			var [at, f, e] = this.callers[payload.msgid];
-			delete this.callers[payload.msgid];
-			if (at) {
-				if (payload.error) {
-					e(new ProtoError(payload.error));	
-				}
-				else {
-					f(m);
+			var c = this.callers[payload.msgid];
+			if (c) {
+				var [at, f, e] = c;
+				delete this.callers[payload.msgid];
+				if (at) {
+					if (payload.error) {
+						e(new ProtoError(payload.error));	
+					}
+					else {
+						f(m);
+					}
 				}
 			}
 		}
