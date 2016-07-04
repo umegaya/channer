@@ -5,6 +5,7 @@ import {ChannelElementComponent, ChannelCollection} from "./lists/channel"
 import {TopicElementComponent, TopicCollection} from "./lists/topic"
 import {ListComponent, ListScrollState} from "./common/scroll"
 import {VoteList} from "./common/votes"
+import SwipeableViews from "react-swipeable-views"
 var _L = window.channer.l10n.translate;
 
 //matrial ui
@@ -36,7 +37,7 @@ export interface TopProp extends PageProp {
 }
 
 export interface TopState extends PageState {
-    selected: string;
+    tabIndex: number;
 }
 
 export class TopStaticState {
@@ -67,54 +68,58 @@ export class TopStaticState {
 
 export class TopComponent extends PageComponent<TopProp, TopState> {
     static state: TopStaticState = null;
+    static tabToIndex: {[k:string]:number} = {
+        topic: 0,
+        channel: 1,
+    }
     constructor(props: TopProp) {
         super(props);
         this.state = {
-            selected: this.props.params.tab || "channel",
+            tabIndex: TopComponent.tabToIndex[this.props.params.tab || "topic"] || 0,
         }
         if (!TopComponent.state) {
             TopComponent.state = new TopStaticState();
             //load persistent state
             TopComponent.state.initialize().then(() => {
-                console.log("initialize state end");
                 this.forceUpdate();
             }, (e: Error) => {
                 console.log("state initialize fails:" + e.message);
             })
         }
     }
-    tabContent = ():{[k:string]: UI.Element} => {
-        return {
-            channel: <ListComponent
-                key={TopComponent.state.channels.key}
-                elementComponent={ChannelElementComponent}
-                models={TopComponent.state.channels}
-                scrollState={TopComponent.state.scrollStates["channel"]}
-                elementOptions={this.route_to}
-            />,
-            topic: <ListComponent
+    tabContent = ():UI.Element => {
+        return <SwipeableViews index={this.state.tabIndex} onChangeIndex={this.onchange}>
+            <ListComponent
                 key={TopComponent.state.topics.key}
                 elementComponent={TopicElementComponent}
                 models={TopComponent.state.topics}
                 scrollState={TopComponent.state.scrollStates["topic"]}
                 elementOptions={this.route_to}
-            />,
-        }
+            />
+            <ListComponent
+                key={TopComponent.state.channels.key}
+                elementComponent={ChannelElementComponent}
+                models={TopComponent.state.channels}
+                scrollState={TopComponent.state.scrollStates["channel"]}
+                elementOptions={this.route_to}
+            />
+        </SwipeableViews>
     }
     route_to = (path: string, options: any): () => void => {
         return this.route.bind(this, path, options);
     }
-    onchange = (val: string) => {
-        this.state.selected = val;
-        this.forceUpdate();
+    onchange = (val: number) => {
+        this.setState({
+            tabIndex: val
+        });
     }
     render(): UI.Element {
         return <div className="top">
-        <Tabs className="tab" value={this.state.selected} onChange={this.onchange}>
-            <Tab label="channels" value="channel"/>
-            <Tab label="topics" value="topic"/>
+        <Tabs className="tab" value={this.state.tabIndex} onChange={this.onchange}>
+            <Tab label="topics" value={0}/>
+            <Tab label="channels" value={1}/>
         </Tabs>
-        {this.tabContent()[this.state.selected]}
+        {this.tabContent()}
         </div>;
     }
 }

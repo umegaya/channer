@@ -19,7 +19,9 @@
     "react-canvas": "git+https://github.com/umegaya/react-canvas.git",
     "react-dom": "^15.1.0",
     "react-list": "^0.7.18",
+    "react-motion": "^0.4.4",
     "react-router": "^2.4.1",
+    "react-swipeable-views": "^0.6.3",
     "typescript": "^1.8.10"
   },
   "devDependencies": {

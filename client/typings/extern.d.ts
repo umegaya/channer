@@ -11,6 +11,7 @@
 /// <reference path="./react-router/history.d.ts"/>
 /// <reference path="./react-router/react-router.d.ts"/>
 /// <reference path="./material-ui/material-ui.d.ts"/>
+/// <reference path="./react-swipeable-views/react-swipeable-views.d.ts"/>
 /// <reference path="./protobuf.d.ts"/>
 /// <reference path="./long/long.d.ts"/>
 /// <reference path="./webpack-runtime.d.ts"/>
