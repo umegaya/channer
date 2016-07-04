@@ -42,6 +42,7 @@ interface ChannerModules {
     database: any;
 	patch: any;
 	app: boolean;
+    chaos: boolean;
     category: {
         data: Array<any>;
         to_id: (cat: string) => number;

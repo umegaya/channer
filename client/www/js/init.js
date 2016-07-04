@@ -12,6 +12,7 @@ window.channer = {
     category: {},
 	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
     testtmp: {},
+	chaos: false,
 };
 
 function initfs(quota, bootstrap) {
@@ -33,6 +34,7 @@ document.addEventListener("deviceready", function () {
 	if (env && env[1]) {
 		console.log("set app environment = " + env[1]);
 		window.environment = env[1];
+		window.channer.chaos = window.environment.match(/chaos/);
 	}
 	document.addEventListener("resume", function () {
 		window.channer.onResume.forEach(function (f){ f(); })	
@@ -69,7 +71,7 @@ document.addEventListener("deviceready", function () {
 		    var config_url = window.endpoint + "/assets/config.json";
 			try {
 				ft.download(encodeURI(config_url), fs.root.toURL() + "config.json.next", function(entry) {
-					if (window.environment.match(/chaos/) && Math.random() < 0.1) {
+					if (window.channer.chaos && Math.random() < 0.1) {
 						launch(new Error());
 						return;
 					}

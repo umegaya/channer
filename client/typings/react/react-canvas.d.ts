@@ -129,6 +129,7 @@ declare module 'react-canvas' {
     itemHeights: {[k:number]:number}
     cachedHeights: {[k:number]:number}
     getMaxScrollTop():number;
+    reset():void;
   }
 
   type ListViewProps = {

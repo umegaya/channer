@@ -105,6 +105,10 @@ export class ProtoWatcher {
 		if (payload.msgid) {
 			var c = this.callers[payload.msgid];
 			if (c) {
+				if (window.channer.chaos && Math.random() < 0.1) {
+					console.warn("monkey do the job:" + payload.type);
+					return;
+				}
 				var [at, f, e] = c;
 				delete this.callers[payload.msgid];
 				if (at) {

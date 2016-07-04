@@ -119,12 +119,12 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     defers: Array<Promise<ModelCollection>>;
     constructor() {
         //TODO: load from local store?
-        this.chunks = [];
-        this.defers = [];
-        this.n_models = 0;
+        this.refresh();
     }
     refresh = () => {
         this.chunks = [];
+        this.defers = [];
+        this.n_models = 0;
     }
     offset_for = (page: number): B => {
         if (page < 2) {
@@ -163,7 +163,7 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     }
     length = (): number => {
         //console.log("length: n_models = " + this.n_models);
-        return this.finished ? this.n_models : (this.n_models + ProtoModelCollection.FETCH_LIMIT);
+        return this.finished ? this.n_models : (this.n_models + Math.floor(ProtoModelCollection.FETCH_LIMIT / 2));
     }
     make_rejecter = (reject: (err: any) => void, page: number): (err: any) => void => {
         return (err: any) => {
@@ -236,8 +236,11 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
 
 export class ListScrollState extends ScrollState {
     fetchError: Error;
+    onRequest: boolean;
     getMaxScrollTop():number {
         if (this.fetchError) {
+            return this.maxScrollTop;
+        } else if (this.onRequest) {
             return this.maxScrollTop;
         } else {
             return Number.MAX_VALUE;
@@ -298,10 +301,12 @@ export class ListComponent extends React.Component<ListProp, ListState> {
     getItem = (index: number, refresh?:boolean): any => {
         return this.props.models.get(index, (c: ModelCollection) => { 
             this.props.scrollState.fetchError = null;
+            this.props.scrollState.onRequest = false;
             console.log("index updated:" + index);
             this.forceUpdate();
         }, (e: any) => {
             this.props.scrollState.fetchError = e as Error;
+            this.props.scrollState.onRequest = false;
             console.log("index updated error:" + e.message);
             this.forceUpdate();
         }, refresh);
@@ -312,12 +317,15 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         if (!model) {
             var e = this.props.scrollState.fetchError;
             if (e) {
-                return <Group style={this.state.itemStyle} key={index} onClick={() => {
+                return <Group style={this.state.itemStyle} key={index.toString() + "-error"} onClick={() => {
+                    this.props.scrollState.fetchError = null;
                     this.getItem(index, true);
+                    this.forceUpdate();
                 }}>
-                    <Text style={this.state.textStyle}>{"error: " + e.message + ". tap to refresh"}</Text>
+                    <Text style={this.state.textStyle}>error. tap to refresh</Text>
                 </Group>
             } else {
+                this.props.scrollState.onRequest = true;
                 return <Group style={this.state.itemStyle} key={index}>
                     <Text style={this.state.textStyle}>loading new records..</Text>
                 </Group>;
@@ -331,8 +339,10 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         });
     }
     onRefresh = (event: string, refreshEndNotifier?: () => void) => {
+        console.log("onRefresh:" + event);
         if (event == "start" && refreshEndNotifier) {
             this.props.models.refresh();
+            this.props.scrollState.reset();
             setTimeout(refreshEndNotifier, 1000);
         }
         else if (event == "activate") {
