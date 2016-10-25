@@ -4,7 +4,7 @@ import ProtoBufModel = Proto2TypeScript.ProtoBufModel;
 import * as Promise from "bluebird"
 import {init_metrics, vw, vh, h} from "./styler"
 import {Surface, ListView, Text, Group, ScrollState} from "react-canvas"
-var Scroll = window.channer.parts.Scroll;
+var ReactList = window.channer.parts.Scroll;
 var Long = window.channer.ProtoBuf.Long;
 var _L = window.channer.l10n.translate;
 
@@ -19,9 +19,9 @@ export interface ModelCollection {
 }
 // ArrayModelCollection : constant scroll data model.
 export class ArrayModelCollection implements ModelCollection {
-    source: Array<any>;
+    source: any[];
     key: string;
-    constructor(source: Array<any>, key: string) {
+    constructor(source: any[], key: string) {
         this.source = source;
         this.key = key;
     }
@@ -83,7 +83,7 @@ export class ScoreBoundary implements Boundary {
     }
 }
 export class ProtoModelChunk<T extends ProtoModel, B extends Boundary> {
-    list: Array<T>;
+    list: T[];
     initialized: boolean;
     start_id: B;
     end_id: B;
@@ -95,7 +95,7 @@ export class ProtoModelChunk<T extends ProtoModel, B extends Boundary> {
         this.list.push(model);
         coll.update_range(this, model);
     }
-    pushList = (coll: ProtoModelCollection<T, B>, models: Array<T>) => {
+    pushList = (coll: ProtoModelCollection<T, B>, models: T[]) => {
         models.forEach((v: T) => {
             this.push(coll, v);
         });
@@ -116,7 +116,7 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
     n_models: number;
     finished: boolean;
     chunks: Array<ProtoModelChunk<T, B>>;
-    defers: Array<Promise<ModelCollection>>;
+    defers: Array<Promise< ModelCollection >>;
     constructor() {
         //TODO: load from local store?
         this.refresh();
@@ -171,7 +171,7 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
             reject(err);
         }
     }
-    fetch = (page: number): Promise<ModelCollection> => {
+    fetch = (page: number): Promise< ModelCollection > => {
         var chunk : ProtoModelChunk<T, B> = this.chunks[page - 1];
         //console.log("fetch for " + page + " " + (chunk == null));
         if (!chunk || !chunk.initialized) {
@@ -210,7 +210,7 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
         //console.log("featchraw:" + page);
         var chunk = this.chunks[page - 1];
         var df = this.defers[page - 1];
-        this.fetch_request(offset, limit).then((list: Array<T>) => {
+        this.fetch_request(offset, limit).then((list: Array< T >) => {
             //console.log("fetch_request finsihed " + page);
             this.defers[page - 1] = null;
             chunk.pushList(this, list);
@@ -223,10 +223,10 @@ export class ProtoModelCollection<T extends ProtoModel, B extends Boundary> impl
             resolve(this);
         }, reject);
     }
-    fetch_request = (offset: B, limit: number): Promise<Array<T>> => {
+    fetch_request = (offset: B, limit: number): Promise<Array< T >> => {
         throw new Error("override this");
     }
-    update_range = (coll: ProtoModelChunk<T, B>, model: T) => {
+    update_range = (coll: ProtoModelChunk<T, B>, model: T): void => {
         throw new Error("override this");        
     }
     item_height = (index: number) => {
@@ -249,10 +249,11 @@ export class ListScrollState extends ScrollState {
 }
 
 export interface ListProp {
-    elementComponent: React.ComponentClass<any>;
+    elementComponent: React.ComponentClass< any >;
     models: ModelCollection;
     scrollState?: ListScrollState;
     elementOptions?: any;
+    noCanvas?: boolean;
 }
 
 export interface ListState {
@@ -261,10 +262,10 @@ export interface ListState {
     itemStyle: any;
     textStyle: any;
     listStyle: any;
+    loadingStyle: any;
 }
 
 export class ListComponent extends React.Component<ListProp, ListState> {
-    size: ClientRect;
     constructor(props: ListProp) {
         super(props);
         var sz = document.getElementById('app').getBoundingClientRect();
@@ -295,6 +296,13 @@ export class ListComponent extends React.Component<ListProp, ListState> {
                 height: window.innerHeight,
                 scrollHeight: 2000000,
                 backgroundColor: "#aaaaaa",
+            },
+            loadingStyle: {
+                top: 0,
+                left: 0,
+                width: sz.width,
+                height: 75,
+                backgroundColor: "#ffffff",
             }
         };
     }
@@ -307,7 +315,7 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         }, (e: any) => {
             this.props.scrollState.fetchError = e as Error;
             this.props.scrollState.onRequest = false;
-            console.log("index updated error:" + e.message);
+            console.log("index updated error:" + e.message + "|" + !!this.props.scrollState.fetchError);
             this.forceUpdate();
         }, refresh);
     }
@@ -316,7 +324,23 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         //console.log("renderItem:" + index + "|" + !!model);
         if (!model) {
             var e = this.props.scrollState.fetchError;
-            if (e) {
+            console.log("renderItem:" + !!e + "|" + this.props.noCanvas);
+            if (this.props.noCanvas) {
+                if (e) {
+                    return <div key={index.toString() + "-error"} onClick={() => {
+                        this.props.scrollState.fetchError = null;
+                        this.getItem(index, true);
+                        this.forceUpdate();
+                    }}>
+                        error. tap to refresh
+                    </div>
+                } else {
+                    this.props.scrollState.onRequest = true;
+                    return <div key={index}>
+                        loading new records..
+                    </div>;
+                }
+            } else if (e) {
                 return <Group style={this.state.itemStyle} key={index.toString() + "-error"} onClick={() => {
                     this.props.scrollState.fetchError = null;
                     this.getItem(index, true);
@@ -338,6 +362,18 @@ export class ListComponent extends React.Component<ListProp, ListState> {
             elemOpts: this.props.elementOptions,
         });
     }
+    onRenderRefresh = (scrollTop: number): UI.Element => {
+        this.state.loadingStyle.translateY = -75 - scrollTop;
+        if (this.state.showRefresh) {
+            return <Group style={this.state.loadingStyle} key={"refreshing"}>
+                <Text style={this.state.textStyle}>refreshing</Text>
+            </Group>
+        } else {
+            return <Group style={this.state.loadingStyle} key={"wait_refresh"}>
+                <Text style={this.state.textStyle}>pull to refresh</Text>
+            </Group>
+        }
+    }
     onRefresh = (event: string, refreshEndNotifier?: () => void) => {
         console.log("onRefresh:" + event);
         if (event == "start" && refreshEndNotifier) {
@@ -353,6 +389,12 @@ export class ListComponent extends React.Component<ListProp, ListState> {
         }
     }
     render(): UI.Element {
+        if (this.props.noCanvas) {
+            return <ReactList 
+                itemRenderer={this.renderItem}
+                length={this.props.models.length()}
+            />;
+        }
         return <Surface 
             top={0} left={0} width={this.state.size.width} height={this.state.size.height}>
             <ListView
@@ -361,7 +403,8 @@ export class ListComponent extends React.Component<ListProp, ListState> {
                 itemHeightGetter={this.props.models.item_height}
                 scrollState={this.props.scrollState}
                 itemGetter={this.renderItem} 
-                onRefresh={this.onRefresh}/>
-        </Surface>
+                onRefresh={this.onRefresh}
+                onRenderRefresh={this.onRenderRefresh}/>
+        </Surface>;
     }
 }

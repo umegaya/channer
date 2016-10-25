@@ -10,7 +10,7 @@ import ChannerProto = Proto2TypeScript.ChannerProto;
 
 var ProtoBuf = window.channer.ProtoBuf;
 //TODO: recover original value more respectively
-var proto_def = (<string>require('channer.proto.json')).replace(/Long/g, "fixed64");
+var proto_def = JSON.stringify(require('channer.proto.json')).replace(/Long/g, "fixed64");
 export var Builder : Proto2TypeScript.ChannerProtoBuilder 
 	= window.channer.ProtoBuf.loadJson(proto_def).build("ChannerProto");
 
@@ -290,7 +290,17 @@ export class Handler {
         p.channel_list_request = req;
         return this.send(p);
     }
-    topic_list = (bucket: string, query: string, offset_score?: number, offset_id?: Long, locale?: string, 
+	topic_create = (channel_id: Long, title: string, content: string): Promise<Model> => {
+		var p = new Builder.Payload();
+		var req = new Builder.TopicCreateRequest();
+		req.channel = channel_id;
+		req.title = title;
+		req.content = content;
+		p.type = ChannerProto.Payload.Type.PostCreateRequest;
+		p.topic_create_request = req;
+		return this.send(p);
+	}
+	topic_list = (bucket: string, query: string, offset_score?: number, offset_id?: Long, locale?: string, 
 		limit?: number): Promise<Model> => {
         var p = new Builder.Payload();
         p.type = ChannerProto.Payload.Type.TopicListRequest;
@@ -319,19 +329,30 @@ export class Handler {
         p.topic_list_request = req;
         return this.send(p);
     }
-	post = (topic_id: Long, text: string, options?: ChannerProto.Post.Options): Promise<Model> => {
-		var post = new Builder.Post();
-		post.text = text;
-		if (options) {
-			post.options = options;
-		}
-		var req = new Builder.PostRequest();
-		req.post = post;
-		req.topic_id = topic_id;
-		req.walltime = Timer.now();
+	post_create = (topic_id: Long, text: string): Promise<Model> => {
 		var p = new Builder.Payload();
-		p.type = ChannerProto.Payload.Type.PostRequest;
-		p.post_request = req;
+		var req = new Builder.PostCreateRequest();
+		req.topic = topic_id;
+		req.content = text;
+		p.type = ChannerProto.Payload.Type.PostCreateRequest;
+		p.post_create_request = req;
+		return this.send(p);
+	}
+	post_list = (topic_id: Long, query: string, offset_id?: Long, limit?: number): Promise<Model> => {
+		var p = new Builder.Payload();
+		var req = new Builder.PostListRequest();
+        var map : {
+            [k:string]:ChannerProto.PostListRequest.QueryType
+        } = {
+            "latest": ChannerProto.PostListRequest.QueryType.New,
+            "popular": ChannerProto.PostListRequest.QueryType.Popular,
+        }
+		req.query = map[query];
+		req.topic = topic_id;
+		req.offset_id = offset_id;
+		req.limit = limit;
+		p.type = ChannerProto.Payload.Type.PostListRequest;
+		p.post_list_request = req;
 		return this.send(p);
 	}
 }

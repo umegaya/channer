@@ -49,7 +49,6 @@ declare module Proto2TypeScript {
 		Topic: ChannerProto.TopicBuilder;
 		Model: ChannerProto.ModelBuilder;
 		LoginRequest: ChannerProto.LoginRequestBuilder;
-		PostRequest: ChannerProto.PostRequestBuilder;
 		FetchRequest: ChannerProto.FetchRequestBuilder;
 		ReadRequest: ChannerProto.ReadRequestBuilder;
 		EnterTopicRequest: ChannerProto.EnterTopicRequestBuilder;
@@ -60,8 +59,9 @@ declare module Proto2TypeScript {
 		ChannelListRequest: ChannerProto.ChannelListRequestBuilder;
 		TopicCreateRequest: ChannerProto.TopicCreateRequestBuilder;
 		TopicListRequest: ChannerProto.TopicListRequestBuilder;
+		PostCreateRequest: ChannerProto.PostCreateRequestBuilder;
+		PostListRequest: ChannerProto.PostListRequestBuilder;
 		LoginResponse: ChannerProto.LoginResponseBuilder;
-		PostResponse: ChannerProto.PostResponseBuilder;
 		FetchResponse: ChannerProto.FetchResponseBuilder;
 		ReadResponse: ChannerProto.ReadResponseBuilder;
 		EnterTopicResponse: ChannerProto.EnterTopicResponseBuilder;
@@ -72,6 +72,8 @@ declare module Proto2TypeScript {
 		ChannelListResponse: ChannerProto.ChannelListResponseBuilder;
 		TopicCreateResponse: ChannerProto.TopicCreateResponseBuilder;
 		TopicListResponse: ChannerProto.TopicListResponseBuilder;
+		PostCreateResponse: ChannerProto.PostCreateResponseBuilder;
+		PostListResponse: ChannerProto.PostListResponseBuilder;
 		Error: ChannerProto.ErrorBuilder;
 		Payload: ChannerProto.PayloadBuilder;
 		
@@ -744,31 +746,6 @@ declare module Proto2TypeScript.ChannerProto {
 
 declare module Proto2TypeScript.ChannerProto {
 
-	export interface PostRequest extends ProtoBufModel {
-		topic_id: Long;
-		getTopicId() : Long;
-		setTopicId(topicId : Long): void;
-		walltime: number;
-		getWalltime() : number;
-		setWalltime(walltime : number): void;
-		post: Post;
-		getPost() : Post;
-		setPost(post : Post): void;
-		
-	}
-	
-	export interface PostRequestBuilder {
-		new(): PostRequest;
-		decode(buffer: ArrayBuffer) : PostRequest;
-		//decode(buffer: NodeBuffer) : PostRequest;
-		//decode(buffer: ByteArrayBuffer) : PostRequest;
-		decode64(buffer: string) : PostRequest;
-		
-	}	
-}
-
-declare module Proto2TypeScript.ChannerProto {
-
 	export interface FetchRequest extends ProtoBufModel {
 		start_at: HLC;
 		getStartAt() : HLC;
@@ -977,9 +954,9 @@ declare module Proto2TypeScript.ChannerProto {
 		channel: Long;
 		getChannel() : Long;
 		setChannel(channel : Long): void;
-		name: string;
-		getName() : string;
-		setName(name : string): void;
+		title: string;
+		getTitle() : string;
+		setTitle(title : string): void;
 		content: string;
 		getContent() : string;
 		setContent(content : string): void;
@@ -1017,6 +994,9 @@ declare module Proto2TypeScript.ChannerProto {
 		offset_id?: Long;
 		getOffsetId() : Long;
 		setOffsetId(offsetId : Long): void;
+		channel?: Long;
+		getChannel() : Long;
+		setChannel(channel : Long): void;
 		
 	}
 	
@@ -1055,6 +1035,66 @@ declare module Proto2TypeScript.ChannerProto.TopicListRequest {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface PostCreateRequest extends ProtoBufModel {
+		topic: Long;
+		getTopic() : Long;
+		setTopic(topic : Long): void;
+		content: string;
+		getContent() : string;
+		setContent(content : string): void;
+		
+	}
+	
+	export interface PostCreateRequestBuilder {
+		new(): PostCreateRequest;
+		decode(buffer: ArrayBuffer) : PostCreateRequest;
+		//decode(buffer: NodeBuffer) : PostCreateRequest;
+		//decode(buffer: ByteArrayBuffer) : PostCreateRequest;
+		decode64(buffer: string) : PostCreateRequest;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
+	export interface PostListRequest extends ProtoBufModel {
+		query: PostListRequest.QueryType;
+		getQuery() : PostListRequest.QueryType;
+		setQuery(query : PostListRequest.QueryType): void;
+		topic: Long;
+		getTopic() : Long;
+		setTopic(topic : Long): void;
+		limit?: number;
+		getLimit() : number;
+		setLimit(limit : number): void;
+		offset_id?: Long;
+		getOffsetId() : Long;
+		setOffsetId(offsetId : Long): void;
+		
+	}
+	
+	export interface PostListRequestBuilder {
+		new(): PostListRequest;
+		decode(buffer: ArrayBuffer) : PostListRequest;
+		//decode(buffer: NodeBuffer) : PostListRequest;
+		//decode(buffer: ByteArrayBuffer) : PostListRequest;
+		decode64(buffer: string) : PostListRequest;
+		QueryType: PostListRequest.QueryType;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto.PostListRequest {
+	export const enum QueryType {
+		None = 0,
+		New = 1,
+		Popular = 2,
+		
+	}
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface LoginResponse extends ProtoBufModel {
 		id: Long;
 		getId() : Long;
@@ -1080,25 +1120,6 @@ declare module Proto2TypeScript.ChannerProto {
 		//decode(buffer: NodeBuffer) : LoginResponse;
 		//decode(buffer: ByteArrayBuffer) : LoginResponse;
 		decode64(buffer: string) : LoginResponse;
-		
-	}	
-}
-
-declare module Proto2TypeScript.ChannerProto {
-
-	export interface PostResponse extends ProtoBufModel {
-		posted_at: HLC;
-		getPostedAt() : HLC;
-		setPostedAt(postedAt : HLC): void;
-		
-	}
-	
-	export interface PostResponseBuilder {
-		new(): PostResponse;
-		decode(buffer: ArrayBuffer) : PostResponse;
-		//decode(buffer: NodeBuffer) : PostResponse;
-		//decode(buffer: ByteArrayBuffer) : PostResponse;
-		decode64(buffer: string) : PostResponse;
 		
 	}	
 }
@@ -1289,6 +1310,44 @@ declare module Proto2TypeScript.ChannerProto {
 
 declare module Proto2TypeScript.ChannerProto {
 
+	export interface PostCreateResponse extends ProtoBufModel {
+		created: Model.Post;
+		getCreated() : Model.Post;
+		setCreated(created : Model.Post): void;
+		
+	}
+	
+	export interface PostCreateResponseBuilder {
+		new(): PostCreateResponse;
+		decode(buffer: ArrayBuffer) : PostCreateResponse;
+		//decode(buffer: NodeBuffer) : PostCreateResponse;
+		//decode(buffer: ByteArrayBuffer) : PostCreateResponse;
+		decode64(buffer: string) : PostCreateResponse;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
+	export interface PostListResponse extends ProtoBufModel {
+		list: Model.Post[];
+		getList() : Model.Post[];
+		setList(list : Model.Post[]): void;
+		
+	}
+	
+	export interface PostListResponseBuilder {
+		new(): PostListResponse;
+		decode(buffer: ArrayBuffer) : PostListResponse;
+		//decode(buffer: NodeBuffer) : PostListResponse;
+		//decode(buffer: ByteArrayBuffer) : PostListResponse;
+		decode64(buffer: string) : PostListResponse;
+		
+	}	
+}
+
+declare module Proto2TypeScript.ChannerProto {
+
 	export interface Error extends ProtoBufModel {
 		type: Error.Type;
 		getType() : Error.Type;
@@ -1331,6 +1390,9 @@ declare module Proto2TypeScript.ChannerProto.Error {
 		TopicCreate_DatabaseError = 50,
 		TopicCreate_NoPersonaError = 51,
 		TopicList_DatabaseError = 60,
+		PostCreate_DatabaseError = 70,
+		PostCreate_NoPersonaError = 71,
+		PostList_DatabaseError = 80,
 		
 	}
 }
@@ -1347,9 +1409,6 @@ declare module Proto2TypeScript.ChannerProto {
 		login_request?: LoginRequest;
 		getLoginRequest() : LoginRequest;
 		setLoginRequest(loginRequest : LoginRequest): void;
-		post_request?: PostRequest;
-		getPostRequest() : PostRequest;
-		setPostRequest(postRequest : PostRequest): void;
 		fetch_request?: FetchRequest;
 		getFetchRequest() : FetchRequest;
 		setFetchRequest(fetchRequest : FetchRequest): void;
@@ -1380,15 +1439,18 @@ declare module Proto2TypeScript.ChannerProto {
 		topic_list_request?: TopicListRequest;
 		getTopicListRequest() : TopicListRequest;
 		setTopicListRequest(topicListRequest : TopicListRequest): void;
+		post_create_request?: PostCreateRequest;
+		getPostCreateRequest() : PostCreateRequest;
+		setPostCreateRequest(postCreateRequest : PostCreateRequest): void;
+		post_list_request?: PostListRequest;
+		getPostListRequest() : PostListRequest;
+		setPostListRequest(postListRequest : PostListRequest): void;
 		error?: Error;
 		getError() : Error;
 		setError(error : Error): void;
 		login_response?: LoginResponse;
 		getLoginResponse() : LoginResponse;
 		setLoginResponse(loginResponse : LoginResponse): void;
-		post_response?: PostResponse;
-		getPostResponse() : PostResponse;
-		setPostResponse(postResponse : PostResponse): void;
 		fetch_response?: FetchResponse;
 		getFetchResponse() : FetchResponse;
 		setFetchResponse(fetchResponse : FetchResponse): void;
@@ -1419,6 +1481,12 @@ declare module Proto2TypeScript.ChannerProto {
 		topic_list_response?: TopicListResponse;
 		getTopicListResponse() : TopicListResponse;
 		setTopicListResponse(topicListResponse : TopicListResponse): void;
+		post_create_response?: PostCreateResponse;
+		getPostCreateResponse() : PostCreateResponse;
+		setPostCreateResponse(postCreateResponse : PostCreateResponse): void;
+		post_list_response?: PostListResponse;
+		getPostListResponse() : PostListResponse;
+		setPostListResponse(postListResponse : PostListResponse): void;
 		post_notify?: Post;
 		getPostNotify() : Post;
 		setPostNotify(postNotify : Post): void;
@@ -1440,7 +1508,6 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 	export const enum Type {
 		Unknown = 0,
 		LoginRequest = 1,
-		PostRequest = 2,
 		FetchRequest = 3,
 		ReadRequest = 4,
 		EnterTopicRequest = 5,
@@ -1451,8 +1518,9 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		ChannelListRequest = 10,
 		TopicCreateRequest = 11,
 		TopicListRequest = 12,
+		PostCreateRequest = 13,
+		PostListRequest = 14,
 		LoginResponse = 31,
-		PostResponse = 32,
 		FetchResponse = 33,
 		ReadResponse = 34,
 		EnterTopicResponse = 35,
@@ -1463,6 +1531,8 @@ declare module Proto2TypeScript.ChannerProto.Payload {
 		ChannelListResponse = 40,
 		TopicCreateResponse = 41,
 		TopicListResponse = 42,
+		PostCreateResponse = 43,
+		PostListResponse = 44,
 		PostNotify = 61,
 		Error = 101,
 		

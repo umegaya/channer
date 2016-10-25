@@ -1,28 +1,42 @@
 package packets
 
 import (
+	"log"
+
 	proto "github.com/umegaya/channer/server/proto"
+	"github.com/umegaya/channer/server/lib/models"
 )
 
-func ProcessPost(from Source, msgid uint32, post *proto.PostRequest, t Transport) {
-	//TODO: save post data into database 
-
+func ProcessPostCreate(from Source, msgid uint32, req *proto.PostCreateRequest, t Transport) {
+	p, err := models.NewPost(models.DBM(), from.Account(), req)
+	if err != nil {
+		log.Printf("err: %v", err);
+		SendError(from, msgid, err)
+		return
+	}
 	//send post notification to all member in this Topic
-	t.Send(&TopicDestination{
-		TopicId: post.TopicId,
-	}, &proto.Payload {
-		Type: proto.Payload_PostNotify,
-		PostNotify: post.Post,
+	from.Send(&proto.Payload {
+		Type: proto.Payload_PostCreateResponse,
+		Msgid: msgid,
+		PostCreateResponse: &proto.PostCreateResponse{
+			Created: &p.Model_Post,
+		},
 	})
+}
+
+func ProcessPostList(from Source, msgid uint32, req *proto.PostListRequest, t Transport) {
+	ps, err := models.ListPost(models.DBM(), req)
+	if err != nil {
+		log.Printf("err: %v", err);
+		SendError(from, msgid, err)
+		return
+	}
 
 	from.Send(&proto.Payload {
-		Type: proto.Payload_PostResponse,
+		Type: proto.Payload_PostListResponse,
 		Msgid: msgid,
-		PostResponse: &proto.PostResponse {
-			PostedAt: &proto.HLC { 
-				Walltime: 0, 
-				LogicalTs: 0,
-			},
+		PostListResponse: &proto.PostListResponse {
+			List: ps,
 		},
 	})
 }

@@ -42,9 +42,14 @@ type SendPacket struct {
 
 //handlers map actual packet handler and packet type
 var handlers = map[proto.Payload_Type]func (pkt *RecvPacket, t Transport) {
-	proto.Payload_PostRequest: func (pkt *RecvPacket, t Transport) {
-		if pkt.Payload.PostRequest != nil {
-			go ProcessPost(pkt.From, pkt.Payload.Msgid, pkt.Payload.PostRequest, t)
+	proto.Payload_PostCreateRequest: func (pkt *RecvPacket, t Transport) {
+		if pkt.Payload.PostCreateRequest != nil {
+			go ProcessPostCreate(pkt.From, pkt.Payload.Msgid, pkt.Payload.PostCreateRequest, t)
+		}
+	},
+	proto.Payload_PostListRequest: func (pkt *RecvPacket, t Transport) {
+		if pkt.Payload.PostListRequest != nil {
+			go ProcessPostList(pkt.From, pkt.Payload.Msgid, pkt.Payload.PostListRequest, t)
 		}
 	},
 	proto.Payload_PingRequest: func (pkt *RecvPacket, t Transport) {
@@ -100,6 +105,11 @@ func AssetsConfig() *assets.Config {
 func (pkt *RecvPacket) Process(t Transport) {
 	if handler, ok := handlers[pkt.Payload.Type]; ok {
 		handler(pkt, t);
+	} else {
+		SendError(pkt.From, pkt.Payload.Msgid, &proto.Err {
+			Type: proto.Error_RuntimeError,
+			Explanation: fmt.Sprintf("no handler for %v", pkt.Payload.Type),			
+		})
 	}
 }
 

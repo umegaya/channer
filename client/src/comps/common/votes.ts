@@ -3,9 +3,17 @@ import {Database, Txn} from "../../storage";
 import * as Promise from "bluebird"
 
 export class VoteList {
+    private static ins:VoteList = null;
+    static instance(): VoteList {
+        if (!VoteList.ins) {
+            VoteList.ins = new VoteList();
+        }
+        return VoteList.ins;
+    }
     diff: { [k:string]:number }
     list: { [k:string]:number }
     save_scheduled: any;
+    promise: Promise<VoteList>;
     constructor() {
         this.diff = {}
         this.list = null;
@@ -19,20 +27,23 @@ export class VoteList {
         return !!this.list;
     }
     load = (): Promise<VoteList> => {
-        var tx = window.channer.database.tx("votes");
-        return tx.begin().then((txn:Txn) => {
-            console.log("initialize state: call select:" + (tx === txn));
-            return txn.table("votes").select();
-        }).then((val:{id: string, vote: number}[]) => {
-            console.log("initialize state: recv result");
-            this.list = {};
-            val.forEach((v: {id: string, vote: number}) => {
-                console.log("initialize state: foreach:" + v.id + "|" + v.vote);
-                this.list[v.id] = v.vote;
+        if (!this.promise) {
+            var tx = window.channer.database.tx("votes");
+            this.promise = tx.begin().then((txn:Txn) => {
+                console.log("initialize state: call select:" + (tx === txn));
+                return txn.table("votes").select();
+            }).then((val:{id: string, vote: number}[]) => {
+                console.log("initialize state: recv result");
+                this.list = {};
+                val.forEach((v: {id: string, vote: number}) => {
+                    console.log("initialize state: foreach:" + v.id + "|" + v.vote);
+                    this.list[v.id] = v.vote;
+                });
+                tx.commit();
+                return this;
             });
-            tx.commit();
-            return this;
-        });
+        }
+        return this.promise;
     }
     get = (id: string) => {
         if (!this.list) { return 0; }

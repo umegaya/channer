@@ -6,6 +6,7 @@
   "dependencies": {
     "bluebird": "^3.4.1",
     "hammerjs": "^2.0.6",
+    "highlight.js": "^9.7.0",
     "jshashes": "^1.0.5",
     "material-ui": "^0.15.0",
     "mithril": "^0.2.0",
@@ -19,6 +20,7 @@
     "react-canvas": "git+https://github.com/umegaya/react-canvas.git",
     "react-dom": "^15.1.0",
     "react-list": "^0.7.18",
+    "react-markdown-it": "git+https://github.com/umegaya/react-markdown.git",
     "react-motion": "^0.4.4",
     "react-router": "^2.4.1",
     "react-swipeable-views": "^0.6.3",
@@ -36,6 +38,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-util": "^3.0.7",
     "json": "^9.0.3",
+    "json-loader": "^0.5.4",
     "kouto-swiss": "^0.11.14",
     "nightwatch": "^0.8.14",
     "phantomjs": "^1.9.19",

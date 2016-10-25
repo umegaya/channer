@@ -142,6 +142,7 @@ declare module 'react-canvas' {
     scrollingPenetrationAcceleration?: number;
     onScroll?: (scrollTop: number) => void;
     onRefresh?: (eventType: string) => void;
+    onRenderRefresh?: (scrollTop: number) => JSX.Element;
     scrollState?: ScrollState;
   }
 

@@ -86,6 +86,8 @@ export class ProtoWatcher {
 			var c = this.callers[k];
 			if (!c) {
 				console.log("c removed:" + k);
+				delete this.callers[k];
+				continue;
 			}
 			if (c[0] < now) {
 				try {

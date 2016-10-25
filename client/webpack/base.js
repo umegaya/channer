@@ -42,7 +42,7 @@ module.exports = function (settings) {
         module: {
             loaders: [
                 {test: /\.tsx?$/,     loader: 'awesome-typescript-loader?tsconfig=./tsconfig.json'},
-                {test: /\.json$/,   loader: 'raw-loader'},
+                {test: /\.json$/,   loader: 'json-loader'},
                 {test: /\.css$/,    loader: 'css-loader'},
                 {test: /\.styl$/,   loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'},
                 {test: /\.svg$/,    loader: 'url-loader?mimetype=image/svg+xml&limit=10000&name=[hash:6].[ext]' },

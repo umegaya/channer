@@ -25,6 +25,10 @@ func Import(path string) error {
 		if err := InsertReactionFixture(dbm); err != nil {
 			return err
 		}
+		log.Printf("insert posts")
+		if err := InsertPostFixture(dbm); err != nil {
+			return err
+		}
 	}
 	return filepath.Walk(path, func (path string, f os.FileInfo, err error) error {
 		return nil

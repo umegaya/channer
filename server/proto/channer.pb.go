@@ -14,7 +14,6 @@
 		Topic
 		Model
 		LoginRequest
-		PostRequest
 		FetchRequest
 		ReadRequest
 		EnterTopicRequest
@@ -25,8 +24,9 @@
 		ChannelListRequest
 		TopicCreateRequest
 		TopicListRequest
+		PostCreateRequest
+		PostListRequest
 		LoginResponse
-		PostResponse
 		FetchResponse
 		ReadResponse
 		EnterTopicResponse
@@ -37,6 +37,8 @@
 		ChannelListResponse
 		TopicCreateResponse
 		TopicListResponse
+		PostCreateResponse
+		PostListResponse
 		Error
 		Payload
 */
@@ -371,6 +373,42 @@ func (x *TopicListRequest_QueryType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type PostListRequest_QueryType int32
+
+const (
+	PostListRequest_None    PostListRequest_QueryType = 0
+	PostListRequest_New     PostListRequest_QueryType = 1
+	PostListRequest_Popular PostListRequest_QueryType = 2
+)
+
+var PostListRequest_QueryType_name = map[int32]string{
+	0: "None",
+	1: "New",
+	2: "Popular",
+}
+var PostListRequest_QueryType_value = map[string]int32{
+	"None":    0,
+	"New":     1,
+	"Popular": 2,
+}
+
+func (x PostListRequest_QueryType) Enum() *PostListRequest_QueryType {
+	p := new(PostListRequest_QueryType)
+	*p = x
+	return p
+}
+func (x PostListRequest_QueryType) String() string {
+	return proto.EnumName(PostListRequest_QueryType_name, int32(x))
+}
+func (x *PostListRequest_QueryType) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(PostListRequest_QueryType_value, data, "PostListRequest_QueryType")
+	if err != nil {
+		return err
+	}
+	*x = PostListRequest_QueryType(value)
+	return nil
+}
+
 type Error_Type int32
 
 const (
@@ -393,6 +431,9 @@ const (
 	Error_TopicCreate_DatabaseError   Error_Type = 50
 	Error_TopicCreate_NoPersonaError  Error_Type = 51
 	Error_TopicList_DatabaseError     Error_Type = 60
+	Error_PostCreate_DatabaseError    Error_Type = 70
+	Error_PostCreate_NoPersonaError   Error_Type = 71
+	Error_PostList_DatabaseError      Error_Type = 80
 )
 
 var Error_Type_name = map[int32]string{
@@ -415,6 +456,9 @@ var Error_Type_name = map[int32]string{
 	50: "TopicCreate_DatabaseError",
 	51: "TopicCreate_NoPersonaError",
 	60: "TopicList_DatabaseError",
+	70: "PostCreate_DatabaseError",
+	71: "PostCreate_NoPersonaError",
+	80: "PostList_DatabaseError",
 }
 var Error_Type_value = map[string]int32{
 	"Unknown":                     0,
@@ -436,6 +480,9 @@ var Error_Type_value = map[string]int32{
 	"TopicCreate_DatabaseError":   50,
 	"TopicCreate_NoPersonaError":  51,
 	"TopicList_DatabaseError":     60,
+	"PostCreate_DatabaseError":    70,
+	"PostCreate_NoPersonaError":   71,
+	"PostList_DatabaseError":      80,
 }
 
 func (x Error_Type) Enum() *Error_Type {
@@ -460,7 +507,6 @@ type Payload_Type int32
 const (
 	Payload_Unknown               Payload_Type = 0
 	Payload_LoginRequest          Payload_Type = 1
-	Payload_PostRequest           Payload_Type = 2
 	Payload_FetchRequest          Payload_Type = 3
 	Payload_ReadRequest           Payload_Type = 4
 	Payload_EnterTopicRequest     Payload_Type = 5
@@ -471,8 +517,9 @@ const (
 	Payload_ChannelListRequest    Payload_Type = 10
 	Payload_TopicCreateRequest    Payload_Type = 11
 	Payload_TopicListRequest      Payload_Type = 12
+	Payload_PostCreateRequest     Payload_Type = 13
+	Payload_PostListRequest       Payload_Type = 14
 	Payload_LoginResponse         Payload_Type = 31
-	Payload_PostResponse          Payload_Type = 32
 	Payload_FetchResponse         Payload_Type = 33
 	Payload_ReadResponse          Payload_Type = 34
 	Payload_EnterTopicResponse    Payload_Type = 35
@@ -483,6 +530,8 @@ const (
 	Payload_ChannelListResponse   Payload_Type = 40
 	Payload_TopicCreateResponse   Payload_Type = 41
 	Payload_TopicListResponse     Payload_Type = 42
+	Payload_PostCreateResponse    Payload_Type = 43
+	Payload_PostListResponse      Payload_Type = 44
 	Payload_PostNotify            Payload_Type = 61
 	Payload_Error                 Payload_Type = 101
 )
@@ -490,7 +539,6 @@ const (
 var Payload_Type_name = map[int32]string{
 	0:   "Unknown",
 	1:   "LoginRequest",
-	2:   "PostRequest",
 	3:   "FetchRequest",
 	4:   "ReadRequest",
 	5:   "EnterTopicRequest",
@@ -501,8 +549,9 @@ var Payload_Type_name = map[int32]string{
 	10:  "ChannelListRequest",
 	11:  "TopicCreateRequest",
 	12:  "TopicListRequest",
+	13:  "PostCreateRequest",
+	14:  "PostListRequest",
 	31:  "LoginResponse",
-	32:  "PostResponse",
 	33:  "FetchResponse",
 	34:  "ReadResponse",
 	35:  "EnterTopicResponse",
@@ -513,13 +562,14 @@ var Payload_Type_name = map[int32]string{
 	40:  "ChannelListResponse",
 	41:  "TopicCreateResponse",
 	42:  "TopicListResponse",
+	43:  "PostCreateResponse",
+	44:  "PostListResponse",
 	61:  "PostNotify",
 	101: "Error",
 }
 var Payload_Type_value = map[string]int32{
 	"Unknown":               0,
 	"LoginRequest":          1,
-	"PostRequest":           2,
 	"FetchRequest":          3,
 	"ReadRequest":           4,
 	"EnterTopicRequest":     5,
@@ -530,8 +580,9 @@ var Payload_Type_value = map[string]int32{
 	"ChannelListRequest":    10,
 	"TopicCreateRequest":    11,
 	"TopicListRequest":      12,
+	"PostCreateRequest":     13,
+	"PostListRequest":       14,
 	"LoginResponse":         31,
-	"PostResponse":          32,
 	"FetchResponse":         33,
 	"ReadResponse":          34,
 	"EnterTopicResponse":    35,
@@ -542,6 +593,8 @@ var Payload_Type_value = map[string]int32{
 	"ChannelListResponse":   40,
 	"TopicCreateResponse":   41,
 	"TopicListResponse":     42,
+	"PostCreateResponse":    43,
+	"PostListResponse":      44,
 	"PostNotify":            61,
 	"Error":                 101,
 }
@@ -1015,7 +1068,7 @@ type Model_Post struct {
 	Persona UUID   `protobuf:"fixed64,3,req,name=persona,casttype=UUID" json:"persona"`
 	Locale  string `protobuf:"bytes,4,req,name=locale" json:"locale"`
 	Attr    uint64 `protobuf:"varint,5,req,name=attr" json:"attr"`
-	Point   uint32 `protobuf:"fixed32,6,req,name=point" json:"point"`
+	Point   int32  `protobuf:"fixed32,6,req,name=point" json:"point"`
 	Vote    uint32 `protobuf:"fixed32,7,req,name=vote" json:"vote"`
 	Content string `protobuf:"bytes,8,req,name=content" json:"content"`
 	Body    []byte `protobuf:"bytes,9,req,name=body" json:"body"`
@@ -1060,7 +1113,7 @@ func (m *Model_Post) GetAttr() uint64 {
 	return 0
 }
 
-func (m *Model_Post) GetPoint() uint32 {
+func (m *Model_Post) GetPoint() int32 {
 	if m != nil {
 		return m.Point
 	}
@@ -1434,37 +1487,6 @@ func (m *LoginRequest) GetRescue() string {
 	return ""
 }
 
-type PostRequest struct {
-	TopicId  UUID   `protobuf:"fixed64,1,req,name=topic_id,casttype=UUID" json:"topic_id"`
-	Walltime uint64 `protobuf:"varint,2,req,name=walltime" json:"walltime"`
-	Post     *Post  `protobuf:"bytes,3,req,name=post" json:"post,omitempty"`
-}
-
-func (m *PostRequest) Reset()         { *m = PostRequest{} }
-func (m *PostRequest) String() string { return proto.CompactTextString(m) }
-func (*PostRequest) ProtoMessage()    {}
-
-func (m *PostRequest) GetTopicId() UUID {
-	if m != nil {
-		return m.TopicId
-	}
-	return 0
-}
-
-func (m *PostRequest) GetWalltime() uint64 {
-	if m != nil {
-		return m.Walltime
-	}
-	return 0
-}
-
-func (m *PostRequest) GetPost() *Post {
-	if m != nil {
-		return m.Post
-	}
-	return nil
-}
-
 type FetchRequest struct {
 	StartAt *HLC   `protobuf:"bytes,1,req,name=start_at" json:"start_at,omitempty"`
 	EndAt   *HLC   `protobuf:"bytes,2,opt,name=end_at" json:"end_at,omitempty"`
@@ -1699,7 +1721,7 @@ func (m *ChannelListRequest) GetOffsetId() uint64 {
 
 type TopicCreateRequest struct {
 	Channel UUID   `protobuf:"fixed64,1,req,name=channel,casttype=UUID" json:"channel"`
-	Name    string `protobuf:"bytes,2,req,name=name" json:"name"`
+	Title   string `protobuf:"bytes,2,req,name=title" json:"title"`
 	Content string `protobuf:"bytes,3,req,name=content" json:"content"`
 }
 
@@ -1714,9 +1736,9 @@ func (m *TopicCreateRequest) GetChannel() UUID {
 	return 0
 }
 
-func (m *TopicCreateRequest) GetName() string {
+func (m *TopicCreateRequest) GetTitle() string {
 	if m != nil {
-		return m.Name
+		return m.Title
 	}
 	return ""
 }
@@ -1735,6 +1757,7 @@ type TopicListRequest struct {
 	Limit       int32                       `protobuf:"varint,4,opt,name=limit" json:"limit"`
 	OffsetScore int32                       `protobuf:"varint,5,opt,name=offset_score" json:"offset_score"`
 	OffsetId    *UUID                       `protobuf:"fixed64,6,opt,name=offset_id,casttype=UUID" json:"offset_id,omitempty"`
+	Channel     *UUID                       `protobuf:"fixed64,7,opt,name=channel,casttype=UUID" json:"channel,omitempty"`
 }
 
 func (m *TopicListRequest) Reset()         { *m = TopicListRequest{} }
@@ -1777,6 +1800,75 @@ func (m *TopicListRequest) GetOffsetScore() int32 {
 }
 
 func (m *TopicListRequest) GetOffsetId() UUID {
+	if m != nil && m.OffsetId != nil {
+		return *m.OffsetId
+	}
+	return 0
+}
+
+func (m *TopicListRequest) GetChannel() UUID {
+	if m != nil && m.Channel != nil {
+		return *m.Channel
+	}
+	return 0
+}
+
+type PostCreateRequest struct {
+	Topic   UUID   `protobuf:"fixed64,1,req,name=topic,casttype=UUID" json:"topic"`
+	Content string `protobuf:"bytes,2,req,name=content" json:"content"`
+}
+
+func (m *PostCreateRequest) Reset()         { *m = PostCreateRequest{} }
+func (m *PostCreateRequest) String() string { return proto.CompactTextString(m) }
+func (*PostCreateRequest) ProtoMessage()    {}
+
+func (m *PostCreateRequest) GetTopic() UUID {
+	if m != nil {
+		return m.Topic
+	}
+	return 0
+}
+
+func (m *PostCreateRequest) GetContent() string {
+	if m != nil {
+		return m.Content
+	}
+	return ""
+}
+
+type PostListRequest struct {
+	Query    PostListRequest_QueryType `protobuf:"varint,1,req,name=query,enum=ChannerProto.PostListRequest_QueryType" json:"query"`
+	Topic    UUID                      `protobuf:"fixed64,2,req,name=topic,casttype=UUID" json:"topic"`
+	Limit    int32                     `protobuf:"varint,3,opt,name=limit" json:"limit"`
+	OffsetId *UUID                     `protobuf:"fixed64,4,opt,name=offset_id,casttype=UUID" json:"offset_id,omitempty"`
+}
+
+func (m *PostListRequest) Reset()         { *m = PostListRequest{} }
+func (m *PostListRequest) String() string { return proto.CompactTextString(m) }
+func (*PostListRequest) ProtoMessage()    {}
+
+func (m *PostListRequest) GetQuery() PostListRequest_QueryType {
+	if m != nil {
+		return m.Query
+	}
+	return PostListRequest_None
+}
+
+func (m *PostListRequest) GetTopic() UUID {
+	if m != nil {
+		return m.Topic
+	}
+	return 0
+}
+
+func (m *PostListRequest) GetLimit() int32 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
+func (m *PostListRequest) GetOffsetId() UUID {
 	if m != nil && m.OffsetId != nil {
 		return *m.OffsetId
 	}
@@ -1829,21 +1921,6 @@ func (m *LoginResponse) GetUser() string {
 		return *m.User
 	}
 	return ""
-}
-
-type PostResponse struct {
-	PostedAt *HLC `protobuf:"bytes,1,req,name=posted_at" json:"posted_at,omitempty"`
-}
-
-func (m *PostResponse) Reset()         { *m = PostResponse{} }
-func (m *PostResponse) String() string { return proto.CompactTextString(m) }
-func (*PostResponse) ProtoMessage()    {}
-
-func (m *PostResponse) GetPostedAt() *HLC {
-	if m != nil {
-		return m.PostedAt
-	}
-	return nil
 }
 
 type FetchResponse struct {
@@ -1980,6 +2057,36 @@ func (m *TopicListResponse) GetList() []*Model_Topic {
 	return nil
 }
 
+type PostCreateResponse struct {
+	Created *Model_Post `protobuf:"bytes,1,req,name=created" json:"created,omitempty"`
+}
+
+func (m *PostCreateResponse) Reset()         { *m = PostCreateResponse{} }
+func (m *PostCreateResponse) String() string { return proto.CompactTextString(m) }
+func (*PostCreateResponse) ProtoMessage()    {}
+
+func (m *PostCreateResponse) GetCreated() *Model_Post {
+	if m != nil {
+		return m.Created
+	}
+	return nil
+}
+
+type PostListResponse struct {
+	List []*Model_Post `protobuf:"bytes,1,rep,name=list" json:"list,omitempty"`
+}
+
+func (m *PostListResponse) Reset()         { *m = PostListResponse{} }
+func (m *PostListResponse) String() string { return proto.CompactTextString(m) }
+func (*PostListResponse) ProtoMessage()    {}
+
+func (m *PostListResponse) GetList() []*Model_Post {
+	if m != nil {
+		return m.List
+	}
+	return nil
+}
+
 // response error
 type Error struct {
 	Type        Error_Type `protobuf:"varint,1,req,name=type,enum=ChannerProto.Error_Type" json:"type"`
@@ -2009,7 +2116,6 @@ type Payload struct {
 	Type                  Payload_Type           `protobuf:"varint,1,req,name=type,enum=ChannerProto.Payload_Type" json:"type"`
 	Msgid                 uint32                 `protobuf:"varint,2,opt,name=msgid" json:"msgid"`
 	LoginRequest          *LoginRequest          `protobuf:"bytes,3,opt,name=login_request" json:"login_request,omitempty"`
-	PostRequest           *PostRequest           `protobuf:"bytes,4,opt,name=post_request" json:"post_request,omitempty"`
 	FetchRequest          *FetchRequest          `protobuf:"bytes,5,opt,name=fetch_request" json:"fetch_request,omitempty"`
 	ReadRequest           *ReadRequest           `protobuf:"bytes,6,opt,name=read_request" json:"read_request,omitempty"`
 	EnterTopicRequest     *EnterTopicRequest     `protobuf:"bytes,7,opt,name=enter_topic_request" json:"enter_topic_request,omitempty"`
@@ -2020,9 +2126,10 @@ type Payload struct {
 	ChannelListRequest    *ChannelListRequest    `protobuf:"bytes,12,opt,name=channel_list_request" json:"channel_list_request,omitempty"`
 	TopicCreateRequest    *TopicCreateRequest    `protobuf:"bytes,13,opt,name=topic_create_request" json:"topic_create_request,omitempty"`
 	TopicListRequest      *TopicListRequest      `protobuf:"bytes,14,opt,name=topic_list_request" json:"topic_list_request,omitempty"`
+	PostCreateRequest     *PostCreateRequest     `protobuf:"bytes,15,opt,name=post_create_request" json:"post_create_request,omitempty"`
+	PostListRequest       *PostListRequest       `protobuf:"bytes,16,opt,name=post_list_request" json:"post_list_request,omitempty"`
 	Error                 *Error                 `protobuf:"bytes,30,opt,name=error" json:"error,omitempty"`
 	LoginResponse         *LoginResponse         `protobuf:"bytes,31,opt,name=login_response" json:"login_response,omitempty"`
-	PostResponse          *PostResponse          `protobuf:"bytes,32,opt,name=post_response" json:"post_response,omitempty"`
 	FetchResponse         *FetchResponse         `protobuf:"bytes,33,opt,name=fetch_response" json:"fetch_response,omitempty"`
 	ReadResponse          *ReadResponse          `protobuf:"bytes,34,opt,name=read_response" json:"read_response,omitempty"`
 	EnterTopicResponse    *EnterTopicResponse    `protobuf:"bytes,35,opt,name=enter_topic_response" json:"enter_topic_response,omitempty"`
@@ -2033,6 +2140,8 @@ type Payload struct {
 	ChannelListResponse   *ChannelListResponse   `protobuf:"bytes,40,opt,name=channel_list_response" json:"channel_list_response,omitempty"`
 	TopicCreateResponse   *TopicCreateResponse   `protobuf:"bytes,41,opt,name=topic_create_response" json:"topic_create_response,omitempty"`
 	TopicListResponse     *TopicListResponse     `protobuf:"bytes,42,opt,name=topic_list_response" json:"topic_list_response,omitempty"`
+	PostCreateResponse    *PostCreateResponse    `protobuf:"bytes,43,opt,name=post_create_response" json:"post_create_response,omitempty"`
+	PostListResponse      *PostListResponse      `protobuf:"bytes,44,opt,name=post_list_response" json:"post_list_response,omitempty"`
 	PostNotify            *Post                  `protobuf:"bytes,61,opt,name=post_notify" json:"post_notify,omitempty"`
 }
 
@@ -2057,13 +2166,6 @@ func (m *Payload) GetMsgid() uint32 {
 func (m *Payload) GetLoginRequest() *LoginRequest {
 	if m != nil {
 		return m.LoginRequest
-	}
-	return nil
-}
-
-func (m *Payload) GetPostRequest() *PostRequest {
-	if m != nil {
-		return m.PostRequest
 	}
 	return nil
 }
@@ -2138,6 +2240,20 @@ func (m *Payload) GetTopicListRequest() *TopicListRequest {
 	return nil
 }
 
+func (m *Payload) GetPostCreateRequest() *PostCreateRequest {
+	if m != nil {
+		return m.PostCreateRequest
+	}
+	return nil
+}
+
+func (m *Payload) GetPostListRequest() *PostListRequest {
+	if m != nil {
+		return m.PostListRequest
+	}
+	return nil
+}
+
 func (m *Payload) GetError() *Error {
 	if m != nil {
 		return m.Error
@@ -2148,13 +2264,6 @@ func (m *Payload) GetError() *Error {
 func (m *Payload) GetLoginResponse() *LoginResponse {
 	if m != nil {
 		return m.LoginResponse
-	}
-	return nil
-}
-
-func (m *Payload) GetPostResponse() *PostResponse {
-	if m != nil {
-		return m.PostResponse
 	}
 	return nil
 }
@@ -2229,6 +2338,20 @@ func (m *Payload) GetTopicListResponse() *TopicListResponse {
 	return nil
 }
 
+func (m *Payload) GetPostCreateResponse() *PostCreateResponse {
+	if m != nil {
+		return m.PostCreateResponse
+	}
+	return nil
+}
+
+func (m *Payload) GetPostListResponse() *PostListResponse {
+	if m != nil {
+		return m.PostListResponse
+	}
+	return nil
+}
+
 func (m *Payload) GetPostNotify() *Post {
 	if m != nil {
 		return m.PostNotify
@@ -2257,7 +2380,6 @@ func init() {
 	proto.RegisterType((*Model_Reaction)(nil), "ChannerProto.Model.Reaction")
 	proto.RegisterType((*Model_Service)(nil), "ChannerProto.Model.Service")
 	proto.RegisterType((*LoginRequest)(nil), "ChannerProto.LoginRequest")
-	proto.RegisterType((*PostRequest)(nil), "ChannerProto.PostRequest")
 	proto.RegisterType((*FetchRequest)(nil), "ChannerProto.FetchRequest")
 	proto.RegisterType((*ReadRequest)(nil), "ChannerProto.ReadRequest")
 	proto.RegisterType((*EnterTopicRequest)(nil), "ChannerProto.EnterTopicRequest")
@@ -2268,8 +2390,9 @@ func init() {
 	proto.RegisterType((*ChannelListRequest)(nil), "ChannerProto.ChannelListRequest")
 	proto.RegisterType((*TopicCreateRequest)(nil), "ChannerProto.TopicCreateRequest")
 	proto.RegisterType((*TopicListRequest)(nil), "ChannerProto.TopicListRequest")
+	proto.RegisterType((*PostCreateRequest)(nil), "ChannerProto.PostCreateRequest")
+	proto.RegisterType((*PostListRequest)(nil), "ChannerProto.PostListRequest")
 	proto.RegisterType((*LoginResponse)(nil), "ChannerProto.LoginResponse")
-	proto.RegisterType((*PostResponse)(nil), "ChannerProto.PostResponse")
 	proto.RegisterType((*FetchResponse)(nil), "ChannerProto.FetchResponse")
 	proto.RegisterType((*ReadResponse)(nil), "ChannerProto.ReadResponse")
 	proto.RegisterType((*EnterTopicResponse)(nil), "ChannerProto.EnterTopicResponse")
@@ -2280,6 +2403,8 @@ func init() {
 	proto.RegisterType((*ChannelListResponse)(nil), "ChannerProto.ChannelListResponse")
 	proto.RegisterType((*TopicCreateResponse)(nil), "ChannerProto.TopicCreateResponse")
 	proto.RegisterType((*TopicListResponse)(nil), "ChannerProto.TopicListResponse")
+	proto.RegisterType((*PostCreateResponse)(nil), "ChannerProto.PostCreateResponse")
+	proto.RegisterType((*PostListResponse)(nil), "ChannerProto.PostListResponse")
 	proto.RegisterType((*Error)(nil), "ChannerProto.Error")
 	proto.RegisterType((*Payload)(nil), "ChannerProto.Payload")
 	proto.RegisterEnum("ChannerProto.Model_Account_Type", Model_Account_Type_name, Model_Account_Type_value)
@@ -2290,6 +2415,7 @@ func init() {
 	proto.RegisterEnum("ChannerProto.ChannelListRequest_QueryType", ChannelListRequest_QueryType_name, ChannelListRequest_QueryType_value)
 	proto.RegisterEnum("ChannerProto.TopicListRequest_BucketType", TopicListRequest_BucketType_name, TopicListRequest_BucketType_value)
 	proto.RegisterEnum("ChannerProto.TopicListRequest_QueryType", TopicListRequest_QueryType_name, TopicListRequest_QueryType_value)
+	proto.RegisterEnum("ChannerProto.PostListRequest_QueryType", PostListRequest_QueryType_name, PostListRequest_QueryType_value)
 	proto.RegisterEnum("ChannerProto.Error_Type", Error_Type_name, Error_Type_value)
 	proto.RegisterEnum("ChannerProto.Payload_Type", Payload_Type_name, Payload_Type_value)
 }
@@ -3038,42 +3164,6 @@ func (m *LoginRequest) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
-func (m *PostRequest) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *PostRequest) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	data[i] = 0x9
-	i++
-	i = encodeFixed64Channer(data, i, uint64(m.TopicId))
-	data[i] = 0x10
-	i++
-	i = encodeVarintChanner(data, i, uint64(m.Walltime))
-	if m.Post == nil {
-		return 0, github_com_gogo_protobuf_proto.NewRequiredNotSetError("post")
-	} else {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintChanner(data, i, uint64(m.Post.Size()))
-		n4, err := m.Post.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n4
-	}
-	return i, nil
-}
-
 func (m *FetchRequest) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -3095,21 +3185,21 @@ func (m *FetchRequest) MarshalTo(data []byte) (int, error) {
 		data[i] = 0xa
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.StartAt.Size()))
-		n5, err := m.StartAt.MarshalTo(data[i:])
+		n4, err := m.StartAt.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n5
+		i += n4
 	}
 	if m.EndAt != nil {
 		data[i] = 0x12
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.EndAt.Size()))
-		n6, err := m.EndAt.MarshalTo(data[i:])
+		n5, err := m.EndAt.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n6
+		i += n5
 	}
 	data[i] = 0x18
 	i++
@@ -3141,11 +3231,11 @@ func (m *ReadRequest) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x12
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ReadPostTs.Size()))
-		n7, err := m.ReadPostTs.MarshalTo(data[i:])
+		n6, err := m.ReadPostTs.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n7
+		i += n6
 	}
 	return i, nil
 }
@@ -3279,11 +3369,11 @@ func (m *ChannelCreateRequest) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x32
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.Options.Size()))
-		n8, err := m.Options.MarshalTo(data[i:])
+		n7, err := m.Options.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n8
+		i += n7
 	}
 	return i, nil
 }
@@ -3344,8 +3434,8 @@ func (m *TopicCreateRequest) MarshalTo(data []byte) (int, error) {
 	i = encodeFixed64Channer(data, i, uint64(m.Channel))
 	data[i] = 0x12
 	i++
-	i = encodeVarintChanner(data, i, uint64(len(m.Name)))
-	i += copy(data[i:], m.Name)
+	i = encodeVarintChanner(data, i, uint64(len(m.Title)))
+	i += copy(data[i:], m.Title)
 	data[i] = 0x1a
 	i++
 	i = encodeVarintChanner(data, i, uint64(len(m.Content)))
@@ -3386,6 +3476,68 @@ func (m *TopicListRequest) MarshalTo(data []byte) (int, error) {
 	i = encodeVarintChanner(data, i, uint64(m.OffsetScore))
 	if m.OffsetId != nil {
 		data[i] = 0x31
+		i++
+		i = encodeFixed64Channer(data, i, uint64(*m.OffsetId))
+	}
+	if m.Channel != nil {
+		data[i] = 0x39
+		i++
+		i = encodeFixed64Channer(data, i, uint64(*m.Channel))
+	}
+	return i, nil
+}
+
+func (m *PostCreateRequest) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *PostCreateRequest) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	data[i] = 0x9
+	i++
+	i = encodeFixed64Channer(data, i, uint64(m.Topic))
+	data[i] = 0x12
+	i++
+	i = encodeVarintChanner(data, i, uint64(len(m.Content)))
+	i += copy(data[i:], m.Content)
+	return i, nil
+}
+
+func (m *PostListRequest) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *PostListRequest) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	data[i] = 0x8
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Query))
+	data[i] = 0x11
+	i++
+	i = encodeFixed64Channer(data, i, uint64(m.Topic))
+	data[i] = 0x18
+	i++
+	i = encodeVarintChanner(data, i, uint64(m.Limit))
+	if m.OffsetId != nil {
+		data[i] = 0x21
 		i++
 		i = encodeFixed64Channer(data, i, uint64(*m.OffsetId))
 	}
@@ -3431,36 +3583,6 @@ func (m *LoginResponse) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintChanner(data, i, uint64(len(*m.User)))
 		i += copy(data[i:], *m.User)
-	}
-	return i, nil
-}
-
-func (m *PostResponse) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *PostResponse) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.PostedAt == nil {
-		return 0, github_com_gogo_protobuf_proto.NewRequiredNotSetError("posted_at")
-	} else {
-		data[i] = 0xa
-		i++
-		i = encodeVarintChanner(data, i, uint64(m.PostedAt.Size()))
-		n9, err := m.PostedAt.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n9
 	}
 	return i, nil
 }
@@ -3616,11 +3738,11 @@ func (m *ChannelCreateResponse) MarshalTo(data []byte) (int, error) {
 		data[i] = 0xa
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.Channel.Size()))
-		n10, err := m.Channel.MarshalTo(data[i:])
+		n8, err := m.Channel.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n10
+		i += n8
 	}
 	return i, nil
 }
@@ -3676,11 +3798,11 @@ func (m *TopicCreateResponse) MarshalTo(data []byte) (int, error) {
 		data[i] = 0xa
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.Created.Size()))
-		n11, err := m.Created.MarshalTo(data[i:])
+		n9, err := m.Created.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n11
+		i += n9
 	}
 	return i, nil
 }
@@ -3696,6 +3818,66 @@ func (m *TopicListResponse) Marshal() (data []byte, err error) {
 }
 
 func (m *TopicListResponse) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.List) > 0 {
+		for _, msg := range m.List {
+			data[i] = 0xa
+			i++
+			i = encodeVarintChanner(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	return i, nil
+}
+
+func (m *PostCreateResponse) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *PostCreateResponse) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Created == nil {
+		return 0, github_com_gogo_protobuf_proto.NewRequiredNotSetError("created")
+	} else {
+		data[i] = 0xa
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.Created.Size()))
+		n10, err := m.Created.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n10
+	}
+	return i, nil
+}
+
+func (m *PostListResponse) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *PostListResponse) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -3765,117 +3947,129 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x1a
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.LoginRequest.Size()))
-		n12, err := m.LoginRequest.MarshalTo(data[i:])
+		n11, err := m.LoginRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n12
-	}
-	if m.PostRequest != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintChanner(data, i, uint64(m.PostRequest.Size()))
-		n13, err := m.PostRequest.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n13
+		i += n11
 	}
 	if m.FetchRequest != nil {
 		data[i] = 0x2a
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.FetchRequest.Size()))
-		n14, err := m.FetchRequest.MarshalTo(data[i:])
+		n12, err := m.FetchRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n14
+		i += n12
 	}
 	if m.ReadRequest != nil {
 		data[i] = 0x32
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ReadRequest.Size()))
-		n15, err := m.ReadRequest.MarshalTo(data[i:])
+		n13, err := m.ReadRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n15
+		i += n13
 	}
 	if m.EnterTopicRequest != nil {
 		data[i] = 0x3a
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.EnterTopicRequest.Size()))
-		n16, err := m.EnterTopicRequest.MarshalTo(data[i:])
+		n14, err := m.EnterTopicRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n16
+		i += n14
 	}
 	if m.ExitTopicRequest != nil {
 		data[i] = 0x42
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ExitTopicRequest.Size()))
-		n17, err := m.ExitTopicRequest.MarshalTo(data[i:])
+		n15, err := m.ExitTopicRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n17
+		i += n15
 	}
 	if m.PingRequest != nil {
 		data[i] = 0x4a
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PingRequest.Size()))
-		n18, err := m.PingRequest.MarshalTo(data[i:])
+		n16, err := m.PingRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n18
+		i += n16
 	}
 	if m.RescueRequest != nil {
 		data[i] = 0x52
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.RescueRequest.Size()))
-		n19, err := m.RescueRequest.MarshalTo(data[i:])
+		n17, err := m.RescueRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n19
+		i += n17
 	}
 	if m.ChannelCreateRequest != nil {
 		data[i] = 0x5a
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ChannelCreateRequest.Size()))
-		n20, err := m.ChannelCreateRequest.MarshalTo(data[i:])
+		n18, err := m.ChannelCreateRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n20
+		i += n18
 	}
 	if m.ChannelListRequest != nil {
 		data[i] = 0x62
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ChannelListRequest.Size()))
-		n21, err := m.ChannelListRequest.MarshalTo(data[i:])
+		n19, err := m.ChannelListRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n21
+		i += n19
 	}
 	if m.TopicCreateRequest != nil {
 		data[i] = 0x6a
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.TopicCreateRequest.Size()))
-		n22, err := m.TopicCreateRequest.MarshalTo(data[i:])
+		n20, err := m.TopicCreateRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n22
+		i += n20
 	}
 	if m.TopicListRequest != nil {
 		data[i] = 0x72
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.TopicListRequest.Size()))
-		n23, err := m.TopicListRequest.MarshalTo(data[i:])
+		n21, err := m.TopicListRequest.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n21
+	}
+	if m.PostCreateRequest != nil {
+		data[i] = 0x7a
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.PostCreateRequest.Size()))
+		n22, err := m.PostCreateRequest.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n22
+	}
+	if m.PostListRequest != nil {
+		data[i] = 0x82
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.PostListRequest.Size()))
+		n23, err := m.PostListRequest.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
@@ -3905,29 +4099,17 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		}
 		i += n25
 	}
-	if m.PostResponse != nil {
-		data[i] = 0x82
-		i++
-		data[i] = 0x2
-		i++
-		i = encodeVarintChanner(data, i, uint64(m.PostResponse.Size()))
-		n26, err := m.PostResponse.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n26
-	}
 	if m.FetchResponse != nil {
 		data[i] = 0x8a
 		i++
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.FetchResponse.Size()))
-		n27, err := m.FetchResponse.MarshalTo(data[i:])
+		n26, err := m.FetchResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n27
+		i += n26
 	}
 	if m.ReadResponse != nil {
 		data[i] = 0x92
@@ -3935,11 +4117,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ReadResponse.Size()))
-		n28, err := m.ReadResponse.MarshalTo(data[i:])
+		n27, err := m.ReadResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n28
+		i += n27
 	}
 	if m.EnterTopicResponse != nil {
 		data[i] = 0x9a
@@ -3947,11 +4129,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.EnterTopicResponse.Size()))
-		n29, err := m.EnterTopicResponse.MarshalTo(data[i:])
+		n28, err := m.EnterTopicResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n29
+		i += n28
 	}
 	if m.ExitTopicResponse != nil {
 		data[i] = 0xa2
@@ -3959,11 +4141,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ExitTopicResponse.Size()))
-		n30, err := m.ExitTopicResponse.MarshalTo(data[i:])
+		n29, err := m.ExitTopicResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n30
+		i += n29
 	}
 	if m.PingResponse != nil {
 		data[i] = 0xaa
@@ -3971,11 +4153,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PingResponse.Size()))
-		n31, err := m.PingResponse.MarshalTo(data[i:])
+		n30, err := m.PingResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n31
+		i += n30
 	}
 	if m.RescueResponse != nil {
 		data[i] = 0xb2
@@ -3983,11 +4165,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.RescueResponse.Size()))
-		n32, err := m.RescueResponse.MarshalTo(data[i:])
+		n31, err := m.RescueResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n32
+		i += n31
 	}
 	if m.ChannelCreateResponse != nil {
 		data[i] = 0xba
@@ -3995,11 +4177,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ChannelCreateResponse.Size()))
-		n33, err := m.ChannelCreateResponse.MarshalTo(data[i:])
+		n32, err := m.ChannelCreateResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n33
+		i += n32
 	}
 	if m.ChannelListResponse != nil {
 		data[i] = 0xc2
@@ -4007,11 +4189,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.ChannelListResponse.Size()))
-		n34, err := m.ChannelListResponse.MarshalTo(data[i:])
+		n33, err := m.ChannelListResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n34
+		i += n33
 	}
 	if m.TopicCreateResponse != nil {
 		data[i] = 0xca
@@ -4019,11 +4201,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.TopicCreateResponse.Size()))
-		n35, err := m.TopicCreateResponse.MarshalTo(data[i:])
+		n34, err := m.TopicCreateResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n35
+		i += n34
 	}
 	if m.TopicListResponse != nil {
 		data[i] = 0xd2
@@ -4031,11 +4213,35 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x2
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.TopicListResponse.Size()))
-		n36, err := m.TopicListResponse.MarshalTo(data[i:])
+		n35, err := m.TopicListResponse.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n35
+	}
+	if m.PostCreateResponse != nil {
+		data[i] = 0xda
+		i++
+		data[i] = 0x2
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.PostCreateResponse.Size()))
+		n36, err := m.PostCreateResponse.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n36
+	}
+	if m.PostListResponse != nil {
+		data[i] = 0xe2
+		i++
+		data[i] = 0x2
+		i++
+		i = encodeVarintChanner(data, i, uint64(m.PostListResponse.Size()))
+		n37, err := m.PostListResponse.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n37
 	}
 	if m.PostNotify != nil {
 		data[i] = 0xea
@@ -4043,11 +4249,11 @@ func (m *Payload) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x3
 		i++
 		i = encodeVarintChanner(data, i, uint64(m.PostNotify.Size()))
-		n37, err := m.PostNotify.MarshalTo(data[i:])
+		n38, err := m.PostNotify.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n37
+		i += n38
 	}
 	return i, nil
 }
@@ -4371,18 +4577,6 @@ func (m *LoginRequest) Size() (n int) {
 	return n
 }
 
-func (m *PostRequest) Size() (n int) {
-	var l int
-	_ = l
-	n += 9
-	n += 1 + sovChanner(uint64(m.Walltime))
-	if m.Post != nil {
-		l = m.Post.Size()
-		n += 1 + l + sovChanner(uint64(l))
-	}
-	return n
-}
-
 func (m *FetchRequest) Size() (n int) {
 	var l int
 	_ = l
@@ -4477,7 +4671,7 @@ func (m *TopicCreateRequest) Size() (n int) {
 	var l int
 	_ = l
 	n += 9
-	l = len(m.Name)
+	l = len(m.Title)
 	n += 1 + l + sovChanner(uint64(l))
 	l = len(m.Content)
 	n += 1 + l + sovChanner(uint64(l))
@@ -4493,6 +4687,30 @@ func (m *TopicListRequest) Size() (n int) {
 	n += 1 + l + sovChanner(uint64(l))
 	n += 1 + sovChanner(uint64(m.Limit))
 	n += 1 + sovChanner(uint64(m.OffsetScore))
+	if m.OffsetId != nil {
+		n += 9
+	}
+	if m.Channel != nil {
+		n += 9
+	}
+	return n
+}
+
+func (m *PostCreateRequest) Size() (n int) {
+	var l int
+	_ = l
+	n += 9
+	l = len(m.Content)
+	n += 1 + l + sovChanner(uint64(l))
+	return n
+}
+
+func (m *PostListRequest) Size() (n int) {
+	var l int
+	_ = l
+	n += 1 + sovChanner(uint64(m.Query))
+	n += 9
+	n += 1 + sovChanner(uint64(m.Limit))
 	if m.OffsetId != nil {
 		n += 9
 	}
@@ -4515,16 +4733,6 @@ func (m *LoginResponse) Size() (n int) {
 	}
 	if m.User != nil {
 		l = len(*m.User)
-		n += 1 + l + sovChanner(uint64(l))
-	}
-	return n
-}
-
-func (m *PostResponse) Size() (n int) {
-	var l int
-	_ = l
-	if m.PostedAt != nil {
-		l = m.PostedAt.Size()
 		n += 1 + l + sovChanner(uint64(l))
 	}
 	return n
@@ -4620,6 +4828,28 @@ func (m *TopicListResponse) Size() (n int) {
 	return n
 }
 
+func (m *PostCreateResponse) Size() (n int) {
+	var l int
+	_ = l
+	if m.Created != nil {
+		l = m.Created.Size()
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	return n
+}
+
+func (m *PostListResponse) Size() (n int) {
+	var l int
+	_ = l
+	if len(m.List) > 0 {
+		for _, e := range m.List {
+			l = e.Size()
+			n += 1 + l + sovChanner(uint64(l))
+		}
+	}
+	return n
+}
+
 func (m *Error) Size() (n int) {
 	var l int
 	_ = l
@@ -4636,10 +4866,6 @@ func (m *Payload) Size() (n int) {
 	n += 1 + sovChanner(uint64(m.Msgid))
 	if m.LoginRequest != nil {
 		l = m.LoginRequest.Size()
-		n += 1 + l + sovChanner(uint64(l))
-	}
-	if m.PostRequest != nil {
-		l = m.PostRequest.Size()
 		n += 1 + l + sovChanner(uint64(l))
 	}
 	if m.FetchRequest != nil {
@@ -4682,16 +4908,20 @@ func (m *Payload) Size() (n int) {
 		l = m.TopicListRequest.Size()
 		n += 1 + l + sovChanner(uint64(l))
 	}
+	if m.PostCreateRequest != nil {
+		l = m.PostCreateRequest.Size()
+		n += 1 + l + sovChanner(uint64(l))
+	}
+	if m.PostListRequest != nil {
+		l = m.PostListRequest.Size()
+		n += 2 + l + sovChanner(uint64(l))
+	}
 	if m.Error != nil {
 		l = m.Error.Size()
 		n += 2 + l + sovChanner(uint64(l))
 	}
 	if m.LoginResponse != nil {
 		l = m.LoginResponse.Size()
-		n += 2 + l + sovChanner(uint64(l))
-	}
-	if m.PostResponse != nil {
-		l = m.PostResponse.Size()
 		n += 2 + l + sovChanner(uint64(l))
 	}
 	if m.FetchResponse != nil {
@@ -4732,6 +4962,14 @@ func (m *Payload) Size() (n int) {
 	}
 	if m.TopicListResponse != nil {
 		l = m.TopicListResponse.Size()
+		n += 2 + l + sovChanner(uint64(l))
+	}
+	if m.PostCreateResponse != nil {
+		l = m.PostCreateResponse.Size()
+		n += 2 + l + sovChanner(uint64(l))
+	}
+	if m.PostListResponse != nil {
+		l = m.PostListResponse.Size()
 		n += 2 + l + sovChanner(uint64(l))
 	}
 	if m.PostNotify != nil {
@@ -6730,10 +6968,10 @@ func (m *Model_Post) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			iNdEx += 4
-			m.Point = uint32(data[iNdEx-4])
-			m.Point |= uint32(data[iNdEx-3]) << 8
-			m.Point |= uint32(data[iNdEx-2]) << 16
-			m.Point |= uint32(data[iNdEx-1]) << 24
+			m.Point = int32(data[iNdEx-4])
+			m.Point |= int32(data[iNdEx-3]) << 8
+			m.Point |= int32(data[iNdEx-2]) << 16
+			m.Point |= int32(data[iNdEx-1]) << 24
 			hasFields[0] |= uint64(0x00000020)
 		case 7:
 			if wireType != 5 {
@@ -8163,138 +8401,6 @@ func (m *LoginRequest) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *PostRequest) Unmarshal(data []byte) error {
-	var hasFields [1]uint64
-	l := len(data)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowChanner
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: PostRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PostRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 1 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TopicId", wireType)
-			}
-			m.TopicId = 0
-			if (iNdEx + 8) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += 8
-			m.TopicId = UUID(data[iNdEx-8])
-			m.TopicId |= UUID(data[iNdEx-7]) << 8
-			m.TopicId |= UUID(data[iNdEx-6]) << 16
-			m.TopicId |= UUID(data[iNdEx-5]) << 24
-			m.TopicId |= UUID(data[iNdEx-4]) << 32
-			m.TopicId |= UUID(data[iNdEx-3]) << 40
-			m.TopicId |= UUID(data[iNdEx-2]) << 48
-			m.TopicId |= UUID(data[iNdEx-1]) << 56
-			hasFields[0] |= uint64(0x00000001)
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Walltime", wireType)
-			}
-			m.Walltime = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowChanner
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				m.Walltime |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			hasFields[0] |= uint64(0x00000002)
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Post", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowChanner
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthChanner
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Post == nil {
-				m.Post = &Post{}
-			}
-			if err := m.Post.Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-			hasFields[0] |= uint64(0x00000004)
-		default:
-			iNdEx = preIndex
-			skippy, err := skipChanner(data[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthChanner
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-	if hasFields[0]&uint64(0x00000001) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("topic_id")
-	}
-	if hasFields[0]&uint64(0x00000002) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("walltime")
-	}
-	if hasFields[0]&uint64(0x00000004) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("post")
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
 func (m *FetchRequest) Unmarshal(data []byte) error {
 	var hasFields [1]uint64
 	l := len(data)
@@ -9330,7 +9436,7 @@ func (m *TopicCreateRequest) Unmarshal(data []byte) error {
 			hasFields[0] |= uint64(0x00000001)
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -9355,7 +9461,7 @@ func (m *TopicCreateRequest) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Name = string(data[iNdEx:postIndex])
+			m.Title = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 			hasFields[0] |= uint64(0x00000002)
 		case 3:
@@ -9407,7 +9513,7 @@ func (m *TopicCreateRequest) Unmarshal(data []byte) error {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("channel")
 	}
 	if hasFields[0]&uint64(0x00000002) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("name")
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("title")
 	}
 	if hasFields[0]&uint64(0x00000004) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("content")
@@ -9572,6 +9678,24 @@ func (m *TopicListRequest) Unmarshal(data []byte) error {
 			v |= UUID(data[iNdEx-2]) << 48
 			v |= UUID(data[iNdEx-1]) << 56
 			m.OffsetId = &v
+		case 7:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Channel", wireType)
+			}
+			var v UUID
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += 8
+			v = UUID(data[iNdEx-8])
+			v |= UUID(data[iNdEx-7]) << 8
+			v |= UUID(data[iNdEx-6]) << 16
+			v |= UUID(data[iNdEx-5]) << 24
+			v |= UUID(data[iNdEx-4]) << 32
+			v |= UUID(data[iNdEx-3]) << 40
+			v |= UUID(data[iNdEx-2]) << 48
+			v |= UUID(data[iNdEx-1]) << 56
+			m.Channel = &v
 		default:
 			iNdEx = preIndex
 			skippy, err := skipChanner(data[iNdEx:])
@@ -9589,6 +9713,243 @@ func (m *TopicListRequest) Unmarshal(data []byte) error {
 	}
 	if hasFields[0]&uint64(0x00000001) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("query")
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PostCreateRequest) Unmarshal(data []byte) error {
+	var hasFields [1]uint64
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PostCreateRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PostCreateRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Topic", wireType)
+			}
+			m.Topic = 0
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += 8
+			m.Topic = UUID(data[iNdEx-8])
+			m.Topic |= UUID(data[iNdEx-7]) << 8
+			m.Topic |= UUID(data[iNdEx-6]) << 16
+			m.Topic |= UUID(data[iNdEx-5]) << 24
+			m.Topic |= UUID(data[iNdEx-4]) << 32
+			m.Topic |= UUID(data[iNdEx-3]) << 40
+			m.Topic |= UUID(data[iNdEx-2]) << 48
+			m.Topic |= UUID(data[iNdEx-1]) << 56
+			hasFields[0] |= uint64(0x00000001)
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Content", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Content = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000002)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+	if hasFields[0]&uint64(0x00000001) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("topic")
+	}
+	if hasFields[0]&uint64(0x00000002) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("content")
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PostListRequest) Unmarshal(data []byte) error {
+	var hasFields [1]uint64
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PostListRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PostListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Query", wireType)
+			}
+			m.Query = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Query |= (PostListRequest_QueryType(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			hasFields[0] |= uint64(0x00000001)
+		case 2:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Topic", wireType)
+			}
+			m.Topic = 0
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += 8
+			m.Topic = UUID(data[iNdEx-8])
+			m.Topic |= UUID(data[iNdEx-7]) << 8
+			m.Topic |= UUID(data[iNdEx-6]) << 16
+			m.Topic |= UUID(data[iNdEx-5]) << 24
+			m.Topic |= UUID(data[iNdEx-4]) << 32
+			m.Topic |= UUID(data[iNdEx-3]) << 40
+			m.Topic |= UUID(data[iNdEx-2]) << 48
+			m.Topic |= UUID(data[iNdEx-1]) << 56
+			hasFields[0] |= uint64(0x00000002)
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Limit", wireType)
+			}
+			m.Limit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Limit |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OffsetId", wireType)
+			}
+			var v UUID
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += 8
+			v = UUID(data[iNdEx-8])
+			v |= UUID(data[iNdEx-7]) << 8
+			v |= UUID(data[iNdEx-6]) << 16
+			v |= UUID(data[iNdEx-5]) << 24
+			v |= UUID(data[iNdEx-4]) << 32
+			v |= UUID(data[iNdEx-3]) << 40
+			v |= UUID(data[iNdEx-2]) << 48
+			v |= UUID(data[iNdEx-1]) << 56
+			m.OffsetId = &v
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+	if hasFields[0]&uint64(0x00000001) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("query")
+	}
+	if hasFields[0]&uint64(0x00000002) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("topic")
 	}
 
 	if iNdEx > l {
@@ -9784,94 +10145,6 @@ func (m *LoginResponse) Unmarshal(data []byte) error {
 	}
 	if hasFields[0]&uint64(0x00000002) == 0 {
 		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("secret")
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *PostResponse) Unmarshal(data []byte) error {
-	var hasFields [1]uint64
-	l := len(data)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowChanner
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: PostResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PostResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PostedAt", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowChanner
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthChanner
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.PostedAt == nil {
-				m.PostedAt = &HLC{}
-			}
-			if err := m.PostedAt.Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-			hasFields[0] |= uint64(0x00000001)
-		default:
-			iNdEx = preIndex
-			skippy, err := skipChanner(data[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthChanner
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-	if hasFields[0]&uint64(0x00000001) == 0 {
-		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("posted_at")
 	}
 
 	if iNdEx > l {
@@ -10629,6 +10902,175 @@ func (m *TopicListResponse) Unmarshal(data []byte) error {
 	}
 	return nil
 }
+func (m *PostCreateResponse) Unmarshal(data []byte) error {
+	var hasFields [1]uint64
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PostCreateResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PostCreateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Created", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Created == nil {
+				m.Created = &Model_Post{}
+			}
+			if err := m.Created.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+			hasFields[0] |= uint64(0x00000001)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+	if hasFields[0]&uint64(0x00000001) == 0 {
+		return github_com_gogo_protobuf_proto.NewRequiredNotSetError("created")
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PostListResponse) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChanner
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PostListResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PostListResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field List", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.List = append(m.List, &Model_Post{})
+			if err := m.List[len(m.List)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChanner(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthChanner
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *Error) Unmarshal(data []byte) error {
 	var hasFields [1]uint64
 	l := len(data)
@@ -10831,39 +11273,6 @@ func (m *Payload) Unmarshal(data []byte) error {
 				m.LoginRequest = &LoginRequest{}
 			}
 			if err := m.LoginRequest.Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PostRequest", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowChanner
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthChanner
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.PostRequest == nil {
-				m.PostRequest = &PostRequest{}
-			}
-			if err := m.PostRequest.Unmarshal(data[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -11197,6 +11606,72 @@ func (m *Payload) Unmarshal(data []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 15:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PostCreateRequest", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.PostCreateRequest == nil {
+				m.PostCreateRequest = &PostCreateRequest{}
+			}
+			if err := m.PostCreateRequest.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 16:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PostListRequest", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.PostListRequest == nil {
+				m.PostListRequest = &PostListRequest{}
+			}
+			if err := m.PostListRequest.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		case 30:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Error", wireType)
@@ -11260,39 +11735,6 @@ func (m *Payload) Unmarshal(data []byte) error {
 				m.LoginResponse = &LoginResponse{}
 			}
 			if err := m.LoginResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 32:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PostResponse", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowChanner
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthChanner
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.PostResponse == nil {
-				m.PostResponse = &PostResponse{}
-			}
-			if err := m.PostResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -11623,6 +12065,72 @@ func (m *Payload) Unmarshal(data []byte) error {
 				m.TopicListResponse = &TopicListResponse{}
 			}
 			if err := m.TopicListResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 43:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PostCreateResponse", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.PostCreateResponse == nil {
+				m.PostCreateResponse = &PostCreateResponse{}
+			}
+			if err := m.PostCreateResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 44:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PostListResponse", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChanner
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthChanner
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.PostListResponse == nil {
+				m.PostListResponse = &PostListResponse{}
+			}
+			if err := m.PostListResponse.Unmarshal(data[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

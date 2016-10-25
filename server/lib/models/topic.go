@@ -58,6 +58,18 @@ func NewTopic(dbif Dbif, a *Account, req *proto.TopicCreateRequest) (*Topic, err
 	return tp, nil
 }
 
+func FindTopic(dbif Dbif, id proto.UUID) (*Topic, error) {
+	t := &Topic{
+		proto.Model_Topic {
+			Id: id,
+		},
+	}
+	if err := dbif.SelectOne(t, dbm.Stmt("select * from %s.topics where id=$1"), t.Id); err != nil {
+		return nil, err
+	}
+	return t, nil
+}
+
 //return value of actor call
 type HotEntry struct {
 	Id proto.UUID

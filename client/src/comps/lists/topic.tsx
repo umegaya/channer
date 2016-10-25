@@ -31,9 +31,9 @@ export class TopicCollection extends ProtoModelCollection<ChannerProto.Model.Top
             + this.props.val("topic_sort_duration") + "/" 
             + window.channer.settings.values.search_locale;
     }
-    fetch_request = (offset: ScoreBoundary, limit: number): Promise<Array<ChannerProto.Model.Topic>> => {
-        return new Promise<Array<ChannerProto.Model.Topic>>(
-        (resolve: (e: Array<ChannerProto.Model.Topic>) => void, reject: (err: any) => void) => {
+    fetch_request = (offset: ScoreBoundary, limit: number): Promise<ChannerProto.Model.Topic[]> => {
+        return new Promise<ChannerProto.Model.Topic[]>(
+        (resolve: (e: ChannerProto.Model.Topic[]) => void, reject: (err: any) => void) => {
             var conn: Handler = window.channer.conn;
             var bucket: string = this.props.val("topic_sort_by");
             var query: string = this.props.val("topic_sort_duration");
@@ -133,7 +133,7 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
                 <Text style={styler.vote_text(20, 0)}>{down.toString()}</Text>
             </Group>;
         //apply text metrics
-        return <Group style={styler.bg()} onClick={this.props.elemOpts("/topic/" + model.id.toString())}>                    
+        return <Group style={styler.bg()} onClick={this.props.elemOpts("/topic/180646409492955137")}>                    
             {upvoteElement}
             {downvoteElement}   
 

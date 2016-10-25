@@ -48,7 +48,7 @@ export class TopStaticState {
     scrollStates: {[k:string]:ListScrollState};
     constructor() {
         this.settings = PropCollectionFactory.ref("top-models");
-        this.votes = new VoteList();
+        this.votes = VoteList.instance();
         this.scrollStates = {};
         this.refresh_topic();
         this.refresh_channel();
@@ -108,9 +108,19 @@ export class TopComponent extends PageComponent<TopProp, TopState> {
     route_to = (path: string, options: any): () => void => {
         return this.route.bind(this, path, options);
     }
+    tabname_by = (val: number): string => {
+        for (var k in TopComponent.tabToIndex) {
+            if (TopComponent.tabToIndex[k] == val) {
+                return k;
+            }
+        }
+        return "topic";
+    }
     onchange = (val: number) => {
         this.setState({
-            tabIndex: val
+            tabIndex: val,
+        }, () => {
+            this.route("/top/" + this.tabname_by(val), { replace: true });
         });
     }
     render(): UI.Element {

@@ -23,9 +23,9 @@ export class ChannelCollection extends ProtoModelCollection<ChannerProto.Model.C
             + this.props.val("channel_category") + "/"
             + window.channer.settings.values.search_locale;
     }
-    fetch_request = (offset: LongBoundary, limit: number): Promise<Array<ChannerProto.Model.Channel>> => {
-        return new Promise<Array<ChannerProto.Model.Channel>>(
-        (resolve: (e: Array<ChannerProto.Model.Channel>) => void, reject: (err: any) => void) => {
+    fetch_request = (offset: LongBoundary, limit: number): Promise<ChannerProto.Model.Channel[]> => {
+        return new Promise<ChannerProto.Model.Channel[]>(
+        (resolve: (e: ChannerProto.Model.Channel[]) => void, reject: (err: any) => void) => {
             var conn: Handler = window.channer.conn;
             var sort_by: string = this.props.val("channel_sort_by");
             var category: number = window.channer.category.to_id(

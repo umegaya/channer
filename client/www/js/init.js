@@ -15,6 +15,8 @@ window.channer = {
 	chaos: false,
 };
 
+console.log("js loaded");
+
 function initfs(quota, bootstrap) {
     if (navigator.webkitPersistentStorage) {
         navigator.webkitPersistentStorage.requestQuota(quota, function(grantedBytes) {

@@ -114,9 +114,13 @@ func ListChannel(dbif Dbif, req *proto.ChannelListRequest) ([]*proto.Model_Chann
 }
 
 //takes about 90sec
-func bytesColumnEncode(v []byte) string {
+func hexColumnEncode(v []byte, bin bool) string {
 	result := make([]byte, 3 + 4*len(v))
-	result[0] = 'b'
+	if bin {
+		result[0] = 'b'
+	} else {
+		result[0] = 'E'		
+	}
 	result[1] = '\''
 	start := 2
 	for i := 0; i < len(v); i++ {
@@ -128,6 +132,12 @@ func bytesColumnEncode(v []byte) string {
 	}
 	result[start + 4 * len(v)] = '\''
 	return string(result)
+}
+func bytesColumnEncode(v []byte) string {
+	return hexColumnEncode(v, true)
+}
+func stringColumnEncode(v string) string {
+	return hexColumnEncode([]byte(v), false)
 }
 func Locales() []string {
 	return []string {"en", "ja", "ko", "zh_Hant", "zh_Hans"}	

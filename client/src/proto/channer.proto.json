@@ -497,7 +497,7 @@
                                 },
                                 {
                                     "rule": "required",
-                                    "type": "fixed32",
+                                    "type": "sfixed32",
                                     "name": "point",
                                     "id": 6
                                 },
@@ -871,32 +871,6 @@
                     ]
                 },
                 {
-                    "name": "PostRequest",
-                    "fields": [
-                        {
-                            "rule": "required",
-                            "type": "Long",
-                            "name": "topic_id",
-                            "id": 1,
-                            "options": {
-                                "(gogoproto.casttype)": "UUID"
-                            }
-                        },
-                        {
-                            "rule": "required",
-                            "type": "uint64",
-                            "name": "walltime",
-                            "id": 2
-                        },
-                        {
-                            "rule": "required",
-                            "type": "Post",
-                            "name": "post",
-                            "id": 3
-                        }
-                    ]
-                },
-                {
                     "name": "FetchRequest",
                     "fields": [
                         {
@@ -1117,7 +1091,7 @@
                         {
                             "rule": "required",
                             "type": "string",
-                            "name": "name",
+                            "name": "title",
                             "id": 2
                         },
                         {
@@ -1166,6 +1140,16 @@
                             "type": "Long",
                             "name": "offset_id",
                             "id": 6,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID",
+                                "(gogoproto.nullable)": true
+                            }
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "Long",
+                            "name": "channel",
+                            "id": 7,
                             "options": {
                                 "(gogoproto.casttype)": "UUID",
                                 "(gogoproto.nullable)": true
@@ -1222,6 +1206,81 @@
                     ]
                 },
                 {
+                    "name": "PostCreateRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "Long",
+                            "name": "topic",
+                            "id": 1,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
+                        },
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "content",
+                            "id": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "PostListRequest",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "QueryType",
+                            "name": "query",
+                            "id": 1
+                        },
+                        {
+                            "rule": "required",
+                            "type": "Long",
+                            "name": "topic",
+                            "id": 2,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID"
+                            }
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "int32",
+                            "name": "limit",
+                            "id": 3
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "Long",
+                            "name": "offset_id",
+                            "id": 4,
+                            "options": {
+                                "(gogoproto.casttype)": "UUID",
+                                "(gogoproto.nullable)": true
+                            }
+                        }
+                    ],
+                    "enums": [
+                        {
+                            "name": "QueryType",
+                            "values": [
+                                {
+                                    "name": "None",
+                                    "id": 0
+                                },
+                                {
+                                    "name": "New",
+                                    "id": 1
+                                },
+                                {
+                                    "name": "Popular",
+                                    "id": 2
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
                     "name": "LoginResponse",
                     "fields": [
                         {
@@ -1265,17 +1324,6 @@
                             "options": {
                                 "(gogoproto.nullable)": true
                             }
-                        }
-                    ]
-                },
-                {
-                    "name": "PostResponse",
-                    "fields": [
-                        {
-                            "rule": "required",
-                            "type": "HLC",
-                            "name": "posted_at",
-                            "id": 1
                         }
                     ]
                 },
@@ -1369,6 +1417,28 @@
                         {
                             "rule": "repeated",
                             "type": "Model.Topic",
+                            "name": "list",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "PostCreateResponse",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "Model.Post",
+                            "name": "created",
+                            "id": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "PostListResponse",
+                    "fields": [
+                        {
+                            "rule": "repeated",
+                            "type": "Model.Post",
                             "name": "list",
                             "id": 1
                         }
@@ -1469,6 +1539,18 @@
                                 {
                                     "name": "TopicList_DatabaseError",
                                     "id": 60
+                                },
+                                {
+                                    "name": "PostCreate_DatabaseError",
+                                    "id": 70
+                                },
+                                {
+                                    "name": "PostCreate_NoPersonaError",
+                                    "id": 71
+                                },
+                                {
+                                    "name": "PostList_DatabaseError",
+                                    "id": 80
                                 }
                             ]
                         }
@@ -1494,12 +1576,6 @@
                             "type": "LoginRequest",
                             "name": "login_request",
                             "id": 3
-                        },
-                        {
-                            "rule": "optional",
-                            "type": "PostRequest",
-                            "name": "post_request",
-                            "id": 4
                         },
                         {
                             "rule": "optional",
@@ -1563,6 +1639,18 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "PostCreateRequest",
+                            "name": "post_create_request",
+                            "id": 15
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "PostListRequest",
+                            "name": "post_list_request",
+                            "id": 16
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Error",
                             "name": "error",
                             "id": 30
@@ -1572,12 +1660,6 @@
                             "type": "LoginResponse",
                             "name": "login_response",
                             "id": 31
-                        },
-                        {
-                            "rule": "optional",
-                            "type": "PostResponse",
-                            "name": "post_response",
-                            "id": 32
                         },
                         {
                             "rule": "optional",
@@ -1641,6 +1723,18 @@
                         },
                         {
                             "rule": "optional",
+                            "type": "PostCreateResponse",
+                            "name": "post_create_response",
+                            "id": 43
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "PostListResponse",
+                            "name": "post_list_response",
+                            "id": 44
+                        },
+                        {
+                            "rule": "optional",
                             "type": "Post",
                             "name": "post_notify",
                             "id": 61
@@ -1657,10 +1751,6 @@
                                 {
                                     "name": "LoginRequest",
                                     "id": 1
-                                },
-                                {
-                                    "name": "PostRequest",
-                                    "id": 2
                                 },
                                 {
                                     "name": "FetchRequest",
@@ -1703,12 +1793,16 @@
                                     "id": 12
                                 },
                                 {
-                                    "name": "LoginResponse",
-                                    "id": 31
+                                    "name": "PostCreateRequest",
+                                    "id": 13
                                 },
                                 {
-                                    "name": "PostResponse",
-                                    "id": 32
+                                    "name": "PostListRequest",
+                                    "id": 14
+                                },
+                                {
+                                    "name": "LoginResponse",
+                                    "id": 31
                                 },
                                 {
                                     "name": "FetchResponse",
@@ -1749,6 +1843,14 @@
                                 {
                                     "name": "TopicListResponse",
                                     "id": 42
+                                },
+                                {
+                                    "name": "PostCreateResponse",
+                                    "id": 43
+                                },
+                                {
+                                    "name": "PostListResponse",
+                                    "id": 44
                                 },
                                 {
                                     "name": "PostNotify",

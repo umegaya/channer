@@ -32,13 +32,13 @@ class L10n {
         this.dict = dict;
         this.settings = null;
         L10n.supportedLanguages = {
-            "en": JSON.parse(require("./l10n/lang/en.json")),
-            "ja": JSON.parse(require("./l10n/lang/ja.json")),
-            "ko": JSON.parse(require("./l10n/lang/ko.json")),
-            "zh_Hant": JSON.parse(require("./l10n/lang/zh_Hant.json")),
-            "zh_Hans": JSON.parse(require("./l10n/lang/zh_Hans.json")),
+            "en": require("./l10n/lang/en.json"),
+            "ja": require("./l10n/lang/ja.json"),
+            "ko": require("./l10n/lang/ko.json"),
+            "zh_Hant": require("./l10n/lang/zh_Hant.json"),
+            "zh_Hans": require("./l10n/lang/zh_Hans.json"),
         };
-        this.supported = JSON.parse(require("./l10n/supported.json"));
+        this.supported = require("./l10n/supported.json");
         for (var k in this.supported) {
             var v = this.supported[k];
             if (!L10n.supportedLanguages[v]) {
@@ -128,5 +128,5 @@ class L10n {
         return null;
     }
 }
-window.channer.l10n = new L10n(navigator.globalization, JSON.parse(require("./l10n/data.json")));
+window.channer.l10n = new L10n(navigator.globalization, require("./l10n/data.json"));
 window.channer.jsloader_promise = window.channer.l10n.setuplang();

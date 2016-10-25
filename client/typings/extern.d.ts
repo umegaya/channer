@@ -11,6 +11,7 @@
 /// <reference path="./react-router/history.d.ts"/>
 /// <reference path="./react-router/react-router.d.ts"/>
 /// <reference path="./material-ui/material-ui.d.ts"/>
+/// <reference path="./highlightjs/highlightjs.d.ts"/>
 /// <reference path="./react-swipeable-views/react-swipeable-views.d.ts"/>
 /// <reference path="./protobuf.d.ts"/>
 /// <reference path="./long/long.d.ts"/>
@@ -33,6 +34,7 @@ interface ChannerModules {
 	m: _mithril.MithrilStatic;
     Hammer: HammerStatic;
 	ProtoBuf: any;
+    MarkdownParser: any;
 	timer: any/*Timer*/;
 	settings: any/*UserSettings*/;
 	push: any/*Push*/;
@@ -76,6 +78,7 @@ interface ChannerModules {
 	}
     parts: {
         Scroll: UI.Component;
+        Markdown: UI.Component;
         Button: UI.Component;
         TextField: UI.Component;
         Tabs: UI.Component;

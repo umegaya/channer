@@ -119,7 +119,7 @@ message Model {
 		required fixed64 persona = 3 [(gogoproto.casttype) = "UUID"];//persona who post it.
 		required string locale = 4;
 		required uint64 attr = 5;//attr flag (banned or something)
-		required fixed32 point = 6;
+		required sfixed32 point = 6;
 		required fixed32 vote = 7;
 		required string content = 8;//posted text TODO: parse it and store metadata to body
 		required bytes body = 9; //packed Body message
@@ -183,12 +183,6 @@ message LoginRequest {
 	optional string rescue = 10 [(gogoproto.nullable) = true]; //to recover accout
 }
 
-message PostRequest {
-	required fixed64 topic_id = 1 [(gogoproto.casttype) = "UUID"];
-	required uint64 walltime = 2;
-	required Post post = 3;
-}
-
 message FetchRequest {
 	required HLC start_at = 1;
 	optional HLC end_at = 2;
@@ -242,7 +236,7 @@ message ChannelListRequest {
 
 message TopicCreateRequest {
 	required fixed64 channel = 1 [(gogoproto.casttype) = "UUID"];
-	required string name = 2;
+	required string title = 2;
 	required string content = 3;
 }
 
@@ -266,6 +260,24 @@ message TopicListRequest {
 	optional int32 limit = 4;
 	optional int32 offset_score = 5;
 	optional fixed64 offset_id = 6 [(gogoproto.casttype) = "UUID", (gogoproto.nullable) = true];
+	optional fixed64 channel = 7 [(gogoproto.casttype) = "UUID", (gogoproto.nullable) = true];
+}
+
+message PostCreateRequest {
+	required fixed64 topic = 1 [(gogoproto.casttype) = "UUID"];
+	required string content = 2;
+}
+
+message PostListRequest {
+	enum QueryType {
+		None = 0;
+		New = 1;
+		Popular = 2;
+	}
+	required QueryType query = 1;
+	required fixed64 topic = 2 [(gogoproto.casttype) = "UUID"];
+	optional int32 limit = 3;
+	optional fixed64 offset_id = 4 [(gogoproto.casttype) = "UUID", (gogoproto.nullable) = true];
 }
 
 
@@ -276,10 +288,6 @@ message LoginResponse {
 	optional string pass = 3 [(gogoproto.nullable) = true];
 	optional string mail = 4 [(gogoproto.nullable) = true];
 	optional string user = 5 [(gogoproto.nullable) = true];
-}
-
-message PostResponse {
-	required HLC posted_at = 1;
 }
 
 message FetchResponse {
@@ -320,6 +328,14 @@ message TopicListResponse {
 	repeated Model.Topic list = 1;
 }
 
+message PostCreateResponse {
+	required Model.Post created = 1;
+}
+
+message PostListResponse {
+	repeated Model.Post list = 1;
+}
+
 
 //response error
 message Error {
@@ -349,6 +365,11 @@ message Error {
 		TopicCreate_NoPersonaError = 51;
 
 		TopicList_DatabaseError = 60;
+
+		PostCreate_DatabaseError = 70;
+		PostCreate_NoPersonaError = 71;
+
+		PostList_DatabaseError = 80;
 	}
 	required Type type = 1;
 	optional string explanation = 2;
@@ -366,17 +387,19 @@ message Error {
 message Payload {
 	enum Type { 
 		Unknown = 0;
-		LoginRequest = 1; PostRequest = 2; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7; 
+		LoginRequest = 1; FetchRequest = 3; ReadRequest = 4; EnterTopicRequest = 5; ExitTopicRequest = 6; PingRequest = 7; 
 		RescueRequest = 8; ChannelCreateRequest = 9; ChannelListRequest = 10; TopicCreateRequest = 11; TopicListRequest = 12;
-		LoginResponse = 31; PostResponse = 32; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37; 
+		PostCreateRequest = 13; PostListRequest = 14;
+
+		LoginResponse = 31; FetchResponse = 33; ReadResponse = 34; EnterTopicResponse = 35; ExitTopicResponse = 36; PingResponse = 37; 
 		RescueResponse = 38; ChannelCreateResponse = 39; ChannelListResponse = 40; TopicCreateResponse = 41; TopicListResponse = 42;
+		PostCreateResponse = 43; PostListResponse = 44;
 		PostNotify = 61;
 		Error = 101;
 	}
 	required Type type = 1;
 	optional uint32 msgid = 2;
 	optional LoginRequest login_request = 3;
-	optional PostRequest post_request = 4;
 	optional FetchRequest fetch_request = 5;
 	optional ReadRequest read_request = 6;
 	optional EnterTopicRequest enter_topic_request = 7;
@@ -387,11 +410,12 @@ message Payload {
 	optional ChannelListRequest channel_list_request = 12;
 	optional TopicCreateRequest topic_create_request = 13;
 	optional TopicListRequest topic_list_request  = 14;
+	optional PostCreateRequest post_create_request = 15;
+	optional PostListRequest post_list_request = 16;
 
 	optional Error error = 30;
 
 	optional LoginResponse login_response = 31;
-	optional PostResponse post_response = 32;
 	optional FetchResponse fetch_response = 33;
 	optional ReadResponse read_response = 34;
 	optional EnterTopicResponse enter_topic_response = 35;
@@ -402,6 +426,9 @@ message Payload {
 	optional ChannelListResponse channel_list_response = 40;
 	optional TopicCreateResponse topic_create_response = 41;
 	optional TopicListResponse topic_list_response = 42;
+	optional PostCreateResponse post_create_response = 43;
+	optional PostListResponse post_list_response = 44;
+
 
 	optional Post post_notify = 61;
 }

@@ -117,7 +117,8 @@ gulp.task("webpack-watch", function() {
       stats: {
         colors: true,
         reasons: true
-      }
+      },
+      headers: { "Access-Control-Allow-Origin": "*" },      
     }).listen(port, server, function(err) {
         if(err) throw new util.PluginError("webpack:serve", err);
         // Server listening

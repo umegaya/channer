@@ -31,6 +31,8 @@ window.channer.hash = require('jshashes');
 //window.channer.parts.TextField = require('polythene/textfield/textfield');
 //window.channer.parts.Tabs = require('polythene/tabs/tabs');
 //window.channer.parts.Radio = require('polythene/radio-button/radio-button');
+window.channer.parts.Scroll = require('react-list');
+window.channer.parts.Markdown = require('react-markdown-it');
 
 //utility method for member ByteBuffer of protobuf data structure.  
 window.channer.ProtoBuf.ByteBuffer.prototype.slice = 
