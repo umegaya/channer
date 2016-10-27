@@ -26,11 +26,11 @@ module.exports = function (settings) {
             extensions: ['', '.ts', '.tsx', '.js', '.proto', '.css'],
             modulesDirectories: ["node_modules", "src/proto"],
             alias: {
-                protobufjs: __root + "/node_modules/protobufjs/dist/ProtoBuf-light.js",
-                Long: __root + "/node_modules/protobufjs/node_modules/bytebuffer/node_modules/long/dist/Long.js",
-                long: __root + "/node_modules/protobufjs/node_modules/bytebuffer/node_modules/long/dist/Long.js",
-                ByteBuffer: __root + "/node_modules/protobufjs/node_modules/bytebuffer/dist/ByteBufferAB.js",
-                bytebuffer: __root + "/node_modules/protobufjs/node_modules/bytebuffer/dist/ByteBufferAB.js",
+                //protobufjs: __root + "/node_modules/protobufjs/dist/ProtoBuf-light.js",
+                //Long: __root + "/node_modules/protobufjs/node_modules/bytebuffer/node_modules/long/dist/Long.js",
+                //long: __root + "/node_modules/protobufjs/node_modules/bytebuffer/node_modules/long/dist/Long.js",
+                //ByteBuffer: __root + "/node_modules/protobufjs/node_modules/bytebuffer/dist/ByteBufferAB.js",
+                //bytebuffer: __root + "/node_modules/protobufjs/node_modules/bytebuffer/dist/ByteBufferAB.js",
                 "mithril.animate": __root + "/node_modules/mithril.animate/dist/mithril.animate.js",
                 "mithril.bindings": __root + "/node_modules/mithril.animate/node_modules/mithril.bindings/dist/mithril.bindings.js",
             }

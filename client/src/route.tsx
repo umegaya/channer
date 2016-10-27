@@ -1,7 +1,7 @@
 /// <reference path="../typings/extern.d.ts"/>
 import * as React from 'react'
 import { render } from 'react-dom'
-import { Router, Route, browserHistory, hashHistory } from 'react-router'
+import { Router, Route, hashHistory } from 'react-router'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { TopComponent } from './comps/top'

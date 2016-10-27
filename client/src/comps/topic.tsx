@@ -1,6 +1,7 @@
 /// <reference path="../../typings/extern.d.ts"/>
 import {PageProp, PageState, PageComponent} from "./common/page"
 import {PropCollectionFactory, PropCollection, prop} from "../input/prop"
+import {EditComponent} from "../input/edit";
 import {PostCollection, PostElementComponent} from "./lists/post"
 import {ListComponent, ListScrollState} from "./common/scroll"
 var _L = window.channer.l10n.translate;
@@ -60,6 +61,7 @@ export class TopicComponent extends PageComponent<TopicProp, TopicState> {
                 scrollState={TopicComponent.state.scroll}
                 noCanvas={true}
             />
+            <EditComponent/>
         </div>;
     }
 }

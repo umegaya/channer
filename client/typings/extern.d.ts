@@ -16,6 +16,8 @@
 /// <reference path="./protobuf.d.ts"/>
 /// <reference path="./long/long.d.ts"/>
 /// <reference path="./webpack-runtime.d.ts"/>
+/// <reference path="./immutable/immutable.d.ts"/>
+/// <reference path="./draft-js/draft-js.d.ts"/>
 
 interface Window {
     channer: ChannerModules;

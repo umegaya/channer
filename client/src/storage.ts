@@ -188,7 +188,7 @@ export class Database {
 	db: IDBDatabase;
 	constructor(name: string) {
 		this.name = name;
-		this.indexedDB = window.indexedDB || window.msIndexedDB;
+		this.indexedDB = window.indexedDB;
 	}
 	static promisify<T>(req: IDBRequest): Promise<T> {
 		return new Promise((resolve: (ev: any) => void, reject: (error: any) => void) => {
