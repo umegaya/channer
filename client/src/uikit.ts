@@ -1,38 +1,11 @@
 /// <reference path="../typings/extern.d.ts"/>
 
-export var m : _mithril.MithrilStatic = window.channer.m;
 export var Hammer: HammerStatic = window.channer.Hammer;
 var _L = window.channer.l10n.translate;
 var _LD = window.channer.l10n.translateDate;
 import ChannerProto = Proto2TypeScript.ChannerProto;
 
 export class Util {
-	static route(dest: string, params?: any, options?: {
-            route_only?: boolean; 
-            replace_history?: boolean; 
-    }) {
-        //console.error("route to:" + dest);
-        options = options || {};
-		if (!options.route_only) {
-            if (!dest) {
-                console.error("invalid dest from");
-            }
-			window.channer.settings.values.last_url = dest;
-            console.log("last_page_url check:" + 
-                (dest.indexOf("/menu") < 0 && dest.indexOf("menu=on") < 0) + "|" + 
-                (window.channer.settings.values.last_page_url != dest) + "|" + 
-                dest + "|" + 
-                window.channer.settings.values.last_page_url);
-            
-            if ((dest.indexOf("/menu") < 0 && dest.indexOf("menu=on") < 0) &&
-                (window.channer.settings.values.last_page_url != dest)) {
-                console.log("lastpageurl:" + dest);
-                window.channer.settings.values.last_page_url = dest;
-            }
-			window.channer.settings.save();
-		}
-		m.route(dest, params, options.replace_history);
-	}
 	static restart_app() {
 		document.location.pathname = "/";
 		document.location.reload();

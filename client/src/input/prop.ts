@@ -53,11 +53,11 @@ export class PropCollection implements Persistable {
         else {
             //trigger redraw
             this.loadprop().then(() => { 
-                m.endComputation(); 
+                //m.endComputation(); 
                 return null;
             }, (e: Error) => {
             console.log("PropCollection init error by " + e.message);
-                m.endComputation();             
+                //m.endComputation();             
                 return null;
             });
         }

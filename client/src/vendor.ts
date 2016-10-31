@@ -9,9 +9,7 @@ var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
 window.channer.ProtoBuf = require('protobufjs');
-window.channer.m = require('mithril');
 //window.m must exist for initializing some of mithril plugin
-window.m = window.channer.m;
 //window.channer.mtransit = require('mithril-transition');
 //(require('mithril.bindings'))(window.channer.m);
 //require('mithril.animate');
@@ -31,6 +29,8 @@ window.channer.hash = require('jshashes');
 //window.channer.parts.TextField = require('polythene/textfield/textfield');
 //window.channer.parts.Tabs = require('polythene/tabs/tabs');
 //window.channer.parts.Radio = require('polythene/radio-button/radio-button');
+window.channer.parts.Button = require('material-ui/RaisedButton');
+window.channer.parts.TextField = require('material-ui/TextField');
 window.channer.parts.Scroll = require('react-list');
 window.channer.parts.Markdown = require('react-markdown-it');
 /* 

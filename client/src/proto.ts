@@ -2,7 +2,7 @@
 import {Socket, Manager} from "./socket"
 import {ProtoWatcher, ProtoError, Model} from "./watcher"
 import {Timer} from "./timer"
-import {m, Util} from "./uikit"
+import {Util} from "./uikit"
 import {errorMessages} from "./error"
 import * as Promise from "bluebird"
 
@@ -48,11 +48,6 @@ export class Handler {
 		return this.msgid_seed;
 	}
 	private redraw = () => {
-        m.startComputation()
-		setTimeout(() => {
-            this.querying = ChannerProto.Payload.Type.Unknown;
-			m.endComputation();
-		}, 1);
 	}
     private debug_close = (error_count: number) => {
         this.socket.debug_close(error_count);
@@ -94,7 +89,6 @@ export class Handler {
 		});
 	}
 	private ontimer = (nowms: number) => {
-		/*
         if (this.socket.next_connection || !this.socket.connected()) {
             this.redraw();
         }
@@ -111,7 +105,6 @@ export class Handler {
 			this.reauth();
 			this.last_auth = nowms;
 		}
-		*/
 	}
 	private reauth = () => {
 		/*var current = m.route();

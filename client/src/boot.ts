@@ -2,7 +2,7 @@
 import {Handler} from "./proto"
 import {Config, UserSettings, UserSettingsValues} from "./config"
 import {Timer} from "./timer"
-import {m, Util} from "./uikit"
+import {Util} from "./uikit"
 import {Push, PushReceiver} from "./push"
 import {Storage, StorageIO, Database} from "./storage"
 
