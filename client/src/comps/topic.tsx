@@ -1,9 +1,10 @@
 /// <reference path="../../typings/extern.d.ts"/>
 import {PageProp, PageState, PageComponent} from "./common/page"
 import {PropCollectionFactory, PropCollection, prop} from "../input/prop"
-import {EditComponent} from "../input/edit";
+import {EditComponent} from "./common/edit";
 import {PostCollection, PostElementComponent} from "./lists/post"
 import {ListComponent, ListScrollState} from "./common/scroll"
+import {Handler, Builder} from "../proto"
 var _L = window.channer.l10n.translate;
 import ChannerProto = Proto2TypeScript.ChannerProto;
 var Long = window.channer.ProtoBuf.Long;
@@ -52,6 +53,16 @@ export class TopicComponent extends PageComponent<TopicProp, TopicState> {
         }
         TopicComponent.state.posts.set_topic_id(id);
     }
+    on_send_post = (state: ReactRTE.EditorValue) => {
+        console.log("on_send_post: " + state.toString('markdown'));
+        var conn: Handler = window.channer.conn;
+        conn.post_create(TopicComponent.state.posts.topic_id, state.toString('markdown')).
+        then((r: ChannerProto.PostCreateResponse) => {
+            console.log("on_send_post success");
+        }, (e: Error) => {
+            console.log("on_send_post: fail " + e.message);
+        });
+    }
     render(): UI.Element {
         return <div className="topic">
             <ListComponent
@@ -61,7 +72,14 @@ export class TopicComponent extends PageComponent<TopicProp, TopicState> {
                 scrollState={TopicComponent.state.scroll}
                 noCanvas={true}
             />
-            <EditComponent/>
+            <div className="editor">
+                <EditComponent onSend={this.on_send_post}/>
+            </div>
         </div>;
+            /*
+            <div className="editor">
+                <EditComponent/>
+            </div>
+            */
     }
 }

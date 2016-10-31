@@ -8,12 +8,15 @@ import (
 )
 
 func ProcessPostCreate(from Source, msgid uint32, req *proto.PostCreateRequest, t Transport) {
+		log.Printf("ProcessPostCreate");
+
 	p, err := models.NewPost(models.DBM(), from.Account(), req)
 	if err != nil {
 		log.Printf("err: %v", err);
 		SendError(from, msgid, err)
 		return
 	}
+		log.Printf("ProcessPostCreate success");
 	//send post notification to all member in this Topic
 	from.Send(&proto.Payload {
 		Type: proto.Payload_PostCreateResponse,

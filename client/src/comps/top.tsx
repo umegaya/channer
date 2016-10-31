@@ -10,7 +10,6 @@ var _L = window.channer.l10n.translate;
 
 //matrial ui
 import * as React from 'react'
-import { withRouter } from 'react-router'
 import {Tabs, Tab} from "material-ui/Tabs"
 import FontIcon from 'material-ui/FontIcon';
 

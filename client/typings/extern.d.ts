@@ -18,6 +18,7 @@
 /// <reference path="./webpack-runtime.d.ts"/>
 /// <reference path="./immutable/immutable.d.ts"/>
 /// <reference path="./draft-js/draft-js.d.ts"/>
+/// <reference path="./draft-js/react-rte.d.ts"/>
 
 interface Window {
     channer: ChannerModules;
@@ -81,6 +82,7 @@ interface ChannerModules {
     parts: {
         Scroll: UI.Component;
         Markdown: UI.Component;
+        RichTextEditor: UI.Component;
         Button: UI.Component;
         TextField: UI.Component;
         Tabs: UI.Component;

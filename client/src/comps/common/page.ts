@@ -1,9 +1,10 @@
 /// <reference path="../../../typings/extern.d.ts"/>
 import * as React from 'react'
 import { render } from 'react-dom'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps, InjectedRouter } from 'react-router'
 
 export interface PageProp extends RouteComponentProps<any, any> {
+    router: InjectedRouter;
 }
 
 export interface PageState {
@@ -16,11 +17,12 @@ export class PageComponent<P extends PageProp, S extends PageState> extends Reac
     route = (path: string, options?: {
         replace: boolean;
     }): void => {
+        //250ms delay to show ripple
         setTimeout(() => {
             if (options && options.replace) {
-                return this.props.history.replace(path);
+                return this.props.router.replace(path);
             } else {
-                return this.props.history.push(path);
+                return this.props.router.push(path);
             }
         }, 250);
     }

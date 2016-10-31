@@ -33,6 +33,15 @@ window.channer.hash = require('jshashes');
 //window.channer.parts.Radio = require('polythene/radio-button/radio-button');
 window.channer.parts.Scroll = require('react-list');
 window.channer.parts.Markdown = require('react-markdown-it');
+/* 
+    refer default for work around with following react error
+    ```
+    Element type is invalid: expected a string (for built-in components) or 
+    a class/function (for composite components) but got: object. 
+    Check the render method of `EditComponent`
+    ```
+*/
+window.channer.parts.RichTextEditor = require('react-rte').default;
 
 //utility method for member ByteBuffer of protobuf data structure.  
 window.channer.ProtoBuf.ByteBuffer.prototype.slice = 
