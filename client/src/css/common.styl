@@ -10,6 +10,9 @@ outline-text(w, c)
     
 shadowing()
     box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28)
+    
+body
+    margin: 0px
 
 .title-h1
     font-size: 130%
@@ -24,6 +27,38 @@ shadowing()
 
 .pe-textfield
     width: 96vw
+    
+.pe-button--text 
+    .pe-button__label
+        min-height: 48px
+        padding: 17px 0
 
 .scroll-container
-    height: 88vh
+    height: 91vh
+    
+.stop-scrolling
+    height: 100%
+    overflow: hidden
+
+#app
+    width: 100vw
+    height: 100vh
+    
+.listview
+    .block
+        border-bottom: solid 1px
+        border-color: #aaa
+
+.pulldown
+    .listview
+        .block
+            padding-top: 3vh
+            height: 10vh
+            text-align: center
+    .scroll-container
+        z-index: 10
+        position: absolute
+        top: 6vh
+        width: 96vw
+        background-color: rgba(255, 255, 255, 1)
+        shadowing()

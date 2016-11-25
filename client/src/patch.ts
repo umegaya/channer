@@ -1,6 +1,6 @@
 /// <reference path="../typings/extern.d.ts"/>
 import {FS} from "./fs";
-import Q = require('q');
+import * as Promise from "bluebird"
 
 class Version {
     name: string;
@@ -23,58 +23,59 @@ class Patcher {
         this.fs = fs;
         this.download_always = debug;
     }
-    update = (baseUrl: string, vs: Versions): Q.Promise<any> => {
+    update = (baseUrl: string, vs: Versions): Promise<any> => {
         //create assets directory if not exists
-        var df: Q.Deferred<DirectoryEntry> = Q.defer<DirectoryEntry>();
-        //no rootDir needed. otherwise FileNotFound error raise
-        return this.fs.opendir('assets', {create:true})
-        .then(() => {
-            var loaders : Q.Promise<FileEntry>[] = [];
-            for (var i in vs) {
-                var ent = vs[i];
-                var name: string = ent.name;
-                var ext: string = ent.ext;
-                var dest: string = 'assets/' + name + "." + ext;
-                if (vs[i].updated) {
-                    var src: string = baseUrl + "/assets/" + name + "." + ent.hash + "." + ent.ext;
-                    console.log("download:" + src + " => " + dest);
-                    loaders.push(this.fs.download(src, dest));
-                }
-                else {
-                    //console.log("load:" + dest);
-                    loaders.push(this.fs.openfile(dest));
-                }
-            }
-            return Q.all(loaders).then((entries : Array<FileEntry>) => {
-                entries.shift(); //prevent patch.js from loading
-                if (entries.length > 0) {
-                    //setup sequencial js loader (because halfway loaded js may cause error)
-                    var promise : Q.Promise<any> = this.fs.load(entries[0]);
-                    //for working with messy spec of javascript closure...
-                    var _loadnext = (ent: FileEntry) => {
-                        return (loadedjs: FileEntry) => {
-                            return this.fs.load(ent);
-                        }                   
+        return new Promise<any>((resolve: (e: any) => void, reject: (err: any) => void) => {
+            //no rootDir needed. otherwise FileNotFound error raise
+            return this.fs.opendir('assets', {create:true})
+            .then(() => {
+                var loaders : Promise<FileEntry>[] = [];
+                for (var i in vs) {
+                    var ent = vs[i];
+                    var name: string = ent.name;
+                    var ext: string = ent.ext;
+                    var dest: string = 'assets/' + name + "." + ext;
+                    if (vs[i].updated) {
+                        var src: string = baseUrl + "/assets/" + name + "." + ent.hash + "." + ent.ext;
+                        console.log("download:" + src + " => " + dest);
+                        loaders.push(this.fs.download(src, dest));
                     }
-                    for (var i = 1; i < entries.length; i++) {
-                        var ent = entries[i];
-                        var idx = i;
-                        promise = promise.then(_loadnext(ent));
+                    else {
+                        //console.log("load:" + dest);
+                        loaders.push(this.fs.openfile(dest));
                     }
-                    return promise;
                 }
-                return true;
+                return Promise.all(loaders).then((entries : Array<FileEntry>) => {
+                    entries.splice(0, 2); //prevent commons.js and patch.js from loading
+                    if (entries.length > 0) {
+                        //setup sequencial js loader (because halfway loaded js may cause error)
+                        var promise : Promise<FileEntry> = this.fs.load(entries[0]);
+                        //for working with messy spec of javascript closure...
+                        var _loadnext = (ent: FileEntry) => {
+                            return (loadedjs: FileEntry): Promise<FileEntry> => {
+                                return this.fs.load(ent);
+                            }                   
+                        }
+                        for (var i = 1; i < entries.length; i++) {
+                            var ent = entries[i];
+                            var idx = i;
+                            promise = promise.then(_loadnext(ent));
+                        }
+                        promise.then(resolve);
+                    } else {
+                        resolve(this);
+                    }
+                });
             });
         });
     }
-    patch = (baseUrl: string) : Q.Promise<any> => {
+    patch = (baseUrl: string) : Promise<any> => {
         var next : Config;
         var prev : Config;
         var apply : Versions = [];
         return this.fs.openfile('config.json.next')
         .then(this.fs.readfile)
         .then((nextData: string) => {
-            var df: Q.Deferred<FileEntry> = Q.defer<FileEntry>();
             next = JSON.parse(nextData);
             //create if not exists current config.json.
             //no rootDir needed. otherwise FileNotFound error raise
@@ -126,7 +127,7 @@ window.channer.patch = function (loaderURL: string, onfinished: (config: any) =>
     var patcher = new Patcher(window.channer.fs, debug);
     patcher.patch(loaderURL).then(function (config: any) {
         if (!config.url) {
-            config.url = loaderURL.replace(/[0-9]+$/, "8888").replace(/^http/, "wss") + "/ws";
+            config.url = loaderURL.replace(/[0-9]+$/, "8888").replace(/^http/, "ws") + "/ws";
         }
         console.log("end patch: endpoint = " + config.url);
         onfinished(config);

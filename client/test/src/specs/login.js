@@ -21,11 +21,10 @@ module.exports = {
             .assert.elementPresent('.login .input-text.mail')
             .assert.elementPresent('.login button.disabled')
             .execute(function () {
-                if (window.channer.mobile) {
+                if (window.channer.app) {
                     return ["should not be mobile"];
                 }
-                var current = window.channer.components.active;
-                if (current.component.next_url != "/top") {
+                if (window.channer.m.route().contains("top")) {
                     return ["login component should be loaded correctly"];
                 }
                 var expect_keys = [
@@ -62,9 +61,8 @@ module.exports = {
             .assert.elementNotPresent('.login')
             .assert.elementPresent('.top')
             .execute(function (user, mail) {
-                var current = window.channer.components.active;
-                if (!(current.component instanceof window.channer.components.Top)) {
-                    return ["channel component should be loaded"];
+                if (window.channer.m.route().contains("top")) {
+                    return ["top component should be loaded"];
                 }
                 if (window.channer.settings.values.user != user) {
                     return ["username should be same as specified:" + user + "|" + 
@@ -120,8 +118,7 @@ module.exports = {
             .pause(common.LOAD_PAUSE)
             .execute(function (baseurl) {
                 try {
-                    var current = window.channer.components.active;
-                    if (!(current.component instanceof window.channer.components.Rescue)) {
+                    if (window.channer.m.route().contains("rescue")) {
                         return ["rescue component should be loaded"];
                     }
                     var url = current.ctrl.url()
@@ -155,9 +152,8 @@ module.exports = {
             .url(context.rescue_url)
             .pause(common.LOAD_PAUSE)
             .execute(function (username, mail, password, secret, account) {
-                var current = window.channer.components.active;
-                if (!(current.component instanceof window.channer.components.Top)) {
-                    return ["channel component should be loaded"];
+                if (window.channer.m.route().contains("top")) {
+                    return ["top component should be loaded"];
                 }
                 if (window.channer.settings.values.user != username) {
                     return ["username should be same as specified"];

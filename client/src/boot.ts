@@ -2,16 +2,18 @@
 import {Handler} from "./proto"
 import {Config, UserSettings, UserSettingsValues} from "./config"
 import {Timer} from "./timer"
-import {m, Util, Router} from "./uikit"
+import {Util} from "./uikit"
 import {Push, PushReceiver} from "./push"
-import {Storage, StorageIO} from "./storage"
-import {HelpComponent} from "./components/help"
+import {Storage, StorageIO, Database} from "./storage"
 
 //for debug. remove user setting
 var truncate_settings = window.environment.match(/test/);
 
+var errRaiser = (): any => {
+	throw new Error("errRaiser!!");
+}
+
 window.channer.bootstrap = function (config: any) {	
-    console.log("bootstrap");
 	//create system modules
 	var c : Config = new Config(config);
 	var t : Timer = new Timer();
@@ -28,6 +30,7 @@ window.channer.bootstrap = function (config: any) {
 			console.log("push: onerror:" + resp.message);	
 		},
 	});
+	var d : Database = new Database("channer");
 	var setting_io : StorageIO = null;
 	//store system modules to global namespace
 	window.channer.conn = h;
@@ -35,6 +38,7 @@ window.channer.bootstrap = function (config: any) {
 	window.channer.config = c;
 	window.channer.push = p;
 	window.channer.storage = s;
+	window.channer.database = d;
 	//build bootstrap chain
 	s.open(c.user_settings_path, {create: true})
 	.then((io: StorageIO) => {
@@ -49,19 +53,28 @@ window.channer.bootstrap = function (config: any) {
 		}
 		u.values.init();
 		window.channer.settings = u;
-        return p.start(window.channer.mobile);  
+        return p.start(window.channer.app);  
 	}, (e: Error) => {
 		console.log("user setting broken. remove all");
 		setting_io.rm();
-		throw e;
-		//never reach here. to make compiler feel good. :<
-        return p.start(window.channer.mobile);  
+        return errRaiser();
 	})
 	.then((resp: PhonegapPluginPush.RegistrationEventResponse) => {
 		window.channer.settings.values.device_id = resp.registrationId;
 		return window.channer.settings.save();
 	})
 	.then(() => {
+		return window.channer.database.initialize((db: Database, oldv: number) => {
+			console.log("database oldv = " + oldv);
+			switch (oldv) {
+			case 0:
+				console.log("database initialize: ver 0");
+				db.open("settings", { keyPath: "key" }, true);
+				db.open("votes", { keyPath: "id" }, true);
+			}
+		}, truncate_settings);
+	})
+	.then((db: Database) => {
 		return window.channer.fs.applycss("base", require("./css/main.styl"));
 	})
 	.then(() => {
@@ -70,25 +83,9 @@ window.channer.bootstrap = function (config: any) {
 		//startup timer and network
 		t.start(c.timer_resolution_ms);
 		h.resume();
-		m.route.mode = "hash"; //prevent from refreshing page when route changes.
 		//setup client router
-		var last_url: string = window.channer.settings.values.last_url;
-		var start_url: string = last_url ? ("/login?next=" + last_url) : "/login"; 
-        //typescript wrongly resolve m.route signature here. so explicit cast required.
-        var top = new window.channer.components.Top(c);
-        var login = new window.channer.components.Login(c);
-        var ch = new window.channer.components.Channel(c);
-		(<Router>m.route)(document.body, start_url, {
-			"/login":            login,
-			"/rescue":           new window.channer.components.Rescue(c),
-			"/rescue/:rescue":   login,
-			"/help/:title":      new HelpComponent(c),
-            "/top":              top,
-			"/top/:tab":         top,
-			"/channel/:ch":      ch,
-			"/channel/:ch/:tab": ch,
-			"/topic/:id":        new window.channer.components.Topic(c),
-		});
+		window.channer.router();
+		return null;
 	})
 	.done(null, (e: Error) => {
 		console.log("bootstrap error: " + e.message);

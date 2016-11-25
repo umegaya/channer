@@ -65,8 +65,8 @@
     "please enter user name": {
         "ja": "ユーザー名を入力してください。"
     },
-    "sending request now": {
-        "ja": "リクエスト送信中"
+    "sending request now $1": {
+        "ja": "リクエスト送信中:$1"
     },
     "reconnect within $1 second": {
         "ja": "あと$1秒後に再接続します"
@@ -124,5 +124,26 @@
     },
     "Back": {
         "ja": "戻る"
+    },
+    "Next": {
+        "ja": "次へ"
+    },
+    "Add Description": {
+        "ja": "説明を追加"
+    },
+    "Category": {
+        "ja": "カテゴリー"
+    },
+    "Priority Locale": {
+        "ja": "優先する言語"
+    },
+    "Locale": {
+        "ja": "地域"
+    },
+    "All": {
+        "ja": "すべて"
+    },
+    "Language" : {
+        "ja": "言語"
     }
 }

@@ -7,12 +7,15 @@ window.channer = {
 	components: {
         active: {},
     },
-    parts: {
-        
-    },
+    parts: {},
+	rparts: {},
+    category: {},
 	mobile: document.URL.indexOf('http://') < 0 && document.URL.indexOf('https://') < 0,
     testtmp: {},
+	chaos: false,
 };
+
+console.log("js loaded");
 
 function initfs(quota, bootstrap) {
     if (navigator.webkitPersistentStorage) {
@@ -33,6 +36,7 @@ document.addEventListener("deviceready", function () {
 	if (env && env[1]) {
 		console.log("set app environment = " + env[1]);
 		window.environment = env[1];
+		window.channer.chaos = window.environment.match(/chaos/);
 	}
 	document.addEventListener("resume", function () {
 		window.channer.onResume.forEach(function (f){ f(); })	
@@ -56,7 +60,7 @@ document.addEventListener("deviceready", function () {
 				throw new Error((error && error.message) ? error.message : "dummy");
 			}
 			catch (e) {
-				console.log("env = " + window.environment + "|" + window.channer.mobile);
+				console.log("env = " + window.environment + "|" + window.channer.app);
 				alert("this device under bad network connection. " + 
 					"go to the place where provides good connection, then retry. " + 
 					"error at " + e.stack);
@@ -69,7 +73,7 @@ document.addEventListener("deviceready", function () {
 		    var config_url = window.endpoint + "/assets/config.json";
 			try {
 				ft.download(encodeURI(config_url), fs.root.toURL() + "config.json.next", function(entry) {
-					if (window.environment.match(/chaos/) && Math.random() < 0.1) {
+					if (window.channer.chaos && Math.random() < 0.1) {
 						launch(new Error());
 						return;
 					}
@@ -106,36 +110,59 @@ document.addEventListener("deviceready", function () {
 				}
 			})
 		}
+		
+		function execute_patcher(ev) {
+			window.channer.patch(window.endpoint, function (config) {
+				console.log("end patch");
+				try {
+					window.channer.bootstrap(config);
+				}
+				catch (e) {
+					console.log("bootstrap error: " + e.message);
+				}
+			}, function (error) {
+				console.log("bootstrap fails:" + JSON.stringify(error));
+				//broken script?
+				//remove config.json => retry from first
+				remove_config(launch);
+			});
+		}
+		
+		function load_script(url, cb) {
+			var script = document.createElement("script");
+			script.onload = cb;
+			script.type = "text/javascript";
+			script.src = url;
+			document.head.appendChild(script);			
+		}
+		
+		function load_or_dl_script(prev_ver, now_ver, cb) {
+			if (prev_ver == null || prev_ver.hash != now_ver.hash) {
+				var url = window.endpoint + "/assets/" + now_ver.name + "." + now_ver.hash + ".js";
+				console.log("use new ver:" + url);
+				load_script(url, cb);
+			}
+			else {
+				var url = fs.root.toURL() + "assets/" + prev_ver.name + ".js";
+				console.log("use cached ver:" + url);
+				load_script(url, cb);
+			}			
+		}
 
 		function check_patcher_version(config_next) {
-			var new_url = window.endpoint + "/assets/patch." + config_next.versions[0].hash + ".js";
-			var config_prev = null;
-			function load_patch_script(url) {
-				var script = document.createElement("script");
-				script.onload = function (ev) {
-					window.channer.patch(window.endpoint, function (config) {
-                        console.log("end patch");
-						try {
-							window.channer.bootstrap(config);
-						}
-						catch (e) {
-							console.log("bootstrap error: " + e.message);
-						}
-					}, function (error) {
-						console.log("bootstrap fails:" + JSON.stringify(error));
-						//broken script?
-						//remove config.json => retry from first
-						remove_config(launch);
-					});
-				}
-				script.type = "text/javascript";
-				script.src = url;
-				document.head.appendChild(script);
+			var new_cmns_ver = config_next.versions[0], new_patch_ver = config_next.versions[1];
+			var cmns_ver = null, patch_ver = null;
+			function load_patch_script() {
+				load_or_dl_script(patch_ver, new_patch_ver, execute_patcher);
+			}
+			function load_commons_script() {
+				load_or_dl_script(cmns_ver, new_cmns_ver, load_patch_script);
 			}
 			fs.root.getFile("config.json", null, function (entry) {
 				entry.file(function (file) {    
 					var reader = new FileReader();
 					reader.onloadend = function (event) {
+						var config_prev = null;
 						try {
 							config_prev = JSON.parse(reader.result);
 						}
@@ -149,27 +176,20 @@ document.addEventListener("deviceready", function () {
 							remove_config(launch);
 							return;
 						}
-						if (config_prev.versions[0].hash != config_next.versions[0].hash) {
-							console.log("use new ver1:" + new_url);
-							load_patch_script(new_url);
-						}
-						else {
-							var cache_url = fs.root.toURL() + "assets/patch.js";
-							console.log("use cached ver:" + cache_url);
-							load_patch_script(cache_url);
-						}
+						cmns_ver = config_prev.versions[0], patch_ver = config_prev.versions[1];
+						load_commons_script();
 					}
 					reader.readAsText(file);
 				}, function (e) {
 					console.log("fail to read config.json");
 					remove_config(function () {
-						console.log("use new ver:" + new_url);
-						load_patch_script(new_url);
+						console.log("err1:" + JSON.stringify(e));
+						load_commons_script();
 					})
 				});				
 			}, function (err) {
-				console.log("use new ver2:" + new_url);
-				load_patch_script(new_url);
+				console.log("err2:" + JSON.stringify(err));
+				load_commons_script();
 			});			
 		}
 		fs.root.getFile("pg_devapp_config.json", null, function (entry) {

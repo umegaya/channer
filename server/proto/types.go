@@ -1,3 +1,12 @@
 package ChannerProto
 
-type UUID uint64
+import (
+	"github.com/umegaya/yue"
+)
+
+type UUID yue.UUID
+type Err Error
+
+func (e *Err) Error() string {
+	return e.Explanation
+}

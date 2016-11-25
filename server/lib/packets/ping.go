@@ -1,7 +1,7 @@
 package packets
 
 import (
-	proto "../../proto"
+	proto "github.com/umegaya/channer/server/proto"
 )
 
 func ProcessPing(from Source, msgid uint32, req *proto.PingRequest, t Transport) {

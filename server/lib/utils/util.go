@@ -3,9 +3,12 @@ package utils
 import (
 	"net"
 	"fmt"
-	//"log"
+	"log"
+	"runtime"
 	"strings"
 	"strconv"
+	"sync"
+	"sync/atomic"
 )
 
 func INetNtoa(ip string) uint32 {      
@@ -49,4 +52,49 @@ func IFIP(name string, need_ipv6 bool) (net.IP, error) {
 		}
 	}
 	return nil, fmt.Errorf("interface %v: no suitable setting found", name)
+}
+
+type WaitGroup struct {
+	sync.WaitGroup
+	errors []error
+	cnt int32
+}
+
+func NewWaitGroup(size int) *WaitGroup {
+	wg := &WaitGroup {
+		errors: make([]error, size),
+	}
+	wg.WaitGroup.Add(size)
+	return wg
+}
+
+func (wg *WaitGroup) Done(err error) {
+	cnt := atomic.AddInt32(&wg.cnt, 1)
+	//log.Printf("Done with %v %v", cnt, err)
+	wg.errors[cnt - 1] = err
+	wg.WaitGroup.Done()
+}
+
+func (wg *WaitGroup) Wait() error {
+	wg.WaitGroup.Wait()
+	var err error
+	for i, e := range wg.errors {
+		if e != nil && err == nil {
+			err = e
+		}
+		wg.errors[i] = nil
+	}
+	wg.cnt = 0
+	//log.Printf("Wait with %v", err)
+	return err
+}
+
+//dump system stats
+func DumpMemUsage() {
+	var mem runtime.MemStats
+    runtime.ReadMemStats(&mem)
+    log.Println(mem.Alloc)
+    log.Println(mem.TotalAlloc)
+    log.Println(mem.HeapAlloc)
+    log.Println(mem.HeapSys)	
 }

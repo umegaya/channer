@@ -1,27 +1,19 @@
-/// <reference path="../typings/mithril.d.ts"/>
+/// <reference path="../typings/react/react.d.ts"/>
 declare namespace UI {
-	interface Element extends _mithril.MithrilVirtualElement {		
+	interface Element extends JSX.Element {		
 	}
 	
-	interface Property<T> extends _mithril.MithrilProperty<T> {
-	}
-
-	interface Controller extends _mithril.MithrilController {
+	interface Property<T> {
+		(prop?: T): T;
 	}
 	
-	interface View<T extends Controller> extends _mithril.MithrilView<T> {	
+	interface Component extends __React.ComponentClass<any> {
 	}
     
-    interface Attributes extends _mithril.MithrilAttributes {
-        id?: string;
-        secure?: string;
+    interface PageComponent extends Component {
+        menus: Array<Component>;
     }
-    	
-	interface Component {
-		controller: (args?:any) => Controller;
-		view: View<Controller>;
-	}
-	
+    
 	interface ComponentFactory {
 		new (...args: any[]): Component;
 	}

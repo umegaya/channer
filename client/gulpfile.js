@@ -63,9 +63,11 @@ gulp.task('locale', function () {
 gulp.task('proto-json', function () {
     var gopath = process.env.GOPATH
     var incpath = "-p "+gopath+"/src -p "+gopath+"/src/github.com/gogo/protobuf/protobuf"
+    console.log('pbjs <%= file.path %> --source proto --target json ' + incpath);
     return gulp
         .src(paths.proto + '/**/*.proto', {base: paths.proto})
-        .pipe(exec('pbjs <%= file.path %> --source proto --target json ' + incpath, execOptions))
+        .pipe(exec('pbjs <%= file.path %> --source proto --target json ' + incpath + 
+            '|sed -e \'s/"[a-zA-Z0-9]*fixed64"/"Long"/g\'', execOptions))
         .pipe(exec.reporter(execReportOptions))
         .pipe(rename(function (path) {
             path.extname += '.json';
@@ -115,7 +117,8 @@ gulp.task("webpack-watch", function() {
       stats: {
         colors: true,
         reasons: true
-      }
+      },
+      headers: { "Access-Control-Allow-Origin": "*" },      
     }).listen(port, server, function(err) {
         if(err) throw new util.PluginError("webpack:serve", err);
         // Server listening
