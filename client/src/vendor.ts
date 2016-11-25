@@ -9,26 +9,10 @@ var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
 window.channer.ProtoBuf = require('protobufjs');
-//window.m must exist for initializing some of mithril plugin
-//window.channer.mtransit = require('mithril-transition');
-//(require('mithril.bindings'))(window.channer.m);
-//require('mithril.animate');
-//window.m = undefined;
 //load hammerjs
 window.channer.Hammer = require('hammerjs');
 //js hash function
 window.channer.hash = require('jshashes');
-//UI parts from polythene and mithril-infinite
-//window.channer.parts.Scroll = require('mithril-infinite');
-//these 2 are not for importing UI parts, 
-//but for apply correct theme to show polythene component correctly
-//require('polythene/theme/theme');
-//require('polythene/layout/theme/theme');
-//importing necessary polythene components.
-//window.channer.parts.Button = require('polythene/button/button');
-//window.channer.parts.TextField = require('polythene/textfield/textfield');
-//window.channer.parts.Tabs = require('polythene/tabs/tabs');
-//window.channer.parts.Radio = require('polythene/radio-button/radio-button');
 window.channer.parts.Button = require('material-ui/RaisedButton');
 window.channer.parts.TextField = require('material-ui/TextField');
 window.channer.parts.Scroll = require('react-list');

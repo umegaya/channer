@@ -4,7 +4,6 @@
 /// <reference path="./bluebird/bluebird.d.ts"/>
 /// <reference path="./hammerjs/hammerjs.d.ts"/>
 /// <reference path="./UI.d.ts"/>
-/// <reference path="./mithril.d.ts"/>
 /// <reference path="./react/react.d.ts"/>
 /// <reference path="./react/react-dom.d.ts"/>
 /// <reference path="./react/react-canvas.d.ts"/>
@@ -22,7 +21,6 @@
 
 interface Window {
     channer: ChannerModules;
-    m: any; //temporary for loading mithril.animate
     environment: string;
 }
 
@@ -34,7 +32,6 @@ interface ChannerModules {
 	bootstrap: (c: any/*Config*/) => void;
 	conn: any/*Handler*/;
 	config: any/*Config*/;
-	m: _mithril.MithrilStatic;
     Hammer: HammerStatic;
 	ProtoBuf: any;
     MarkdownParser: any;

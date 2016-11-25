@@ -52,12 +52,11 @@ export class PropCollection implements Persistable {
         }
         else {
             //trigger redraw
+            //TODO: how trigger redrawing of react here?
             this.loadprop().then(() => { 
-                //m.endComputation(); 
                 return null;
             }, (e: Error) => {
             console.log("PropCollection init error by " + e.message);
-                //m.endComputation();             
                 return null;
             });
         }
