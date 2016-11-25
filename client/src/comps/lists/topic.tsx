@@ -133,7 +133,7 @@ export class TopicElementComponent extends React.Component<TopicElementProp, Top
                 <Text style={styler.vote_text(20, 0)}>{down.toString()}</Text>
             </Group>;
         //apply text metrics
-        return <Group style={styler.bg()} onClick={this.props.elemOpts("/topic/180646409492955137")}>                    
+        return <Group style={styler.bg()} onClick={this.props.elemOpts("/topic/196493816140660737")}>                    
             {upvoteElement}
             {downvoteElement}   
 

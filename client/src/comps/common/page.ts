@@ -13,12 +13,18 @@ export interface PageState {
 export class PageComponent<P extends PageProp, S extends PageState> extends React.Component<P, S> {
     constructor(props: P) {
         super(props);
+		window.channer.conn.set_router(this.props.router);
     }
     route = (path: string, options?: {
-        replace: boolean;
+        replace?: boolean;
+        route_only?: boolean;
     }): void => {
         //250ms delay to show ripple
         setTimeout(() => {
+            if (options && !options.route_only) {
+                window.channer.settings.values.last_url = path;
+                window.channer.settings.save();
+            }
             if (options && options.replace) {
                 return this.props.router.replace(path);
             } else {

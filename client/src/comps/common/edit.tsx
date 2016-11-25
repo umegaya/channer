@@ -3,9 +3,9 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import {Editor, EditorState} from 'draft-js';
-var RichTextEditor : UI.Component = window.channer.parts.RichTextEditor;
+var RichTextEditor : ReactRTE.Editor = window.channer.parts.RichTextEditor;
 var toEditorValue = function (editorState: Draft.Model.ImmutableData.EditorState): ReactRTE.EditorValue {
-  return RichTextEditor["EditorValue"].createFromState(editorState);
+  return RichTextEditor.EditorValue.createFromState(editorState);
 }
 
 export class EditState {

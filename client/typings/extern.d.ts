@@ -82,7 +82,7 @@ interface ChannerModules {
     parts: {
         Scroll: UI.Component;
         Markdown: UI.Component;
-        RichTextEditor: UI.Component;
+        RichTextEditor: ReactRTE.Editor;
         Button: UI.Component;
         TextField: UI.Component;
         Tabs: UI.Component;
@@ -90,4 +90,9 @@ interface ChannerModules {
         Channel: UI.Component;
         Topic: UI.Component;
     }
+}
+
+//SyntacticEvent wrapper
+interface HTMLElemEvent<T extends HTMLElement> extends SyntheticEvent {
+    target: T;
 }

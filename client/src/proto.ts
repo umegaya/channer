@@ -14,11 +14,18 @@ var proto_def = JSON.stringify(require('channer.proto.json')).replace(/Long/g, "
 export var Builder : Proto2TypeScript.ChannerProtoBuilder 
 	= window.channer.ProtoBuf.loadJson(proto_def).build("ChannerProto");
 
+export interface Routable {
+	location: Location;
+	replace: (next: string) => void;
+	push: (next: string) => void;
+}
+
 export class Handler {
 	watcher: ProtoWatcher;
 	latency: number;
     querying: ChannerProto.Payload.Type;
     last_error: Error;
+	router: Routable;
 	private url: string;
 	private socket: Socket;
 	private msgid_seed: number;
@@ -107,14 +114,10 @@ export class Handler {
 		}
 	}
 	private reauth = () => {
-		/*var current = m.route();
-		if (!current.match(/^\/(login|rescue)/)) {
-			console.log("re-authenticate current url:" + current);
-			Util.route("/login?next=" + encodeURIComponent(current), null, {
-                route_only: true,
-                replace_history: true,
-            });
-		}*/		
+		if (this.router && !this.router.location.pathname.match(/^\/(login|rescue)/)) {
+			console.log("re-authenticate current url:" + this.router.location.pathname);
+			this.router.replace("/login?next=" + encodeURIComponent(this.router.location.pathname));
+		}
 	}
 	private onopen = () => {
 		this.reauth();
@@ -151,6 +154,9 @@ export class Handler {
 	}
 	private signature = (user: Long, secret: string, walltime: number): string => {
 		return (new window.channer.hash.SHA256()).b64(walltime + user.toString() + secret);
+	}
+	set_router = (router: Routable) => {
+		this.router = router;
 	}
     reconnect_duration = (): number => {
         return this.socket.reconnect_duration();
