@@ -88,9 +88,8 @@ class L10n {
     }
     translateDate = (date: Date): Promise<string> => {
         return new Promise<string>((resolve: (e: string) => void, reject: (err: any) => void) => {
-            var df: Q.Deferred<string> = Q.defer<string>();
             this.g.dateToString(date, (d: {value : string}) => {
-                df.resolve(d.value);
+                resolve(d.value);
             }, reject);
         });
     }
